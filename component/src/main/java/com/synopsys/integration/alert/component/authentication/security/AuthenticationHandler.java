@@ -7,10 +7,8 @@
  */
 package com.synopsys.integration.alert.component.authentication.security;
 
-import com.synopsys.integration.alert.authentication.saml.security.SAMLGroupConverter;
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
-import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +18,6 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.saml2.provider.service.authentication.OpenSaml4AuthenticationProvider;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
@@ -28,27 +25,35 @@ import org.springframework.security.saml2.provider.service.web.DefaultRelyingPar
 import org.springframework.security.saml2.provider.service.web.RelyingPartyRegistrationResolver;
 import org.springframework.security.saml2.provider.service.web.authentication.OpenSaml4AuthenticationRequestResolver;
 import org.springframework.security.saml2.provider.service.web.authentication.Saml2AuthenticationRequestResolver;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import java.util.Arrays;
+import com.synopsys.integration.alert.authentication.saml.security.SAMLGroupConverter;
+import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
+import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 
 @EnableWebSecurity
 @Configuration
-public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
+public class AuthenticationHandler {
     private final HttpPathManager httpPathManager;
     private final CsrfTokenRepository csrfTokenRepository;
     private final AlertProperties alertProperties;
     private final RoleAccessor roleAccessor;
 
     private final SAMLGroupConverter samlGroupConverter;
+    private final AlertAuthenticationProvider authenticationProvider;
 
     @Autowired
     AuthenticationHandler(
@@ -56,25 +61,47 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         CsrfTokenRepository csrfTokenRepository,
         AlertProperties alertProperties,
         RoleAccessor roleAccessor,
-        SAMLGroupConverter samlGroupConverter
+        SAMLGroupConverter samlGroupConverter,
+        AlertAuthenticationProvider authenticationProvider
     ) {
         this.httpPathManager = httpPathManager;
         this.csrfTokenRepository = csrfTokenRepository;
         this.alertProperties = alertProperties;
         this.roleAccessor = roleAccessor;
         this.samlGroupConverter = samlGroupConverter;
+        this.authenticationProvider = authenticationProvider;
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityContextRepository securityContextRepository() {
+        return new HttpSessionSecurityContextRepository();
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http, SecurityContextRepository securityContextRepository) throws Exception {
         configureWithSSL(http);
-        http.authorizeRequests()
-            .requestMatchers(createAllowedPathMatchers()).permitAll()
-            .and().authorizeRequests().anyRequest().authenticated()
-            .and().csrf().csrfTokenRepository(csrfTokenRepository).ignoringRequestMatchers(createCsrfIgnoreMatchers())
-            .withObjectPostProcessor(createRoleProcessor())
-            .and().logout().logoutSuccessUrl("/");
+        RequestMatcher[] allowedRequestMatchers = createAllowedPathMatchers();
+        CsrfTokenRequestAttributeHandler csrfRequestHandler = new CsrfTokenRequestAttributeHandler();
+        // set the name of the attribute the CsrfToken will be populated on
+        csrfRequestHandler.setCsrfRequestAttributeName(null);
+        http.securityContext((securityContext) -> {
+                securityContext.requireExplicitSave(true);
+                securityContext.securityContextRepository(securityContextRepository);
+            })
+            .authenticationProvider(authenticationProvider)
+            .authorizeHttpRequests()
+            .requestMatchers(allowedRequestMatchers).permitAll()
+            .and().authorizeHttpRequests().anyRequest().authenticated()
+            .and().csrf(csrf -> {
+                csrf.csrfTokenRequestHandler(csrfRequestHandler);
+                csrf.csrfTokenRepository(csrfTokenRepository);
+                csrf.ignoringRequestMatchers(allowedRequestMatchers);
+            })
+            .authorizeHttpRequests().withObjectPostProcessor(createRoleProcessor())
+            .and().logout()
+            .logoutSuccessUrl(HttpPathManager.PATH_ROOT);
         configureSAML(http);
+        return http.build();
     }
 
     private void configureWithSSL(HttpSecurity http) throws Exception {
@@ -113,7 +140,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     }
 
     private ObjectPostProcessor<AffirmativeBased> createRoleProcessor() {
-        return new ObjectPostProcessor<>() {
+        return new ObjectPostProcessor<AffirmativeBased>() {
             @Override
             public <O extends AffirmativeBased> O postProcess(O affirmativeBased) {
                 WebExpressionVoter webExpressionVoter = new WebExpressionVoter();
@@ -127,13 +154,6 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
                 return affirmativeBased;
             }
         };
-    }
-
-    private String[] retrieveAllowedRoles() {
-        return roleAccessor.getRoles()
-                   .stream()
-                   .map(UserRoleModel::getName)
-                   .toArray(String[]::new);
     }
 
     @Bean
@@ -163,6 +183,23 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         simpleUrlLogoutSuccessHandler.setDefaultTargetUrl("/");
         simpleUrlLogoutSuccessHandler.setAlwaysUseDefaultTargetUrl(true);
         return simpleUrlLogoutSuccessHandler;
+    }
+
+    @Bean
+    public DefaultWebSecurityExpressionHandler webSecurityExpressionHandler() {
+        DefaultWebSecurityExpressionHandler expressionHandler = new DefaultWebSecurityExpressionHandler();
+        expressionHandler.setRoleHierarchy(authorities -> {
+            String[] allAlertRoles = retrieveAllowedRoles();
+            return AuthorityUtils.createAuthorityList(allAlertRoles);
+        });
+        return expressionHandler;
+    }
+
+    private String[] retrieveAllowedRoles() {
+        return roleAccessor.getRoles()
+            .stream()
+            .map(UserRoleModel::getName)
+            .toArray(String[]::new);
     }
 
     // ==========

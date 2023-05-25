@@ -14,7 +14,7 @@ dependencies {
     implementation 'com.zaxxer:HikariCP'
     implementation 'org.springframework.boot:spring-boot-autoconfigure'
     implementation 'org.springframework.security:spring-security-core'
-    implementation 'org.hibernate:hibernate-core'
+    implementation 'org.hibernate.orm:hibernate-core'
 
     runtimeOnly 'org.postgresql:postgresql'
     runtimeOnly 'org.liquibase:liquibase-core'
@@ -22,7 +22,7 @@ dependencies {
     // Connection Pool
     // https://www.baeldung.com/hibernate-c3p0
     // https://www.codejava.net/frameworks/hibernate/solved-jdbcconnectionexception-unable-to-acquire-jdbc-connection-with-hibernate-and-mysql
-    runtimeOnly 'org.hibernate:hibernate-c3p0'
+    runtimeOnly 'org.hibernate.orm:hibernate-c3p0'
 
     // Deprecated for removal in 8.0.0. We still need the h2 jar bundled for use in the docker-entrypoint to upgrade a pre 6.0.0 database.
     runtimeOnly 'com.h2database:h2'

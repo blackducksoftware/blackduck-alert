@@ -10,7 +10,6 @@ import org.mockito.Mockito;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.core.task.SyncTaskExecutor;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.convert.IssueTrackerMessageFormatter;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerAsyncMessageSender;
@@ -24,6 +23,8 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+
 class IssueTrackerChannelTest {
     @Test
     void distributeMessagesTest() throws AlertException {
@@ -57,7 +58,7 @@ class IssueTrackerChannelTest {
         IssueTrackerTransitionEventGenerator<String> transitioner = (model) -> null;
         IssueTrackerCreationEventGenerator creator = (model) -> null;
         RabbitTemplate rabbitTemplate = Mockito.mock(RabbitTemplate.class);
-        EventManager eventManager = new EventManager(new Gson(), rabbitTemplate, new SyncTaskExecutor());
+        EventManager eventManager = new EventManager(BlackDuckServicesFactory.createDefaultGson(), rabbitTemplate, new SyncTaskExecutor());
         ExecutingJobManager executingJobManager = Mockito.mock(ExecutingJobManager.class);
         return new IssueTrackerAsyncMessageSender<>(
             creator,

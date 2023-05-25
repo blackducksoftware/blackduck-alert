@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 class EmailGlobalConfigurationModelSaveActionsTest {
 
@@ -45,7 +46,7 @@ class EmailGlobalConfigurationModelSaveActionsTest {
     public static final String TEST_SMTP_PORT = "2025";
     public static final String TEST_AUTH_USER = "auser";
 
-    private final Gson gson = new Gson();
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
     private final AlertProperties alertProperties = new MockAlertProperties();
     private final FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
     private final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);

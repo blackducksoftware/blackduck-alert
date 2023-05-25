@@ -33,13 +33,14 @@ import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.database.job.azure.boards.DefaultAzureBoardsJobDetailsAccessor;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreator;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 class AzureBoardsCreateIssueEventHandlerTest {
 
     public static final String ISSUE_KEY = "JP-1";
-    private Gson gson = new Gson();
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
     private AtomicInteger issueCounter;
     private EventManager eventManager;
     private IssueTrackerResponsePostProcessor responsePostProcessor;

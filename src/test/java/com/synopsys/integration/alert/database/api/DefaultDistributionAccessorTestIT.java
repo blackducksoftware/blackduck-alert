@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.ParseException;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +23,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJob;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
@@ -52,8 +51,8 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 class DefaultDistributionAccessorTestIT {
     private final int TOTAL_NUMBER_OF_RECORDS = 6;
 
-    public static final String SORT_LAST_SENT = "filteredAudit.time_last_sent";
-    public static final String SORT_STATUS = "filteredAudit.status";
+    public static final String SORT_LAST_SENT = "time_last_sent";
+    public static final String SORT_STATUS = "status";
     public static final String SORT_CHANNEL = "channel_descriptor_name";
     public static final String SORT_FREQUENCY = "distribution_frequency";
     public static final String SORT_NAME = "name";
@@ -81,7 +80,7 @@ class DefaultDistributionAccessorTestIT {
     }
 
     private void cleanUpJobs() {
-        int pageNumber = 1;
+        int pageNumber = 0;
         AlertPagedModel<DistributionJobModel> jobs = jobAccessor.getPageOfJobs(pageNumber, 100);
         while (pageNumber <= jobs.getTotalPages()) {
             jobs.getModels()
@@ -107,8 +106,6 @@ class DefaultDistributionAccessorTestIT {
     }
 
     @Test
-    @Transactional
-    @Modifying
     void verifyQueryBuildsTest() {
         AlertPagedModel<DistributionWithAuditInfo> distributionWithAuditInfo = distributionAccessor.getDistributionWithAuditInfo(
             0,
@@ -122,73 +119,53 @@ class DefaultDistributionAccessorTestIT {
     }
 
     @Test
-    @Transactional
-    @Modifying
     void verifyValidityOfQueryTest() throws ParseException {
         assertValidQueryFunctionality(TOTAL_NUMBER_OF_RECORDS, () -> distributionAccessor.getDistributionWithAuditInfo(0, 100, "name", Direction.ASC, getAllDescriptorNames()));
     }
 
     @Test
-    @Transactional
-    @Modifying
     void verifyValidityOfQueryWithNullsTest() throws ParseException {
         assertValidQueryFunctionality(TOTAL_NUMBER_OF_RECORDS, () -> distributionAccessor.getDistributionWithAuditInfo(0, 100, null, null, getAllDescriptorNames()));
     }
 
     @Test
-    @Transactional
-    @Modifying
     void sortByNameDESCLowPageSizeTest() throws ParseException {
         assertSorted(3, 3, SORT_NAME, Direction.DESC, DistributionWithAuditInfo::getJobName);
     }
 
     @Test
-    @Transactional
-    @Modifying
     void sortByNameDESCTest() throws ParseException {
         assertSorted(TOTAL_NUMBER_OF_RECORDS, 100, SORT_NAME, Direction.DESC, DistributionWithAuditInfo::getJobName);
     }
 
     @Test
-    @Transactional
-    @Modifying
     void sortByNameASCTest() throws ParseException {
         assertSorted(TOTAL_NUMBER_OF_RECORDS, 100, SORT_NAME, Direction.ASC, DistributionWithAuditInfo::getJobName);
     }
 
     @Test
-    @Transactional
-    @Modifying
     void sortByFrequencyASCTest() throws ParseException {
         assertSorted(TOTAL_NUMBER_OF_RECORDS, 100, SORT_FREQUENCY, Direction.ASC, DistributionWithAuditInfo::getFrequencyType);
     }
 
     @Test
-    @Transactional
-    @Modifying
     void sortByFrequencyDESCTest() throws ParseException {
         assertSorted(TOTAL_NUMBER_OF_RECORDS, 100, SORT_FREQUENCY, Direction.DESC, DistributionWithAuditInfo::getFrequencyType);
     }
 
     @Test
-    @Transactional
-    @Modifying
     @Disabled("This feature is not currently supported due to limitations in hibernate")
     void sortByAuditLastTimeSentDESCTest() throws ParseException {
         assertAuditLastTimeSent(Direction.DESC);
     }
 
     @Test
-    @Transactional
-    @Modifying
     @Disabled("This feature is not currently supported due to limitations in hibernate")
     void sortByAuditLastTimeSentASCTest() throws ParseException {
         assertAuditLastTimeSent(Direction.ASC);
     }
 
     @Test
-    @Transactional
-    @Modifying
     void sortByChannelNameDESCTest() throws ParseException {
         assertSorted(TOTAL_NUMBER_OF_RECORDS, 100, SORT_CHANNEL, Direction.DESC, DistributionWithAuditInfo::getChannelName);
     }
@@ -259,7 +236,8 @@ class DefaultDistributionAccessorTestIT {
             Optional<JobCompletionStatusModel> jobExecutionStatusModel = jobCompletionStatusAccessor.getJobExecutionStatus(distributionWithAuditInfo.getJobId());
             if (jobExecutionStatusModel.isPresent()) {
                 assertEquals(jobExecutionStatusModel.get().getLatestStatus(), distributionWithAuditInfo.getAuditStatus());
-                String jsonFormattedString = DateUtils.formatDate(jobExecutionStatusModel.get().getLastRun(), DateUtils.AUDIT_DATE_FORMAT);
+                OffsetDateTime lastRunUTC = DateUtils.fromInstantUTC(jobExecutionStatusModel.get().getLastRun().toInstant());
+                String jsonFormattedString = DateUtils.formatDate(lastRunUTC, DateUtils.AUDIT_DATE_FORMAT);
                 String removedDashes = StringUtils.replace(jsonFormattedString, "-", "/");
                 String formattedTimestamp = StringUtils.substringBeforeLast(removedDashes, ".");
                 assertEquals(formattedTimestamp, distributionWithAuditInfo.getAuditTimeLastSent());

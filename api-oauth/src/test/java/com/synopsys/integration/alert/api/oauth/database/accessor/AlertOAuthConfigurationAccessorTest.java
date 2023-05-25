@@ -13,13 +13,13 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.oauth.database.AlertOAuthModel;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 class AlertOAuthConfigurationAccessorTest {
     private MockAlertOAuthConfigurationRepository repository;
@@ -29,7 +29,7 @@ class AlertOAuthConfigurationAccessorTest {
     void initRepository() {
         repository = new MockAlertOAuthConfigurationRepository();
         AlertProperties alertProperties = new MockAlertProperties();
-        FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, new Gson());
+        FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, BlackDuckServicesFactory.createDefaultGson());
         EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
         accessor = new AlertOAuthConfigurationAccessor(repository, encryptionUtility);
     }
@@ -52,7 +52,7 @@ class AlertOAuthConfigurationAccessorTest {
     @Test
     void readSingleConfigurationWithUnknownId() {
         AlertProperties alertProperties = new MockAlertProperties();
-        FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, new Gson());
+        FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, BlackDuckServicesFactory.createDefaultGson());
         EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
         accessor = new AlertOAuthConfigurationAccessor(repository, encryptionUtility);
         Optional<AlertOAuthModel> configuration = accessor.getConfiguration(UUID.randomUUID());

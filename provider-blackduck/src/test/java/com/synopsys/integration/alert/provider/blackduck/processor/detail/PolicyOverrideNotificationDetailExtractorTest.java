@@ -19,11 +19,12 @@ import com.synopsys.integration.alert.test.common.TestResourceUtils;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyOverrideNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.view.PolicyOverrideNotificationView;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class PolicyOverrideNotificationDetailExtractorTest {
     public static final String POLICY_OVERRIDE_JSON_PATH = "json/policyOverrideNotification.json";
 
-    private final Gson gson = new Gson();
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
 
     @Test
     public void extractDetailedContentTest() throws IOException {

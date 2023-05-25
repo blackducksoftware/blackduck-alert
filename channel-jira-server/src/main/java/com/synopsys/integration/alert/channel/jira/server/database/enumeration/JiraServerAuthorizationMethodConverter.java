@@ -2,10 +2,10 @@ package com.synopsys.integration.alert.channel.jira.server.database.enumeration;
 
 import java.util.stream.Stream;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
-
 import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
+
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 @Converter(autoApply = true)
 public class JiraServerAuthorizationMethodConverter implements AttributeConverter<JiraServerAuthorizationMethod, Integer> {

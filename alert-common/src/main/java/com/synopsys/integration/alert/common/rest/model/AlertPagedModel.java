@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import net.minidev.json.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class AlertPagedModel<M> extends AlertPagedDetails<M> implements Serializable {
     public static final String DEFAULT_PAGE_NUMBER_STRING = "0";
@@ -29,7 +29,6 @@ public class AlertPagedModel<M> extends AlertPagedDetails<M> implements Serializ
     }
 
     @Override
-    @JsonIgnore
     public List<M> getModels() {
         return super.getModels();
     }

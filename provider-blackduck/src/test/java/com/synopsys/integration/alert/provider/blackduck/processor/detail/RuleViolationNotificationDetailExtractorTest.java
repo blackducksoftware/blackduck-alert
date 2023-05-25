@@ -19,12 +19,13 @@ import com.synopsys.integration.alert.test.common.TestResourceUtils;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 import com.synopsys.integration.blackduck.api.manual.component.RuleViolationNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.view.RuleViolationNotificationView;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class RuleViolationNotificationDetailExtractorTest {
     public static final String NOTIFICATION_JSON_PATH = "json/ruleViolationNotification.json";
     public static final String DUPLICATE_NOTIFICATION_JSON_PATH = "json/ruleViolationDuplicateNotification.json";
 
-    private final Gson gson = new Gson();
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
 
     @Test
     public void extractDetailedContentTest() throws IOException {

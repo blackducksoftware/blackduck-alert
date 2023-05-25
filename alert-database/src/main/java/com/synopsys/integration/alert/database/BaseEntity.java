@@ -9,9 +9,9 @@ package com.synopsys.integration.alert.database;
 
 import java.io.Serializable;
 
-import javax.persistence.MappedSuperclass;
-
 import com.synopsys.integration.util.Stringable;
+
+import jakarta.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public abstract class BaseEntity extends Stringable implements Serializable {

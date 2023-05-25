@@ -7,10 +7,6 @@
  */
 package com.synopsys.integration.alert.component.authentication.web;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +15,9 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.stereotype.Component;
@@ -27,16 +25,22 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.component.authentication.security.AlertAuthenticationProvider;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
 @Component
 public class AuthenticationActions {
     private final Logger logger = LoggerFactory.getLogger(AuthenticationActions.class);
     private final AlertAuthenticationProvider authenticationProvider;
     private final CsrfTokenRepository csrfTokenRepository;
+    private final SecurityContextRepository securityContextRepository;
 
     @Autowired
-    public AuthenticationActions(AlertAuthenticationProvider authenticationProvider, CsrfTokenRepository csrfTokenRepository) {
+    public AuthenticationActions(AlertAuthenticationProvider authenticationProvider, CsrfTokenRepository csrfTokenRepository, SecurityContextRepository securityContextRepository) {
         this.authenticationProvider = authenticationProvider;
         this.csrfTokenRepository = csrfTokenRepository;
+        this.securityContextRepository = securityContextRepository;
     }
 
     public ActionResponse<Void> authenticateUser(HttpServletRequest servletRequest, HttpServletResponse servletResponse, LoginConfig loginConfig) throws BadCredentialsException {
@@ -50,6 +54,9 @@ public class AuthenticationActions {
                 CsrfToken token = csrfTokenRepository.generateToken(servletRequest);
                 csrfTokenRepository.saveToken(token, servletRequest, servletResponse);
                 servletResponse.setHeader(token.getHeaderName(), token.getToken());
+                SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+                securityContext.setAuthentication(authentication);
+                securityContextRepository.saveContext(securityContext, servletRequest, servletResponse);
                 response = new ActionResponse<>(HttpStatus.NO_CONTENT);
             } else {
                 servletRequest.getSession().invalidate();

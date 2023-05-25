@@ -31,13 +31,15 @@ import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 class JiraServerGlobalConfigAccessorTest {
     static final String TEST_URL = "url";
     static final String TEST_USERNAME = "username";
     static final String TEST_PASSWORD = "password";
     static final String TEST_ACCESS_TOKEN = "access_token";
-    private final Gson gson = new Gson();
+
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
     private final AlertProperties alertProperties = new MockAlertProperties();
     private final FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
     private final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);

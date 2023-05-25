@@ -20,6 +20,7 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 class AlertOAuthCredentialDataStoreTest {
 
@@ -32,7 +33,7 @@ class AlertOAuthCredentialDataStoreTest {
     @BeforeEach
     void initDataStore() {
         repository = new MockAlertOAuthConfigurationRepository();
-        Gson gson = new Gson();
+        Gson gson = BlackDuckServicesFactory.createDefaultGson();
         AlertProperties alertProperties = new MockAlertProperties();
         FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
         EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
