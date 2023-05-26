@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
-import com.synopsys.integration.alert.channel.jira.server.database.configuration.JiraServerConfigurationRepository;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
@@ -40,8 +39,6 @@ class JiraServerGlobalTestActionTestIT {
     private JiraServerTestActionFactory jiraServerTestActionFactory;
     @Autowired
     private JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor;
-    @Autowired
-    private JiraServerConfigurationRepository jiraServerConfigurationRepository;
 
     private final String testJiraServerUrl = testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_URL);
     private final String testJiraServerUsername = testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_USERNAME);
@@ -49,6 +46,7 @@ class JiraServerGlobalTestActionTestIT {
 
     @BeforeEach
     void init() {
+        cleanup();
         AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
         DescriptorKey descriptorKey = ChannelKeys.JIRA_SERVER;
         PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
@@ -58,7 +56,12 @@ class JiraServerGlobalTestActionTestIT {
 
     @AfterEach
     void cleanup() {
-        jiraServerConfigurationRepository.deleteAll();
+        jiraServerGlobalConfigAccessor.getConfigurationPage(0, 100, null, null, null)
+            .getModels()
+            .stream()
+            .map(JiraServerGlobalConfigModel::getId)
+            .map(UUID::fromString)
+            .forEach(jiraServerGlobalConfigAccessor::deleteConfiguration);
     }
 
     @Test
