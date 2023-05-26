@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.scheduling.TaskScheduler;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.provider.ProviderPhoneHomeHandler;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
@@ -24,6 +23,7 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 import com.synopsys.integration.alert.task.PhoneHomeTask;
 import com.synopsys.integration.alert.web.api.about.AboutReader;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class PhoneHomeTest {
@@ -58,7 +58,18 @@ public class PhoneHomeTest {
 
         ProviderKey providerKey = new BlackDuckProviderKey();
 
-        PhoneHomeTask phoneHomeTask = new PhoneHomeTask(taskScheduler, aboutReader, jobAccessor, configurationModelConfigurationAccessor, null, proxyManager, new Gson(), auditAccessor, providerHandlers, providerKey);
+        PhoneHomeTask phoneHomeTask = new PhoneHomeTask(
+            taskScheduler,
+            aboutReader,
+            jobAccessor,
+            configurationModelConfigurationAccessor,
+            null,
+            proxyManager,
+            BlackDuckServicesFactory.createDefaultGson(),
+            auditAccessor,
+            providerHandlers,
+            providerKey
+        );
 
         try {
             phoneHomeTask.run();

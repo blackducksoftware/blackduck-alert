@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -86,7 +85,7 @@ public class BlackDuckSSOConfigRetrieverTest {
         configurationModel.put(createConfigFieldModel(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, blackDuckApiKey));
         configurationModel.put(createConfigFieldModel(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, blackDuckTimeout));
 
-        return new BlackDuckProperties(0L, new Gson(), BlackDuckServicesFactory.createDefaultObjectMapper(), mockAlertProperties, mockProxyManager, configurationModel);
+        return new BlackDuckProperties(0L, BlackDuckServicesFactory.createDefaultGson(), BlackDuckServicesFactory.createDefaultObjectMapper(), mockAlertProperties, mockProxyManager, configurationModel);
     }
 
     private ConfigurationFieldModel createConfigFieldModel(String key, String value) {

@@ -9,9 +9,6 @@ package com.synopsys.integration.alert.channel.email.action;
 
 import java.util.function.Supplier;
 
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +34,9 @@ import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
 import com.synopsys.integration.alert.service.email.SmtpConfig;
 import com.synopsys.integration.alert.service.email.SmtpConfigBuilder;
 import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
+
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
 
 @Component
 public class EmailGlobalTestAction {

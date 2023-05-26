@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
@@ -58,7 +57,6 @@ class DistributionJobRepositoryTestIT {
     }
 
     @Test
-    @Transactional
     void findAndSortReturnsNotificationsOnNoFilters() {
         // Create a JobsDetailEntity and the DistributionJobEntity
         EmailJobDetailsModel emailJobDetailsModel = createEmailJobDetails();
@@ -93,7 +91,6 @@ class DistributionJobRepositoryTestIT {
     }
 
     @Test
-    @Transactional
     void findAndSortReturnsNotificationsOnPolicyFilter() {
         List<String> policyFilterNames = List.of("Policy1");
 
@@ -144,7 +141,6 @@ class DistributionJobRepositoryTestIT {
     }
 
     @Test
-    @Transactional
     void findAndSortReturnsNotificationsOnSeverityFilter() {
         List<String> vulnerabilitySeverityFilterNames = List.of(VulnerabilitySeverityType.CRITICAL.name());
 
@@ -193,7 +189,6 @@ class DistributionJobRepositoryTestIT {
     }
 
     @Test
-    @Transactional
     void findAndSortReturnsNotificationsOnSeverityAndPolicyFilter() {
         List<String> policyFilterNames = List.of("Policy1");
         List<String> vulnerabilitySeverityFilterNames = List.of(VulnerabilitySeverityType.CRITICAL.name());
@@ -260,7 +255,7 @@ class DistributionJobRepositoryTestIT {
             List.of(FrequencyType.REAL_TIME.name()),
             Collections.emptySet(),
             new HashSet<>(policyFilterNames),
-            new HashSet<>(),
+            null,
             PageRequest.of(0, 10)
         );
         assertEquals(1L, filteredPageWithEmptySeverityAndWantedPolicy.getTotalElements());

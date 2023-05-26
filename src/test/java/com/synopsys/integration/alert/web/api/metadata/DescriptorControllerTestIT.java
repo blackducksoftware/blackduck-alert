@@ -22,7 +22,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
@@ -30,6 +29,7 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 import com.synopsys.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 @Transactional
 @AlertIntegrationTest
@@ -140,7 +140,7 @@ public class DescriptorControllerTestIT {
     private DescriptorsResponseModel assertValidResponse(MockHttpServletRequestBuilder request) throws Exception {
         MvcResult mvcResult = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
         String listOfDescriptorsJson = mvcResult.getResponse().getContentAsString();
-        DescriptorsResponseModel descriptorsResponseModel = new Gson().fromJson(listOfDescriptorsJson, DescriptorsResponseModel.class);
+        DescriptorsResponseModel descriptorsResponseModel = BlackDuckServicesFactory.createDefaultGson().fromJson(listOfDescriptorsJson, DescriptorsResponseModel.class);
         Set<DescriptorMetadata> setOfDescriptors = descriptorsResponseModel.getDescriptors();
 
         assertTrue(setOfDescriptors.size() > 0);

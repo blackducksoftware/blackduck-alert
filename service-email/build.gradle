@@ -3,7 +3,7 @@ ext.moduleName = 'com.synopsys.integration.alert.service.email'
 dependencies {
     api 'org.freemarker:freemarker'
 
-    runtimeOnly 'com.sun.mail:javax.mail'
+    runtimeOnly 'org.eclipse.angus:angus-mail'
 
     implementation platform(project(':alert-platform'))
     implementation project(':api-common-model')
@@ -11,7 +11,7 @@ dependencies {
 
     implementation 'org.jsoup:jsoup'
     implementation 'org.springframework:spring-context'
-    implementation 'javax.mail:javax.mail-api'
+    implementation 'jakarta.mail:jakarta.mail-api'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
     implementation 'jakarta.activation:jakarta.activation-api'
 

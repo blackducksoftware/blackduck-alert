@@ -33,6 +33,7 @@ import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class EmailGlobalFieldModelTestActionTest {
     @Test
@@ -61,7 +62,7 @@ public class EmailGlobalFieldModelTestActionTest {
 
         MockAlertProperties testAlertProperties = new MockAlertProperties();
         MessageContentGroupCsvCreator messageContentGroupCsvCreator = new MessageContentGroupCsvCreator();
-        Gson gson = new Gson();
+        Gson gson = BlackDuckServicesFactory.createDefaultGson();
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(testAlertProperties, messageContentGroupCsvCreator, gson);
 
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
@@ -139,7 +140,7 @@ public class EmailGlobalFieldModelTestActionTest {
         JobEmailAddressValidator emailAddressValidator = Mockito.mock(JobEmailAddressValidator.class);
         Mockito.when(emailAddressValidator.validate(Mockito.any(), Mockito.anyCollection())).thenReturn(new ValidatedEmailAddresses(Set.of(emailAddress), Set.of()));
 
-        Gson gson = new Gson();
+        Gson gson = BlackDuckServicesFactory.createDefaultGson();
         MessageContentGroupCsvCreator messageContentGroupCsvCreator = new MessageContentGroupCsvCreator();
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(testAlertProperties, messageContentGroupCsvCreator, gson);
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();

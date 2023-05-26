@@ -287,7 +287,7 @@ class AuditEntryHandlerLegacyTestIT {
         try {
             auditRequest.get();
         } catch (ResponseStatusException e) {
-            assertEquals(expectedStatus, e.getStatus());
+            assertEquals(expectedStatus, HttpStatus.resolve(e.getStatusCode().value()));
         }
     }
 
