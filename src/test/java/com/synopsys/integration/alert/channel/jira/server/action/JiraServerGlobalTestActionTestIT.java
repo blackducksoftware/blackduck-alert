@@ -77,7 +77,7 @@ class JiraServerGlobalTestActionTestIT {
 
         ValidationResponseModel validationResponseModel = response.getContent()
             .orElseThrow(() -> new AssertionError("Expected response content not found"));
-        assertFalse(validationResponseModel.hasErrors());
+        assertFalse(validationResponseModel.hasErrors(), "Error occurred when none expected: " + validationResponseModel.getMessage());
     }
 
     @Test
@@ -100,7 +100,7 @@ class JiraServerGlobalTestActionTestIT {
 
         ValidationResponseModel validationResponseModel = response.getContent()
             .orElseThrow(() -> new AssertionError("Expected response content not found"));
-        assertTrue(validationResponseModel.hasErrors());
+        assertTrue(validationResponseModel.hasErrors(), "No errors occurred when an error was expected: " + validationResponseModel.getMessage());
     }
 
     @Test
@@ -120,7 +120,7 @@ class JiraServerGlobalTestActionTestIT {
         ActionResponse<ValidationResponseModel> response = jiraServerGlobalTestAction.testWithPermissionCheck(jiraServerGlobalConfigModel);
         ValidationResponseModel validationResponseModel = response.getContent()
             .orElseThrow(() -> new AssertionError("Expected response content not found"));
-        assertFalse(validationResponseModel.hasErrors());
+        assertFalse(validationResponseModel.hasErrors(), "Error occurred when none expected: " + validationResponseModel.getMessage());
     }
 
     private JiraServerGlobalConfigModel createBasicConfigModel() {
