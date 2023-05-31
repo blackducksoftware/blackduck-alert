@@ -5,7 +5,7 @@ import UserModal from 'page/usermgmt/user/UserModal';
 import StatusMessage from 'common/component/StatusMessage';
 import Button from 'common/component/button/Button';
 
-const UserTableActions = ({ canCreate, canDelete, data, selected }) => {
+const UserTableActions = ({ canCreate, canDelete, data, selected, setSelected }) => {
     const modalOptions = {
         type: 'CREATE',
         submitText: 'Create',
@@ -25,7 +25,7 @@ const UserTableActions = ({ canCreate, canDelete, data, selected }) => {
         setStatusMessage();
         setShowDeleteModal(true);
     }
-
+    console.log(selected);
     return (
         <>
             { statusMessage && (
@@ -60,6 +60,7 @@ const UserTableActions = ({ canCreate, canDelete, data, selected }) => {
                     isOpen={showDeleteModal}
                     toggleModal={setShowDeleteModal}
                     selected={selected}
+                    setSelected={setSelected}
                     setStatusMessage={setStatusMessage}
                 />
             )}

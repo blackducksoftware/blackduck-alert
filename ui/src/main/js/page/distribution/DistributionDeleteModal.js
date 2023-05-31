@@ -27,7 +27,7 @@ function getStagedForDelete(data, selected) {
     return staged.map((distribution) => ({ ...distribution, staged: true }));
 }
 
-const DistributionDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMessage }) => {
+const DistributionDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, setStatusMessage }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { deleteStatus, error } = useSelector((state) => state.distribution);
@@ -65,6 +65,7 @@ const DistributionDeleteModal = ({ isOpen, toggleModal, data, selected, setStatu
                 type: 'success'
             });
 
+            setSelected([]);
             handleClose();
         }
 

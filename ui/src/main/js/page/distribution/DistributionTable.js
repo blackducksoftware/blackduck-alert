@@ -162,7 +162,7 @@ const DistributionTable = ({ readonly }) => {
             onPage={handlePagination}
             data={data}
             emptyTableConfig={emptyTableConfig}
-            tableActions={() => <DistributionTableActions data={data} readonly={readonly} selected={selected} />}
+            tableActions={() => <DistributionTableActions data={data} readonly={readonly} selected={selected} setSelected={setSelected} />}
         />
     );
 };

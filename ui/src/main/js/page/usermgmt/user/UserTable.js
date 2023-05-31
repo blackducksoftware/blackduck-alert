@@ -136,7 +136,7 @@ const UserTable = ({ canCreate, canDelete }) => {
             active={autoRefresh}
             onToggle={handleToggle}
             emptyTableConfig={emptyTableConfig}
-            tableActions={() => <UserTableActions canCreate={canCreate} canDelete={canDelete} data={tableData} selected={selected} />}
+            tableActions={() => <UserTableActions canCreate={canCreate} canDelete={canDelete} data={tableData} selected={selected} setSelected={setSelected} />}
         />
     );
 };

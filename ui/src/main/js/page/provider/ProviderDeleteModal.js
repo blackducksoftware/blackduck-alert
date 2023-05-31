@@ -23,7 +23,7 @@ function getStagedForDelete(data, selected) {
     return staged.map((provider) => ({ ...provider, staged: true }));
 }
 
-const ProviderDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMessage }) => {
+const ProviderDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMessage, setSelected }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { deleteStatus, error } = useSelector((state) => state.provider);
@@ -61,6 +61,7 @@ const ProviderDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMes
                 type: 'success'
             });
 
+            setSelected([]);
             handleClose();
         }
 

@@ -77,6 +77,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
     }
 
     useEffect(() => {
+        console.log(saveStatus);
         if (saveStatus === 'VALIDATING' || saveStatus === 'SAVING') {
             setShowLoader(true);
         }

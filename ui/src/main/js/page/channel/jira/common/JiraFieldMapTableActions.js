@@ -4,7 +4,7 @@ import FieldMappingDeleteModal from 'page/channel/jira/common/FieldMappingDelete
 import FieldMappingModal from 'page/channel/jira/common/FieldMappingModal';
 import Button from 'common/component/button/Button';
 
-const JiraFieldMapTableActions = ({ data, selected, updateTableData }) => {
+const JiraFieldMapTableActions = ({ data, selected, updateTableData, setSelected }) => {
     const modalOptions = {
         type: 'CREATE',
         title: 'Create a New Mapping'
@@ -44,6 +44,7 @@ const JiraFieldMapTableActions = ({ data, selected, updateTableData }) => {
                     toggleModal={setShowDeleteModal}
                     selected={selected}
                     updateTableData={updateTableData}
+                    setSelected={setSelected}
                 />
             )}
         </>

@@ -24,7 +24,7 @@ function getStagedForDelete(data, selected) {
     return staged.map((fieldModel) => ({ ...fieldModel, staged: true }));
 }
 
-const FieldMappingDeleteModal = ({ isOpen, toggleModal, data, selected, updateTableData }) => {
+const FieldMappingDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, updateTableData }) => {
     const classes = useStyles();
 
     const [selectedFieldModels, setSelectedFieldModels] = useState(getStagedForDelete(data, selected));
@@ -37,6 +37,7 @@ const FieldMappingDeleteModal = ({ isOpen, toggleModal, data, selected, updateTa
     function handleDelete() {
         const updatedData = data.filter(fieldMapping => !selected.includes(fieldMapping.fieldName))
         updateTableData(updatedData);
+        setSelected([]);
         handleClose();
     }
 

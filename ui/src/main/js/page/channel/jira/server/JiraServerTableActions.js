@@ -5,7 +5,7 @@ import JiraServerModal from 'page/channel/jira/server/JiraServerModal';
 import JiraServerDeleteModal from 'page/channel/jira/server/JiraServerDeleteModal';
 import Button from 'common/component/button/Button';
 
-const JiraServerTableActions = ({ data, readonly, allowDelete, selected }) => {
+const JiraServerTableActions = ({ data, readonly, allowDelete, selected, setSelected }) => {
     const modalOptions = {
         type: 'CREATE',
         submitText: 'Create',
@@ -58,6 +58,7 @@ const JiraServerTableActions = ({ data, readonly, allowDelete, selected }) => {
                     toggleModal={setShowDeleteModal}
                     selected={selected}
                     setStatusMessage={setStatusMessage}
+                    setSelected={setSelected}
                 />
             )}
         </>

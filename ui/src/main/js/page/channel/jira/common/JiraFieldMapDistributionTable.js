@@ -50,7 +50,7 @@ function JiraFieldMapDistributionTable({ cloudTableData, onFieldMappingUpdate })
             selected={selected}
             onSelected={onSelected}
             emptyTableConfig={emptyTableConfig}
-            tableActions={() => <JiraFieldMapTableActions data={tableData} selected={selected} updateTableData={setTableData} />}
+            tableActions={() => <JiraFieldMapTableActions data={tableData} selected={selected} setSelected={setSelected} updateTableData={setTableData} />}
         />
     );
 }

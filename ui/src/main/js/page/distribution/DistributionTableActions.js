@@ -6,7 +6,7 @@ import StatusMessage from 'common/component/StatusMessage';
 import { DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom';
 
-const DistributionTableActions = ({ data, selected }) => {
+const DistributionTableActions = ({ data, selected, setSelected }) => {
     const history = useHistory();
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
@@ -40,6 +40,7 @@ const DistributionTableActions = ({ data, selected }) => {
                     toggleModal={setShowDeleteModal}
                     selected={selected}
                     setStatusMessage={setStatusMessage}
+                    setSelected={setSelected}
                 />
             )}
         </>

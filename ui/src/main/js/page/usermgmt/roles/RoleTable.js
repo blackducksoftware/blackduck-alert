@@ -124,7 +124,7 @@ const RoleTable = ({ canCreate, canDelete }) => {
                 sortConfig={sortConfig}
                 disableSelectOptions={disableSelectOptions}
                 emptyTableConfig={emptyTableConfig}
-                tableActions={() => <RoleTableActions canCreate={canCreate} canDelete={canDelete} data={roles} selected={selected} />}
+                tableActions={() => <RoleTableActions canCreate={canCreate} canDelete={canDelete} data={roles} selected={selected} setSelected={setSelected} />}
             />
         </>
     );

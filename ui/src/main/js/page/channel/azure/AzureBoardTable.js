@@ -142,7 +142,7 @@ const AzureBoardTale = ({ readonly, allowDelete }) => {
             onPage={handlePagination}
             data={data}
             emptyTableConfig={emptyTableConfig}
-            tableActions={() => <AzureBoardTableActions data={data} readonly={readonly} allowDelete={allowDelete} selected={selected} />}
+            tableActions={() => <AzureBoardTableActions data={data} readonly={readonly} allowDelete={allowDelete} selected={selected} setSelected={setSelected} />}
         />
     );
 };

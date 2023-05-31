@@ -18,7 +18,7 @@ const useStyles = createUseStyles({
     }
 });
 
-const RoleDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMessage }) => {
+const RoleDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, setStatusMessage }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { deleteStatus, error } = useSelector((state) => state.roles);
@@ -71,6 +71,7 @@ const RoleDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMessage
                 type: 'success'
             });
 
+            setSelected([]);
             handleClose();
         }
 

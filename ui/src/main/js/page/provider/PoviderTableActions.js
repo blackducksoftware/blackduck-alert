@@ -5,7 +5,7 @@ import ProviderModal from 'page/provider/ProviderModal';
 import StatusMessage from 'common/component/StatusMessage';
 import Button from 'common/component/button/Button';
 
-const PoviderTableActions = ({ data, selected, readonly }) => {
+const PoviderTableActions = ({ data, selected, readonly, setSelected }) => {
     const modalOptions = {
         type: 'CREATE',
         submitText: 'Create',
@@ -58,6 +58,7 @@ const PoviderTableActions = ({ data, selected, readonly }) => {
                     toggleModal={setShowDeleteModal}
                     selected={selected}
                     setStatusMessage={setStatusMessage}
+                    setSelected={setSelected}
                 />
             )}
         </>

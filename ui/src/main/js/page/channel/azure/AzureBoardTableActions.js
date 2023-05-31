@@ -5,7 +5,7 @@ import Button from 'common/component/button/Button';
 import AzureBoardModal from 'page/channel/azure/AzureBoardModal';
 import AzureBoardDeleteModal from 'page/channel/azure/AzureBoardDeleteModal';
 
-const AzureBoardTableActions = ({ data, readonly, allowDelete, selected }) => {
+const AzureBoardTableActions = ({ data, readonly, allowDelete, selected, setSelected }) => {
     const modalOptions = {
         type: 'CREATE',
         submitText: 'Create',
@@ -58,6 +58,7 @@ const AzureBoardTableActions = ({ data, readonly, allowDelete, selected }) => {
                     toggleModal={setShowDeleteModal}
                     selected={selected}
                     setStatusMessage={setStatusMessage}
+                    setSelected={setSelected}
                 />
             )}
         </>

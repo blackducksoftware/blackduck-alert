@@ -23,7 +23,7 @@ function getStagedForDelete(data, selected) {
     return staged.map((user) => ({ ...user, staged: true }));
 }
 
-const UserDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMessage }) => {
+const UserDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, setStatusMessage }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { deleteStatus, error } = useSelector((state) => state.users);
@@ -61,6 +61,7 @@ const UserDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMessage
                 type: 'success'
             });
 
+            setSelected([]);
             handleClose();
         }
 

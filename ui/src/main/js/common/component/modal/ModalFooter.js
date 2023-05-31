@@ -53,7 +53,7 @@ const ModalFooter = ({ handleCancel, handleSubmit, handleTest, submitText, style
                     onClick={handleSubmit}
                     text={submitText}
                     style={style}
-                    showLoader={showLoader === 'save'}
+                    showLoader={showLoader === 'save' || showLoader}
                     isDisabled={disableSubmit}
                     title={submitTitle}
                 />

@@ -148,7 +148,7 @@ function ProviderTable({ readonly }) {
             active={autoRefresh}
             onToggle={handleToggle}
             emptyTableConfig={emptyTableConfig}
-            tableActions={() => <PoviderTableActions data={tableData} selected={selected} readonly={readonly} />}
+            tableActions={() => <PoviderTableActions data={tableData} selected={selected} readonly={readonly} setSelected={setSelected} />}
         />
     );
 }

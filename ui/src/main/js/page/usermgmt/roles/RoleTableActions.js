@@ -11,7 +11,7 @@ const CREATE_MODAL_OPTIONS = {
     submitText: 'Save'
 };
 
-const RoleTableActions = ({ canCreate, canDelete, data, selected }) => {
+const RoleTableActions = ({ canCreate, canDelete, data, selected, setSelected }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
@@ -58,6 +58,7 @@ const RoleTableActions = ({ canCreate, canDelete, data, selected }) => {
                     toggleModal={setShowDeleteModal}
                     selected={selected}
                     setStatusMessage={setStatusMessage}
+                    setSelected={setSelected}
                 />
             ) }
 

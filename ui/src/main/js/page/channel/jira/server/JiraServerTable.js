@@ -142,7 +142,7 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
             onPage={handlePagination}
             data={data}
             emptyTableConfig={emptyTableConfig}
-            tableActions={() => <JiraServerTableActions data={data} readonly={readonly} allowDelete={allowDelete} selected={selected} />}
+            tableActions={() => <JiraServerTableActions data={data} readonly={readonly} allowDelete={allowDelete} selected={selected} setSelected={setSelected} />}
         />
     );
 };

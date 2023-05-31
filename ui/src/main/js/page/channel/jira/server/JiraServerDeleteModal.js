@@ -23,7 +23,7 @@ function getStagedForDelete(data, selected) {
     return staged.map((server) => ({ ...server, staged: true }));
 }
 
-const JiraServerDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMessage }) => {
+const JiraServerDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, setStatusMessage }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { deleteStatus, error } = useSelector((state) => state.jiraServer);
@@ -61,6 +61,7 @@ const JiraServerDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusM
                 type: 'success'
             });
 
+            setSelected([]);
             handleClose();
         }
 

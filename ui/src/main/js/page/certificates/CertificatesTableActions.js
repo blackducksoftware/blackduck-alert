@@ -4,7 +4,7 @@ import CertificateModal from 'page/certificates/CertificateModal';
 import DeleteCertificatesModal from 'page/certificates/DeleteCertificatesModal';
 import Button from 'common/component/button/Button';
 
-const CertificatesTableActions = ({ data, selected }) => {
+const CertificatesTableActions = ({ data, selected, setSelected }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
@@ -43,6 +43,7 @@ const CertificatesTableActions = ({ data, selected }) => {
                     isOpen={showDeleteModal}
                     toggleModal={setShowDeleteModal}
                     selected={selected}
+                    setSelected={setSelected}
                 />
             )}
 

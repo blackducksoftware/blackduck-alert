@@ -18,7 +18,7 @@ const useStyles = createUseStyles({
     }
 });
 
-const DeleteCertificatesModal = ({ isOpen, toggleModal, data, selected }) => {
+const DeleteCertificatesModal = ({ isOpen, toggleModal, data, selected, setSelected }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
 
@@ -45,6 +45,7 @@ const DeleteCertificatesModal = ({ isOpen, toggleModal, data, selected }) => {
                 dispatch(deleteCertificate(certificate.id));
             }
         });
+        setSelected([]);
         handleClose();
     }
 

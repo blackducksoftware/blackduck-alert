@@ -113,7 +113,7 @@ const CertificatesTable = () => {
             onSort={onSort}
             sortConfig={sortConfig}
             emptyTableConfig={emptyTableConfig}
-            tableActions={() => <CertificatesTableActions data={tableData} selected={selected} />}
+            tableActions={() => <CertificatesTableActions data={tableData} selected={selected} setSelected={setSelected} />}
         />
     );
 };
