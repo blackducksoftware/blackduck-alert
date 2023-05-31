@@ -96,7 +96,7 @@ const MainPage = ({
                 urlName={BLACKDUCK_INFO.url}
                 descriptor={globalDescriptorMap[BLACKDUCK_INFO.key]}
                 render={(readonly) => (
-                    <ProviderPageLayout 
+                    <ProviderPageLayout
                         readonly={readonly}
                     />
                 )}
@@ -106,7 +106,7 @@ const MainPage = ({
                 urlName={AZURE_BOARDS_INFO.url}
                 descriptor={globalDescriptorMap[AZURE_BOARDS_INFO.key]}
                 render={(readonly, showDelete) => (
-                    <AzureBoardsPageLayout 
+                    <AzureBoardsPageLayout
                         readonly={readonly}
                         allowDelete={showDelete}
                     />
@@ -147,7 +147,7 @@ const MainPage = ({
                 urlName={JIRA_SERVER_INFO.url}
                 descriptor={globalDescriptorMap[JIRA_SERVER_INFO.key]}
                 render={(readOnly, showDelete) => (
-                    <JiraServerPageLayout 
+                    <JiraServerPageLayout
                         csrfToken={csrfToken}
                         showRefreshButton={!autoRefresh}
                         readonly={readOnly}

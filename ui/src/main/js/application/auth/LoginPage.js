@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createUseStyles } from 'react-jss';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PasswordInput from 'common/component/input/PasswordInput';
 import TextInput from 'common/component/input/TextInput';
 import Header from 'common/component/Header';
-import { login } from 'store/actions/session';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import SamlLogin from './SamlLogin';
 import Button from 'common/component/button/Button';
+import { login } from 'store/actions/session';
+import SamlLogin from 'application/auth/SamlLogin';
 
 const useStyles = createUseStyles({
     loginButton: {

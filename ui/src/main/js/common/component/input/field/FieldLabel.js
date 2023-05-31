@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import classNames from 'classnames';
 
@@ -45,6 +46,13 @@ const FieldLabel = ({ label, description, fieldId, isRequired  }) => {
             )}
         </div>
     );
+};
+
+FieldLabel.propTypes = {
+    label: PropTypes.string,
+    description: PropTypes.string,
+    fieldId: PropTypes.string,
+    isRequired: PropTypes.bool
 };
 
 export default FieldLabel;

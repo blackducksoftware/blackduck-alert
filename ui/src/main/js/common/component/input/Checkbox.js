@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import FieldLabel from 'common/component/input/field/FieldLabel';
 
@@ -13,13 +14,13 @@ const Checkbox = ({ id, name, label, placeholder, value = '', isChecked = false,
     const classes = useStyles();
 
     function changeHandler({ target: { value, checked } }) {
-        if(!isDisabled) {
+        if (!isDisabled) {
             onChange({ name, value, checked });
         }
     }
 
     return (
-        <div className={classes.checkboxField}>
+        <div className={classes.checkboxField} >
             <FieldLabel label={label}/>
             <input
                 name={name}
@@ -37,6 +38,17 @@ const Checkbox = ({ id, name, label, placeholder, value = '', isChecked = false,
             />
         </div>
     );
+};
+
+CheckboxInput.propTypes = {
+    id: PropTypes.string,
+    name: PropTypes.string,
+    label: PropTypes.string.isRequired,
+    placeholder: PropTypes.string,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+    isChecked: PropTypes.bool,
+    isDisabled: PropTypes.bool,
+    onChange: PropTypes.func
 };
 
 export default Checkbox;

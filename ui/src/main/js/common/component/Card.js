@@ -38,15 +38,14 @@ const Card = ({ icon, label, description }) => {
             </div>
             <div className={classes.cardInfo}>
                 <div style={{ fontSize: '16px' }}>{label}</div>
-                { description && ( <div>{description}</div>) }
+                { description && (<div>{description}</div>) }
             </div>
         </div>
-
-    ); 
+    );
 };
 
 Card.propTypes = {
-    icon: PropTypes.oneOfType([ PropTypes.array, PropTypes.string]),
+    icon: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
     label: PropTypes.string,
     description: PropTypes.string
 };

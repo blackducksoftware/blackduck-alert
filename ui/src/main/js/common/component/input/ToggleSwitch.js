@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { createUseStyles } from 'react-jss';
 
@@ -66,10 +67,10 @@ const ToggleSwitch = ({ onToggle, active }) => {
     const switchClasses = useMemo(() => classNames(classes.switchLabel, {
         [classes.toggleSwitchActive]: active
     }), [active]);
-    
+
     return (
         <div className={classes.switchContainer}>
-            <span style={{fontSize: '10px'}}>
+            <span style={{ fontSize: '10px' }}>
                 Auto-Refresh
             </span>
             <span>
@@ -80,6 +81,11 @@ const ToggleSwitch = ({ onToggle, active }) => {
             </span>
         </div>
     );
+};
+
+ToggleSwitch.propTypes = {
+    onToggle: PropTypes.func,
+    active: PropTypes.bool
 };
 
 export default ToggleSwitch;

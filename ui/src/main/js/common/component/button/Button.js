@@ -11,7 +11,6 @@ const useStyles = createUseStyles((theme) => ({
         padding: ['4px', '10px'],
         font: 'inherit',
         fontSize: '13px',
-        whiteSpace: 'nowrap',
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',
@@ -32,7 +31,7 @@ const useStyles = createUseStyles((theme) => ({
             cursor: 'not-allowed'
         },
         '&:active': {
-            backgroundColor: theme.colors.darkGreyAlertColor,
+            backgroundColor: theme.colors.darkGreyAlertColor
         }
     },
     transparent: {
@@ -41,12 +40,12 @@ const useStyles = createUseStyles((theme) => ({
         '&:hover': {
             color: theme.colors.white.default,
             border: 'solid 1px',
-            backgroundColor: theme.colors.defaultAlertColor,
+            backgroundColor: theme.colors.defaultAlertColor
         },
         '&:active': {
             color: theme.colors.white.default,
             border: 'solid 1px',
-            backgroundColor: theme.colors.darkGreyAlertColor,
+            backgroundColor: theme.colors.darkGreyAlertColor
         }
     },
     delete: {
@@ -61,7 +60,7 @@ const useStyles = createUseStyles((theme) => ({
         },
         '&:active': {
             border: `solid 1px ${theme.colors.red.lighterRed}`,
-            backgroundColor: theme.colors.red.lighterRed,
+            backgroundColor: theme.colors.red.lighterRed
         }
     },
     loader: {
@@ -116,7 +115,8 @@ Button.propTypes = {
     title: PropTypes.string,
     type: PropTypes.string,
     text: PropTypes.string.isRequired,
-    showLoader: PropTypes.bool
+    showLoader: PropTypes.bool,
+    icon: PropTypes.oneOfType([PropTypes.string, PropTypes.array])
 };
 
 export default Button;

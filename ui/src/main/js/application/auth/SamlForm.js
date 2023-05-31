@@ -22,7 +22,7 @@ import BlackDuckSSOConfigImportModal from './BlackDuckSSOConfigImportModal';
 
 const CERT_FILE_TYPES = ['.crt', '.cer', '.der', '.cert', '.pem'];
 const PRIVATE_KEY_FILE_TYPES = ['.p8', '.p8e', '.pem'];
-const XML_FILE_TYPES = ['text/xml', 'application/xml','.xml'];
+const XML_FILE_TYPES = ['text/xml', 'application/xml', '.xml'];
 
 const radioOptions = [{
     name: 'url',
@@ -150,7 +150,6 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                                     id="blackduck-sso-import-button"
                                     onClick={() => setShowBlackDuckSSOImportModal(true)}
                                     text="Fill Form"
-                                    style="default"
                                 />
                             </div>
                         </LabeledField>
