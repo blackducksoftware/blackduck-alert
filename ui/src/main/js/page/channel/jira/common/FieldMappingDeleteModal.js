@@ -35,7 +35,7 @@ const FieldMappingDeleteModal = ({ isOpen, toggleModal, data, selected, setSelec
     }
 
     function handleDelete() {
-        const updatedData = data.filter(fieldMapping => !selected.includes(fieldMapping.fieldName))
+        const updatedData = data.filter((fieldMapping) => !selected.includes(fieldMapping.fieldName));
         updateTableData(updatedData);
         setSelected([]);
         handleClose();
@@ -89,7 +89,8 @@ FieldMappingDeleteModal.propTypes = {
     isOpen: PropTypes.bool,
     toggleModal: PropTypes.func,
     selected: PropTypes.array,
-    setStatusMessage: PropTypes.func
+    setSelected: PropTypes.func,
+    updateTableData: PropTypes.func
 };
 
 export default FieldMappingDeleteModal;

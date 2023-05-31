@@ -18,7 +18,7 @@ const MultiSelectHeaderCell = ({ tableData, onSelected, selected, disableSelectO
     const classes = useStyles();
     const checkboxRef = useRef();
 
-    const selectableData = tableData.filter(row => !disableSelectOptions?.disabledItems.includes(row[disableSelectOptions.key]));
+    const selectableData = tableData.filter((row) => !disableSelectOptions?.disabledItems.includes(row[disableSelectOptions.key]));
 
     // Return the ids of the rows if they are not included in the disableSelectOptions.disabledItems array
     const ids = useMemo(() => tableData?.filter((row) => (
@@ -27,7 +27,7 @@ const MultiSelectHeaderCell = ({ tableData, onSelected, selected, disableSelectO
         // fieldName added for distribution tables
         item.id || item.fieldName
     )), [tableData]);
-    
+
     useEffect(() => {
         if (selected?.length === 0) {
             checkboxRef.current.checked = false;
@@ -64,7 +64,10 @@ const MultiSelectHeaderCell = ({ tableData, onSelected, selected, disableSelectO
 MultiSelectHeaderCell.propTypes = {
     tableData: PropTypes.arrayOf(PropTypes.object),
     onSelected: PropTypes.func,
-    selected: PropTypes.arrayOf(PropTypes.string)
+    selected: PropTypes.arrayOf(PropTypes.string),
+    disableSelectOptions: PropTypes.shape({
+        disabledItems: PropTypes.array
+    })
 };
 
 export default MultiSelectHeaderCell;

@@ -25,7 +25,7 @@ const FieldMappingModal = ({ tableData, selectedData, selectedIndex, isOpen, tog
     }
 
     const handleChange = (e) => {
-        setModel({ ...model, [e.target.name]: e.target.value});
+        setModel({ ...model, [e.target.name]: e.target.value });
     };
 
     return (
@@ -67,7 +67,10 @@ FieldMappingModal.propTypes = {
         submitText: PropTypes.string,
         title: PropTypes.string,
         copyDescription: PropTypes.string
-    })
+    }),
+    selectedData: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+    selectedIndex: PropTypes.string,
+    updateTableData: PropTypes.func
 };
 
 export default FieldMappingModal;

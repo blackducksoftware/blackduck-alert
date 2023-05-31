@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
-import Modal from 'common/component/modal/Modal'
+import Modal from 'common/component/modal/Modal';
 import LabelValuePair from 'common/component/LabelValuePair';
 import { EXISTING_CHANNELS, EXISTING_PROVIDERS } from 'common/DescriptorInfo';
-import AuditFailureModalContent from './AuditFailureModalContent';
+import AuditFailureModalContent from 'page/audit/AuditFailureModalContent';
 
 const descriptorOptions = {
     ...EXISTING_PROVIDERS,
@@ -105,7 +105,14 @@ AuditFailureModal.propTypes = {
         fullyQualifiedType: PropTypes.string,
         nextRunTime: PropTypes.string,
         properties: PropTypes.array,
-        type: PropTypes.string
+        type: PropTypes.string,
+        notification: PropTypes.shape({
+            providerCreationTime: PropTypes.string,
+            providerConfigName: PropTypes.string,
+            notificationType: PropTypes.string
+        }),
+        lastSent: PropTypes.string,
+        jobs: PropTypes.array
     }),
     isOpen: PropTypes.bool,
     toggleModal: PropTypes.func

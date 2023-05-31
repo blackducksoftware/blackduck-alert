@@ -132,7 +132,8 @@ RoleDeleteModal.propTypes = {
         id: PropTypes.string
     })),
     selected: PropTypes.arrayOf(PropTypes.string),
-    setStatusMessage: PropTypes.func
+    setStatusMessage: PropTypes.func,
+    setSelected: PropTypes.func
 };
 
 export default RoleDeleteModal;

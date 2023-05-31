@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Table from 'common/component/table/Table';
 import AboutProviderCell from 'page/about/AboutProviderCell';
 
@@ -19,5 +20,9 @@ const AboutProviderTable = ({ tableData }) => (
         emptyTableConfig={emptyTableConfig}
     />
 );
+
+AboutProviderTable.propTypes = {
+    tableData: PropTypes.object
+};
 
 export default AboutProviderTable;

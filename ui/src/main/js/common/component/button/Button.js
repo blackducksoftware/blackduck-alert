@@ -69,12 +69,12 @@ const useStyles = createUseStyles((theme) => ({
     }
 }));
 
-const Button = ({ id, icon, type, isDisabled, onClick, role, style = 'default', title, text, showLoader }) => {
+const Button = ({ id, icon, type, isDisabled, onClick, role, buttonStyle = 'default', title, text, showLoader }) => {
     const classes = useStyles();
     const btnClass = classNames(classes.button, {
-        [classes.delete]: style === 'delete',
-        [classes.default]: style === 'default',
-        [classes.transparent]: style === 'transparent'
+        [classes.delete]: buttonStyle === 'delete',
+        [classes.default]: buttonStyle === 'default',
+        [classes.transparent]: buttonStyle === 'transparent'
     });
 
     return (
@@ -112,7 +112,7 @@ Button.propTypes = {
     onClick: PropTypes.func,
     isDisabled: PropTypes.bool,
     role: PropTypes.string,
-    style: PropTypes.oneOf(['default', 'transparent', 'delete']),
+    buttonStyle: PropTypes.oneOf(['default', 'transparent', 'delete']),
     title: PropTypes.string,
     type: PropTypes.string,
     text: PropTypes.string.isRequired,

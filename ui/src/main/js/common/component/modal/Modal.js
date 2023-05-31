@@ -18,7 +18,7 @@ const useStyles = createUseStyles((theme) => ({
         position: 'fixed',
         zIndex: '10000',
         outline: 0,
-        cursor: 'default',
+        cursor: 'default'
     },
     modalStyle: {
         backgroundColor: theme.colors.white.default,
@@ -49,10 +49,9 @@ const useStyles = createUseStyles((theme) => ({
     }
 }));
 
-const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handleSubmit, 
-    handleTest, submitText, testText, showLoader, notification, showNotification, style,
-    disableSubmit, submitTitle
-}) => {
+const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handleSubmit,
+    handleTest, submitText, testText, showLoader, notification, showNotification, buttonStyle,
+    disableSubmit, submitTitle }) => {
     const classes = useStyles();
 
     const modalStyleClass = classNames(classes.modalStyle, {
@@ -83,7 +82,7 @@ const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handle
                         handleCancel={handleCancel}
                         handleSubmit={handleSubmit}
                         handleTest={handleTest}
-                        style={style}
+                        buttonStyle={buttonStyle}
                         submitText={submitText}
                         testText={testText}
                         showLoader={showLoader}
@@ -98,7 +97,6 @@ const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handle
 };
 
 Modal.defaultProps = {
-    open: true,
     size: 'md'
 };
 
@@ -118,7 +116,10 @@ Modal.propTypes = {
     showNotification: PropTypes.bool,
     showLoader: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
     submitText: PropTypes.string,
-    testText: PropTypes.string
+    testText: PropTypes.string,
+    buttonStyle: PropTypes.string,
+    disableSubmit: PropTypes.bool,
+    submitTitle: PropTypes.string
 };
 
 export default Modal;

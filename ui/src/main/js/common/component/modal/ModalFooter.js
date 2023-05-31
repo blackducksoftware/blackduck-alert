@@ -25,34 +25,34 @@ const useStyles = createUseStyles({
     }
 });
 
-const ModalFooter = ({ handleCancel, handleSubmit, handleTest, submitText, style = 'default', 
-    showLoader, testText, disableSubmit, submitTitle
-}) => {
+const ModalFooter = ({ handleCancel, handleSubmit, handleTest, submitText, buttonStyle = 'default',
+    showLoader, testText, disableSubmit, submitTitle }) => {
     const classes = useStyles();
 
     return (
         <div className={classes.modalFooter}>
             <div className={classes.footerActions}>
                 { handleTest && (
-                    <Button 
+                    <Button
                         onClick={handleTest}
                         text={testText}
-                        style="transparent"
+                        buttonStyle="transparent"
                         showLoader={showLoader === 'test'}
                     />
                 )}
 
                 { (handleCancel && !handleTest) && (
-                    <Button 
+                    <Button
                         onClick={handleCancel}
-                        text="Cancel" style="transparent"
+                        text="Cancel" 
+                        buttonStyle="transparent"
                         showLoader={showLoader === 'cancel'}
                     />
                 )}
-                <Button 
+                <Button
                     onClick={handleSubmit}
                     text={submitText}
-                    style={style}
+                    buttonStyle={buttonStyle}
                     showLoader={showLoader === 'save' || showLoader}
                     isDisabled={disableSubmit}
                     title={submitTitle}
@@ -68,8 +68,10 @@ ModalFooter.propTypes = {
     handleTest: PropTypes.func,
     showLoader: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
     submitText: PropTypes.string,
-    style: PropTypes.string,
-    testText: PropTypes.string
+    buttonStyle: PropTypes.string,
+    testText: PropTypes.string,
+    disableSubmit: PropTypes.bool,
+    submitTitle: PropTypes.string
 };
 
 export default ModalFooter;

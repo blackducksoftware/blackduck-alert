@@ -68,7 +68,7 @@ const LoginPage = () => {
                         <div className="row">
                             <div className="col-sm-12 text-right">
                                 <div className={classes.loginButton}>
-                                    <Button id="loginSubmit" text="Login" type="submit" style="default" />
+                                    <Button id="loginSubmit" text="Login" type="submit" />
                                     <div className="progressIcon">
                                         {fetching && (
                                             <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />

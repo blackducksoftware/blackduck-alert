@@ -34,10 +34,17 @@ const JiraServerTableActions = ({ data, readonly, allowDelete, selected, setSele
                 />
             )}
 
-            <Button onClick={handleCreateJiraServerClick} type="button" icon="plus" text="Create Jira Server" style="default" />
+            <Button onClick={handleCreateJiraServerClick} type="button" icon="plus" text="Create Jira Server" />
 
             { allowDelete && (
-                <Button onClick={handleJiraServerDeleteClick} isDisabled={selected.length === 0} type="button" icon="trash" text="Delete" style="delete" />
+                <Button
+                    onClick={handleJiraServerDeleteClick}
+                    isDisabled={selected.length === 0}
+                    type="button"
+                    icon="trash"
+                    text="Delete"
+                    buttonStyle="delete"
+                />
             )}
 
             { showCreateModal && (
@@ -69,7 +76,8 @@ JiraServerTableActions.propTypes = {
     readonly: PropTypes.bool,
     allowDelete: PropTypes.bool,
     data: PropTypes.object,
-    selected: PropTypes.array
+    selected: PropTypes.array,
+    setSelected: PropTypes.func
 };
 
 export default JiraServerTableActions;

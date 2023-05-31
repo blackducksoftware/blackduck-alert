@@ -5,7 +5,7 @@ import { EMAIL_URLS } from 'page/channel/email/EmailModels';
 import { JIRA_CLOUD_URLS } from 'page/channel/jira/cloud/JiraCloudModel';
 import { JIRA_SERVER_URLS } from 'page/channel/jira/server/JiraServerModel';
 import { MSTEAMS_URLS } from 'page/channel/msteams/MSTeamsModel';
-import { SLACK_URLS } from 'page/channel/slack/SlackModels'; 
+import { SLACK_URLS } from 'page/channel/slack/SlackModels';
 
 function getUrl(channel) {
     switch (channel) {
@@ -26,18 +26,16 @@ function getUrl(channel) {
     }
 }
 
-const AboutChannelCell = ({ data }) => {
-
-    return (
-        <a href={getUrl(data.urlName)}>
-            {data.name}
-        </a>
-    );
-};
+const AboutChannelCell = ({ data }) => (
+    <a href={getUrl(data.urlName)}>
+        {data.name}
+    </a>
+);
 
 AboutChannelCell.propTypes = {
     data: PropTypes.shape({
-        name: PropTypes.string
+        name: PropTypes.string,
+        urlName: PropTypes.string
     })
 };
 

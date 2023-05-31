@@ -21,7 +21,9 @@ const EmptyTableView = ({ emptyTableConfig }) => {
 };
 
 EmptyTableView.defaultProps = {
-    message: 'There are no records to display for this table.'
+    emptyTableConfig: {
+        message: 'There are no records to display for this table.'
+    }
 };
 
 EmptyTableView.propTypes = {

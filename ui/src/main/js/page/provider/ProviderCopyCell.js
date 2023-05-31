@@ -20,8 +20,8 @@ const ProviderCopyCell = ({ data }) => {
     function handleClick() {
         setStatusMessage();
         setShowModal(true);
-        setSelectedData((data) => ({
-            ...data,
+        setSelectedData((rowData) => ({
+            ...rowData,
             id: null,
             name: '',
             createdAt: null,

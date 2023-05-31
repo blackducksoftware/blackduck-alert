@@ -58,7 +58,8 @@ TableHeader.propTypes = {
     sortConfig: PropTypes.shape({
         name: PropTypes.string,
         direction: PropTypes.string
-    })
+    }),
+    disableSelectOptions: PropTypes.object
 };
 
 export default TableHeader;

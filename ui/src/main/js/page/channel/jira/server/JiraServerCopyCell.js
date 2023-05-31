@@ -19,8 +19,8 @@ const JiraServerCopyCell = ({ data }) => {
     function handleClick() {
         setStatusMessage();
         setShowModal(true);
-        setSelectedData((data) => ({
-            ...data,
+        setSelectedData((slectedRow) => ({
+            ...slectedRow,
             id: null,
             name: '',
             password: '',

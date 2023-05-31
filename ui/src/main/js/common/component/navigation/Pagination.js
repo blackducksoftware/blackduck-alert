@@ -8,7 +8,7 @@ const useStyles = createUseStyles({
     pagination: {
         padding: ['5px', 0, '25px']
     }
-})
+});
 
 function getDisplayPages(currentPage, totalPages) {
     const links = [];

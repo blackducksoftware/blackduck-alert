@@ -1,4 +1,4 @@
-import { 
+import {
     AUDIT_RESEND_ERROR,
     SERIALIZE,
     AUDIT_GET_REQUEST,
@@ -32,7 +32,6 @@ const initialState = {
     refreshNotificationSuccess: false,
     refreshJobSuccess: false
 };
-
 
 const config = (state = initialState, action) => {
     switch (action.type) {

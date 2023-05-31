@@ -9,8 +9,7 @@ import TextInput from 'common/component/input/TextInput';
 import ButtonField from 'common/component/input/field/ButtonField';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import { AZURE_BOARDS_GLOBAL_FIELD_KEYS } from 'page/channel/azure/AzureBoardsModel';
-import { clearAzureFieldErrors, fetchAzure, saveAzureBoard, sendOAuth, validateAzure } from 'store/actions/azure';
-import { testAzureBoard } from 'store/actions/azure';
+import { clearAzureFieldErrors, fetchAzure, saveAzureBoard, sendOAuth, testAzureBoard, validateAzure } from 'store/actions/azure';
 
 const useStyles = createUseStyles({
     descriptorContainer: {
@@ -133,7 +132,7 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                 title: 'Azure Board Connection Unsuccessful.',
                 message: error.message,
                 type: 'error'
-            })
+            });
             setShowNotification(true);
         }
 
@@ -143,7 +142,7 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
             setNotificationConfig({
                 title: 'Azure Board Connection Successful.',
                 type: 'success'
-            })
+            });
             setShowNotification(true);
             dispatch(clearAzureFieldErrors());
         }

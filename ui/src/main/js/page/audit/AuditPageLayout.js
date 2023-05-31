@@ -7,8 +7,8 @@ const AuditPageLayout = () => (
     <div>
         <PageHeader
             title={AUDIT_INFO.label}
-            description="Audit tracks all failed distribution events that have been produced by Alert. This page offers the ability to see why the event failed. 
-                The Audit failure table represents a grouping of data by notification.  Click on the View icon in any given row to display jobs associated
+            description="Audit tracks all failed distribution events that have been produced by Alert. This page offers the ability to see why the event failed.
+                 The Audit failure table represents a grouping of data by notification.  Click on the View icon in any given row to display jobs associated
                 with that notification."
             icon="check"
         />

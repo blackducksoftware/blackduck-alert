@@ -35,9 +35,15 @@ const PoviderTableActions = ({ data, selected, readonly, setSelected }) => {
                 />
             )}
 
-            <Button onClick={handleCreateProviderClick} type="button" icon="plus" text="Create Provider" style="default" />
+            <Button onClick={handleCreateProviderClick} type="button" icon="plus" text="Create Provider" />
 
-            <Button onClick={handleDeleteProviderClick} type="button" icon="trash" isDisabled={selected.length === 0} text="Delete" style="delete" />
+            <Button onClick={handleDeleteProviderClick}
+                type="button"
+                icon="trash"
+                isDisabled={selected.length === 0}
+                text="Delete"
+                buttonStyle="delete"
+            />
 
             { showCreateModal && (
                 <ProviderModal
@@ -68,7 +74,8 @@ const PoviderTableActions = ({ data, selected, readonly, setSelected }) => {
 PoviderTableActions.propTypes = {
     data: PropTypes.arrayOf(PropTypes.object),
     selected: PropTypes.array,
-    readonly: PropTypes.bool
+    readonly: PropTypes.bool,
+    setSelected: PropTypes.func
 };
 
 export default PoviderTableActions;

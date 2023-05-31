@@ -75,7 +75,7 @@ const FluidFieldMappingField = ({
             <div className="d-inline-flex">
                 <div className="container">
                     {renderExistingRows}
-                    <Button id={id} onClick={addRow} text={buttonLabel} icon="plus" style="default" />
+                    <Button id={id} onClick={addRow} text={buttonLabel} icon="plus" />
                 </div>
             </div>
         </LabeledField>

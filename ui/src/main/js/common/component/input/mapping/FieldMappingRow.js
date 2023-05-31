@@ -48,7 +48,7 @@ const FieldMappingRow = ({
                     onChange={({ target }) => setCurrentRightSide(target.value)}
                 />
             </div>
-            <Button id="delete-mapping" onClick={() => deleteRow(index)} text="Remove Property" icon="minus" style="default" />
+            <Button id="delete-mapping" onClick={() => deleteRow(index)} text="Remove Property" icon="minus" />
         </div>
     );
 };

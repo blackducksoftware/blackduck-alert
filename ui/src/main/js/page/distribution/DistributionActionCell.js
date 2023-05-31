@@ -7,21 +7,26 @@ import { useHistory } from 'react-router-dom/cjs/react-router-dom';
 const DistributionEditCell = ({ data, settings }) => {
     const history = useHistory();
     const { type } = settings;
-    const url = type === 'edit' 
-        ? `${DISTRIBUTION_URLS.distributionConfigUrl}/${data.jobId}` 
-        : `${DISTRIBUTION_URLS.distributionConfigCopyUrl}/${data.jobId}`
+    const url = type === 'edit'
+        ? `${DISTRIBUTION_URLS.distributionConfigUrl}/${data.jobId}`
+        : `${DISTRIBUTION_URLS.distributionConfigCopyUrl}/${data.jobId}`;
 
     function handleClick() {
         history.push(url);
     }
 
     return (
-        <IconButton  icon={type === 'edit' ? "pencil-alt" : "copy"}  onClick={() => handleClick()} />
+        <IconButton icon={type === 'edit' ? 'pencil-alt' : 'copy'} onClick={() => handleClick()} />
     );
 };
 
 DistributionEditCell.propTypes = {
-    data: PropTypes.object
+    data: PropTypes.shape({
+        jobId: PropTypes.string
+    }),
+    settings: PropTypes.shape({
+        type: PropTypes.string
+    })
 };
 
 export default DistributionEditCell;

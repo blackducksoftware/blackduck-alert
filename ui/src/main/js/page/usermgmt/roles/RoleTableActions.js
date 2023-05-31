@@ -34,11 +34,18 @@ const RoleTableActions = ({ canCreate, canDelete, data, selected, setSelected })
             )}
 
             { canCreate && (
-                <Button onClick={handleCreateRole} type="button" icon="plus" text="Create Role" style="default" />
+                <Button onClick={handleCreateRole} type="button" icon="plus" text="Create Role" />
             )}
 
             { canDelete && (
-                <Button onClick={handleDeleteRole} isDisabled={selected.length === 0} type="button" icon="trash" text="Delete" style="delete" />
+                <Button
+                    onClick={handleDeleteRole}
+                    isDisabled={selected.length === 0}
+                    type="button"
+                    icon="trash"
+                    text="Delete"
+                    buttonStyle="delete"
+                />
             )}
 
             { showCreateModal && (
@@ -86,7 +93,8 @@ RoleTableActions.propTypes = {
             write: PropTypes.bool
         }))
     })),
-    selected: PropTypes.arrayOf(PropTypes.string)
+    selected: PropTypes.arrayOf(PropTypes.string),
+    setSelected: PropTypes.func
 };
 
 export default RoleTableActions;

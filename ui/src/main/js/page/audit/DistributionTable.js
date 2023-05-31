@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Table from 'common/component/table/Table';
 import EventTypeCell from 'page/audit/EventTypeCell';
 import DistributionLastSentCell from 'page/audit/DistributionLastSentCell';
@@ -28,7 +29,7 @@ const DistributionTable = ({ data }) => {
         label: 'Refresh',
         sortable: false,
         customCell: RefreshFailureCell,
-        settings: { 
+        settings: {
             alignment: 'center',
             type: 'job',
             notificationId: data.id
@@ -42,6 +43,13 @@ const DistributionTable = ({ data }) => {
             emptyTableConfig={emptyTableConfig}
         />
     );
+};
+
+DistributionTable.propTypes = {
+    data: PropTypes.shape({
+        jobs: PropTypes.object,
+        id: PropTypes.string
+    })
 };
 
 export default DistributionTable;

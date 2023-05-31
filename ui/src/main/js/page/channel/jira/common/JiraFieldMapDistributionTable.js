@@ -17,8 +17,8 @@ function JiraFieldMapDistributionTable({ cloudTableData, onFieldMappingUpdate })
         onFieldMappingUpdate(tableData);
     }, [tableData]);
 
-    function handleEditData(data) {
-        setData(data);
+    function handleEditData(editedData) {
+        setData(editedData);
     }
 
     const COLUMNS = [{
@@ -37,7 +37,7 @@ function JiraFieldMapDistributionTable({ cloudTableData, onFieldMappingUpdate })
         settings: { alignment: 'center', tableData },
         customCallback: handleEditData
     }];
-    
+
     const onSelected = (selectedRow) => {
         setSelected(selectedRow);
     };
@@ -56,7 +56,8 @@ function JiraFieldMapDistributionTable({ cloudTableData, onFieldMappingUpdate })
 }
 
 JiraFieldMapDistributionTable.propTypes = {
-    tableData: PropTypes.object
+    cloudTableData: PropTypes.object,
+    onFieldMappingUpdate: PropTypes.func
 };
 
 export default JiraFieldMapDistributionTable;

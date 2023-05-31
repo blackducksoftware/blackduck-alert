@@ -24,8 +24,8 @@ const CertificatesTableActions = ({ data, selected, setSelected }) => {
 
     return (
         <>
-            <Button onClick={handleCreateCertificateClick} type="button" icon="plus" text="Create Certificate" style="default" />
-            <Button onClick={handleDeleteCertificateClick} isDisabled={selected.length === 0} icon="trash" text="Delete" style="delete" />
+            <Button onClick={handleCreateCertificateClick} type="button" icon="plus" text="Create Certificate" />
+            <Button onClick={handleDeleteCertificateClick} isDisabled={selected.length === 0} icon="trash" text="Delete" buttonStyle="delete" />
 
             { showCreateModal && (
                 <CertificateModal
@@ -59,7 +59,8 @@ CertificatesTableActions.propTypes = {
         certificateContent: PropTypes.string,
         lastUpdated: PropTypes.string,
         id: PropTypes.string
-    }))
+    })),
+    setSelected: PropTypes.func
 };
 
 export default CertificatesTableActions;

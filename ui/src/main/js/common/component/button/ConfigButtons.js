@@ -28,7 +28,7 @@ class ConfigButtons extends Component {
                     borderRight: '1px solid #aaa'
                 }}
                 >
-                    <Button id={testId} onClick={onTestClick} text={testLabel} style="default" />
+                    <Button id={testId} onClick={onTestClick} text={testLabel} />
                 </div>
             );
         }
@@ -39,7 +39,7 @@ class ConfigButtons extends Component {
         const { includeSave, submitLabel, submitId } = this.props;
         if (includeSave) {
             return (
-                <Button id={submitId} text={submitLabel} style="default" type="submit" />
+                <Button id={submitId} text={submitLabel} type="submit" />
             );
         }
         return null;
@@ -52,7 +52,7 @@ class ConfigButtons extends Component {
 
         if (includeCancel) {
             return (
-                <Button id={cancelId} onClick={onCancelClick} text={cancelLabel} style="transparent" />
+                <Button id={cancelId} onClick={onCancelClick} text={cancelLabel} buttonStyle="transparent" />
             );
         }
         return null;
@@ -71,7 +71,7 @@ class ConfigButtons extends Component {
         if (includeDelete) {
             return (
                 <div style={Object.assign(style, { borderLeft })}>
-                    <Button id={deleteId} onClick={this.handleDelete} text={deleteLabel} style="default" />
+                    <Button id={deleteId} onClick={this.handleDelete} text={deleteLabel} />
                 </div>
             );
         }

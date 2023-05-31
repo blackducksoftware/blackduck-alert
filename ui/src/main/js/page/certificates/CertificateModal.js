@@ -123,7 +123,7 @@ CertificateModal.propTypes = {
     }),
     modalOptions: PropTypes.shape({
         submitText: PropTypes.string,
-        title: PropTypes.string,
+        title: PropTypes.string
     }),
     setStatusMessage: PropTypes.func,
     successMessage: PropTypes.string

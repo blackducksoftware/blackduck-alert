@@ -45,7 +45,7 @@ const SamlLogin = () => {
         <div className={classes.samlLoginContainer}>
             <div className={classes.separator}>Or</div>
             <div className={classes.samlLoginAction}>
-                <Button onClick={handleClick} type="button" text="Login with SAML" style="default" />
+                <Button onClick={handleClick} type="button" text="Login with SAML" />
             </div>
         </div>
     );

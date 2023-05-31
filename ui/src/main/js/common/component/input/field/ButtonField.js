@@ -42,7 +42,7 @@ const ButtonField = ({
                 errorValue={fieldError}
             >
                 <div className="d-inline-flex p-2 col-sm-8">
-                    <Button id={fieldKey} onClick={callOnSendClick} text={buttonLabel} style="default" disabled={readOnly} />
+                    <Button id={fieldKey} onClick={callOnSendClick} text={buttonLabel} disabled={readOnly} />
                 </div>
                 {success && <StatusMessage id={`${fieldKey}-status-message`} actionMessage={statusMessage} />}
             </LabeledField>

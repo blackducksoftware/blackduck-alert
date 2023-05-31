@@ -8,9 +8,8 @@ import CheckboxInput from 'common/component/input/CheckboxInput';
 import PasswordInput from 'common/component/input/PasswordInput';
 import TextInput from 'common/component/input/TextInput';
 import ButtonField from 'common/component/input/field/ButtonField';
-import { clearJiraServerFieldErrors, fetchJiraServer, saveJiraServer, 
-    sendJiraServerPlugin, testJiraServer, validateJiraServer 
-} from 'store/actions/jira-server';
+import { clearJiraServerFieldErrors, fetchJiraServer, saveJiraServer,
+    sendJiraServerPlugin, testJiraServer, validateJiraServer } from 'store/actions/jira-server';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import { JIRA_SERVER_GLOBAL_FIELD_KEYS } from 'page/channel/jira/server/JiraServerModel';
 
@@ -92,7 +91,7 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                 title: 'Configure Jira Server Plugin Unsuccessful.',
                 message: error?.message,
                 type: 'error'
-            })
+            });
             setShowNotification(true);
         }
     }, [pluginStatus, oAuthLink]);
@@ -109,7 +108,7 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                 handleSave();
             }
         }
-        
+
         if (saveStatus === 'VALIDATED' && requestType === 'test') {
             handleTest();
         }
@@ -130,7 +129,7 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                 title: 'Jira Server Test Unsuccessful.',
                 message: error?.message,
                 type: 'error'
-            })
+            });
             setShowNotification(true);
         }
 
@@ -140,7 +139,7 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
             setNotificationConfig({
                 title: 'Jira Server Test Successful.',
                 type: 'success'
-            })
+            });
             setShowNotification(true);
         }
 

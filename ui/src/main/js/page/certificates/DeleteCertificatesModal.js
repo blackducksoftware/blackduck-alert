@@ -97,7 +97,8 @@ DeleteCertificatesModal.propTypes = {
         certificateContent: PropTypes.string,
         lastUpdated: PropTypes.string,
         id: PropTypes.string
-    })).isRequired
+    })).isRequired,
+    setSelected: PropTypes.func
 };
 
 export default DeleteCertificatesModal;

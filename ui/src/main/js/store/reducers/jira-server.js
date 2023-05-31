@@ -128,20 +128,20 @@ const jiraServer = (state = initialState, action) => {
                 fetching: true,
                 saveStatus: '',
                 testStatus: 'TESTING'
-            }
+            };
         case JIRA_SERVER_TEST_SUCCESS:
             return {
                 ...state,
                 fetching: false,
                 testStatus: 'SUCCESS'
-            }
+            };
         case JIRA_SERVER_TEST_FAIL:
             return {
                 ...state,
                 fetching: false,
                 testStatus: 'ERROR',
                 error: HTTPErrorUtils.createErrorObject(action)
-            }
+            };
         case JIRA_SERVER_PLUGIN_REQUEST:
             return {
                 ...state,

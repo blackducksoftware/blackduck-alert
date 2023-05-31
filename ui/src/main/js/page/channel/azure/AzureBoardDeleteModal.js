@@ -123,7 +123,8 @@ AzureBoardDeleteModal.propTypes = {
     isOpen: PropTypes.bool,
     toggleModal: PropTypes.func,
     selected: PropTypes.array,
-    setStatusMessage: PropTypes.func
+    setStatusMessage: PropTypes.func,
+    setSelected: PropTypes.func
 };
 
 export default AzureBoardDeleteModal;

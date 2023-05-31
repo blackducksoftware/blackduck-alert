@@ -4,7 +4,7 @@ import {
     DISTRIBUTION_GET_FAIL,
     DISTRIBUTION_DELETE_REQUEST,
     DISTRIBUTION_DELETE_SUCCESS,
-    DISTRIBUTION_DELETE_FAIL,
+    DISTRIBUTION_DELETE_FAIL
 } from 'store/actions/types';
 import * as ConfigRequestBuilder from 'common/util/configurationRequestBuilder';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';

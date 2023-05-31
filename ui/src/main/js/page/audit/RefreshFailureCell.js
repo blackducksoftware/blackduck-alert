@@ -9,9 +9,7 @@ const RefreshFailureCell = ({ data, settings }) => {
     const dispatch = useDispatch();
     const [statusMessage, setStatusMessage] = useState();
     const { error, hasError, refreshNotificationSuccess, refreshJobSuccess } = useSelector((state) => state.audit);
-
-    useEffect(() => {
-        
+    useEffect(() => {s
         if (hasError) {
             setStatusMessage({
                 message: `${error.status}: ${error.statusText}`,
@@ -32,18 +30,18 @@ const RefreshFailureCell = ({ data, settings }) => {
                 type: 'success'
             });
         }
-    }, [hasError, error, refreshNotificationSuccess, refreshJobSuccess])
+    }, [hasError, error, refreshNotificationSuccess, refreshJobSuccess]);
 
     const handleRefresh = () => {
         setStatusMessage();
         if (settings.type === 'notification') {
             dispatch(sendNotification(data.id, settings.params));
         }
-        
+
         if (settings.type === 'job') {
             dispatch(sendJob(settings.notificationId, data.configId));
         }
-    }
+    };
 
     return (
         <>

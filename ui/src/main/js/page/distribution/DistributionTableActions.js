@@ -29,9 +29,16 @@ const DistributionTableActions = ({ data, selected, setSelected }) => {
                 />
             )}
 
-            <Button onClick={handleCreateProviderClick} type="button" icon="plus" text="Create Job" style="default" />
+            <Button onClick={handleCreateProviderClick} type="button" icon="plus" text="Create Job" />
 
-            <Button onClick={handleDeleteProviderClick} type="button" icon="trash" isDisabled={selected.length === 0} text="Delete" style="delete" />
+            <Button
+                onClick={handleDeleteProviderClick}
+                type="button"
+                icon="trash"
+                isDisabled={selected.length === 0}
+                text="Delete"
+                buttonStyle="delete"
+            />
 
             { showDeleteModal && (
                 <DistributionDeleteModal
@@ -49,7 +56,8 @@ const DistributionTableActions = ({ data, selected, setSelected }) => {
 
 DistributionTableActions.propTypes = {
     data: PropTypes.arrayOf(PropTypes.object),
-    selected: PropTypes.array
+    selected: PropTypes.array,
+    setSelected: PropTypes.func
 };
 
 export default DistributionTableActions;

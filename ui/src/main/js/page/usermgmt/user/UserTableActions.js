@@ -25,7 +25,7 @@ const UserTableActions = ({ canCreate, canDelete, data, selected, setSelected })
         setStatusMessage();
         setShowDeleteModal(true);
     }
-    console.log(selected);
+
     return (
         <>
             { statusMessage && (
@@ -36,11 +36,11 @@ const UserTableActions = ({ canCreate, canDelete, data, selected, setSelected })
             )}
 
             { canCreate && (
-                <Button onClick={handleCreateUserClick} type="button" icon="plus" text="Create User" style="default" />
+                <Button onClick={handleCreateUserClick} type="button" icon="plus" text="Create User" />
             )}
 
             { canDelete && (
-                <Button onClick={handleDeleteUserClick} isDisabled={selected.length === 0} type="button" icon="trash" text="Delete" style="delete" />
+                <Button onClick={handleDeleteUserClick} isDisabled={selected.length === 0} type="button" icon="trash" text="Delete" buttonStyle="delete" />
             )}
 
             { showCreateModal && (
@@ -72,7 +72,8 @@ UserTableActions.propTypes = {
     canCreate: PropTypes.bool,
     canDelete: PropTypes.bool,
     data: PropTypes.arrayOf(PropTypes.object),
-    selected: PropTypes.array
+    selected: PropTypes.array,
+    setSelected: PropTypes.func
 };
 
 export default UserTableActions;

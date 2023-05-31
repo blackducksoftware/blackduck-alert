@@ -129,13 +129,13 @@ const AuditFailureTable = () => {
         label: 'Refresh',
         sortable: false,
         customCell: RefreshFailureCell,
-        settings: { 
+        settings: {
             alignment: 'center',
             params: paramsConfig,
             type: 'notification'
         }
     }];
-    
+
     return (
         <Table
             tableData={data?.models}

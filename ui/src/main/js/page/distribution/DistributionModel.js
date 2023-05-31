@@ -106,5 +106,5 @@ export const CHANNEL_OPTIONS = [
 ];
 
 export const channelTranslation = {
-    label: (value) => CHANNEL_OPTIONS.find((obj) => obj.value === value)?.label,
+    label: (value) => CHANNEL_OPTIONS.find((obj) => obj.value === value)?.label
 };

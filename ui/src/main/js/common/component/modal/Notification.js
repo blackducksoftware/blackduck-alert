@@ -44,7 +44,6 @@ const Notification = ({ notification }) => {
                     {message}
                 </div>
             )}
-            
         </div>
     );
 };

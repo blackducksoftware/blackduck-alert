@@ -5,7 +5,7 @@ import {
     DISTRIBUTION_GET_FAIL,
     DISTRIBUTION_DELETE_REQUEST,
     DISTRIBUTION_DELETE_SUCCESS,
-    DISTRIBUTION_DELETE_FAIL,
+    DISTRIBUTION_DELETE_FAIL
 } from 'store/actions/types';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 
@@ -23,7 +23,7 @@ const initialState = {
     },
     error: HTTPErrorUtils.createEmptyErrorObject(),
     fieldErrors: {},
-    deleteStatus: '',
+    deleteStatus: ''
 };
 
 const distribution = (state = initialState, action) => {

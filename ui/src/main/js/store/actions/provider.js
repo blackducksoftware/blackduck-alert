@@ -281,7 +281,7 @@ export function testProvider(provider) {
             }
         })
             .catch(console.error);
-    }
+    };
 }
 
 export function clearProviderFieldErrors() {

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { createUseStyles } from 'react-jss';
 import ReadOnlyField from 'common/component/input/field/ReadOnlyField';
 import { getAboutInfo } from 'store/actions/about';
 import ConfigurationLabel from 'common/component/ConfigurationLabel';
@@ -9,7 +10,6 @@ import LabeledField from 'common/component/input/field/LabeledField';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { EXISTING_CHANNELS, EXISTING_PROVIDERS } from 'common/DescriptorInfo';
 import AboutProviderTable from './AboutProviderTable';
-import { createUseStyles } from 'react-jss';
 import AboutChannelsTable from './AboutChannelsTable';
 
 const useStyles = createUseStyles({
@@ -28,7 +28,7 @@ const useStyles = createUseStyles({
         padding: [0, '16px'],
         width: '100%'
     }
-})
+});
 
 const AboutInfo = ({
     getAbout, version, projectUrl, commitHash, documentationUrl, globalDescriptorMap, distributionDescriptorMap
@@ -65,8 +65,8 @@ const AboutInfo = ({
     const channelData = createTableData(channelDescriptorData, EXISTING_CHANNELS);
     const providersMissing = !providerData || providerData.length <= 0;
     const channelsMissing = !channelData || channelData.length <= 0;
-    const commitHashUrl = projectUrl + "/commit/" + commitHash
-    console.log(channelData);
+    const commitHashUrl = `${projectUrl}/commit/${commitHash}`;
+
     return (
         <div>
             <ConfigurationLabel configurationName="About" />

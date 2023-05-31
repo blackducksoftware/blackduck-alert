@@ -16,7 +16,7 @@ const JiraFieldMapEditCell = ({ data, settings, customCallback }) => {
     function handleClick() {
         setShowModal(true);
     }
-    
+
     return (
         <>
             <IconButton icon="pencil-alt" onClick={() => handleClick()} />
@@ -38,7 +38,11 @@ const JiraFieldMapEditCell = ({ data, settings, customCallback }) => {
 };
 
 JiraFieldMapEditCell.propTypes = {
-    data: PropTypes.object
+    data: PropTypes.object,
+    settings: PropTypes.shape({
+        tableData: PropTypes.object
+    }),
+    customCallback: PropTypes
 };
 
 export default JiraFieldMapEditCell;

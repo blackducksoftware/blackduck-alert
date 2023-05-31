@@ -48,7 +48,8 @@ MultiSelectCell.propTypes = {
     selected: PropTypes.arrayOf(PropTypes.string),
     onSelected: PropTypes.func,
     data: PropTypes.shape({
-        id: PropTypes.string
+        id: PropTypes.string,
+        fieldName: PropTypes.string
     }),
     disableSelectOptions: PropTypes.shape({
         key: PropTypes.string,

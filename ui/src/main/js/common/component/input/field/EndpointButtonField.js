@@ -95,7 +95,7 @@ const EndpointButtonField = ({
                 errorValue={fieldError}
             >
                 <div className="d-inline-flex p-2 col-sm-8">
-                    <Button id={fieldKey} onClick={flipShowModal} text={buttonLabel} style="default" disabled={readOnly} />
+                    <Button id={fieldKey} onClick={flipShowModal} text={buttonLabel} disabled={readOnly} />
                     {successBox
                     && (
                         <div className="d-inline-flex p-2 checkbox">

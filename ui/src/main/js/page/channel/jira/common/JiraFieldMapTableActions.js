@@ -23,9 +23,9 @@ const JiraFieldMapTableActions = ({ data, selected, updateTableData, setSelected
 
     return (
         <>
-            <Button onClick={handleCreateClick} type="button" icon="plus" text="Add Jira Field Mapping" style="default" />
+            <Button onClick={handleCreateClick} type="button" icon="plus" text="Add Jira Field Mapping" />
 
-            <Button onClick={handleDeleteClick} type="button" icon="trash" isDisabled={selected.length === 0} text="Delete" style="delete" />
+            <Button onClick={handleDeleteClick} type="button" icon="trash" isDisabled={selected.length === 0} text="Delete" buttonStyle="delete" />
 
             { showCreateModal && (
                 <FieldMappingModal
@@ -53,7 +53,9 @@ const JiraFieldMapTableActions = ({ data, selected, updateTableData, setSelected
 
 JiraFieldMapTableActions.propTypes = {
     data: PropTypes.arrayOf(PropTypes.object),
-    selected: PropTypes.array
+    selected: PropTypes.array,
+    setSelected: PropTypes.func,
+    updateTableData: PropTypes.func
 };
 
 export default JiraFieldMapTableActions;

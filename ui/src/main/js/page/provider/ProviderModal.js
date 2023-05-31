@@ -100,7 +100,7 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
         if (saveStatus === 'VALIDATED' && requestType === 'save') {
             handleSave();
         }
-        
+
         if (saveStatus === 'VALIDATED' && requestType === 'test') {
             handleTest();
         }
@@ -121,7 +121,7 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
                 title: 'Provider Test Unsuccessful.',
                 message: error.message,
                 type: 'error'
-            })
+            });
             setShowNotification(true);
         }
 
@@ -131,7 +131,7 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
             setNotificationConfig({
                 title: 'Provider Test Successful.',
                 type: 'success'
-            })
+            });
             setShowNotification(true);
             dispatch(clearProviderFieldErrors());
         }

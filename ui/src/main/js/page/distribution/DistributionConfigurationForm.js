@@ -40,7 +40,7 @@ import PageHeader from 'common/component/navigation/PageHeader';
 import { createNewConfigurationRequest } from 'common/util/configurationRequestBuilder';
 
 const DistributionConfigurationForm = ({
-    csrfToken, errorHandler, descriptors, lastUpdated
+    csrfToken, errorHandler, descriptors
 }) => {
     const { id } = useParams();
     const history = useHistory();
@@ -292,7 +292,7 @@ const DistributionConfigurationForm = ({
     );
 
     const processingFieldDescription = `Select the way messages will be processed: ${getProcessingDescription(FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.processingType))}`;
-    
+
     const getProjectsRequest = () => {
         const apiUrl = '/alert/api/function/channel.common.configured.project?pageNumber=0&pageSize=1000&searchTerm=';
         return createNewConfigurationRequest(apiUrl, csrfToken, createAdditionalEmailRequestBody());
@@ -312,7 +312,7 @@ const DistributionConfigurationForm = ({
                 value: name
             };
         });
-    }
+    };
 
     const convertDataToOptions = (responseData) => {
         const { models } = responseData;
@@ -328,16 +328,14 @@ const DistributionConfigurationForm = ({
             };
         });
     };
-    
+
     function getSelectedProjects() {
         const values = FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects);
-        const selectedProjects = values.map((model) => {
-            return {
-                label: model.name,
-                value: model,
-                missing: model.missing
-            }
-        });
+        const selectedProjects = values.map((model) => ({
+            label: model.name,
+            value: model,
+            missing: model.missing
+        }));
         return selectedProjects;
     }
 
@@ -366,7 +364,7 @@ const DistributionConfigurationForm = ({
                 createDataToTest={createTestData}
                 errorHandler={errorHandler}
             >
-                {/* 
+                {/*
                     Enabled [x]
                     Name [x]
                     Provider [ ]
@@ -440,7 +438,7 @@ const DistributionConfigurationForm = ({
                     errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)}
                     errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId]}
                 />
-                
+
                 {FieldModelUtilities.hasValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName)
                     && FieldModelUtilities.hasValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)
                     && (
@@ -570,21 +568,21 @@ const DistributionConfigurationForm = ({
                             />
                         </CollapsiblePane>
                     )}
-                    <SelectInput
-                        id={DISTRIBUTION_COMMON_FIELD_KEYS.channelName}
-                        name={DISTRIBUTION_COMMON_FIELD_KEYS.channelName}
-                        label="Channel"
-                        description="Select the channel. Notifications generated through Alert will be sent through this channel."
-                        options={DISTRIBUTION_CHANNEL_OPTIONS}
-                        clearable={false}
-                        readOnly={readonly}
-                        required
-                        onChange={onChannelSelectChange}
-                        value={FieldModelUtilities.getFieldModelValues(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
-                        errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
-                        errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.channelName]}
-                    />
-                    {renderChannelFields()}
+                <SelectInput
+                    id={DISTRIBUTION_COMMON_FIELD_KEYS.channelName}
+                    name={DISTRIBUTION_COMMON_FIELD_KEYS.channelName}
+                    label="Channel"
+                    description="Select the channel. Notifications generated through Alert will be sent through this channel."
+                    options={DISTRIBUTION_CHANNEL_OPTIONS}
+                    clearable={false}
+                    readOnly={readonly}
+                    required
+                    onChange={onChannelSelectChange}
+                    value={FieldModelUtilities.getFieldModelValues(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
+                    errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.channelName]}
+                />
+                {renderChannelFields()}
             </CommonDistributionConfigurationForm>
         </>
     );
@@ -593,12 +591,7 @@ const DistributionConfigurationForm = ({
 DistributionConfigurationForm.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     errorHandler: PropTypes.object.isRequired,
-    descriptors: PropTypes.object.isRequired,
-    lastUpdated: PropTypes.string
-};
-
-DistributionConfigurationForm.defaultProps = {
-    lastUpdated: null
+    descriptors: PropTypes.object.isRequired
 };
 
 export default DistributionConfigurationForm;

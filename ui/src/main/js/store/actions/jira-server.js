@@ -297,7 +297,7 @@ export function testJiraServer(jiraServerModel) {
             }
         })
             .catch(console.error);
-    }
+    };
 }
 
 export function sendJiraServerPlugin(azureBoard) {

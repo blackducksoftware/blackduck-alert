@@ -12,7 +12,6 @@ import EndpointSelectField from 'common/component/input/EndpointSelectField';
 const EmailDistributionConfiguration = ({
     csrfToken, data, setData, errors, readonly, createAdditionalEmailRequestBody
 }) => {
-
     const getEmailsRequest = () => {
         const apiUrl = '/alert/api/function/email.additional.addresses?pageNumber=0&pageSize=10&searchTerm=';
         return createNewConfigurationRequest(apiUrl, csrfToken, createAdditionalEmailRequestBody());

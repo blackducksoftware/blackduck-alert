@@ -294,7 +294,7 @@ export function testAzureBoard(azureBoard) {
             }
         })
             .catch(console.error);
-    }
+    };
 }
 
 export function sendOAuth(azureBoard) {

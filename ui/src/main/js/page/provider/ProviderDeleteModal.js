@@ -96,7 +96,7 @@ const ProviderDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMes
                 handleCancel={handleClose}
                 handleSubmit={handleDelete}
                 submitText="Delete"
-                style="delete"
+                buttonStyle="delete"
                 showLoader={showLoader}
             >
                 <div className={classes.deleteConfirmMessage}>
@@ -121,7 +121,8 @@ ProviderDeleteModal.propTypes = {
     isOpen: PropTypes.bool,
     toggleModal: PropTypes.func,
     selected: PropTypes.array,
-    setStatusMessage: PropTypes.func
+    setStatusMessage: PropTypes.func,
+    setSelected: PropTypes.func
 };
 
 export default ProviderDeleteModal;

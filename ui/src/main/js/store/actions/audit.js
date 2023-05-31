@@ -1,4 +1,4 @@
-import { 
+import {
     AUDIT_RESEND_ERROR,
     AUDIT_GET_REQUEST,
     AUDIT_GET_SUCCESS,
@@ -128,7 +128,7 @@ export function fetchAuditData(requestParams) {
 export function sendNotification(notificationId, requestParams) {
     return (dispatch, getState) => {
         dispatch(sendNotificationRequest());
-        let resendUrl = `${AUDIT_URLS.resend}${notificationId}/`;
+        const resendUrl = `${AUDIT_URLS.resend}${notificationId}/`;
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
@@ -146,7 +146,7 @@ export function sendNotification(notificationId, requestParams) {
                     dispatch(sendNotificationSuccess());
                     dispatch(fetchAuditData(requestParams));
                 } else {
-                    dispatch(sendNotificationFail(response))
+                    dispatch(sendNotificationFail(response));
                 }
             }).catch(console.error);
     };
@@ -155,7 +155,7 @@ export function sendNotification(notificationId, requestParams) {
 export function sendJob(notificationId, jobId) {
     return (dispatch, getState) => {
         dispatch(sendJobRequest());
-        let resendUrl = `${AUDIT_URLS.resend}${notificationId}/job/${jobId}/`;
+        const resendUrl = `${AUDIT_URLS.resend}${notificationId}/job/${jobId}/`;
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
@@ -172,7 +172,7 @@ export function sendJob(notificationId, jobId) {
                 if (response.ok) {
                     dispatch(sendJobSuccess());
                 } else {
-                    dispatch(sendJobFail(response))
+                    dispatch(sendJobFail(response));
                 }
             }).catch(console.error);
     };
