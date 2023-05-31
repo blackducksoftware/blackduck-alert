@@ -32,6 +32,7 @@ import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 class EmailChannelTestIT {
     protected Gson gson;
@@ -41,7 +42,7 @@ class EmailChannelTestIT {
 
     @BeforeEach
     public void init() {
-        gson = new Gson();
+        gson = BlackDuckServicesFactory.createDefaultGson();
         testProperties = new TestProperties();
         eventManager = Mockito.mock(EventManager.class);
         executingJobManager = Mockito.mock(ExecutingJobManager.class);

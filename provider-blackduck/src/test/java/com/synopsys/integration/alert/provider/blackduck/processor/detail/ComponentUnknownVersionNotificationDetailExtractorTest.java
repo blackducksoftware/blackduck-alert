@@ -18,11 +18,12 @@ import com.synopsys.integration.alert.provider.blackduck.processor.model.Compone
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentUnknownVersionNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.view.ComponentUnknownVersionNotificationView;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class ComponentUnknownVersionNotificationDetailExtractorTest {
     public static final String NOTIFICATION_JSON_PATH = "json/componentUnknownVersionNotification.json";
 
-    private final Gson gson = new Gson();
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
 
     @Test
     public void extractDetailedContentTest() throws IOException {

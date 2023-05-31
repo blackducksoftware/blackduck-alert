@@ -25,18 +25,20 @@ public class HttpPathManager {
     public static final String PATH_CSS_STYLE_CSS = "/css/style.css";
     public static final String PATH_FAVICON_ICO = "/favicon.ico";
     public static final String PATH_FONTS = "/fonts/**";
-    public static final String PATH_INDEX_HTML = "index.html";
+    public static final String PATH_INDEX_HTML = "/index.html";
     public static final String PATH_JS_BUNDLE_JS = "/js/bundle.js";
     public static final String PATH_JS_BUNDLE_JS_MAP = "/js/bundle.js.map";
     public static final String PATH_SAML_ROOT = "/saml/**";
     public static final String PATH_ABOUT = AlertRestConstants.BASE_PATH + "/about";
     public static final String PATH_LOGIN = AlertRestConstants.BASE_PATH + "/login";
+    public static final String PATH_LOGIN_ROOT = AlertRestConstants.BASE_PATH + "/login/**";
     public static final String PATH_LOGOUT = AlertRestConstants.BASE_PATH + "/logout";
     public static final String PATH_PASSWORD_RESET = AlertRestConstants.BASE_PATH + "/resetPassword";
     public static final String PATH_PASSWORD_RESET_ROOT = AlertRestConstants.BASE_PATH + "/resetPassword/**";
     public static final String PATH_SYSTEM_MESSAGES_LATEST = AlertRestConstants.BASE_PATH + "/system/messages/latest";
     public static final String PATH_VERIFY = AlertRestConstants.BASE_PATH + "/verify";
     public static final String PATH_VERIFY_SAML = PATH_VERIFY + "/saml";
+    public static final String PATH_CSRF = AlertRestConstants.BASE_PATH + "/csrf";
 
     private static final String[] DEFAULT_PATHS = {
         PATH_ROOT,
@@ -50,12 +52,14 @@ public class HttpPathManager {
         PATH_SAML_ROOT,
         PATH_ABOUT,
         PATH_LOGIN,
+        PATH_LOGIN_ROOT,
         PATH_LOGOUT,
         PATH_PASSWORD_RESET,
         PATH_PASSWORD_RESET_ROOT,
         PATH_SYSTEM_MESSAGES_LATEST,
         PATH_VERIFY,
-        PATH_VERIFY_SAML
+        PATH_VERIFY_SAML,
+        PATH_CSRF
     };
 
     private final Collection<String> allowedPaths;

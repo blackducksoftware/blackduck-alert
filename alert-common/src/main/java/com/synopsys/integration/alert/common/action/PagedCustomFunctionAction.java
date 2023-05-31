@@ -10,8 +10,6 @@ package com.synopsys.integration.alert.common.action;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.math.NumberUtils;
 
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
@@ -20,6 +18,8 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.PagingParamValidationUtils;
 import com.synopsys.integration.exception.IntegrationException;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 public abstract class PagedCustomFunctionAction<T extends AlertPagedModel<?>> extends CustomFunctionAction<T> {
     protected PagedCustomFunctionAction(AuthorizationManager authorizationManager) {

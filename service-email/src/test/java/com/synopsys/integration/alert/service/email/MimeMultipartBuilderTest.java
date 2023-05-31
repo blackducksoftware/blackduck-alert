@@ -16,12 +16,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.mail.MessagingException;
-
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
+
+import jakarta.mail.MessagingException;
 
 public class MimeMultipartBuilderTest {
     @Test

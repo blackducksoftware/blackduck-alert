@@ -16,4 +16,5 @@ dependencies {
 
     testImplementation project(':test-common-channel')
     testImplementation project(':alert-database-job')
+    testImplementation 'com.synopsys.integration:blackduck-common'
 }

@@ -26,13 +26,14 @@ import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
 import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.database.MockRepositorySorter;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 class AzureBoardsEnvironmentVariableHandlerTest {
     private final String ORGANIZATION_NAME = "A Organization Name";
     private final String APP_ID = String.valueOf(UUID.randomUUID());
     private final String CLIENT_SECRET = "aClientSecret";
 
-    private final Gson gson = new Gson();
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
     private final AlertProperties alertProperties = new MockAlertProperties();
     private final FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
     private final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);

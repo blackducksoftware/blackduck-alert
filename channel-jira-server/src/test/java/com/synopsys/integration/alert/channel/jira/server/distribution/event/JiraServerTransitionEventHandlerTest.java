@@ -33,6 +33,7 @@ import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServe
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.components.StatusCategory;
 import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
@@ -47,7 +48,7 @@ import com.synopsys.integration.jira.common.server.service.ProjectService;
 
 class JiraServerTransitionEventHandlerTest {
 
-    private Gson gson = new Gson();
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
     private AtomicInteger issueCounter;
     private EventManager eventManager;
     private IssueTrackerResponsePostProcessor responsePostProcessor;

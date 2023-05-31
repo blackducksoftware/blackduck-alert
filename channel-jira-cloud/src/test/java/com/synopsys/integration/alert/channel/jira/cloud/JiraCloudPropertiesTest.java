@@ -9,8 +9,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.jira.common.cloud.configuration.JiraCloudRestConfig;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
@@ -55,7 +55,7 @@ public class JiraCloudPropertiesTest {
     public void testServerServiceFactory() {
         try {
             JiraCloudProperties properties = new JiraCloudProperties("http://localhost:2990", "token", "user", false, ProxyInfo.NO_PROXY_INFO);
-            JiraCloudServiceFactory serviceFactory = properties.createJiraServicesCloudFactory(LoggerFactory.getLogger(getClass()), new Gson());
+            JiraCloudServiceFactory serviceFactory = properties.createJiraServicesCloudFactory(LoggerFactory.getLogger(getClass()), BlackDuckServicesFactory.createDefaultGson());
             assertNotNull(serviceFactory);
         } catch (IssueTrackerException ex) {
             ex.printStackTrace();

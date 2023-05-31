@@ -16,6 +16,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMeta
 import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusAccessor;
 import com.synopsys.integration.alert.common.rest.AlertWebServerUrlManager;
 import com.synopsys.integration.alert.web.api.metadata.DescriptorMetadataActions;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class AboutActionsTest {
 
@@ -46,7 +47,7 @@ public class AboutActionsTest {
 
     @Test
     public void testGetAboutDataNotPresent() {
-        Gson gson = new Gson();
+        Gson gson = BlackDuckServicesFactory.createDefaultGson();
         AlertWebServerUrlManager alertWebServerUrlManager = Mockito.mock(AlertWebServerUrlManager.class);
         SystemStatusAccessor systemStatusAccessor = Mockito.mock(SystemStatusAccessor.class);
         DescriptorMetadataActions descriptorActions = Mockito.mock(DescriptorMetadataActions.class);

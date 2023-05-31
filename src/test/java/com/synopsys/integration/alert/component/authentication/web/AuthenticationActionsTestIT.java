@@ -19,9 +19,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -35,6 +32,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,6 +55,9 @@ import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 @Tag(TestTags.CUSTOM_BLACKDUCK_CONNECTION)
 @Transactional
 @AlertIntegrationTest
@@ -72,6 +73,9 @@ class AuthenticationActionsTestIT {
     @Autowired
     private CsrfTokenRepository csrfTokenRepository;
 
+    @Autowired
+    private SecurityContextRepository securityContextRepository;
+
     @BeforeEach
     public void init() throws Exception {
         ldapManager.getAuthenticationProvider();
@@ -83,7 +87,7 @@ class AuthenticationActionsTestIT {
     void testAuthenticateDBUserIT() {
         HttpServletRequest servletRequest = new MockHttpServletRequest();
         HttpServletResponse servletResponse = new MockHttpServletResponse();
-        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository);
+        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository, securityContextRepository);
         ActionResponse<Void> response = authenticationActions.authenticateUser(servletRequest, servletResponse, mockLoginRestModel.createRestModel());
 
         assertTrue(response.isSuccessful());
@@ -95,7 +99,7 @@ class AuthenticationActionsTestIT {
         HttpServletRequest servletRequest = new MockHttpServletRequest();
         HttpServletResponse servletResponse = new MockHttpServletResponse();
         mockLoginRestModel.setAlertUsername(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER));
-        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository);
+        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository, securityContextRepository);
         MockLoginRestModel badRestModel = new MockLoginRestModel();
         badRestModel.setAlertPassword("badpassword");
         ActionResponse<Void> response = authenticationActions.authenticateUser(servletRequest, servletResponse, badRestModel.createRestModel());
@@ -110,7 +114,7 @@ class AuthenticationActionsTestIT {
         // add a user test then delete a user.
         String userName = String.format("testuser_%s", UUID.randomUUID());
         mockLoginRestModel.setAlertUsername(userName);
-        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository);
+        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository, securityContextRepository);
         userAccessor.addUser(userName, mockLoginRestModel.getAlertPassword(), "");
         ActionResponse<Void> response = authenticationActions.authenticateUser(servletRequest, servletResponse, mockLoginRestModel.createRestModel());
 
@@ -136,7 +140,7 @@ class AuthenticationActionsTestIT {
         Mockito.when(mockLDAPManager.isLDAPEnabled()).thenReturn(true);
         Mockito.when(mockLDAPManager.getAuthenticationProvider()).thenReturn(Optional.of(ldapAuthenticationProvider));
 
-        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository);
+        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository, securityContextRepository);
         ActionResponse<Void> response = authenticationActions.authenticateUser(servletRequest, servletResponse, mockLoginRestModel.createRestModel());
         assertTrue(response.isSuccessful());
         assertFalse(response.hasContent());
@@ -167,7 +171,7 @@ class AuthenticationActionsTestIT {
         LDAPAuthenticationPerformer ldapAuthenticationPerformer = new LDAPAuthenticationPerformer(authenticationEventManager, roleAccessor, mockLDAPManager);
         AlertAuthenticationProvider authenticationProvider = new AlertAuthenticationProvider(List.of(ldapAuthenticationPerformer, alertDatabaseAuthenticationPerformer));
 
-        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository);
+        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository, securityContextRepository);
         ActionResponse<Void> response = authenticationActions.authenticateUser(servletRequest, servletResponse, mockLoginRestModel.createRestModel());
         assertTrue(response.isError());
         Mockito.verify(databaseProvider).authenticate(Mockito.any(Authentication.class));
@@ -175,7 +179,7 @@ class AuthenticationActionsTestIT {
 
     @Test
     void userLogoutWithValidSessionTest() {
-        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository);
+        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository, securityContextRepository);
         MockHttpServletRequest servletRequest = new MockHttpServletRequest();
         MockHttpServletResponse servletResponse = new MockHttpServletResponse();
         MockHttpSession session = (MockHttpSession) servletRequest.getSession(true);
@@ -188,7 +192,7 @@ class AuthenticationActionsTestIT {
 
     @Test
     void userLogoutWithInvalidSessionTest() {
-        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository);
+        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository, securityContextRepository);
         HttpServletRequest servletRequest = new MockHttpServletRequest();
         MockHttpServletResponse servletResponse = new MockHttpServletResponse();
         ActionResponse<Void> response = authenticationActions.logout(servletRequest, servletResponse);
@@ -199,7 +203,7 @@ class AuthenticationActionsTestIT {
     void userLoginWithBadCredentialsTest() {
         AlertAuthenticationProvider authenticationProvider = Mockito.mock(AlertAuthenticationProvider.class);
         Mockito.when(authenticationProvider.authenticate(Mockito.any())).thenThrow(new BadCredentialsException("Bad credentials test"));
-        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository);
+        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository, securityContextRepository);
 
         HttpServletRequest servletRequest = new MockHttpServletRequest();
         HttpServletResponse servletResponse = new MockHttpServletResponse();

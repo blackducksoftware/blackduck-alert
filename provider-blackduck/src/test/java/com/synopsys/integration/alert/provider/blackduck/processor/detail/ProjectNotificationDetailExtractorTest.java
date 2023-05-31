@@ -16,11 +16,12 @@ import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationC
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
 import com.synopsys.integration.blackduck.api.manual.component.ProjectNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.view.ProjectNotificationView;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class ProjectNotificationDetailExtractorTest {
     public static final String NOTIFICATION_JSON_PATH = "json/projectNotification.json";
 
-    private final Gson gson = new Gson();
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
 
     @Test
     public void extractDetailedContentTest() throws IOException {

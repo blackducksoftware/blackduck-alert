@@ -11,7 +11,6 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.api.authentication.validator.AuthenticationConfigurationFieldModelValidator;
@@ -23,6 +22,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 /**
  * @deprecated This class will be removed in 8.0.0.
@@ -112,7 +112,7 @@ public class AuthenticationConfigurationValidatorTest {
 
     private GlobalConfigurationValidatorAsserter createValidatorAsserter(Map<String, FieldValueModel> keyToValues) {
         AlertProperties mockAlertProperties = new MockAlertProperties();
-        FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(mockAlertProperties, new Gson());
+        FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(mockAlertProperties, BlackDuckServicesFactory.createDefaultGson());
         return new GlobalConfigurationValidatorAsserter(new AuthenticationDescriptorKey().getUniversalKey(), new AuthenticationConfigurationFieldModelValidator(filePersistenceUtil), keyToValues);
     }
 

@@ -57,7 +57,7 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
     }
 
     public TestBlackDuckProperties(MockAlertProperties alertProperties, ProxyManager proxyManager) {
-        this(new Gson(), BlackDuckServicesFactory.createDefaultObjectMapper(), alertProperties, new TestProperties(), proxyManager);
+        this(BlackDuckServicesFactory.createDefaultGson(), BlackDuckServicesFactory.createDefaultObjectMapper(), alertProperties, new TestProperties(), proxyManager);
     }
 
     public TestBlackDuckProperties(Gson gson, ObjectMapper objectMapper, MockAlertProperties alertProperties, TestProperties testProperties, ProxyManager proxyManager) {

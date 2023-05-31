@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -48,6 +49,11 @@ import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDes
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 
+/**
+ * @deprecated Replaced by AuditEntryController. To be removed in 8.0.0.
+ */
+@Deprecated(forRemoval = true)
+@Disabled
 @Transactional
 @AlertIntegrationTest
 public class AuditEntryControllerLegacyTestIT {

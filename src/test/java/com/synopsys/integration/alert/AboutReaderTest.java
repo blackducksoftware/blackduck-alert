@@ -15,7 +15,6 @@ import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
@@ -27,6 +26,7 @@ import com.synopsys.integration.alert.web.api.about.AboutModel;
 import com.synopsys.integration.alert.web.api.about.AboutReader;
 import com.synopsys.integration.alert.web.api.metadata.DescriptorMetadataActions;
 import com.synopsys.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.rest.RestConstants;
 
 public class AboutReaderTest {
@@ -62,7 +62,7 @@ public class AboutReaderTest {
 
     @Test
     public void testAboutRead() {
-        AboutReader reader = new AboutReader(new Gson(), alertWebServerUrlManager, defaultSystemStatusUtility, descriptorMetadataActions);
+        AboutReader reader = new AboutReader(BlackDuckServicesFactory.createDefaultGson(), alertWebServerUrlManager, defaultSystemStatusUtility, descriptorMetadataActions);
         Optional<AboutModel> aboutModel = reader.getAboutModel();
         assertTrue(aboutModel.isPresent());
     }
@@ -76,7 +76,7 @@ public class AboutReaderTest {
 
     @Test
     public void testAboutReadVersion() {
-        AboutReader reader = new AboutReader(new Gson(), alertWebServerUrlManager, defaultSystemStatusUtility, descriptorMetadataActions);
+        AboutReader reader = new AboutReader(BlackDuckServicesFactory.createDefaultGson(), alertWebServerUrlManager, defaultSystemStatusUtility, descriptorMetadataActions);
         String version = reader.getProductVersion();
         assertTrue(StringUtils.isNotBlank(version));
     }

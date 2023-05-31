@@ -11,4 +11,5 @@ dependencies {
     implementation 'com.synopsys.integration:integration-rest'
 
     testImplementation project(':test-common')
+    testImplementation 'com.synopsys.integration:blackduck-common'
 }

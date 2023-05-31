@@ -29,6 +29,7 @@ import com.synopsys.integration.alert.service.email.SmtpConfig;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.service.email.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 @ExtendWith(SpringExtension.class)
 class EmailChannelMessagingServiceTest {
@@ -54,7 +55,7 @@ class EmailChannelMessagingServiceTest {
         Mockito.doCallRealMethod().when(emailMessagingService).addTemplateImage(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 
         alertProperties = new MockAlertProperties();
-        Gson gson = new Gson();
+        Gson gson = BlackDuckServicesFactory.createDefaultGson();
         MessageContentGroupCsvCreator messageContentGroupCsvCreator = new MessageContentGroupCsvCreator();
         emailAttachmentFileCreator = new EmailAttachmentFileCreator(alertProperties, messageContentGroupCsvCreator, gson);
 
