@@ -144,7 +144,7 @@ const JiraServerDistributionConfiguration = ({
                 title="Advanced Jira Configuration"
                 expanded={false}
             >
-                <JiraFieldMapDistributionTable cloudTableData={tableData} onFieldMappingUpdate={updateModel} />
+                <JiraFieldMapDistributionTable initialData={tableData} onFieldMappingUpdate={updateModel} />
             </CollapsiblePane>
         </>
     );

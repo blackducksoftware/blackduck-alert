@@ -5,11 +5,11 @@ import JiraFieldMapEditCell from 'page/channel/jira/common/JiraFieldMapEditCell'
 import JiraFieldMapTableActions from 'page/channel/jira/common/JiraFieldMapTableActions';
 
 const emptyTableConfig = {
-    message: 'There are no records to display for this table.  Please add a Jira Cloud field mapping to use this table.'
+    message: 'There are no records to display for this table.  Please add a Jira field mapping to use this table.'
 };
 
-function JiraFieldMapDistributionTable({ cloudTableData, onFieldMappingUpdate }) {
-    const [tableData, setTableData] = useState(cloudTableData);
+function JiraFieldMapDistributionTable({ initialData, onFieldMappingUpdate }) {
+    const [tableData, setTableData] = useState(initialData);
     const [selected, setSelected] = useState([]);
     const [data, setData] = useState();
 
@@ -56,7 +56,7 @@ function JiraFieldMapDistributionTable({ cloudTableData, onFieldMappingUpdate })
 }
 
 JiraFieldMapDistributionTable.propTypes = {
-    cloudTableData: PropTypes.object,
+    initialData: PropTypes.object,
     onFieldMappingUpdate: PropTypes.func
 };
 
