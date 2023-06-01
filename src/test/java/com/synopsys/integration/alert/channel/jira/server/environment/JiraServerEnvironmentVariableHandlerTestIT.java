@@ -21,7 +21,6 @@ import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobal
 import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.rest.model.Config;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
@@ -45,10 +44,12 @@ class JiraServerEnvironmentVariableHandlerTestIT {
     @BeforeEach
     @AfterEach
     public void cleanup() {
-        jiraGlobalConfigAccessor.getConfigurationByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
-            .map(Config::getId)
+        jiraGlobalConfigAccessor.getConfigurationPage(0, 100, null, null, null)
+            .getModels()
+            .stream()
+            .map(JiraServerGlobalConfigModel::getId)
             .map(UUID::fromString)
-            .ifPresent(jiraGlobalConfigAccessor::deleteConfiguration);
+            .forEach(jiraGlobalConfigAccessor::deleteConfiguration);
     }
 
     @Test
@@ -62,7 +63,7 @@ class JiraServerEnvironmentVariableHandlerTestIT {
         );
         EnvironmentProcessingResult result = jiraServerEnvironmentVariableHandler.updateFromEnvironment();
         assertEquals(ChannelKeys.JIRA_SERVER.getDisplayName(), jiraServerEnvironmentVariableHandler.getName());
-        assertTrue(result.hasValues());
+        assertTrue(result.hasValues(), result.toString());
 
         assertEquals(TEST_DISABLE_PLUGIN_CHECK, result.getVariableValue(JiraServerEnvironmentVariableHandler.DISABLE_PLUGIN_KEY).orElse("Disable plugin check value missing"));
         assertEquals(TEST_URL, result.getVariableValue(JiraServerEnvironmentVariableHandler.URL_KEY).orElse("Url value missing"));

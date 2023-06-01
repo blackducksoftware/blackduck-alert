@@ -25,6 +25,7 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
+import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
@@ -103,7 +104,7 @@ public class JiraServerSummaryFieldLengthTestIT {
         String password = testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_PASSWORD);
 
         JiraServerPropertiesFactory jiraServerPropertiesFactory = Mockito.mock(JiraServerPropertiesFactory.class);
-        JiraServerProperties jiraServerProperties = new JiraServerProperties(url, password, username, true, ProxyInfo.NO_PROXY_INFO);
+        JiraServerProperties jiraServerProperties = new JiraServerProperties(url, JiraServerAuthorizationMethod.BASIC, password, username, null, true, ProxyInfo.NO_PROXY_INFO);
         Mockito.when(jiraServerPropertiesFactory.createJiraProperties(Mockito.any(UUID.class))).thenReturn(jiraServerProperties);
 
         return jiraServerPropertiesFactory;
