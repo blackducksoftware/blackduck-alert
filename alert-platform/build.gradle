@@ -21,7 +21,7 @@ dependencies {
         api 'com.synopsys.integration:integration-rest:10.3.8'
         api 'com.synopsys.integration:integration-common:26.0.6'
         api 'com.synopsys.integration:blackduck-common:66.1.5'
-        api 'com.synopsys.integration:int-jira-common:3.0.7'
+        api 'com.synopsys.integration:int-jira-common:4.0.0'
         api 'com.synopsys.integration:phone-home-client:5.1.10'
 
         api 'com.google.cloud:libraries-bom:2.2.0'

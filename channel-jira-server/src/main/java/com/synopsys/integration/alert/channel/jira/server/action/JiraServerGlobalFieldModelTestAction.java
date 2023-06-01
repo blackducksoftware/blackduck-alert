@@ -18,6 +18,7 @@ import com.synopsys.integration.alert.api.channel.jira.action.JiraGlobalFieldMod
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
+import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.response.MultiPermissionResponseModel;
@@ -87,7 +88,7 @@ public class JiraServerGlobalFieldModelTestAction extends JiraGlobalFieldModelTe
         String username = fieldUtility.getStringOrNull(JiraServerDescriptor.KEY_SERVER_USERNAME);
         String password = fieldUtility.getStringOrNull(JiraServerDescriptor.KEY_SERVER_PASSWORD);
         boolean pluginCheckDisabled = fieldUtility.getBooleanOrFalse(JiraServerDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK);
-        return jiraServerPropertiesFactory.createJiraProperties(url, password, username, pluginCheckDisabled);
+        return jiraServerPropertiesFactory.createJiraProperties(url, JiraServerAuthorizationMethod.BASIC, password, username, null, pluginCheckDisabled);
     }
 
 }
