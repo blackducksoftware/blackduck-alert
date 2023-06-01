@@ -106,7 +106,7 @@ const PageHeader = ({ title, description, icon, lastUpdated }) => {
 PageHeader.propTypes = {
     title: PropTypes.string.isRequired,
     description: PropTypes.string,
-    icon: PropTypes.string,
+    icon: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
     lastUpdated: PropTypes.string
 };
 

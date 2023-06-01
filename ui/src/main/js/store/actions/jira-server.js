@@ -300,15 +300,15 @@ export function testJiraServer(jiraServerModel) {
     };
 }
 
-export function sendJiraServerPlugin(azureBoard) {
+export function sendJiraServerPlugin(jiraServerModel) {
     return (dispatch, getState) => {
         dispatch(sendJiraServerPluginRequest());
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveJiraServerFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
-        const oAuthRequest = ConfigRequestBuilder.createNewConfigurationRequest(JIRA_SERVER_URLS.jiraServerPluginUrl, csrfToken, azureBoard);
-        oAuthRequest.then((response) => {
+        const request = ConfigRequestBuilder.createNewConfigurationRequest(JIRA_SERVER_URLS.jiraServerPluginUrl, csrfToken, jiraServerModel);
+        request.then((response) => {
             response.json()
                 .then((responseData) => {
                     if (response.ok) {

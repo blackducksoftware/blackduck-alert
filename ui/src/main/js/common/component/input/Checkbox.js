@@ -40,7 +40,7 @@ const Checkbox = ({ id, name, label, placeholder, value = '', isChecked = false,
     );
 };
 
-CheckboxInput.propTypes = {
+Checkbox.propTypes = {
     id: PropTypes.string,
     name: PropTypes.string,
     label: PropTypes.string.isRequired,
