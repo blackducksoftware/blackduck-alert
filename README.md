@@ -11,7 +11,7 @@ This application provides the ability to send notifications from a provider to v
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=com.synopsys.integration%3Ablackduck-alert&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.synopsys.integration%3Ablackduck-alert)
 ### Build Steps ###
 #### Requirements ####
- - JDK 11
+ - JDK 17
  - Node 16.15.1 (Recommended)
  - NPM 8.11.0 (Recommended)
 
