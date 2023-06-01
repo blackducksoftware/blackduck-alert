@@ -53,7 +53,7 @@ ext {
 }
 
 mainClassName = 'com.synopsys.integration.alert.Application'
-version = '7.0.0-SIGQA5-SNAPSHOT'
+version = '7.0.0-SIGQA5'
 
 ext.isSnapshot = project.version.endsWith('-SNAPSHOT')
 ext.isSIGQA = project.version.contains('-SIGQA')
