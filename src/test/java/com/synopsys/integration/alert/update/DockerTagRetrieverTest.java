@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.update.model.DockerTagModel;
 import com.synopsys.integration.alert.update.model.DockerTagsResponseModel;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.LogLevel;
@@ -29,7 +30,7 @@ import com.synopsys.integration.rest.response.Response;
 public class DockerTagRetrieverTest {
     private static final int TAGS_COUNT = 2;
 
-    private final Gson gson = new Gson();
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
 
     @Test
     public void getTagsModelTest() throws IntegrationException {

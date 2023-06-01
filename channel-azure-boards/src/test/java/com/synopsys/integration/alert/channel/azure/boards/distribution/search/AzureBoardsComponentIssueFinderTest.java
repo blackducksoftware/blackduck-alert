@@ -32,6 +32,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
 import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseFields;
 import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseModel;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 class AzureBoardsComponentIssueFinderTest {
     private static final ProviderDetails PROVIDER_DETAILS = new ProviderDetails(15L, new LinkableItem("Provider", "A provider", "https://provider-url"));
@@ -55,7 +56,7 @@ class AzureBoardsComponentIssueFinderTest {
 
     @Test
     void findExistingIssuesByProjectIssueModelTest() throws AlertException {
-        Gson gson = new Gson();
+        Gson gson = BlackDuckServicesFactory.createDefaultGson();
         String organizationName = "orgName";
         AzureBoardsIssueTrackerQueryManager queryManager = Mockito.mock(AzureBoardsIssueTrackerQueryManager.class);
         IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();
@@ -84,7 +85,7 @@ class AzureBoardsComponentIssueFinderTest {
 
     @Test
     void findExistingIssuesByProjectIssueModelForUnknownVersionTest() throws AlertException {
-        Gson gson = new Gson();
+        Gson gson = BlackDuckServicesFactory.createDefaultGson();
         String organizationName = "orgName";
         AzureBoardsIssueTrackerQueryManager queryManager = Mockito.mock(AzureBoardsIssueTrackerQueryManager.class);
         IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();

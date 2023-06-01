@@ -31,6 +31,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetail
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 import okhttp3.mockwebserver.MockResponse;
@@ -45,7 +46,7 @@ class SlackDistributionEventHandlerTest {
     private SlackDistributionEventHandler distributionEventHandler;
     private final MockWebServer mockSlackServer = new MockWebServer();
 
-    private final Gson gson = new Gson();
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
     private EventManager eventManager;
     private ExecutingJobManager executingJobManager;
 

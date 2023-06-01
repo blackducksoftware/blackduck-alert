@@ -28,6 +28,7 @@ import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 class MsTeamsChannelTest {
@@ -51,7 +52,7 @@ class MsTeamsChannelTest {
 
     @BeforeEach
     public void init() {
-        gson = new Gson();
+        gson = BlackDuckServicesFactory.createDefaultGson();
         properties = new TestProperties();
         eventManager = Mockito.mock(EventManager.class);
         executingJobManager = Mockito.mock(ExecutingJobManager.class);

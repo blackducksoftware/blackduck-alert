@@ -8,6 +8,8 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.core.task.SyncTaskExecutor;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+
 class EventManagerTest {
     @Test
     void testSendEvents() {
@@ -17,7 +19,7 @@ class EventManagerTest {
         RabbitTemplate rabbitTemplate = Mockito.mock(RabbitTemplate.class);
         Mockito.doNothing().when(rabbitTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
 
-        Gson gson = new Gson();
+        Gson gson = BlackDuckServicesFactory.createDefaultGson();
         String testEventJson = gson.toJson(testEvent);
 
         EventManager eventManager = new EventManager(gson, rabbitTemplate, new SyncTaskExecutor());

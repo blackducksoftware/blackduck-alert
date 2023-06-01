@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 class JiraServerGlobalConfigurationModelSaveActionsTest {
     public static final String TEST_URL = "https://test.jira.example.com";
@@ -41,7 +42,7 @@ class JiraServerGlobalConfigurationModelSaveActionsTest {
     public static final String TEST_PASSWORD = "testpassword";
     public static final String TEST_DISABLE_PLUGIN_CHECK = "true";
 
-    private final Gson gson = new Gson();
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
     private final AlertProperties alertProperties = new MockAlertProperties();
     private final FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
     private final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);

@@ -7,10 +7,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -22,34 +19,16 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
-import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
-import com.synopsys.integration.alert.database.configuration.repository.FieldValueRepository;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 
-@Transactional
 @AlertIntegrationTest
 public abstract class DatabaseConfiguredFieldTest {
     @Autowired
     private JobAccessor jobAccessor;
     @Autowired
     private ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
-
-    @Autowired
-    private DescriptorConfigRepository descriptorConfigRepository;
-
-    @Autowired
-    private FieldValueRepository fieldValueRepository;
-
-    @BeforeEach
-    @AfterEach
-    public void initializeTest() {
-        descriptorConfigRepository.flush();
-        fieldValueRepository.flush();
-        descriptorConfigRepository.deleteAllInBatch();
-        fieldValueRepository.deleteAllInBatch();
-    }
 
     public DistributionJobModel createAndSaveMockDistributionJob(Long blackDuckGlobalConfigId) {
         DistributionJobRequestModel jobRequestModel = createDistributionJobRequestModel(blackDuckGlobalConfigId);

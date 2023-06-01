@@ -46,7 +46,7 @@ public abstract class CustomFunctionAction<T> {
 
             return createActionResponse(fieldModel, servletContentWrapper);
         } catch (ResponseStatusException e) {
-            return new ActionResponse<>(e.getStatus(), e.getReason());
+            return new ActionResponse<>(HttpStatus.resolve(e.getStatusCode().value()), e.getReason());
         } catch (Exception e) {
             return createErrorResponse(e);
         }

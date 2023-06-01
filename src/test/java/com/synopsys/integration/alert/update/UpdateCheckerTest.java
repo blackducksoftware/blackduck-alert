@@ -30,13 +30,14 @@ import com.synopsys.integration.alert.update.model.UpdateModel;
 import com.synopsys.integration.alert.web.api.about.AboutReader;
 import com.synopsys.integration.alert.web.api.metadata.DescriptorMetadataActions;
 import com.synopsys.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class UpdateCheckerTest {
     private static final String SUFFIX_SNAPSHOT = "SNAPSHOT";
     private static final String SUFFIX_SIGQA_1 = "SIGQA1";
     private static final String SUFFIX_OTHER_TEXT = "TEXT-UNKNOWN-TAG";
-    private final Gson gson = new Gson();
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
 
     @Test
     public void testAlertIsNewer() {

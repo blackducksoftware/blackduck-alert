@@ -395,7 +395,7 @@ Remove the stack and then re-deploy the stack. The steps in the upgrade procedur
 NOTE: Use the -h option for the database-utilities.sh script to see the usage and get an explanation of the parameters.
 
 NOTE: If something goes wrong, the database-utilities.sh script can be used to restore the database backup with the -r option.
-If a restore is performed, you must restart Alert.
+Restoring a database backup must be to the same version of Alert it was taken from. If a restore is performed, you must restart Alert.
 
 ### Upgrade
 

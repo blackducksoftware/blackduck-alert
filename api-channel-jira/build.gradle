@@ -12,4 +12,5 @@ dependencies {
     implementation project(':api-descriptor')
 
     testImplementation project(':test-common')
+    testImplementation 'com.synopsys.integration:blackduck-common'
 }

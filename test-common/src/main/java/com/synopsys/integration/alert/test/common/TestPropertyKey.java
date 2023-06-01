@@ -71,6 +71,7 @@ public enum TestPropertyKey {
     TEST_JIRA_SERVER_URL("alert.jira.server.url"),
     TEST_JIRA_SERVER_USERNAME("alert.jira.server.username"),
     TEST_JIRA_SERVER_PASSWORD("alert.jira.server.password"),
+    TEST_JIRA_SERVER_PERSONAL_ACCESS_TOKEN("alert.jira.server.personal.access.token"),
     TEST_JIRA_SERVER_DISABLE_PLUGIN_CHECK("alert.jira.server.disable.plugin.check"),
     TEST_JIRA_SERVER_ADD_COMMENTS("alert.jira.server.add.comments"),
     TEST_JIRA_SERVER_ISSUE_CREATOR("alert.jira.server.issue.creator"),

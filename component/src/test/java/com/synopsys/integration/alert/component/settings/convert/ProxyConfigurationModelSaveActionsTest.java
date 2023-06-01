@@ -33,6 +33,7 @@ import com.synopsys.integration.alert.database.settings.proxy.SettingsProxyConfi
 import com.synopsys.integration.alert.database.settings.proxy.SettingsProxyConfigurationRepository;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 class ProxyConfigurationModelSaveActionsTest {
     public static final String TEST_PROXY_HOST = "host";
@@ -43,7 +44,7 @@ class ProxyConfigurationModelSaveActionsTest {
 
     private final SettingsDescriptorKey settingsDescriptorKey = new SettingsDescriptorKey();
 
-    private final Gson gson = new Gson();
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
     private final AlertProperties alertProperties = new MockAlertProperties();
     private final FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
     private final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);

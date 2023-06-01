@@ -23,9 +23,10 @@ import com.synopsys.integration.alert.common.persistence.model.job.executions.Jo
 import com.synopsys.integration.alert.database.api.DefaultJobCompletionStatusModelAccessor;
 import com.synopsys.integration.alert.database.job.execution.JobCompletionDurationsRepository;
 import com.synopsys.integration.alert.database.job.execution.JobCompletionRepository;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 class AuditSuccessEventListenerTest {
-    private final Gson gson = new Gson();
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
     private final TaskExecutor taskExecutor = new SyncTaskExecutor();
 
     private ExecutingJobManager executingJobManager;

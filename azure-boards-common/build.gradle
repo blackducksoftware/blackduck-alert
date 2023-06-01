@@ -12,4 +12,5 @@ dependencies {
     implementation 'com.synopsys.integration:integration-common'
 
     testImplementation 'org.mockito:mockito-core'
+    testImplementation 'com.synopsys.integration:blackduck-common'
 }

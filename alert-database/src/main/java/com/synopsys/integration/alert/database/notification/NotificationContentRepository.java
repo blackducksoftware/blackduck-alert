@@ -19,13 +19,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface NotificationContentRepository extends JpaRepository<NotificationEntity, Long> {
-    @Query("SELECT entity FROM NotificationEntity entity WHERE entity.createdAt BETWEEN ?1 AND ?2 ORDER BY created_at, provider_creation_time asc")
+    @Query("SELECT entity FROM NotificationEntity entity WHERE entity.createdAt BETWEEN ?1 AND ?2 ORDER BY entity.createdAt, entity.providerCreationTime asc")
     Page<NotificationEntity> findByCreatedAtBetween(OffsetDateTime startDate, OffsetDateTime endDate, Pageable pageable);
 
-    @Query("SELECT entity FROM NotificationEntity entity WHERE entity.createdAt < ?1 ORDER BY created_at, provider_creation_time asc")
+    @Query("SELECT entity FROM NotificationEntity entity WHERE entity.createdAt < ?1 ORDER BY entity.createdAt, entity.providerCreationTime asc")
     List<NotificationEntity> findByCreatedAtBefore(OffsetDateTime date);
 
-    @Query(value = "SELECT entity FROM NotificationEntity entity WHERE entity.id IN (SELECT notificationId FROM entity.auditNotificationRelations WHERE entity.id = notificationId)")
+    @Query(value = "SELECT entity FROM NotificationEntity entity WHERE entity.id IN (SELECT relation.notificationId FROM entity.auditNotificationRelations relation WHERE entity.id = relation.notificationId)")
     Page<NotificationEntity> findAllSentNotifications(Pageable pageable);
 
     @Query(value = "SELECT DISTINCT notificationRow "
@@ -49,7 +49,7 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
         + "LEFT JOIN notificationRow.auditNotificationRelations relation ON notificationRow.id = relation.notificationId "
         + "LEFT JOIN relation.auditEntryEntity auditEntry ON auditEntry.id = relation.auditEntryId "
         + "LEFT JOIN DistributionJobEntity jobEntity ON auditEntry.commonConfigId = jobEntity.jobId "
-        + "WHERE notificationRow.id IN (SELECT notificationId FROM notificationRow.auditNotificationRelations WHERE notificationRow.id = notificationId) AND "
+        + "WHERE notificationRow.id IN (SELECT relation.notificationId FROM notificationRow.auditNotificationRelations relation WHERE notificationRow.id = relation.notificationId) AND "
         + "("
         + "LOWER(notificationRow.provider) LIKE %:searchTerm% OR "
         + "LOWER(notificationRow.notificationType) LIKE %:searchTerm% OR "

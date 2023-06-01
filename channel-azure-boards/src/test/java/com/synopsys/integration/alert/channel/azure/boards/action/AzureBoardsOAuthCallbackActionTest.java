@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,6 +50,9 @@ import com.synopsys.integration.alert.test.common.database.MockRepositorySorter;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
 import com.synopsys.integration.azure.boards.common.service.project.TeamProjectReferenceResponseModel;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @ExtendWith(SpringExtension.class)
 class AzureBoardsOAuthCallbackActionTest {
@@ -61,7 +62,7 @@ class AzureBoardsOAuthCallbackActionTest {
     private static final String ORG_NAME = "alert_test_org_name";
     private static final String CLIENT_ID = "alert_test_client_id";
     private static final String CLIENT_SECRET = "alert_test_client_secret";
-    private final Gson gson = new Gson();
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
     private final AlertProperties alertProperties = new MockAlertProperties();
     private final FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
     private final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);

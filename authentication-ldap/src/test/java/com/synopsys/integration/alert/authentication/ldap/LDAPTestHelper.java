@@ -10,7 +10,6 @@ import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
 import com.synopsys.integration.alert.authentication.ldap.database.configuration.MockLDAPConfigurationRepository;
@@ -26,6 +25,7 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class LDAPTestHelper {
     public static final String DEFAULT_CONFIG_ID = UUID.randomUUID().toString();
@@ -104,7 +104,7 @@ public class LDAPTestHelper {
 
     public static EncryptionUtility createEncryptionUtility() {
         AlertProperties alertProperties = new MockAlertProperties();
-        FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, new Gson());
+        FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, BlackDuckServicesFactory.createDefaultGson());
         return new EncryptionUtility(alertProperties, filePersistenceUtil);
     }
 
