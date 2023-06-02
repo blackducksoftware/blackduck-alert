@@ -255,7 +255,7 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                         id={JIRA_SERVER_GLOBAL_FIELD_KEYS.accessToken}
                         name={JIRA_SERVER_GLOBAL_FIELD_KEYS.accessToken}
                         label="Access Token"
-                        customDescription="The password of the specified Jira Server user."
+                        customDescription="The Jira Server's access token used for authentication."
                         required
                         readOnly={readonly}
                         onChange={FieldModelUtilities.handleTestChange(jiraServerModel, setJiraServerModel)}
