@@ -35,7 +35,7 @@ const radioOptions = [{
     value: 'PERSONAL_ACCESS_TOKEN',
     label: 'Personal Access Token'
 }];
-// authorizationMethod
+
 const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, successMessage, readonly }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
