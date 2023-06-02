@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input/field/LabeledField';
 
 const PasswordInput = ({
-    id, description, errorName, errorValue, inputClass, isSet, label, labelClass, name, onChange, readOnly, required, showDescriptionPlaceHolder, value
+    id, description, errorName, errorValue, inputClass, isSet, label, labelClass, 
+    name, onChange, readOnly, required, showDescriptionPlaceHolder, value, placeholder, customDescription
 }) => {
     const placeholderText = (isSet) ? '***********' : null;
     const onChangeHandler = readOnly ? null : onChange;
@@ -11,6 +12,7 @@ const PasswordInput = ({
         <LabeledField
             id={id}
             labelClass={labelClass}
+            customDescription={customDescription}
             description={description}
             showDescriptionPlaceHolder={showDescriptionPlaceHolder}
             label={label}
@@ -19,7 +21,15 @@ const PasswordInput = ({
             required={required}
         >
             <div className="d-inline-flex flex-column p-2 col-sm-8">
-                <input id={id} type="password" className={inputClass} readOnly={readOnly} name={name} value={value} onChange={onChangeHandler} placeholder={placeholderText} />
+                <input 
+                    id={id} 
+                    type="password" 
+                    className={inputClass} 
+                    readOnly={readOnly} name={name} 
+                    value={value} 
+                    onChange={onChangeHandler} 
+                    placeholder={placeholderText || placeholder} 
+                />
             </div>
         </LabeledField>
     );
@@ -39,7 +49,8 @@ PasswordInput.propTypes = {
     showDescriptionPlaceHolder: PropTypes.bool,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
-    required: PropTypes.bool
+    required: PropTypes.bool,
+    customDescription: PropTypes.string
 };
 
 PasswordInput.defaultProps = {

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import GeneralButton from 'common/component/button/GeneralButton';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input/field/LabeledField';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import { createNewConfigurationRequest } from 'common/util/configurationRequestBuilder';
 import StatusMessage from 'common/component/StatusMessage';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
+import Button from 'common/component/button/Button';
 
 const EndpointButtonField = ({
     id,
@@ -95,14 +95,7 @@ const EndpointButtonField = ({
                 errorValue={fieldError}
             >
                 <div className="d-inline-flex p-2 col-sm-8">
-                    <GeneralButton
-                        id={fieldKey}
-                        onClick={flipShowModal}
-                        disabled={readOnly}
-                        performingAction={progress}
-                    >
-                        {buttonLabel}
-                    </GeneralButton>
+                    <Button id={fieldKey} onClick={flipShowModal} text={buttonLabel} disabled={readOnly} />
                     {successBox
                     && (
                         <div className="d-inline-flex p-2 checkbox">

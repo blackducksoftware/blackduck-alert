@@ -241,6 +241,10 @@ form.form-horizontal.loginForm {
   border-radius: $border-radius;
 }
 
+.modal-description {
+  margin: 10px
+}
+
 .border {
   border: 1px solid $border-color;
 }
@@ -315,7 +319,7 @@ form.form-horizontal.loginForm {
 }
 
 .configButtonContainer {
-  display: block;
+  display: flex;
   margin: 0px auto;
 }
 

@@ -7,3 +7,7 @@ export const MSTEAMS_INFO = {
 export const MSTEAMS_DISTRIBUTION_FIELD_KEYS = {
     webhook: 'channel.msteams.webhook'
 };
+
+export const MSTEAMS_URLS = {
+    mainUrl: '/alert/channels/msteams'
+};

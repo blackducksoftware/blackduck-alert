@@ -1,7 +1,8 @@
 import React from 'react';
 import { createUseStyles } from 'react-jss';
+import Button from 'common/component/button/Button';
 
-const useStyles = createUseStyles({
+const useStyles = createUseStyles((theme) => ({
     samlLoginContainer: {
         minHeight: '75px'
     },
@@ -10,11 +11,11 @@ const useStyles = createUseStyles({
         display: 'flex',
         alignItems: 'center',
         textAlign: 'center',
-        color: 'grey',
+        color: theme.colors.grey.default,
         '&::before, &::after': {
             content: '""',
             flex: 1,
-            borderBottom: 'solid 1px grey'
+            borderBottom: `solid 1px ${theme.colors.grey.default}`
         },
         '&:not(:empty):before': {
             marginRight: '.5em',
@@ -29,24 +30,8 @@ const useStyles = createUseStyles({
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center'
-    },
-    loginButton: {
-        background: 'none',
-        width: '200px',
-        border: 'solid .5px',
-        padding: ['6px', '20px'],
-        margin: ['10px', 'auto', '20px', 'auto'],
-        font: 'inherit',
-        cursor: 'pointer',
-        borderRadius: '4px',
-        fontSize: '14px',
-        backgroundColor: '#2E3B4E',
-        color: 'white',
-        '&:focus': {
-            outline: 0
-        }
     }
-});
+}));
 
 const SamlLogin = () => {
     const classes = useStyles();
@@ -60,9 +45,7 @@ const SamlLogin = () => {
         <div className={classes.samlLoginContainer}>
             <div className={classes.separator}>Or</div>
             <div className={classes.samlLoginAction}>
-                <button className={classes.loginButton} type="button" onClick={handleClick}>
-                    Login with SAML
-                </button>
+                <Button onClick={handleClick} type="button" text="Login with SAML" />
             </div>
         </div>
     );

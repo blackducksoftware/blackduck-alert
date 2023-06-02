@@ -3,3 +3,8 @@ export const AUDIT_INFO = {
     url: 'audit',
     label: 'Audit Failures'
 };
+
+export const AUDIT_URLS = {
+    audit: '/alert/api/audit/failed',
+    resend: '/alert/api/audit/failed/resend/'
+};

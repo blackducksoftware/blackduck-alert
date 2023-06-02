@@ -44,7 +44,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
         if (formData?.authenticationType && formData?.authenticationType.length > 0 && Array.isArray(formData?.authenticationType)) {
             formData.authenticationType = formData.authenticationType[0];
         } else {
-            formData.authenticationType = 'simple'
+            formData.authenticationType = 'simple';
         }
 
         if (formData?.referral && formData?.referral.length > 0 && Array.isArray(formData?.referral)) {
@@ -88,7 +88,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
 
     function testButtonClicked() {
         processFormData();
-        setTestFormData({ ...testFormData, ldapConfigModel: formData});
+        setTestFormData({ ...testFormData, ldapConfigModel: formData });
     }
 
     function handleValidation() {
@@ -99,8 +99,8 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
     const isTestFormComplete = () => {
         // This check will determine whether we enable or disable the Test Submit button within the Test Configuration modal
         return (testFormData[AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPUsername]?.length > 0 &&
-            testFormData[AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPPassword]?.length > 0)
-    }
+            testFormData[AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPPassword]?.length > 0);
+    };
 
     // Revise this to its own modal when we overhaul the modal changes.
     const testFields = (

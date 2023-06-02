@@ -1,6 +1,6 @@
 {
     "name": "blackduck-alert",
-    "version": "7.0.0-SNAPSHOT",
+    "version": "7.0.0-SIGQA6",
     "description": "Alert UI",
     "keywords": [
         "blackduck",
@@ -26,7 +26,6 @@
         "prop-types": "^15.6.2",
         "react": "^16.14.0",
         "react-bootstrap": "^1.5.2",
-        "react-bootstrap-table": "^4.3.1",
         "react-dom": "^16.14.0",
         "react-jss": "^10.9.0",
         "react-redux": "^7.2.3",

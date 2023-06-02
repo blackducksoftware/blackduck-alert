@@ -12,29 +12,28 @@ import JiraCloudGlobalConfiguration from 'page/channel/jira/cloud/JiraCloudGloba
 import { JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';
 import { SLACK_INFO } from 'page/channel/slack/SlackModels';
 import { EMAIL_INFO } from 'page/channel/email/EmailModels';
-import { JIRA_SERVER_INFO, JIRA_SERVER_URLS } from 'page/channel/jira/server/JiraServerModel';
+import { JIRA_SERVER_INFO } from 'page/channel/jira/server/JiraServerModel';
+import JiraServerPageLayout from 'page/channel/jira/server/JiraServerPageLayout';
 import { MSTEAMS_INFO } from 'page/channel/msteams/MSTeamsModel';
 import MSTeamsGlobalConfiguration from 'page/channel/msteams/MSTeamsGlobalConfiguration';
-import { AZURE_BOARDS_INFO, AZURE_BOARDS_URLS } from 'page/channel/azure/AzureBoardsModel';
-import AzureBoardsPageForm from 'page/channel/azure/AzureBoardsPageForm';
-import AzureBoardsTableConstructor from 'page/channel/azure/AzureBoardsTableConstructor';
+import { AZURE_BOARDS_INFO } from 'page/channel/azure/AzureBoardsModel';
+import AzureBoardsPageLayout from 'page/channel/azure/AzureBoardsPageLayout';
 import { SCHEDULING_INFO } from 'page/scheduling/SchedulingModel';
 import SchedulingConfiguration from 'page/scheduling/SchedulingConfiguration';
 import { SETTINGS_INFO } from 'page/settings/SettingsModel';
 import SettingsConfiguration from 'page/settings/standalone/SettingsConfiguration';
 import { AUTHENTICATION_INFO } from 'application/auth/AuthenticationModel';
 import AuthenticationPageLayout from 'application/auth/AuthenticationPageLayout';
-import { BLACKDUCK_INFO, BLACKDUCK_URLS } from 'page/provider/blackduck/BlackDuckModel';
-import BlackDuckProviderConfiguration from 'page/provider/blackduck/BlackDuckProviderConfiguration';
-import BlackDuckConfiguration from 'page/provider/blackduck/BlackDuckConfiguration';
+import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
+import ProviderPageLayout from 'page/provider/ProviderPageLayout';
 import { AUDIT_INFO } from 'page/audit/AuditModel';
-import AuditPage from 'page/audit/AuditPage';
+import AuditPageLayout from 'page/audit/AuditPageLayout';
 import { CERTIFICATE_INFO } from 'page/certificates/CertificateModel';
-import CertificatesPage from 'page/certificates/CertificatesPage';
+import CertificatesPageLayout from 'page/certificates/CertificatesPageLayout';
 import { TASK_MANAGEMENT_INFO } from 'page/task/TaskManagementModel';
-import TaskManagement from 'page/task/TaskManagement';
-import { USER_MANAGEMENT_INFO } from 'page/user/UserModel';
-import UserManagement from 'page/user/UserManagement';
+import TaskManagementPageLayout from 'page/task/TaskManagementPageLayout';
+import { USER_MANAGEMENT_INFO } from 'page/usermgmt/UserModel';
+import UserManagement from 'page/usermgmt/UserManagement';
 import { CONTEXT_TYPE, isOperationAssigned, OPERATIONS } from 'common/util/descriptorUtilities';
 import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
 import DistributionConfiguration from 'page/distribution/DistributionConfiguration';
@@ -43,8 +42,6 @@ import { unauthorized } from 'store/actions/session';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import DescriptorRoute from 'common/component/descriptor/DescriptorRoute';
 import EmailGlobalConfiguration from 'page/channel/email/EmailGlobalConfiguration';
-import ConcreteJiraServerGlobalConfiguration from 'page/channel/jira/server/ConcreteJiraServerGlobalConfiguration';
-import ConcreteJiraServerGlobalConfigurationTable from 'page/channel/jira/server/ConcreteJiraServerGlobalConfigurationTable';
 
 const MainPage = ({
     descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh, unauthorizedFunction
@@ -95,43 +92,12 @@ const MainPage = ({
                 )}
             />
             <DescriptorRoute
-                descriptor={globalDescriptorMap[BLACKDUCK_INFO.key]}
-                urlName={BLACKDUCK_INFO.url}
-                paths={[`${BLACKDUCK_URLS.blackDuckConfigUrl}/:id?`, `${BLACKDUCK_URLS.blackDuckConfigCopyUrl}/:id?`]}
-                render={(readonly, showTest, showSave) => (
-                    <BlackDuckConfiguration
-                        csrfToken={csrfToken}
-                        errorHandler={errorHandler}
-                        readonly={readonly}
-                        displayTest={showTest}
-                        displaySave={showSave}
-                    />
-                )}
-            />
-            <DescriptorRoute
                 uriPrefix={providerUri}
                 urlName={BLACKDUCK_INFO.url}
                 descriptor={globalDescriptorMap[BLACKDUCK_INFO.key]}
-                render={(readonly, showTest, showSave, showDelete) => (
-                    <BlackDuckProviderConfiguration
-                        csrfToken={csrfToken}
-                        showRefreshButton={!autoRefresh}
+                render={(readonly) => (
+                    <ProviderPageLayout
                         readonly={readonly}
-                        displayDelete={showDelete}
-                    />
-                )}
-            />
-            <DescriptorRoute
-                descriptor={globalDescriptorMap[AZURE_BOARDS_INFO.key]}
-                urlName={AZURE_BOARDS_INFO.url}
-                paths={[`${AZURE_BOARDS_URLS.editUrl}/:id?`, `${AZURE_BOARDS_URLS.copyUrl}/:id?`]}
-                render={(readonly, showTest, showSave) => (
-                    <AzureBoardsPageForm
-                        errorHandler={errorHandler}
-                        csrfToken={csrfToken}
-                        readonly={readonly}
-                        displayTest={showTest}
-                        displaySave={showSave}
                     />
                 )}
             />
@@ -139,12 +105,10 @@ const MainPage = ({
                 uriPrefix={channelUri}
                 urlName={AZURE_BOARDS_INFO.url}
                 descriptor={globalDescriptorMap[AZURE_BOARDS_INFO.key]}
-                render={(readonly, showTest, showSave, showDelete) => (
-                    <AzureBoardsTableConstructor
-                        csrfToken={csrfToken}
+                render={(readonly, showDelete) => (
+                    <AzureBoardsPageLayout
                         readonly={readonly}
-                        showRefreshButton={!autoRefresh}
-                        displayDelete={showDelete}
+                        allowDelete={showDelete}
                     />
                 )}
             />
@@ -179,29 +143,15 @@ const MainPage = ({
                 )}
             />
             <DescriptorRoute
-                descriptor={globalDescriptorMap[JIRA_SERVER_INFO.key]}
-                urlName={JIRA_SERVER_INFO.url}
-                paths={[`${JIRA_SERVER_URLS.jiraServerEditUrl}/:id?`, `${JIRA_SERVER_URLS.jiraServerCopyUrl}/:id?`]}
-                render={(readonly, showTest, showSave) => (
-                    <ConcreteJiraServerGlobalConfiguration
-                        errorHandler={errorHandler}
-                        csrfToken={csrfToken}
-                        readonly={readonly}
-                        displayTest={showTest}
-                        displaySave={showSave}
-                    />
-                )}
-            />
-            <DescriptorRoute
                 uriPrefix={channelUri}
                 urlName={JIRA_SERVER_INFO.url}
                 descriptor={globalDescriptorMap[JIRA_SERVER_INFO.key]}
-                render={(readOnly, showTest, showSave, showDelete) => (
-                    <ConcreteJiraServerGlobalConfigurationTable
+                render={(readOnly, showDelete) => (
+                    <JiraServerPageLayout
                         csrfToken={csrfToken}
-                        readonly={readOnly}
                         showRefreshButton={!autoRefresh}
-                        displayDelete={showDelete}
+                        readonly={readOnly}
+                        allowDelete={showDelete}
                     />
                 )}
             />
@@ -220,7 +170,7 @@ const MainPage = ({
                 urlName={AUDIT_INFO.url}
                 descriptor={globalDescriptorMap[AUDIT_INFO.key]}
                 render={() => (
-                    <AuditPage />
+                    <AuditPageLayout />
                 )}
             />
             <DescriptorRoute
@@ -246,7 +196,7 @@ const MainPage = ({
                 urlName={CERTIFICATE_INFO.url}
                 descriptor={globalDescriptorMap[CERTIFICATE_INFO.key]}
                 render={() => (
-                    <CertificatesPage />
+                    <CertificatesPageLayout />
                 )}
             />
             <DescriptorRoute
@@ -282,7 +232,7 @@ const MainPage = ({
                 urlName={TASK_MANAGEMENT_INFO.url}
                 descriptor={globalDescriptorMap[TASK_MANAGEMENT_INFO.key]}
                 render={() => (
-                    <TaskManagement />
+                    <TaskManagementPageLayout />
                 )}
             />
             <DescriptorRoute

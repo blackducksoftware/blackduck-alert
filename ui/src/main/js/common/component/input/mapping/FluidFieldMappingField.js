@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input/field/LabeledField';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import FieldMappingRow from 'common/component/input/mapping/FieldMappingRow';
+import Button from 'common/component/button/Button';
 
 const FluidFieldMappingField = ({
     id,
+    buttonLabel,
     description,
     value,
     setValue,
@@ -74,14 +75,7 @@ const FluidFieldMappingField = ({
             <div className="d-inline-flex">
                 <div className="container">
                     {renderExistingRows}
-                    <button
-                        id={id}
-                        className="btn btn-sm btn-primary"
-                        type="button"
-                        onClick={addRow}
-                    >
-                        <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
-                    </button>
+                    <Button id={id} onClick={addRow} text={buttonLabel} icon="plus" />
                 </div>
             </div>
         </LabeledField>
@@ -93,6 +87,7 @@ FluidFieldMappingField.propTypes = {
     value: PropTypes.object.isRequired,
     setValue: PropTypes.func.isRequired,
     label: PropTypes.string.isRequired,
+    buttonLabel: PropTypes.string,
     description: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,

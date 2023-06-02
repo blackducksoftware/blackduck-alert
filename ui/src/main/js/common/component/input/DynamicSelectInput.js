@@ -23,13 +23,16 @@ const DynamicSelectInput = ({
     clearable,
     onFocus,
     labelClass,
+    customDescription,
     description,
     showDescriptionPlaceHolder,
     label,
     errorName,
     errorValue,
     required,
-    creatable
+    creatable,
+    maxMenuHeight,
+    customVal
 }) => {
     const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
     const selectedOptions = options.filter((option) => value.includes(option.value));
@@ -101,7 +104,7 @@ const DynamicSelectInput = ({
             removeSelected={removeSelected}
             options={options}
             placeholder={placeholder}
-            value={selectedOptions}
+            value={customVal || selectedOptions}
             isMulti={multiSelect}
             closeMenuOnSelect={!multiSelect}
             components={selectInputComponents}
@@ -109,7 +112,7 @@ const DynamicSelectInput = ({
             noOptionsMessage={() => 'No options available'}
             onFocus={onFocus}
             menuPlacement="auto"
-            maxMenuHeight={250}
+            maxMenuHeight={maxMenuHeight || 250}
             styles={selectStyles}
         />
     );
@@ -142,6 +145,7 @@ const DynamicSelectInput = ({
     return (
         <LabeledField
             id={id}
+            customDescription={customDescription}
             description={description}
             errorName={errorName}
             errorValue={errorValue}
@@ -163,7 +167,7 @@ DynamicSelectInput.propTypes = {
     inputClass: PropTypes.string,
     selectSpacingClass: PropTypes.string,
     options: PropTypes.array,
-    value: PropTypes.oneOf(PropTypes.string, PropTypes.array),
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
     placeholder: PropTypes.string,
     searchable: PropTypes.bool,
     removeSelected: PropTypes.bool,
@@ -179,7 +183,10 @@ DynamicSelectInput.propTypes = {
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     required: PropTypes.bool,
-    creatable: PropTypes.bool
+    creatable: PropTypes.bool,
+    maxMenuHeight: PropTypes.number,
+    customDescription: PropTypes.string,
+    customVal: PropTypes.oneOfType([ PropTypes.array, PropTypes.object ])
 };
 
 DynamicSelectInput.defaultProps = {
