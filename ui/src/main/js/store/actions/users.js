@@ -1,5 +1,8 @@
 import {
     USER_MANAGEMENT_USER_CLEAR_FIELD_ERRORS,
+    USER_MANAGEMENT_USER_BULK_DELETE_FETCH,
+    USER_MANAGEMENT_USER_BULK_DELETE_SUCCESS,
+    USER_MANAGEMENT_USER_BULK_DELETE_FAIL,
     USER_MANAGEMENT_USER_DELETE_ERROR,
     USER_MANAGEMENT_USER_DELETED,
     USER_MANAGEMENT_USER_DELETING,
@@ -18,46 +21,46 @@ import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import { unauthorized } from 'store/actions/session';
 import HeaderUtilities from 'common/util/HeaderUtilities';
 
-function fetchingAllUsers() {
+function fetchUsersRequest() {
     return {
         type: USER_MANAGEMENT_USER_FETCHING_ALL
     };
 }
 
-function fetchedAllUsers(users) {
+function fetchUsersSuccess(users) {
     return {
         type: USER_MANAGEMENT_USER_FETCHED_ALL,
         data: users
     };
 }
 
-function fetchingAllUsersError(message) {
+function fetchUsersFail(message) {
     return {
         type: USER_MANAGEMENT_USER_FETCH_ERROR_ALL,
         message
     };
 }
 
-function savingUser() {
+function saveUserRequest() {
     return {
         type: USER_MANAGEMENT_USER_SAVING
     };
 }
 
-function savedUser() {
+function saveUserSuccess() {
     return {
         type: USER_MANAGEMENT_USER_SAVED
     };
 }
 
-function saveUserErrorMessage(message) {
+function saveUserFailMessage(message) {
     return {
         type: USER_MANAGEMENT_USER_SAVE_ERROR,
         message
     };
 }
 
-function saveUserError({ message, errors }) {
+function saveUserFail({ message, errors }) {
     return {
         type: USER_MANAGEMENT_USER_SAVE_ERROR,
         message,
@@ -66,13 +69,13 @@ function saveUserError({ message, errors }) {
     };
 }
 
-function deletingUser() {
+function deleteUserRequest() {
     return {
         type: USER_MANAGEMENT_USER_DELETING
     };
 }
 
-function deletedUser() {
+function deleteUserSuccess() {
     return {
         type: USER_MANAGEMENT_USER_DELETED
     };
@@ -85,10 +88,29 @@ function deletingUserErrorMessage(message) {
     };
 }
 
-function deletingUserError({ message, errors }) {
+function deleteUserFail({ message, errors }) {
     return {
         type: USER_MANAGEMENT_USER_DELETE_ERROR,
         message,
+        errors
+    };
+}
+
+function bulkDeleteUserRequest() {
+    return {
+        type: USER_MANAGEMENT_USER_BULK_DELETE_FETCH
+    };
+}
+
+function bulkDeleteUserSuccess() {
+    return {
+        type: USER_MANAGEMENT_USER_BULK_DELETE_SUCCESS
+    };
+}
+
+function bulkDeleteUserFail(errors) {
+    return {
+        type: USER_MANAGEMENT_USER_BULK_DELETE_FAIL,
         errors
     };
 }
@@ -128,11 +150,11 @@ function handleValidationError(dispatch, errorHandlers, responseStatus, defaultH
 
 export function fetchUsers() {
     return (dispatch, getState) => {
-        dispatch(fetchingAllUsers());
+        dispatch(fetchUsersRequest());
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllUsersError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchUsersFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
         const headersUtil = new HeaderUtilities();
         headersUtil.addApplicationJsonContentType();
         headersUtil.addXCsrfToken(csrfToken);
@@ -144,7 +166,7 @@ export function fetchUsers() {
                 response.json()
                     .then((responseData) => {
                         if (response.ok) {
-                            dispatch(fetchedAllUsers(responseData.users));
+                            dispatch(fetchUsersSuccess(responseData.users));
                         } else {
                             errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
                                 let message = '';
@@ -152,7 +174,7 @@ export function fetchUsers() {
                                     // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
                                     message = responseData.message.toString();
                                 }
-                                return fetchingAllUsersError(message);
+                                return fetchUsersFail(message);
                             }));
                             const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
                             dispatch(handler(response.status));
@@ -161,7 +183,7 @@ export function fetchUsers() {
             })
             .catch((error) => {
                 console.log(error);
-                dispatch(fetchingAllUsersError(error));
+                dispatch(fetchUsersFail(error));
             });
     };
 }
@@ -169,12 +191,10 @@ export function fetchUsers() {
 export function validateUser(user) {
     return (dispatch, getState) => {
         dispatch(validatingUser());
-        const { id } = user;
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveUserErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
-
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveUserFailMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         const validateRequest = ConfigRequestBuilder.createValidateRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user);
         validateRequest.then((response) => {
             if (response.ok) {
@@ -197,12 +217,12 @@ export function validateUser(user) {
 
 export function saveUser(user) {
     return (dispatch, getState) => {
-        dispatch(savingUser());
+        dispatch(saveUserRequest());
         const { id } = user;
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveUserErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveUserFailMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         let saveRequest;
         if (id) {
             saveRequest = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, id, user);
@@ -211,12 +231,12 @@ export function saveUser(user) {
         }
         saveRequest.then((response) => {
             if (response.ok) {
-                dispatch(savedUser());
+                dispatch(saveUserSuccess());
                 dispatch(fetchUsers());
             } else {
                 response.json()
                     .then((responseData) => {
-                        const defaultHandler = () => saveUserError(responseData);
+                        const defaultHandler = () => saveUserFail(responseData);
                         errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
                         errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
                         const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
@@ -230,7 +250,7 @@ export function saveUser(user) {
 
 export function deleteUser(userId) {
     return (dispatch, getState) => {
-        dispatch(deletingUser());
+        dispatch(deleteUserRequest());
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
@@ -238,11 +258,11 @@ export function deleteUser(userId) {
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, userId);
         request.then((response) => {
             if (response.ok) {
-                dispatch(deletedUser());
+                dispatch(deleteUserSuccess());
             } else {
                 response.json()
                     .then((responseData) => {
-                        const defaultHandler = () => deletingUserError(responseData);
+                        const defaultHandler = () => deleteUserFail(responseData);
                         errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
                         errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
                         const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
@@ -251,6 +271,24 @@ export function deleteUser(userId) {
             }
         })
             .catch(console.error);
+    };
+}
+
+export function bulkDeleteUsers(userIdArray) {
+    return (dispatch, getState) => {
+        dispatch(bulkDeleteUserRequest());
+        const { csrfToken } = getState().session;
+
+        Promise.all(userIdArray.map((user) => { // eslint-disable-line
+            return ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user.id);
+        })).catch((error) => {
+            dispatch(bulkDeleteUserFail(error));
+            console.error; // eslint-disable-line
+        }).then((response) => {
+            if (response) {
+                dispatch(bulkDeleteUserSuccess());
+            }
+        });
     };
 }
 

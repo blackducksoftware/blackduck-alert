@@ -4,6 +4,9 @@ import {
     USER_MANAGEMENT_ROLE_DELETE_ERROR,
     USER_MANAGEMENT_ROLE_DELETED,
     USER_MANAGEMENT_ROLE_DELETING,
+    USER_MANAGEMENT_ROLE_DELETE_LIST_ERROR,
+    USER_MANAGEMENT_ROLE_DELETED_LIST,
+    USER_MANAGEMENT_ROLE_DELETING_LIST,
     USER_MANAGEMENT_ROLE_FETCH_ERROR_ALL,
     USER_MANAGEMENT_ROLE_FETCHED_ALL,
     USER_MANAGEMENT_ROLE_FETCHING_ALL,
@@ -23,7 +26,8 @@ const initialState = {
     data: [],
     roleError: null,
     error: HTTPErrorUtils.createEmptyErrorObject(),
-    saveStatus: ''
+    saveStatus: '',
+    deleteStatus: ''
 };
 
 const roles = (state = initialState, action) => {
@@ -35,7 +39,8 @@ const roles = (state = initialState, action) => {
                 deleteSuccess: false,
                 roleError: action.roleError,
                 error: HTTPErrorUtils.createErrorObject(action),
-                saveStatus: ''
+                saveStatus: '',
+                deleteStatus: 'FAIL'
             };
         case USER_MANAGEMENT_ROLE_DELETED:
             return {
@@ -43,14 +48,43 @@ const roles = (state = initialState, action) => {
                 inProgress: false,
                 deleteSuccess: true,
                 error: HTTPErrorUtils.createEmptyErrorObject(),
-                saveStatus: ''
+                saveStatus: '',
+                deleteStatus: 'SUCCESS'
             };
         case USER_MANAGEMENT_ROLE_DELETING:
             return {
                 ...state,
                 inProgress: true,
                 deleteSuccess: false,
-                saveStatus: ''
+                saveStatus: '',
+                deleteStatus: 'PROCESSING'
+            };
+        case USER_MANAGEMENT_ROLE_DELETE_LIST_ERROR:
+            return {
+                ...state,
+                inProgress: false,
+                deleteSuccess: false,
+                roleError: action.roleError,
+                error: HTTPErrorUtils.createErrorObject(action),
+                saveStatus: '',
+                deleteStatus: 'FAIL'
+            };
+        case USER_MANAGEMENT_ROLE_DELETED_LIST:
+            return {
+                ...state,
+                inProgress: false,
+                deleteSuccess: true,
+                error: HTTPErrorUtils.createEmptyErrorObject(),
+                saveStatus: '',
+                deleteStatus: 'SUCCESS'
+            };
+        case USER_MANAGEMENT_ROLE_DELETING_LIST:
+            return {
+                ...state,
+                inProgress: true,
+                deleteSuccess: false,
+                saveStatus: '',
+                deleteStatus: 'PROCESSING'
             };
         case USER_MANAGEMENT_ROLE_FETCH_ERROR_ALL:
             return {

@@ -1,55 +1,113 @@
-import { AUDIT_FETCH_ERROR, AUDIT_FETCHED, AUDIT_FETCHING, AUDIT_RESEND_COMPLETE, AUDIT_RESEND_ERROR, AUDIT_RESEND_START, SERIALIZE } from 'store/actions/types';
+import {
+    AUDIT_RESEND_ERROR,
+    SERIALIZE,
+    AUDIT_GET_REQUEST,
+    AUDIT_GET_SUCCESS,
+    AUDIT_GET_FAIL,
+    AUDIT_NOTIFICATION_PUT_REQUEST,
+    AUDIT_NOTIFICATION_PUT_SUCCESS,
+    AUDIT_NOTIFICATION_PUT_FAIL,
+    AUDIT_JOB_PUT_REQUEST,
+    AUDIT_JOB_PUT_SUCCESS,
+    AUDIT_JOB_PUT_FAIL
+} from 'store/actions/types';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 
 const initialState = {
     fetching: false,
-    totalPageCount: 0,
-    items: [],
-    message: '',
-    error: {},
-    inProgress: false
+    data: {
+        models: [],
+        currentPage: 0,
+        pageSize: 10,
+        mutatorData: {
+            searchTerm: '',
+            sortName: 'provider',
+            sortOrder: 'asc'
+        }
+    },
+    hasError: false,
+    error: HTTPErrorUtils.createEmptyErrorObject(),
+    fieldErrors: {},
+    inProgress: false,
+    refreshNotificationSuccess: false,
+    refreshJobSuccess: false
 };
 
 const config = (state = initialState, action) => {
     switch (action.type) {
-        case AUDIT_RESEND_START:
+        case AUDIT_GET_REQUEST:
             return {
                 ...state,
                 fetching: true,
-                inProgress: true,
-                message: 'Sending...'
+                error: HTTPErrorUtils.createErrorObject(action),
+                fieldErrors: action.errors || {}
             };
-
-        case AUDIT_RESEND_COMPLETE:
+        case AUDIT_GET_SUCCESS:
             return {
                 ...state,
                 fetching: false,
-                inProgress: false,
-                message: 'Send successful',
-                error: HTTPErrorUtils.createEmptyErrorObject()
+                data: action.data,
+                fieldErrors: action.errors || {}
+            };
+        case AUDIT_GET_FAIL:
+            return {
+                ...state,
+                fetching: false,
+                error: HTTPErrorUtils.createErrorObject(action),
+                fieldErrors: action.errors || {}
             };
 
-        case AUDIT_FETCHING:
+        case AUDIT_NOTIFICATION_PUT_REQUEST:
             return {
                 ...state,
                 fetching: true,
-                inProgress: true,
-                message: ''
+                refreshNotificationSuccess: false,
+                hasError: false,
+                error: HTTPErrorUtils.createErrorObject(action),
+                fieldErrors: action.errors || {}
             };
-
-        case AUDIT_FETCHED:
+        case AUDIT_NOTIFICATION_PUT_SUCCESS:
             return {
                 ...state,
                 fetching: false,
-                inProgress: false,
-                totalPageCount: action.totalPageCount,
-                items: action.items,
-                message: '',
-                error: HTTPErrorUtils.createEmptyErrorObject()
+                hasError: false,
+                refreshNotificationSuccess: true,
+                fieldErrors: action.errors || {}
             };
-
+        case AUDIT_NOTIFICATION_PUT_FAIL:
+            return {
+                ...state,
+                fetching: false,
+                hasError: true,
+                error: action.error,
+                fieldErrors: action.errors || {}
+            };
+        case AUDIT_JOB_PUT_REQUEST:
+            return {
+                ...state,
+                fetching: true,
+                refreshJobSuccess: false,
+                hasError: false,
+                error: HTTPErrorUtils.createErrorObject(action),
+                fieldErrors: action.errors || {}
+            };
+        case AUDIT_JOB_PUT_SUCCESS:
+            return {
+                ...state,
+                fetching: false,
+                hasError: false,
+                refreshJobSuccess: true,
+                fieldErrors: action.errors || {}
+            };
+        case AUDIT_JOB_PUT_FAIL:
+            return {
+                ...state,
+                fetching: false,
+                hasError: true,
+                error: action.error,
+                fieldErrors: action.errors || {}
+            };
         case AUDIT_RESEND_ERROR:
-        case AUDIT_FETCH_ERROR:
             return {
                 ...state,
                 fetching: false,

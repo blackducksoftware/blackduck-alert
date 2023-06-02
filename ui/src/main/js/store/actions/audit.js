@@ -1,58 +1,74 @@
-import { AUDIT_FETCH_ERROR, AUDIT_FETCHED, AUDIT_FETCHING, AUDIT_RESEND_COMPLETE, AUDIT_RESEND_ERROR, AUDIT_RESEND_START } from 'store/actions/types';
+import {
+    AUDIT_RESEND_ERROR,
+    AUDIT_GET_REQUEST,
+    AUDIT_GET_SUCCESS,
+    AUDIT_GET_FAIL,
+    AUDIT_NOTIFICATION_PUT_REQUEST,
+    AUDIT_NOTIFICATION_PUT_SUCCESS,
+    AUDIT_NOTIFICATION_PUT_FAIL,
+    AUDIT_JOB_PUT_REQUEST,
+    AUDIT_JOB_PUT_SUCCESS,
+    AUDIT_JOB_PUT_FAIL
+} from 'store/actions/types';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import { unauthorized } from 'store/actions/session';
 import HeaderUtilities from 'common/util/HeaderUtilities';
+import { AUDIT_URLS } from 'page/audit/AuditModel';
 
-const FETCH_URL_AUDIT_FAILED = '/alert/api/audit/failed';
-
-/**
- * Triggers Config Fetching reducer
- * @returns {{type}}
- */
-function fetchingAuditData() {
+function fetchingAuditRequest() {
     return {
-        type: AUDIT_FETCHING
+        type: AUDIT_GET_REQUEST
     };
 }
 
-/**
- * Triggers Audit items fetched
- * @returns {{type}}
- */
-function auditDataFetched(totalPageCount, items) {
+function fetchingAuditSuccess(audit) {
     return {
-        type: AUDIT_FETCHED,
-        totalPageCount,
-        items
+        type: AUDIT_GET_SUCCESS,
+        data: audit
     };
 }
 
-function auditDataFetchError(message) {
-    console.log('Logging audit error message');
-    console.log(message);
+function fetchingAuditFail(error) {
     return {
-        type: AUDIT_FETCH_ERROR,
-        message
+        type: AUDIT_GET_FAIL,
+        error
     };
 }
 
-/**
- * Triggers Config Fetching reducer
- * @returns {{type}}
- */
-function startingAuditResend() {
+function sendNotificationRequest() {
     return {
-        type: AUDIT_RESEND_START
+        type: AUDIT_NOTIFICATION_PUT_REQUEST
     };
 }
 
-/**
- * Triggers Audit items fetched
- * @returns {{type}}
- */
-function auditResentSuccessfully() {
+function sendNotificationSuccess() {
     return {
-        type: AUDIT_RESEND_COMPLETE
+        type: AUDIT_NOTIFICATION_PUT_SUCCESS
+    };
+}
+
+function sendNotificationFail(error) {
+    return {
+        type: AUDIT_NOTIFICATION_PUT_FAIL,
+        error
+    };
+}
+function sendJobRequest() {
+    return {
+        type: AUDIT_JOB_PUT_REQUEST
+    };
+}
+
+function sendJobSuccess() {
+    return {
+        type: AUDIT_JOB_PUT_SUCCESS
+    };
+}
+
+function sendJobFail(error) {
+    return {
+        type: AUDIT_JOB_PUT_FAIL,
+        error
     };
 }
 
@@ -64,55 +80,55 @@ function auditResendError(message) {
 }
 
 function createPagedQueryURL(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications) {
-    // server side is 0 based but UI paging component starts with 1
-    const pageNumberParameter = pageNumber - 1;
     const encodedSearchTerm = encodeURIComponent(searchTerm);
-    return `${FETCH_URL_AUDIT_FAILED}?pageNumber=${pageNumberParameter}&pageSize=${pageSize}&searchTerm=${encodedSearchTerm}&sortField=${sortField}&sortOrder=${sortOrder}&onlyShowSentNotifications=${onlyShowSentNotifications}`;
+    return `${AUDIT_URLS.audit}?pageNumber=${pageNumber}&pageSize=${pageSize}&searchTerm=${encodedSearchTerm}&sortField=${sortField}&sortOrder=${sortOrder}&onlyShowSentNotifications=${onlyShowSentNotifications}`;
 }
 
-/**
- * Fetching Audit Data
- * @returns {function(*)}
- */
-export function getAuditData(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications) {
+export function fetchAuditData(requestParams) {
     return (dispatch, getState) => {
-        dispatch(fetchingAuditData());
+        dispatch(fetchingAuditRequest());
         const { csrfToken } = getState().session;
-        const fetchUrl = createPagedQueryURL(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications);
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => auditDataFetchError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAuditFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
+
+        const { pageNumber, pageSize, mutatorData } = requestParams;
+        const fetchUrl = createPagedQueryURL(pageNumber, pageSize, mutatorData.searchTerm, mutatorData.sortName, mutatorData.sortOrder, true);
+
         const headersUtil = new HeaderUtilities();
         headersUtil.addXCsrfToken(csrfToken);
         fetch(fetchUrl, {
             credentials: 'same-origin',
             headers: headersUtil.getHeaders()
-        })
-            .then((response) => {
-                response.json()
-                    .then((responseData) => {
-                        if (response.ok) {
-                            dispatch(auditDataFetched(responseData.totalPages, responseData.content));
-                        } else {
-                            errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => auditDataFetchError(responseData.message)));
-                            const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                            dispatch(handler(response.status));
-                        }
-                    });
-            })
-            .catch((error) => {
-                dispatch(auditDataFetchError(error));
-            });
+        }).then((response) => {
+            response.json()
+                .then((responseData) => {
+                    if (response.ok) {
+                        dispatch(fetchingAuditSuccess(responseData));
+                    } else {
+                        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
+                            let message = '';
+                            if (responseData && responseData.message) {
+                                // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
+                                message = responseData.message.toString();
+                            }
+                            return fetchingAuditFail(message);
+                        }));
+                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                        dispatch(handler(response.status));
+                    }
+                });
+        }).catch((error) => {
+            console.log(error);
+            dispatch(fetchingAuditFail(error));
+        });
     };
 }
 
-export function resendNotification(notificationId, commonConfigId, pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications) {
+export function sendNotification(notificationId, requestParams) {
     return (dispatch, getState) => {
-        dispatch(startingAuditResend());
-        let resendUrl = `/alert/api/audit/failed/resend/${notificationId}/`;
-        if (commonConfigId) {
-            resendUrl += `job/${commonConfigId}/`;
-        }
+        dispatch(sendNotificationRequest());
+        const resendUrl = `${AUDIT_URLS.resend}${notificationId}/`;
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
@@ -126,17 +142,38 @@ export function resendNotification(notificationId, commonConfigId, pageNumber, p
             headers: headersUtil.getHeaders()
         })
             .then((response) => {
-                response.json()
-                    .then((responseData) => {
-                        if (response.ok) {
-                            dispatch(auditResentSuccessfully());
-                            dispatch(getAuditData(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications));
-                        } else {
-                            errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => auditResendError(responseData.message)));
-                            const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                            dispatch(handler(response.status));
-                        }
-                    });
+                if (response.ok) {
+                    dispatch(sendNotificationSuccess());
+                    dispatch(fetchAuditData(requestParams));
+                } else {
+                    dispatch(sendNotificationFail(response));
+                }
+            }).catch(console.error);
+    };
+}
+
+export function sendJob(notificationId, jobId) {
+    return (dispatch, getState) => {
+        dispatch(sendJobRequest());
+        const resendUrl = `${AUDIT_URLS.resend}${notificationId}/job/${jobId}/`;
+        const { csrfToken } = getState().session;
+        const errorHandlers = [];
+        errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => auditResendError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
+        const headersUtil = new HeaderUtilities();
+        headersUtil.addApplicationJsonContentType();
+        headersUtil.addXCsrfToken(csrfToken);
+        fetch(resendUrl, {
+            method: 'PUT',
+            credentials: 'same-origin',
+            headers: headersUtil.getHeaders()
+        })
+            .then((response) => {
+                if (response.ok) {
+                    dispatch(sendJobSuccess());
+                } else {
+                    dispatch(sendJobFail(response));
+                }
             }).catch(console.error);
     };
 }

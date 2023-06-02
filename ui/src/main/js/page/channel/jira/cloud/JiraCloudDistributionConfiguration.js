@@ -1,17 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import CheckboxInput from 'common/component/input/CheckboxInput';
 import { JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS } from 'page/channel/jira/cloud/JiraCloudModel';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import TextInput from 'common/component/input/TextInput';
 import CollapsiblePane from 'common/component/CollapsiblePane';
-import FieldMappingField from 'common/component/input/FieldMappingField';
+import JiraFieldMapDistributionTable from 'page/channel/jira/common/JiraFieldMapDistributionTable';
 
 const JiraCloudDistributionConfiguration = ({
     data, setData, errors, readonly
 }) => {
     if (!FieldModelUtilities.hasValue(data, JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueType)) {
         setData(FieldModelUtilities.updateFieldModelSingleValue(data, JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueType, 'Task'));
+    }
+    const storedMappings = FieldModelUtilities.getFieldModelValues(data, JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.fieldMapping);
+    const tableData = storedMappings.map((mapping) => JSON.parse(mapping));
+
+    function updateModel(model) {
+        const updatedFieldModel = model.map((fieldModel) => JSON.stringify(fieldModel));
+        setData(FieldModelUtilities.updateFieldModelValues(data, JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.fieldMapping, updatedFieldModel));
     }
 
     return (
@@ -100,21 +107,7 @@ const JiraCloudDistributionConfiguration = ({
                 title="Advanced Jira Configuration"
                 expanded={false}
             >
-                <FieldMappingField
-                    id={JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.fieldMapping}
-                    label="Field Mapping"
-                    description="Use this field to provide static values to Jira fields or map them to information from the notifications."
-                    fieldMappingKey={JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.fieldMapping}
-                    mappingTitle="Create Jira Field Mapping"
-                    leftSideMapping="Jira Field"
-                    rightSideMapping="Value"
-                    readonly={readonly}
-                    onChange={FieldModelUtilities.handleChange(data, setData)}
-                    storedMappings={FieldModelUtilities.getFieldModelValues(data, JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.fieldMapping)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.fieldMapping)}
-                    errorValue={errors.fieldErrors[JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.fieldMapping]}
-                />
-                <div />
+                <JiraFieldMapDistributionTable initialData={tableData} onFieldMappingUpdate={updateModel} />
             </CollapsiblePane>
         </>
     );

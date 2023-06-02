@@ -5,10 +5,10 @@ import { JIRA_SERVER_DISTRIBUTION_FIELD_KEYS } from 'page/channel/jira/server/Ji
 import CheckboxInput from 'common/component/input/CheckboxInput';
 import TextInput from 'common/component/input/TextInput';
 import CollapsiblePane from 'common/component/CollapsiblePane';
-import FieldMappingField from 'common/component/input/FieldMappingField';
 import { DISTRIBUTION_COMMON_FIELD_KEYS } from 'page/distribution/DistributionModel';
 import EndpointSelectField from 'common/component/input/EndpointSelectField';
 import { createReadRequest } from 'common/util/configurationRequestBuilder';
+import JiraFieldMapDistributionTable from 'page/channel/jira/common/JiraFieldMapDistributionTable';
 
 const JiraServerDistributionConfiguration = ({
     csrfToken, data, setData, errors, readonly
@@ -32,6 +32,15 @@ const JiraServerDistributionConfiguration = ({
     if (!FieldModelUtilities.hasValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueType)) {
         setData(FieldModelUtilities.updateFieldModelSingleValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueType, 'Task'));
     }
+
+    const storedMappings = FieldModelUtilities.getFieldModelValues(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.fieldMapping);
+    const tableData = storedMappings.map((mapping) => JSON.parse(mapping));
+
+    function updateModel(model) {
+        const updatedFieldModel = model.map((fieldModel) => JSON.stringify(fieldModel));
+        setData(FieldModelUtilities.updateFieldModelValues(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.fieldMapping, updatedFieldModel));
+    }
+
     // TODO make configuration select searchable but requires support in the backend
     return (
         <>
@@ -135,20 +144,7 @@ const JiraServerDistributionConfiguration = ({
                 title="Advanced Jira Configuration"
                 expanded={false}
             >
-                <FieldMappingField
-                    id={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.fieldMapping}
-                    label="Field Mapping"
-                    description="Use this field to provide static values to Jira fields or map them to information from the notifications."
-                    fieldMappingKey={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.fieldMapping}
-                    mappingTitle="Create Jira Field Mapping"
-                    leftSideMapping="Jira Field"
-                    rightSideMapping="Value"
-                    readonly={readonly}
-                    onChange={FieldModelUtilities.handleChange(data, setData)}
-                    storedMappings={FieldModelUtilities.getFieldModelValues(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.fieldMapping)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.fieldMapping)}
-                    errorValue={errors.fieldErrors[JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.fieldMapping]}
-                />
+                <JiraFieldMapDistributionTable initialData={tableData} onFieldMappingUpdate={updateModel} />
             </CollapsiblePane>
         </>
     );

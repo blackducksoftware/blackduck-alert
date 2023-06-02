@@ -3,11 +3,12 @@ import PropTypes from 'prop-types';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input/field/LabeledField';
 
 const CheckboxInput = ({
-    id, description, errorName, errorValue, isChecked, label, labelClass, name, onChange, readOnly, required, showDescriptionPlaceHolder
+    id, description, errorName, errorValue, isChecked, label, labelClass, name, onChange, readOnly, required, showDescriptionPlaceHolder, customDescription
 }) => (
     <LabeledField
         id={id}
         labelClass={labelClass}
+        customDescription={customDescription}
         description={description}
         showDescriptionPlaceHolder={showDescriptionPlaceHolder}
         label={label}
@@ -41,7 +42,8 @@ CheckboxInput.propTypes = {
     onChange: PropTypes.func,
     readOnly: PropTypes.bool,
     required: PropTypes.bool,
-    showDescriptionPlaceHolder: PropTypes.bool
+    showDescriptionPlaceHolder: PropTypes.bool,
+    customDescription: PropTypes.string
 };
 
 CheckboxInput.defaultProps = {

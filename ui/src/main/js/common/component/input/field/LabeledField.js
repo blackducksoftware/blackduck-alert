@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Tooltip from 'react-bootstrap/Tooltip';
 import Overlay from 'react-bootstrap/Overlay';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { createUseStyles } from 'react-jss';
 
 export const LabelFieldPropertyDefaults = {
     LABEL_CLASS_DEFAULT: 'col-sm-3 col-form-label',
@@ -13,9 +14,28 @@ export const LabelFieldPropertyDefaults = {
     REQUIRED_DEFAULT: false
 };
 
+const useStyles = createUseStyles((theme) => ({
+    customTooltip: {
+        position: 'relative'
+    },
+    tooltipText: {
+        position: 'absolute',
+        top: '-25px',
+        left: '-35px',
+        padding: ['2px', '10px'],
+        backgroundColor: theme.colors.grey.darkGrey,
+        width: 'max-content',
+        maxWidth: '500px',
+        zIndex: 100,
+        borderRadius: '2px',
+        color: theme.colors.white.default
+    }
+}));
+
 const LabeledField = ({
-    id, children, description, errorName, errorValue, label, labelClass, required, showDescriptionPlaceHolder
+    id, children, description, errorName, errorValue, label, labelClass, required, showDescriptionPlaceHolder, customDescription
 }) => {
+    const classes = useStyles();
     const [showDescription, setShowDescription] = useState(false);
     const target = useRef(null);
 
@@ -29,8 +49,9 @@ const LabeledField = ({
     return (
         <div key={label} className="form-group">
             <label id={`${id}-label`} className={labelClasses}>{label}</label>
-            {description && (
+            { (description || customDescription) && (
                 <div className="d-inline-flex">
+                    
                     <span
                         className="descriptionIcon"
                         onClick={() => setShowDescription(!showDescription)}
@@ -40,6 +61,13 @@ const LabeledField = ({
                     >
                         <FontAwesomeIcon icon="question-circle" className="alert-icon" size="lg" />
                     </span>
+                    { (customDescription && showDescription) && (
+                        <div className={classes.customTooltip}>
+                            <span className={classes.tooltipText}>
+                                {customDescription}
+                            </span>
+                        </div>
+                    )}
                     <Overlay
                         rootClose
                         placement="top"
@@ -67,14 +95,15 @@ const LabeledField = ({
 
 LabeledField.propTypes = {
     id: PropTypes.string,
-    children: PropTypes.element,
+    children: PropTypes.oneOfType([PropTypes.element, PropTypes.array]),
     description: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
     labelClass: PropTypes.string,
     required: PropTypes.bool,
-    showDescriptionPlaceHolder: PropTypes.bool
+    showDescriptionPlaceHolder: PropTypes.bool,
+    customDescription: PropTypes.string
 };
 
 LabeledField.defaultProps = {
@@ -85,7 +114,8 @@ LabeledField.defaultProps = {
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
-    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
+    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT,
+    customDescription: null
 };
 
 export default LabeledField;

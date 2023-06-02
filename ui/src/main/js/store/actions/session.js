@@ -125,7 +125,6 @@ export function verifyLogin() {
 
 export function verifySaml() {
     return (dispatch) => {
-
         const ignoreSAML = extractIgnoreSAMLParam();
 
         dispatch(initializing());
@@ -177,7 +176,6 @@ export function login(username, password) {
 }
 
 export function confirmLogout() {
-    console.log('confirming logout');
     return {
         type: SESSION_CONFIRM_LOGOUT
     };
