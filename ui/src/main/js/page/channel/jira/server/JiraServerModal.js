@@ -97,7 +97,6 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
         }
 
         if (pluginStatus === 'ERROR') {
-            console.log('error', error);
             setShowLoader(false);
             setNotificationConfig({
                 title: 'Configure Jira Server Plugin Unsuccessful.',
