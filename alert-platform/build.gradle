@@ -18,10 +18,10 @@ dependencies {
         api 'jakarta.mail:jakarta.mail-api:2.1.1'
         api 'org.eclipse.angus:angus-mail:2.0.1'
 
-        api 'com.synopsys.integration:integration-rest:10.3.8'
+        api 'com.synopsys.integration:integration-rest:10.4.1'
         api 'com.synopsys.integration:integration-common:26.0.6'
-        api 'com.synopsys.integration:blackduck-common:66.1.5'
-        api 'com.synopsys.integration:int-jira-common:4.0.0'
+        api 'com.synopsys.integration:blackduck-common:66.2.2'
+        api 'com.synopsys.integration:int-jira-common:4.0.1'
         api 'com.synopsys.integration:phone-home-client:5.1.10'
 
         api 'com.google.cloud:libraries-bom:2.2.0'
