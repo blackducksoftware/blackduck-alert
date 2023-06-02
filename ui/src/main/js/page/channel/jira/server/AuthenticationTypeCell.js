@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-function getAuthType(event) {
-    switch (event) {
+function getAuthType(type) {
+    switch (type) {
         case 'BASIC':
             return 'Basic';
         case 'PERSONAL_ACCESS_TOKEN':
