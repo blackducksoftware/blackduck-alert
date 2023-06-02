@@ -11,7 +11,10 @@ export const JIRA_SERVER_GLOBAL_FIELD_KEYS = {
     password: 'password',
     isPasswordSet: 'isPasswordSet',
     disablePluginCheck: 'disablePluginCheck',
-    configurePlugin: 'configurePlugin'
+    configurePlugin: 'configurePlugin',
+    authorizationMethod: 'authorizationMethod',
+    accessToken: 'accessToken',
+    isAccessTokenSet: 'isAccessTokenSet'
 };
 
 export const JIRA_SERVER_DISTRIBUTION_FIELD_KEYS = {
