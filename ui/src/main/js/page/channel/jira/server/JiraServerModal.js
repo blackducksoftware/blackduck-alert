@@ -12,6 +12,7 @@ import { clearJiraServerFieldErrors, fetchJiraServer, saveJiraServer,
     sendJiraServerPlugin, testJiraServer, validateJiraServer } from 'store/actions/jira-server';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import { JIRA_SERVER_GLOBAL_FIELD_KEYS } from 'page/channel/jira/server/JiraServerModel';
+import RadioInput from 'common/component/input/RadioInput';
 
 const useStyles = createUseStyles({
     descriptorContainer: {
@@ -25,11 +26,21 @@ const useStyles = createUseStyles({
     }
 });
 
+const radioOptions = [{
+    name: 'Basic',
+    value: 'BASIC',
+    label: 'Basic'
+}, {
+    name: 'Personal Access Token',
+    value: 'PERSONAL_ACCESS_TOKEN',
+    label: 'Personal Access Token'
+}];
+
 const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, successMessage, readonly }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { copyDescription, submitText, title, type } = modalOptions;
-    const [jiraServerModel, setJiraServerModel] = useState(type === 'CREATE' ? {} : data);
+    const [jiraServerModel, setJiraServerModel] = useState(type === 'CREATE' ? { authorizationMethod: 'BASIC' } : data);
     const [showLoader, setShowLoader] = useState(false);
     const [requestType, setRequestType] = useState();
     const [notificationConfig, setNotificationConfig] = useState();
@@ -171,11 +182,12 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                 </div>
             )}
             <div>
+                
                 <TextInput
                     id={JIRA_SERVER_GLOBAL_FIELD_KEYS.name}
                     name={JIRA_SERVER_GLOBAL_FIELD_KEYS.name}
                     label="Name"
-                    customDescription="The unique name for the Jira Server server."
+                    customDescription="The unique name for the Jira server."
                     required
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleTestChange(jiraServerModel, setJiraServerModel)}
@@ -187,7 +199,7 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                     id={JIRA_SERVER_GLOBAL_FIELD_KEYS.url}
                     name={JIRA_SERVER_GLOBAL_FIELD_KEYS.url}
                     label="URL"
-                    customDescription="The URL of the Jira Server server."
+                    customDescription="The URL of the Jira server."
                     required
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleTestChange(jiraServerModel, setJiraServerModel)}
@@ -195,31 +207,64 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                     errorName={JIRA_SERVER_GLOBAL_FIELD_KEYS.url}
                     errorValue={error.fieldErrors.url}
                 />
-                <TextInput
-                    id={JIRA_SERVER_GLOBAL_FIELD_KEYS.username}
-                    name={JIRA_SERVER_GLOBAL_FIELD_KEYS.username}
-                    label="User Name"
-                    customDescription="The username of the Jira Server user. Note: Unless 'Disable Plugin Check' is checked, this user must be a Jira admin."
-                    required
+                <RadioInput
+                    id={JIRA_SERVER_GLOBAL_FIELD_KEYS.authorizationMethod}
+                    name={JIRA_SERVER_GLOBAL_FIELD_KEYS.authorizationMethod}
+                    label="Authentication Method"
+                    customDescription="Select the type of authentication that you would like to use for connecting to the intended Jira Server."
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleTestChange(jiraServerModel, setJiraServerModel)}
-                    value={jiraServerModel[JIRA_SERVER_GLOBAL_FIELD_KEYS.username] || undefined}
-                    errorName={JIRA_SERVER_GLOBAL_FIELD_KEYS.username}
-                    errorValue={error.fieldErrors.userName}
-                />
-                <PasswordInput
-                    id={JIRA_SERVER_GLOBAL_FIELD_KEYS.password}
-                    name={JIRA_SERVER_GLOBAL_FIELD_KEYS.password}
-                    label="Password"
-                    customDescription="The password of the specified Jira Server user."
+                    radioOptions={radioOptions}
+                    checked={jiraServerModel.authorizationMethod}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_GLOBAL_FIELD_KEYS.authorizationMethod)}
+                    errorValue={error.fieldErrors[JIRA_SERVER_GLOBAL_FIELD_KEYS.authorizationMethod]}
                     required
-                    readOnly={readonly}
-                    onChange={FieldModelUtilities.handleTestChange(jiraServerModel, setJiraServerModel)}
-                    value={jiraServerModel[JIRA_SERVER_GLOBAL_FIELD_KEYS.password] || undefined}
-                    isSet={jiraServerModel[JIRA_SERVER_GLOBAL_FIELD_KEYS.isPasswordSet]}
-                    errorName={JIRA_SERVER_GLOBAL_FIELD_KEYS.password}
-                    errorValue={error.fieldErrors.password}
+                    isInModal
                 />
+                { jiraServerModel.authorizationMethod === 'BASIC' ? (
+                    <>
+                        <TextInput
+                            id={JIRA_SERVER_GLOBAL_FIELD_KEYS.username}
+                            name={JIRA_SERVER_GLOBAL_FIELD_KEYS.username}
+                            label="User Name"
+                            customDescription="The username of the Jira Server user. Note: Unless 'Disable Plugin Check' is checked, this user must be a Jira admin."
+                            required
+                            readOnly={readonly}
+                            onChange={FieldModelUtilities.handleTestChange(jiraServerModel, setJiraServerModel)}
+                            value={jiraServerModel[JIRA_SERVER_GLOBAL_FIELD_KEYS.username] || undefined}
+                            errorName={JIRA_SERVER_GLOBAL_FIELD_KEYS.username}
+                            errorValue={error.fieldErrors.userName}
+                        />
+                        <PasswordInput
+                            id={JIRA_SERVER_GLOBAL_FIELD_KEYS.password}
+                            name={JIRA_SERVER_GLOBAL_FIELD_KEYS.password}
+                            label="Password"
+                            customDescription="The password of the specified Jira Server user."
+                            required
+                            readOnly={readonly}
+                            onChange={FieldModelUtilities.handleTestChange(jiraServerModel, setJiraServerModel)}
+                            value={jiraServerModel[JIRA_SERVER_GLOBAL_FIELD_KEYS.password] || undefined}
+                            isSet={jiraServerModel[JIRA_SERVER_GLOBAL_FIELD_KEYS.isPasswordSet]}
+                            errorName={JIRA_SERVER_GLOBAL_FIELD_KEYS.password}
+                            errorValue={error.fieldErrors.password}
+                        />
+                    </>
+                ) : (
+                    <PasswordInput
+                        id={JIRA_SERVER_GLOBAL_FIELD_KEYS.accessToken}
+                        name={JIRA_SERVER_GLOBAL_FIELD_KEYS.accessToken}
+                        label="Access Token"
+                        customDescription="The Jira Server's access token used for authentication."
+                        required
+                        readOnly={readonly}
+                        onChange={FieldModelUtilities.handleTestChange(jiraServerModel, setJiraServerModel)}
+                        value={jiraServerModel[JIRA_SERVER_GLOBAL_FIELD_KEYS.accessToken] || undefined}
+                        isSet={jiraServerModel[JIRA_SERVER_GLOBAL_FIELD_KEYS.isAccessTokenSet]}
+                        errorName={JIRA_SERVER_GLOBAL_FIELD_KEYS.accessToken}
+                        errorValue={error.fieldErrors.accessToken}
+                    />
+                )}
+                
                 <CheckboxInput
                     id={JIRA_SERVER_GLOBAL_FIELD_KEYS.disablePluginCheck}
                     name={JIRA_SERVER_GLOBAL_FIELD_KEYS.disablePluginCheck}

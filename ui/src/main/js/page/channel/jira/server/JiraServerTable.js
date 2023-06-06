@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Table from 'common/component/table/Table';
+import AuthenticationTypeCell from 'page/channel/jira/server/AuthenticationTypeCell';
 import JiraServerEditCell from 'page/channel/jira/server/JiraServerEditCell';
 import JiraServerTableActions from 'page/channel/jira/server/JiraServerTableActions';
 import JiraServerCopyCell from 'page/channel/jira/server/JiraServerCopyCell';
@@ -15,6 +16,11 @@ const COLUMNS = [{
     key: 'url',
     label: 'Url',
     sortable: true
+}, {
+    key: 'authorizationMethod',
+    label: 'Authentication Type',
+    sortable: true,
+    customCell: AuthenticationTypeCell
 }, {
     key: 'createdAt',
     label: 'Created At',
