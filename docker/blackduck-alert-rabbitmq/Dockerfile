@@ -2,9 +2,11 @@ FROM blackducksoftware/hub-docker-common:1.0.7 as docker-common
 FROM rabbitmq:3.11-alpine
 
 ARG VERSION
+ARG COMMITHASH
 
 LABEL com.blackducksoftware.integration.alert.vendor="Black Duck Software, Inc." \
-      com.blackducksoftware.integration.alert.version="$VERSION"
+      com.blackducksoftware.integration.alert.version="$VERSION" \
+      com.blackducksoftware.integration.alert.commitHash="$COMMITHASH"
 
 ENV BLACKDUCK_HOME="/opt/blackduck"
 ENV APPLICATION_NAME="rabbitmq"
