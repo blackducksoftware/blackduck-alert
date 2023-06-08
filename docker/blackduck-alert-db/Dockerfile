@@ -19,6 +19,7 @@ LABEL com.blackducksoftware.integration.alert.vendor="Black Duck Software, Inc."
       com.blackducksoftware.integration.alert.version="$VERSION" \
       com.blackducksoftware.integration.alert.commitHash="$COMMITHASH"
 
+RUN apk update
 RUN set -ex \
     && mkdir -p -m 775 /var/lib/pgsql \
     && apk add --no-cache --virtual .run-deps gettext

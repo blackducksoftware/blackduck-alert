@@ -22,6 +22,7 @@ ENV SECURITY_DIR $ALERT_HOME/security
 ENV DEFAULT_BLACKDUCK_ALERT_OPTS -Djava.security.properties=${SECURITY_DIR}/java.security
 ENV APPLICATION_NAME blackduck-alert
 
+RUN apk update
 RUN set -ex \
     && mkdir -p -m 775 $ALERT_CONFIG_HOME $ALERT_TAR_HOME $ALERT_DATA_DIR $CERTIFICATE_MANAGER_DIR \
     && mkdir -p -m 777 $SECURITY_DIR \

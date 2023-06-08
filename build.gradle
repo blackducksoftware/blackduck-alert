@@ -30,7 +30,7 @@ ext {
     moduleName = 'com.synopsys.integration.alert.main'
 
     // This version is also in src/test/resources/spring-test.properties for the test jdbc connection
-    postgresContainerVersionMigration = '12.11'
+    postgresContainerVersionMigration = '14.5'
     postgresContainerVersionCurrent = '14.7'
 
     // Docker Variables
