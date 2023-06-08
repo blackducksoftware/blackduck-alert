@@ -15,9 +15,9 @@ ENV RABBITMQ_HOME="/etc/rabbitmq"
 ENV SECURITY_DIR $APPLICATION_HOME/security
 ENV CERTIFICATE_MANAGER_DIR $APPLICATION_HOME/bin
 
-RUN apk update
 RUN set -ex \
     && mkdir -p -m 775 "$APPLICATION_HOME/bin" "$APPLICATION_HOME/security" "$APPLICATION_HOME/logs" \
+    && apk update \
     && apk add --no-cache --virtual .run-deps \
            curl \
            jq \
