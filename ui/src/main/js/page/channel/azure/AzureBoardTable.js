@@ -5,6 +5,9 @@ import Table from 'common/component/table/Table';
 import AzureBoardTableActions from 'page/channel/azure/AzureBoardTableActions';
 import AzureEditCell from 'page/channel/azure/AzureEditCell';
 import AzureCopyCell from 'page/channel/azure/AzureCopyCell';
+import AzureBoardModal from 'page/channel/azure/AzureBoardModal';
+import StatusMessage from 'common/component/StatusMessage';
+import { useLocation } from 'react-router-dom';
 import { fetchAzure } from 'store/actions/azure';
 
 const COLUMNS = [{
@@ -41,7 +44,8 @@ const emptyTableConfig = {
     message: 'There are no records to display for this table.  Please create an Azure Board connection to use this table.'
 };
 
-const AzureBoardTable = ({ readonly, allowDelete, location }) => {
+const AzureBoardTable = ({ readonly, allowDelete }) => {
+    const location = useLocation();
     const dispatch = useDispatch();
     const { data } = useSelector((state) => state.azure);
     const refreshStatus = JSON.parse(window.localStorage.getItem('AZURE_BOARD_REFRESH_STATUS'));
@@ -68,7 +72,7 @@ const AzureBoardTable = ({ readonly, allowDelete, location }) => {
 
         // split the url to determine if edit is present
         const parsedUrlArray = location.pathname.split('/');
-
+        console.log('parsedUrlArray', parsedUrlArray);
         if (parsedUrlArray.includes('edit')) {
             // obtain the id of the azure board that OAuth just authenticated
             const modalDataID = parsedUrlArray.slice(-1)[0];
