@@ -15,7 +15,7 @@ const DescriptorRoute = ({
             <Route
                 exact
                 key={urlName}
-                path={path}
+                path={[path, `${path}/*`]}
             >
                 {render(readonly, hasTest, hasSave, hasDelete)}
             </Route>

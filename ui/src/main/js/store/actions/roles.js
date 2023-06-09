@@ -249,7 +249,7 @@ export function deleteRole(roleId) {
     };
 }
 
-export function deleteRoleList(roleIds) {
+export function bulkDeleteRoles(roleIds) {
     return (dispatch, getState) => {
         dispatch(deletingRoleList());
         const { csrfToken } = getState().session;
@@ -260,10 +260,9 @@ export function deleteRoleList(roleIds) {
         const request = ConfigRequestBuilder.createMultiDeleteRequest(ConfigRequestBuilder.ROLE_API_URL, csrfToken, roleIds);
         request.then(() => {
             dispatch(deletedRoleList());
-        })
-            .catch((error) => {
-                dispatch(deletingRoleListErrorMessage(error.message));
-            });
+        }).catch((error) => {
+            dispatch(deletingRoleListErrorMessage(error.message));
+        });
     };
 }
 

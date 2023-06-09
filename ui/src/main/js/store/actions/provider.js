@@ -246,7 +246,9 @@ export function bulkDeleteProviders(providerIdArray) {
         const { csrfToken } = getState().session;
 
         Promise.all(providerIdArray.map((provider) => { // eslint-disable-line
-            return ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, provider.id);
+            if (provider.staged) {
+                return ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, provider.id);
+            }
         })).catch((error) => {
             dispatch(bulkDeleteProvidersError(error));
             console.error; // eslint-disable-line
