@@ -72,7 +72,7 @@ const AzureBoardTable = ({ readonly, allowDelete }) => {
 
         // split the url to determine if edit is present
         const parsedUrlArray = location.pathname.split('/');
-        console.log('parsedUrlArray', parsedUrlArray);
+
         if (parsedUrlArray.includes('edit')) {
             // obtain the id of the azure board that OAuth just authenticated
             const modalDataID = parsedUrlArray.slice(-1)[0];
