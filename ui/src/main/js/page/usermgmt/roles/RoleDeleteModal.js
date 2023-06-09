@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createUseStyles } from 'react-jss';
 import PropTypes from 'prop-types';
-import { deleteRoleList, fetchRoles } from 'store/actions/roles';
+import { bulkDeleteRoles, fetchRoles } from 'store/actions/roles';
 import Modal from 'common/component/modal/Modal';
 import Card from 'common/component/Card';
 
@@ -50,8 +50,7 @@ const RoleDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, set
 
             return null;
         });
-
-        dispatch(deleteRoleList(selectedDeleteIds));
+        dispatch(bulkDeleteRoles(selectedDeleteIds));
     }
 
     useEffect(() => {
