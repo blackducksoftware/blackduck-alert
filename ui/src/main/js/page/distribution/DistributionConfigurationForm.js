@@ -5,8 +5,8 @@ import SelectInput from 'common/component/input/DynamicSelectInput';
 import {
     DISTRIBUTION_CHANNEL_OPTIONS,
     DISTRIBUTION_COMMON_FIELD_KEYS,
+    DISTRIBUTION_CONFIGURATION_INFO,
     DISTRIBUTION_FREQUENCY_OPTIONS,
-    DISTRIBUTION_INFO,
     DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS,
     DISTRIBUTION_PROCESSING_DESCRIPTIONS,
     DISTRIBUTION_PROCESSING_TYPES,
@@ -343,8 +343,8 @@ const DistributionConfigurationForm = ({
     return (
         <>
             <PageHeader
-                title={DISTRIBUTION_INFO.label}
-                description={DISTRIBUTION_INFO.description}
+                title={DISTRIBUTION_CONFIGURATION_INFO.label}
+                description={DISTRIBUTION_CONFIGURATION_INFO.description}
                 icon={['fas', 'tasks']}
             />
             <CommonDistributionConfigurationForm
@@ -364,14 +364,6 @@ const DistributionConfigurationForm = ({
                 createDataToTest={createTestData}
                 errorHandler={errorHandler}
             >
-                {/*
-                    Enabled [x]
-                    Name [x]
-                    Provider [ ]
-                    Provider Config [ ]
-                    Channel [ ]
-                    Channel Config [ ]
-                 */}
                 <CheckboxInput
                     id={DISTRIBUTION_COMMON_FIELD_KEYS.enabled}
                     name={DISTRIBUTION_COMMON_FIELD_KEYS.enabled}
