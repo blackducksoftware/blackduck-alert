@@ -61,21 +61,24 @@ const provider = (state = initialState, action) => {
                 fetching: true,
                 data: [],
                 error: HTTPErrorUtils.createErrorObject(action),
-                fieldErrors: action.errors || {}
+                fieldErrors: action.errors || {},
+                deleteStatus: ''
             };
         case PROVIDER_GET_FAIL:
             return {
                 ...state,
                 fetching: false,
                 error: HTTPErrorUtils.createErrorObject(action),
-                fieldErrors: action.errors || {}
+                fieldErrors: action.errors || {},
+                deleteStatus: ''
             };
         case PROVIDER_GET_SUCCESS:
             return {
                 ...state,
                 fetching: false,
                 data: action.data,
-                fieldErrors: action.errors || {}
+                fieldErrors: action.errors || {},
+                deleteStatus: ''
             };
         case PROVIDER_POST_REQUEST:
             return {
