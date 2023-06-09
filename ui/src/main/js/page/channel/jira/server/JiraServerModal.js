@@ -8,8 +8,7 @@ import CheckboxInput from 'common/component/input/CheckboxInput';
 import PasswordInput from 'common/component/input/PasswordInput';
 import TextInput from 'common/component/input/TextInput';
 import ButtonField from 'common/component/input/field/ButtonField';
-import { clearJiraServerFieldErrors, fetchJiraServer, saveJiraServer,
-    sendJiraServerPlugin, testJiraServer, validateJiraServer } from 'store/actions/jira-server';
+import { clearJiraServerFieldErrors, fetchJiraServer, installJiraServerPlugin, saveJiraServer, testJiraServer, validateJiraServer } from 'store/actions/jira-server';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import { JIRA_SERVER_GLOBAL_FIELD_KEYS } from 'page/channel/jira/server/JiraServerModel';
 import RadioInput from 'common/component/input/RadioInput';
@@ -45,10 +44,9 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
     const [requestType, setRequestType] = useState();
     const [notificationConfig, setNotificationConfig] = useState();
     const [showNotification, setShowNotification] = useState(false);
-    const [installPluginClick, setInstallPluginClick] = useState(false);
     const [buttonMessage, setButtonMessage] = useState('');
     const [buttonSuccess, setButtonSuccess] = useState(false);
-    const { pluginStatus, saveStatus, testStatus, oAuthLink, error } = useSelector((state) => state.jiraServer);
+    const { pluginStatus, saveStatus, testStatus, error } = useSelector((state) => state.jiraServer);
 
     function handleClose() {
         toggleModal(false);
@@ -72,28 +70,27 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
         dispatch(testJiraServer(jiraServerModel));
     }
 
-    function handleOAuth() {
-        dispatch(sendJiraServerPlugin(jiraServerModel));
+    function handleInstallJiraServerPlugin() {
+        dispatch(installJiraServerPlugin(jiraServerModel));
     }
 
     const installPlugin = () => {
         setButtonSuccess(false);
-        setInstallPluginClick(true);
-        handleSubmit('save');
+        handleSubmit('installPlugin');
     };
 
     useEffect(() => {
-        setInstallPluginClick(false);
         if (pluginStatus === 'FETCHING') {
             setShowLoader(true);
         }
 
         if (pluginStatus === 'SUCCESS') {
-            handleClose();
-            setStatusMessage({
-                message: successMessage,
+            setShowLoader(false);
+            setNotificationConfig({
+                title: 'Jira Server Plugin Install Successful.',
                 type: 'success'
             });
+            setShowNotification(true);
         }
 
         if (pluginStatus === 'ERROR') {
@@ -105,19 +102,19 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
             });
             setShowNotification(true);
         }
-    }, [pluginStatus, oAuthLink]);
+    }, [pluginStatus]);
 
     useEffect(() => {
         if (saveStatus === 'VALIDATING' || saveStatus === 'SAVING' || testStatus === 'TESTING') {
             setShowLoader(true);
         }
 
+        if (saveStatus === 'VALIDATED' && requestType === 'installPlugin') {
+            handleInstallJiraServerPlugin();
+        }
+
         if (saveStatus === 'VALIDATED' && requestType === 'save') {
-            if (installPluginClick) {
-                handleOAuth();
-            } else {
-                handleSave();
-            }
+            handleSave();
         }
 
         if (saveStatus === 'VALIDATED' && requestType === 'test') {
@@ -173,7 +170,7 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
             notification={notificationConfig}
             showNotification={showNotification}
         >
-            { type === 'COPY' && (
+            {type === 'COPY' && (
                 <div className={classes.descriptorContainer}>
                     <FontAwesomeIcon icon="exclamation-circle" size="2x" />
                     <span className={classes.descriptor}>
@@ -182,7 +179,7 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                 </div>
             )}
             <div>
-                
+
                 <TextInput
                     id={JIRA_SERVER_GLOBAL_FIELD_KEYS.name}
                     name={JIRA_SERVER_GLOBAL_FIELD_KEYS.name}
@@ -221,7 +218,7 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                     required
                     isInModal
                 />
-                { jiraServerModel.authorizationMethod === 'BASIC' ? (
+                {jiraServerModel.authorizationMethod === 'BASIC' ? (
                     <>
                         <TextInput
                             id={JIRA_SERVER_GLOBAL_FIELD_KEYS.username}
@@ -264,7 +261,7 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                         errorValue={error.fieldErrors.accessToken}
                     />
                 )}
-                
+
                 <CheckboxInput
                     id={JIRA_SERVER_GLOBAL_FIELD_KEYS.disablePluginCheck}
                     name={JIRA_SERVER_GLOBAL_FIELD_KEYS.disablePluginCheck}

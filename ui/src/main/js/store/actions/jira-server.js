@@ -1,23 +1,23 @@
 import {
-    JIRA_SERVER_GET_REQUEST,
-    JIRA_SERVER_GET_SUCCESS,
-    JIRA_SERVER_GET_FAIL,
-    JIRA_SERVER_VALIDATE_REQUEST,
-    JIRA_SERVER_VALIDATE_SUCCESS,
-    JIRA_SERVER_VALIDATE_FAIL,
-    JIRA_SERVER_SAVE_REQUEST,
-    JIRA_SERVER_SAVE_SUCCESS,
-    JIRA_SERVER_SAVE_FAIL,
+    JIRA_SERVER_CLEAR_FIELD_ERRORS,
+    JIRA_SERVER_DELETE_FAIL,
     JIRA_SERVER_DELETE_REQUEST,
     JIRA_SERVER_DELETE_SUCCESS,
-    JIRA_SERVER_DELETE_FAIL,
-    JIRA_SERVER_TEST_REQUEST,
-    JIRA_SERVER_TEST_SUCCESS,
-    JIRA_SERVER_TEST_FAIL,
+    JIRA_SERVER_GET_FAIL,
+    JIRA_SERVER_GET_REQUEST,
+    JIRA_SERVER_GET_SUCCESS,
+    JIRA_SERVER_PLUGIN_FAIL,
     JIRA_SERVER_PLUGIN_REQUEST,
     JIRA_SERVER_PLUGIN_SUCCESS,
-    JIRA_SERVER_PLUGIN_FAIL,
-    JIRA_SERVER_CLEAR_FIELD_ERRORS
+    JIRA_SERVER_SAVE_FAIL,
+    JIRA_SERVER_SAVE_REQUEST,
+    JIRA_SERVER_SAVE_SUCCESS,
+    JIRA_SERVER_TEST_FAIL,
+    JIRA_SERVER_TEST_REQUEST,
+    JIRA_SERVER_TEST_SUCCESS,
+    JIRA_SERVER_VALIDATE_FAIL,
+    JIRA_SERVER_VALIDATE_REQUEST,
+    JIRA_SERVER_VALIDATE_SUCCESS
 } from 'store/actions/types';
 import * as ConfigRequestBuilder from 'common/util/configurationRequestBuilder';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
@@ -300,7 +300,7 @@ export function testJiraServer(jiraServerModel) {
     };
 }
 
-export function sendJiraServerPlugin(jiraServerModel) {
+export function installJiraServerPlugin(jiraServerModel) {
     return (dispatch, getState) => {
         dispatch(sendJiraServerPluginRequest());
         const { csrfToken } = getState().session;
