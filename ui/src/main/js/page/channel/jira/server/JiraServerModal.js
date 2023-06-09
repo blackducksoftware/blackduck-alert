@@ -87,7 +87,7 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
         if (pluginStatus === 'SUCCESS') {
             setShowLoader(false);
             setNotificationConfig({
-                title: 'Jira Server Plugin Successful.',
+                title: 'Jira Server Plugin Install Successful.',
                 type: 'success'
             });
             setShowNotification(true);
