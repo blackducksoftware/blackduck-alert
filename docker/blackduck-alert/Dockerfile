@@ -25,6 +25,7 @@ ENV APPLICATION_NAME blackduck-alert
 RUN set -ex \
     && mkdir -p -m 775 $ALERT_CONFIG_HOME $ALERT_TAR_HOME $ALERT_DATA_DIR $CERTIFICATE_MANAGER_DIR \
     && mkdir -p -m 777 $SECURITY_DIR \
+    && apk update \
     && apk add --no-cache --virtual .blackduck-alert-run-deps \
            openjdk17 \
            curl \

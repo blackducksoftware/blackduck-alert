@@ -21,6 +21,7 @@ LABEL com.blackducksoftware.integration.alert.vendor="Black Duck Software, Inc."
 
 RUN set -ex \
     && mkdir -p -m 775 /var/lib/pgsql \
+    && apk update \
     && apk add --no-cache --virtual .run-deps gettext
 
 COPY alertdb-*.sh /usr/local/bin/

@@ -17,6 +17,7 @@ ENV CERTIFICATE_MANAGER_DIR $APPLICATION_HOME/bin
 
 RUN set -ex \
     && mkdir -p -m 775 "$APPLICATION_HOME/bin" "$APPLICATION_HOME/security" "$APPLICATION_HOME/logs" \
+    && apk update \
     && apk add --no-cache --virtual .run-deps \
            curl \
            jq \

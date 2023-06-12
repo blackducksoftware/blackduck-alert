@@ -88,8 +88,8 @@ function _validate_migration_viability() {
     exit 0
   fi
 
-  if [[ ! "${pgVersionFileValue}" =~ ^(12|13)$ ]]; then
-    _checkStatus 1 "Invalid Postgres data version. Migration is only supported from Postgres-12 and Postgres-13"
+  if [[ ! "${pgVersionFileValue}" =~ ^(14)$ ]]; then
+    _checkStatus 1 "Invalid Postgres data version. Migration is only supported from Postgres-14"
   fi
 
   _logIt "Image is running PG version ${environmentPostgresVersion} and data is from PG version ${pgVersionFileValue}. PG migration needs to run."
