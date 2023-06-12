@@ -34,7 +34,7 @@ dependencies {
         api 'org.mockito:mockito-core:5.2.0'
 
         api 'org.javassist:javassist:3.29.2-GA'
-        api 'org.springdoc:springdoc-openapi-ui:1.7.0'
+        api 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4'
 
         api "org.opensaml:opensaml-core:4.1.1"
         api "org.opensaml:opensaml-saml-api:4.1.1"

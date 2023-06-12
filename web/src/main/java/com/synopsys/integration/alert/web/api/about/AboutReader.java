@@ -93,7 +93,6 @@ public class AboutReader {
     private String createSwaggerUrl(String swaggerPath) {
         UriComponentsBuilder serverUrlBuilder = alertWebServerUrlManager.getServerComponentsBuilder();
         serverUrlBuilder.pathSegment(swaggerPath);
-        serverUrlBuilder.path("/");
         return serverUrlBuilder.toUriString();
     }
 

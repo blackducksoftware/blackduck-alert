@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.web.documentation;
 
-import org.springdoc.core.GroupedOpenApi;
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -28,11 +28,8 @@ public class SwaggerConfiguration {
         return GroupedOpenApi.builder()
             .packagesToScan("com.synopsys.integration.alert")
             .pathsToMatch("/api/**")
-            .producesToMatch("application/json")
-            .consumesToMatch("application/json")
             .group("production")
             .build();
-
     }
 
     @Bean

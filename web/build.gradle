@@ -29,7 +29,7 @@ dependencies {
     implementation 'org.springframework.data:spring-data-commons'
 
     // Documentation
-    implementation 'org.springdoc:springdoc-openapi-ui'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui'
 
     testImplementation project(':test-common')
     testImplementation 'com.synopsys.integration:blackduck-common'
