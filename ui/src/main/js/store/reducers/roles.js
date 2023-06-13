@@ -20,9 +20,7 @@ import {
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 
 const initialState = {
-    inProgress: false,
     fetching: false,
-    deleteSuccess: false,
     data: [],
     roleError: null,
     error: HTTPErrorUtils.createEmptyErrorObject(),

@@ -6,9 +6,9 @@ import {
     CERTIFICATES_DELETE_ERROR,
     CERTIFICATES_DELETED,
     CERTIFICATES_DELETING,
-    CERTIFICATES_FETCH_ERROR_ALL,
-    CERTIFICATES_FETCHED_ALL,
-    CERTIFICATES_FETCHING_ALL,
+    CERTIFICATES_GET_FAIL,
+    CERTIFICATES_GET_REQUEST,
+    CERTIFICATES_GET_SUCCESS,
     CERTIFICATES_SAVE_ERROR,
     CERTIFICATES_SAVED,
     CERTIFICATES_SAVING
@@ -23,20 +23,20 @@ const CERTIFICATES_VALIDATION_API_URL = `${CERTIFICATES_API_URL}/validate`;
 
 function fetchingAllCertificates() {
     return {
-        type: CERTIFICATES_FETCHING_ALL
+        type: CERTIFICATES_GET_REQUEST
     };
 }
 
 function fetchedAllCertificates(certificates) {
     return {
-        type: CERTIFICATES_FETCHED_ALL,
+        type: CERTIFICATES_GET_SUCCESS,
         certificates
     };
 }
 
 function fetchingAllCertificatesError(message) {
     return {
-        type: CERTIFICATES_FETCH_ERROR_ALL,
+        type: CERTIFICATES_GET_FAIL,
         message
     };
 }
