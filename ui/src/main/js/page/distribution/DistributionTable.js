@@ -8,7 +8,7 @@ import ChannelCell from 'page/distribution/ChannelCell';
 import ProviderCell from 'page/distribution/ProviderCell';
 import FrequencyCell from 'page/distribution/FrequencyCell';
 import ProviderEnabledCell from 'page/provider/ProviderEnabledCell';
-import { fetchDistibution } from 'store/actions/distribution';
+import { fetchDistribution } from 'store/actions/distribution';
 
 const COLUMNS = [{
     key: 'jobName',
@@ -79,14 +79,14 @@ const DistributionTable = ({ readonly }) => {
     });
 
     useEffect(() => {
-        dispatch(fetchDistibution(paramsConfig));
+        dispatch(fetchDistribution(paramsConfig));
     }, [paramsConfig]);
 
     useEffect(() => {
         localStorage.setItem('DISTRIBUTION_REFRESH_STATUS', JSON.stringify(autoRefresh));
 
         if (autoRefresh) {
-            const refreshIntervalId = setInterval(() => dispatch(fetchDistibution()), 30000);
+            const refreshIntervalId = setInterval(() => dispatch(fetchDistribution()), 30000);
             return function clearRefreshInterval() {
                 clearInterval(refreshIntervalId);
             };
@@ -96,11 +96,13 @@ const DistributionTable = ({ readonly }) => {
     }, [autoRefresh]);
 
     const handleSearchChange = (e) => {
-        setParamsConfig({ ...paramsConfig,
+        setParamsConfig({
+            ...paramsConfig,
             mutatorData: {
                 ...paramsConfig.mutatorData,
                 searchTerm: e.target.value
-            } });
+            }
+        });
     };
 
     function handleToggle() {
@@ -115,31 +117,37 @@ const DistributionTable = ({ readonly }) => {
         const { sortName, sortOrder } = paramsConfig.mutatorData;
         if (name !== sortName) {
             setSortConfig({ name, direction: 'ASC' });
-            return setParamsConfig({ ...paramsConfig,
+            return setParamsConfig({
+                ...paramsConfig,
                 mutatorData: {
                     ...paramsConfig.mutatorData,
                     sortName: name,
                     sortOrder: 'asc'
-                } });
+                }
+            });
         }
 
         if (name === sortName && sortOrder !== 'desc') {
             setSortConfig({ name, direction: 'DESC' });
-            return setParamsConfig({ ...paramsConfig,
+            return setParamsConfig({
+                ...paramsConfig,
                 mutatorData: {
                     ...paramsConfig.mutatorData,
                     sortName: name,
                     sortOrder: 'desc'
-                } });
+                }
+            });
         }
 
         setSortConfig();
-        return setParamsConfig({ ...paramsConfig,
+        return setParamsConfig({
+            ...paramsConfig,
             mutatorData: {
                 ...paramsConfig.mutatorData,
                 sortName: '',
                 sortOrder: ''
-            } });
+            }
+        });
     };
 
     const onSelected = (selectedRow) => {
