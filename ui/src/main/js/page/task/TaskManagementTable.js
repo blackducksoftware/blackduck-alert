@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import Table from 'common/component/table/Table';
 import ViewTaskCell from 'page/task/ViewTaskCell';
 import { fetchTasks } from 'store/actions/tasks';
-import { fetchUsers } from 'store/actions/users';
 
 const COLUMNS = [{
     key: 'type',
@@ -41,7 +40,7 @@ const TaskManagementTable = () => {
         localStorage.setItem('TASK_MANAGEMENT_REFRESH_STATUS', JSON.stringify(autoRefresh));
 
         if (autoRefresh) {
-            const refreshIntervalId = setInterval(() => dispatch(fetchUsers()), 30000);
+            const refreshIntervalId = setInterval(() => dispatch(fetchTasks()), 30000);
             return function clearRefreshInterval() {
                 clearInterval(refreshIntervalId);
             };
