@@ -2,14 +2,14 @@ import {
     SERIALIZE,
     USER_MANAGEMENT_ROLE_CLEAR_FIELD_ERRORS,
     USER_MANAGEMENT_ROLE_DELETE_ERROR,
-    USER_MANAGEMENT_ROLE_DELETED,
-    USER_MANAGEMENT_ROLE_DELETING,
     USER_MANAGEMENT_ROLE_DELETE_LIST_ERROR,
+    USER_MANAGEMENT_ROLE_DELETED,
     USER_MANAGEMENT_ROLE_DELETED_LIST,
+    USER_MANAGEMENT_ROLE_DELETING,
     USER_MANAGEMENT_ROLE_DELETING_LIST,
-    USER_MANAGEMENT_ROLE_FETCH_ERROR_ALL,
-    USER_MANAGEMENT_ROLE_FETCHED_ALL,
-    USER_MANAGEMENT_ROLE_FETCHING_ALL,
+    USER_MANAGEMENT_ROLE_GET_FAIL,
+    USER_MANAGEMENT_ROLE_GET_REQUEST,
+    USER_MANAGEMENT_ROLE_GET_SUCCESS,
     USER_MANAGEMENT_ROLE_SAVE_ERROR,
     USER_MANAGEMENT_ROLE_SAVED,
     USER_MANAGEMENT_ROLE_SAVING,
@@ -86,32 +86,22 @@ const roles = (state = initialState, action) => {
                 saveStatus: '',
                 deleteStatus: 'PROCESSING'
             };
-        case USER_MANAGEMENT_ROLE_FETCH_ERROR_ALL:
+        case USER_MANAGEMENT_ROLE_GET_FAIL:
             return {
                 ...state,
-                inProgress: false,
-                deleteSuccess: false,
                 error: HTTPErrorUtils.createErrorObject(action),
-                fetching: false,
-                saveStatus: ''
+                fetching: false
             };
-        case USER_MANAGEMENT_ROLE_FETCHED_ALL:
+        case USER_MANAGEMENT_ROLE_GET_SUCCESS:
             return {
                 ...state,
-                inProgress: false,
-                deleteSuccess: false,
                 data: action.data,
-                fetching: false,
-                saveStatus: ''
+                fetching: false
             };
-        case USER_MANAGEMENT_ROLE_FETCHING_ALL:
+        case USER_MANAGEMENT_ROLE_GET_REQUEST:
             return {
                 ...state,
-                inProgress: false,
-                deleteSuccess: false,
-                data: [],
-                fetching: true,
-                saveStatus: ''
+                fetching: true
             };
         case USER_MANAGEMENT_ROLE_SAVE_ERROR:
             return {

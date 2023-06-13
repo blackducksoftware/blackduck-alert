@@ -1,15 +1,15 @@
 import {
     SERIALIZE,
-    USER_MANAGEMENT_USER_CLEAR_FIELD_ERRORS,
+    USER_MANAGEMENT_GET_FAIL,
+    USER_MANAGEMENT_GET_REQUEST,
+    USER_MANAGEMENT_GET_SUCCESS,
+    USER_MANAGEMENT_USER_BULK_DELETE_FAIL,
     USER_MANAGEMENT_USER_BULK_DELETE_FETCH,
     USER_MANAGEMENT_USER_BULK_DELETE_SUCCESS,
-    USER_MANAGEMENT_USER_BULK_DELETE_FAIL,
+    USER_MANAGEMENT_USER_CLEAR_FIELD_ERRORS,
     USER_MANAGEMENT_USER_DELETE_ERROR,
     USER_MANAGEMENT_USER_DELETED,
     USER_MANAGEMENT_USER_DELETING,
-    USER_MANAGEMENT_GET_REQUEST,
-    USER_MANAGEMENT_GET_SUCCESS,
-    USER_MANAGEMENT_GET_FAIL,
     USER_MANAGEMENT_USER_SAVE_ERROR,
     USER_MANAGEMENT_USER_SAVED,
     USER_MANAGEMENT_USER_SAVING,
@@ -94,12 +94,11 @@ const users = (state = initialState, action) => {
             return {
                 ...state,
                 data: action.data,
-                fetching: false,
+                fetching: false
             };
         case USER_MANAGEMENT_GET_FAIL:
             return {
                 ...state,
-                userFetchError: action.userFetchError,
                 error: HTTPErrorUtils.createErrorObject(action),
                 fetching: false
             };
