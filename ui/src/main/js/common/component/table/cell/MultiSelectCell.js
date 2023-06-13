@@ -16,9 +16,9 @@ const useStyles = createUseStyles({
 
 const MultiSelectCell = ({ selected, onSelected, data, disableSelectOptions }) => {
     const classes = useStyles();
-    // fieldName added for distribution tables
-    const { id, fieldName } = data;
-    const identifier = id || fieldName;
+    // jobId added for distribution tables
+    const { id, jobId } = data;
+    const identifier = id || jobId;
     const isSelected = useMemo(() => selected.includes(identifier), [selected, data]);
     const isDisabled = disableSelectOptions?.disabledItems.includes(data[disableSelectOptions.key]);
 
@@ -49,7 +49,7 @@ MultiSelectCell.propTypes = {
     onSelected: PropTypes.func,
     data: PropTypes.shape({
         id: PropTypes.string,
-        fieldName: PropTypes.string
+        jobId: PropTypes.string
     }),
     disableSelectOptions: PropTypes.shape({
         key: PropTypes.string,
