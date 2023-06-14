@@ -6,9 +6,9 @@ import {
     USER_MANAGEMENT_USER_DELETE_ERROR,
     USER_MANAGEMENT_USER_DELETED,
     USER_MANAGEMENT_USER_DELETING,
-    USER_MANAGEMENT_USER_FETCH_ERROR_ALL,
-    USER_MANAGEMENT_USER_FETCHED_ALL,
-    USER_MANAGEMENT_USER_FETCHING_ALL,
+    USER_MANAGEMENT_GET_REQUEST,
+    USER_MANAGEMENT_GET_SUCCESS,
+    USER_MANAGEMENT_GET_FAIL,
     USER_MANAGEMENT_USER_SAVE_ERROR,
     USER_MANAGEMENT_USER_SAVED,
     USER_MANAGEMENT_USER_SAVING,
@@ -23,20 +23,20 @@ import HeaderUtilities from 'common/util/HeaderUtilities';
 
 function fetchUsersRequest() {
     return {
-        type: USER_MANAGEMENT_USER_FETCHING_ALL
+        type: USER_MANAGEMENT_GET_REQUEST
     };
 }
 
 function fetchUsersSuccess(users) {
     return {
-        type: USER_MANAGEMENT_USER_FETCHED_ALL,
+        type: USER_MANAGEMENT_GET_SUCCESS,
         data: users
     };
 }
 
 function fetchUsersFail(message) {
     return {
-        type: USER_MANAGEMENT_USER_FETCH_ERROR_ALL,
+        type: USER_MANAGEMENT_GET_FAIL,
         message
     };
 }
