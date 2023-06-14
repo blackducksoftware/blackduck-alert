@@ -9,7 +9,7 @@ const RefreshFailureCell = ({ data, settings }) => {
     const dispatch = useDispatch();
     const [statusMessage, setStatusMessage] = useState();
     const { error, hasError, refreshNotificationSuccess, refreshJobSuccess } = useSelector((state) => state.audit);
-    useEffect(() => {s
+    useEffect(() => {
         if (hasError) {
             setStatusMessage({
                 message: `${error.status}: ${error.statusText}`,
@@ -45,7 +45,7 @@ const RefreshFailureCell = ({ data, settings }) => {
 
     return (
         <>
-            { statusMessage && (
+            {statusMessage && (
                 <StatusMessage
                     actionMessage={statusMessage.type === 'success' ? statusMessage.message : null}
                     errorMessage={statusMessage.type === 'error' ? statusMessage.message : null}
