@@ -8,7 +8,7 @@ import Card from 'common/component/Card';
 
 const useStyles = createUseStyles({
     deleteConfirmMessage: {
-        margin: [0, 0, '20px', '30px'],
+        margin: [0, '20px', '20px', '30px'],
         fontSize: '16px',
         fontWeight: 'bold'
     },
