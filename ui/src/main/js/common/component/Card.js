@@ -25,7 +25,8 @@ const useStyles = createUseStyles((theme) => ({
     },
     cardInfo: {
         flexGrow: 1,
-        padding: ['5px', 0, 0, '15px']
+        padding: ['5px', 0, 0, '15px'],
+        overflow: 'auto'
     }
 }));
 
