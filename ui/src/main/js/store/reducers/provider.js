@@ -59,7 +59,6 @@ const provider = (state = initialState, action) => {
             return {
                 ...state,
                 fetching: true,
-                data: [],
                 error: HTTPErrorUtils.createErrorObject(action),
                 fieldErrors: action.errors || {},
                 deleteStatus: ''

@@ -24,8 +24,8 @@ const MultiSelectHeaderCell = ({ tableData, onSelected, selected, disableSelectO
     const ids = useMemo(() => tableData?.filter((row) => (
         !disableSelectOptions?.disabledItems.includes(row[disableSelectOptions.key])
     )).map((item) => (
-        // fieldName added for distribution tables
-        item.id || item.fieldName
+        // jobId added for distribution tables
+        item.id || item.jobId
     )), [tableData]);
 
     useEffect(() => {

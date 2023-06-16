@@ -11,6 +11,11 @@ export const DISTRIBUTION_INFO = {
     description: 'Create jobs from the channels Alert provides. Double click the row to edit that job.'
 };
 
+export const DISTRIBUTION_CONFIGURATION_INFO = {
+    label: 'Distribution Configuration',
+    description: 'Configure the Distribution Job for Alert to send updates.'
+};
+
 export const DISTRIBUTION_COMMON_FIELD_KEYS = {
     // Fields in the channel portion of the field model
     enabled: 'channel.common.enabled',

@@ -1,10 +1,10 @@
 import {
-    DISTRIBUTION_GET_REQUEST,
-    DISTRIBUTION_GET_SUCCESS,
-    DISTRIBUTION_GET_FAIL,
+    DISTRIBUTION_DELETE_FAIL,
     DISTRIBUTION_DELETE_REQUEST,
     DISTRIBUTION_DELETE_SUCCESS,
-    DISTRIBUTION_DELETE_FAIL
+    DISTRIBUTION_GET_FAIL,
+    DISTRIBUTION_GET_REQUEST,
+    DISTRIBUTION_GET_SUCCESS
 } from 'store/actions/types';
 import * as ConfigRequestBuilder from 'common/util/configurationRequestBuilder';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
@@ -49,7 +49,7 @@ function deleteDistributionError(errors) {
     };
 }
 
-export function fetchDistibution(requestParams) {
+export function fetchDistribution(requestParams) {
     return (dispatch, getState) => {
         dispatch(fetchDistributionRequest());
         const { csrfToken } = getState().session;

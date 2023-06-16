@@ -5,6 +5,9 @@ import Table from 'common/component/table/Table';
 import AzureBoardTableActions from 'page/channel/azure/AzureBoardTableActions';
 import AzureEditCell from 'page/channel/azure/AzureEditCell';
 import AzureCopyCell from 'page/channel/azure/AzureCopyCell';
+import AzureBoardModal from 'page/channel/azure/AzureBoardModal';
+import StatusMessage from 'common/component/StatusMessage';
+import { useLocation } from 'react-router-dom';
 import { fetchAzure } from 'store/actions/azure';
 
 const COLUMNS = [{
@@ -41,7 +44,8 @@ const emptyTableConfig = {
     message: 'There are no records to display for this table.  Please create an Azure Board connection to use this table.'
 };
 
-const AzureBoardTale = ({ readonly, allowDelete }) => {
+const AzureBoardTable = ({ readonly, allowDelete }) => {
+    const location = useLocation();
     const dispatch = useDispatch();
     const { data } = useSelector((state) => state.azure);
     const refreshStatus = JSON.parse(window.localStorage.getItem('AZURE_BOARD_REFRESH_STATUS'));
@@ -57,6 +61,30 @@ const AzureBoardTale = ({ readonly, allowDelete }) => {
             sortOrder: data?.mutatorData?.direction
         }
     });
+    const [showModal, setShowModal] = useState(false);
+    const [statusMessage, setStatusMessage] = useState();
+    const [modalData, setModalData] = useState();
+
+    useEffect(() => {
+        // If a user authenticates via OAuth, OAuth will redirect us back to Alert with a url path similar to the following: 
+        // `alert/channels/azure_boards/edit/{id}`.  If an ID is present as well as the string 'edit', we can assert that 
+        // the modal should reopen with the data relevant to that ID.
+
+        // split the url to determine if edit is present
+        const parsedUrlArray = location.pathname.split('/');
+
+        if (parsedUrlArray.includes('edit')) {
+            // obtain the id of the azure board that OAuth just authenticated
+            const modalDataID = parsedUrlArray.slice(-1)[0];
+            // filter the table data and set the data for the modal to the one that matches the id from the line above
+            data.models.forEach(model => {
+                if (model.id === modalDataID) {
+                    setModalData(model);
+                    setShowModal(true);
+                }
+            })
+        }
+    }, [location, data]);
 
     useEffect(() => {
         dispatch(fetchAzure(paramsConfig));
@@ -127,29 +155,52 @@ const AzureBoardTale = ({ readonly, allowDelete }) => {
     };
 
     return (
-        <Table
-            tableData={data?.models}
-            columns={COLUMNS}
-            multiSelect
-            searchBarPlaceholder="Search Azure Boards..."
-            handleSearchChange={handleSearchChange}
-            active={autoRefresh}
-            onToggle={handleToggle}
-            onSort={onSort}
-            sortConfig={sortConfig}
-            selected={selected}
-            onSelected={onSelected}
-            onPage={handlePagination}
-            data={data}
-            emptyTableConfig={emptyTableConfig}
-            tableActions={() => <AzureBoardTableActions data={data} readonly={readonly} allowDelete={allowDelete} selected={selected} setSelected={setSelected} />}
-        />
+        <>
+            <Table
+                tableData={data?.models}
+                columns={COLUMNS}
+                multiSelect
+                searchBarPlaceholder="Search Azure Boards..."
+                handleSearchChange={handleSearchChange}
+                active={autoRefresh}
+                onToggle={handleToggle}
+                onSort={onSort}
+                sortConfig={sortConfig}
+                selected={selected}
+                onSelected={onSelected}
+                onPage={handlePagination}
+                data={data}
+                emptyTableConfig={emptyTableConfig}
+                tableActions={() => <AzureBoardTableActions data={data} readonly={readonly} allowDelete={allowDelete} selected={selected} setSelected={setSelected} />}
+            />
+            {statusMessage && (
+                <StatusMessage
+                    actionMessage={statusMessage.type === 'success' ? statusMessage.message : null}
+                    errorMessage={statusMessage.type === 'error' ? statusMessage.message : null}
+                />
+            )}
+
+            {showModal && (
+                <AzureBoardModal
+                    data={modalData}
+                    isOpen={showModal}
+                    toggleModal={setShowModal}
+                    modalOptions={{
+                        type: 'EDIT',
+                        title: 'Edit Azure Board',
+                        submitText: 'Save',
+                        openedAfterOAuthHandshake: true
+                    }}
+                    setStatusMessage={setStatusMessage}
+                    statusMessage="Successfully edited 1 Azure Board."
+                />
+            )}
+        </>
     );
 };
 
-AzureBoardTale.propTypes = {
+AzureBoardTable.propTypes = {
     readonly: PropTypes.bool,
     allowDelete: PropTypes.bool
 };
-
-export default AzureBoardTale;
+export default AzureBoardTable;
