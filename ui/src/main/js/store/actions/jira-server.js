@@ -137,9 +137,11 @@ function sendJiraServerPluginSuccess(message) {
     };
 }
 
-function sendJiraServerPluginError() {
+function sendJiraServerPluginError(message, errors) {
     return {
-        type: JIRA_SERVER_PLUGIN_FAIL
+        type: JIRA_SERVER_PLUGIN_FAIL,
+        message,
+        errors
     };
 }
 
@@ -314,7 +316,7 @@ export function installJiraServerPlugin(jiraServerModel) {
                     if (response.ok) {
                         dispatch(sendJiraServerPluginSuccess(responseData.message));
                     } else {
-                        const defaultHandler = () => sendJiraServerPluginError(responseData);
+                        const defaultHandler = () => sendJiraServerPluginError(responseData.message, responseData.error);
                         errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
                         errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
                         const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);

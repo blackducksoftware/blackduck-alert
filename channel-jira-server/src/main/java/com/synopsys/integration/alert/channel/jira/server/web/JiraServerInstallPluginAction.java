@@ -125,8 +125,8 @@ public class JiraServerInstallPluginAction {
 
     private ActionResponse<ValidationResponseModel> createBadRequestIntegrationException(IntegrationException error) {
         logger.error("There was an issue connecting to Jira server", error);
-        ValidationResponseModel validationResponseModel = ValidationResponseModel.generalError(
-            "The following error occurred when connecting to Jira server: " + error.getMessage());
-        return new ActionResponse<>(HttpStatus.BAD_REQUEST, validationResponseModel);
+        String validationErrorMessage = String.format("The following error occurred when connecting to Jira server: %s", error.getMessage());
+        ValidationResponseModel validationResponseModel = ValidationResponseModel.generalError(validationErrorMessage);
+        return new ActionResponse<>(HttpStatus.BAD_REQUEST, validationErrorMessage, validationResponseModel);
     }
 }
