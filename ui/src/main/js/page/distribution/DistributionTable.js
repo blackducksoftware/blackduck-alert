@@ -15,17 +15,17 @@ const COLUMNS = [{
     label: 'Name',
     sortable: true
 }, {
-    key: 'channelName',
+    key: 'channel',
     label: 'Channel',
     sortable: true,
     customCell: ChannelCell
 }, {
     key: 'provider',
     label: 'Provider',
-    sortable: true,
+    sortable: false,
     customCell: ProviderCell
 }, {
-    key: 'frequencyType',
+    key: 'frequency',
     label: 'Frequency',
     sortable: true,
     customCell: FrequencyCell
@@ -73,7 +73,7 @@ const DistributionTable = ({ readonly }) => {
         pageSize: data?.pageSize,
         mutatorData: {
             searchTerm: data?.mutatorData?.searchTerm,
-            sortName: data?.mutatorData?.name,
+            sortBy: data?.mutatorData?.name,
             sortOrder: data?.mutatorData?.direction
         }
     });
@@ -114,26 +114,26 @@ const DistributionTable = ({ readonly }) => {
     }
 
     const onSort = (name) => {
-        const { sortName, sortOrder } = paramsConfig.mutatorData;
-        if (name !== sortName) {
+        const { sortBy, sortOrder } = paramsConfig.mutatorData;
+        if (name !== sortBy) {
             setSortConfig({ name, direction: 'ASC' });
             return setParamsConfig({
                 ...paramsConfig,
                 mutatorData: {
                     ...paramsConfig.mutatorData,
-                    sortName: name,
+                    sortBy: name,
                     sortOrder: 'asc'
                 }
             });
         }
 
-        if (name === sortName && sortOrder !== 'desc') {
+        if (name === sortBy && sortOrder !== 'desc') {
             setSortConfig({ name, direction: 'DESC' });
             return setParamsConfig({
                 ...paramsConfig,
                 mutatorData: {
                     ...paramsConfig.mutatorData,
-                    sortName: name,
+                    sortBy: name,
                     sortOrder: 'desc'
                 }
             });
@@ -144,7 +144,7 @@ const DistributionTable = ({ readonly }) => {
             ...paramsConfig,
             mutatorData: {
                 ...paramsConfig.mutatorData,
-                sortName: '',
+                sortBy: '',
                 sortOrder: ''
             }
         });
