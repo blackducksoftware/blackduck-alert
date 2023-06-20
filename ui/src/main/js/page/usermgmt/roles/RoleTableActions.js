@@ -4,6 +4,8 @@ import RoleDeleteModal from 'page/usermgmt/roles/RoleDeleteModal';
 import RoleModal from 'page/usermgmt/roles/RoleModal';
 import StatusMessage from 'common/component/StatusMessage';
 import Button from 'common/component/button/Button';
+import { fetchRoles } from 'store/actions/roles';
+import { useDispatch } from 'react-redux';
 
 const CREATE_MODAL_OPTIONS = {
     type: 'CREATE',
@@ -12,6 +14,8 @@ const CREATE_MODAL_OPTIONS = {
 };
 
 const RoleTableActions = ({ canCreate, canDelete, data, selected, setSelected }) => {
+    const dispatch = useDispatch();
+    const [refreshDisabled, setRefreshDisabled] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
@@ -24,9 +28,15 @@ const RoleTableActions = ({ canCreate, canDelete, data, selected, setSelected })
         setShowDeleteModal(true);
     }
 
+    function handleRefresh() {
+        setRefreshDisabled(true);
+        setTimeout(() => setRefreshDisabled(false), 1000);
+        dispatch(fetchRoles());
+    }
+
     return (
         <>
-            { statusMessage && (
+            {statusMessage && (
                 <StatusMessage
                     actionMessage={statusMessage.type === 'success' ? statusMessage.message : null}
                     errorMessage={statusMessage.type === 'error' ? statusMessage.message : null}
@@ -37,7 +47,7 @@ const RoleTableActions = ({ canCreate, canDelete, data, selected, setSelected })
                 <Button onClick={handleCreateRole} type="button" icon="plus" text="Create Role" />
             )}
 
-            { canDelete && (
+            {canDelete && (
                 <Button
                     onClick={handleDeleteRole}
                     isDisabled={selected.length === 0}
@@ -48,7 +58,9 @@ const RoleTableActions = ({ canCreate, canDelete, data, selected, setSelected })
                 />
             )}
 
-            { showCreateModal && (
+            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={refreshDisabled} />
+
+            {showCreateModal && (
                 <RoleModal
                     isOpen={showCreateModal}
                     toggleModal={setShowCreateModal}
@@ -56,7 +68,7 @@ const RoleTableActions = ({ canCreate, canDelete, data, selected, setSelected })
                     setStatusMessage={setStatusMessage}
                     statusMessage="Successfully created 1 role."
                 />
-            ) }
+            )}
 
             { showDeleteModal && (
                 <RoleDeleteModal

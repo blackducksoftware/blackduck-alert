@@ -8,6 +8,7 @@ import ProviderCell from 'page/audit/ProviderCell';
 import RefreshFailureCell from 'page/audit/RefreshFailureCell';
 import ViewFailureCell from 'page/audit/ViewFailureCell';
 import { fetchAuditData } from 'store/actions/audit';
+import Button from 'common/component/button/Button';
 
 const emptyTableConfig = {
     message: 'There are no records to display for this table.'
@@ -15,6 +16,7 @@ const emptyTableConfig = {
 
 const AuditFailureTable = () => {
     const dispatch = useDispatch();
+    const [refreshDisabled, setRefreshDisabled] = useState(false);
     const { data } = useSelector((state) => state.audit);
     const refreshStatus = JSON.parse(window.localStorage.getItem('AUDIT_FAILURE_REFRESH_STATUS') || true);
     const [autoRefresh, setAutoRefresh] = useState(refreshStatus);
@@ -62,6 +64,12 @@ const AuditFailureTable = () => {
 
     function handlePagination(page) {
         setParamsConfig({ ...paramsConfig, pageNumber: page });
+    }
+
+    function handleRefresh() {
+        setRefreshDisabled(true);
+        setTimeout(() => setRefreshDisabled(false), 1000);
+        dispatch(fetchAuditData(paramsConfig));
     }
 
     const onSort = (name) => {
@@ -157,6 +165,7 @@ const AuditFailureTable = () => {
             onPage={handlePagination}
             data={data}
             emptyTableConfig={emptyTableConfig}
+            tableActions={() => <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={refreshDisabled} />}
         />
     );
 };
