@@ -34,7 +34,7 @@ public class JiraServerConfigurationEntity extends BaseEntity {
     @Column(name = "url")
     private String url;
     @Column(name = "authorization_method")
-    private JiraServerAuthorizationMethod jiraServerAuthorizationMethod;
+    private JiraServerAuthorizationMethod authorizationMethod;
     @Column(name = "username")
     private String username;
     @Column(name = "password")
@@ -48,7 +48,7 @@ public class JiraServerConfigurationEntity extends BaseEntity {
     }
 
     public JiraServerConfigurationEntity(
-        UUID configurationId, String name, OffsetDateTime createdAt, OffsetDateTime lastUpdated, String url, JiraServerAuthorizationMethod jiraServerAuthorizationMethod,
+        UUID configurationId, String name, OffsetDateTime createdAt, OffsetDateTime lastUpdated, String url, JiraServerAuthorizationMethod authorizationMethod,
         String username, String password, String accessToken, Boolean disablePluginCheck
     ) {
         this.configurationId = configurationId;
@@ -56,7 +56,7 @@ public class JiraServerConfigurationEntity extends BaseEntity {
         this.createdAt = createdAt;
         this.lastUpdated = lastUpdated;
         this.url = url;
-        this.jiraServerAuthorizationMethod = jiraServerAuthorizationMethod;
+        this.authorizationMethod = authorizationMethod;
         this.username = username;
         this.password = password;
         this.accessToken = accessToken;
@@ -83,8 +83,8 @@ public class JiraServerConfigurationEntity extends BaseEntity {
         return url;
     }
 
-    public JiraServerAuthorizationMethod getJiraServerAuthorizationMethod() {
-        return jiraServerAuthorizationMethod;
+    public JiraServerAuthorizationMethod getAuthorizationMethod() {
+        return authorizationMethod;
     }
 
     public String getUsername() {
