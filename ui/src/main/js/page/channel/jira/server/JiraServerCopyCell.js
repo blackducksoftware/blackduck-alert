@@ -7,7 +7,6 @@ import JiraServerModal from 'page/channel/jira/server/JiraServerModal';
 const JiraServerCopyCell = ({ data }) => {
     const [showModal, setShowModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
-    const [selectedData, setSelectedData] = useState(data);
 
     const modalOptions = {
         type: 'COPY',
@@ -17,15 +16,7 @@ const JiraServerCopyCell = ({ data }) => {
     };
 
     function handleClick() {
-        setStatusMessage();
         setShowModal(true);
-        setSelectedData((slectedRow) => ({
-            ...slectedRow,
-            id: null,
-            name: '',
-            password: '',
-            isPasswordSet: false
-        }));
     }
 
     return (
@@ -41,7 +32,7 @@ const JiraServerCopyCell = ({ data }) => {
 
             { showModal && (
                 <JiraServerModal
-                    data={selectedData}
+                    data={data}
                     isOpen={showModal}
                     toggleModal={setShowModal}
                     modalOptions={modalOptions}
