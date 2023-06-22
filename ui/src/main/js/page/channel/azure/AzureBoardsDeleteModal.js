@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { useDispatch, useSelector } from 'react-redux';
 import Modal from 'common/component/modal/Modal';
-import { deleteAzureBoards, fetchAzure } from 'store/actions/azure';
+import { deleteAzureBoards, fetchAzureBoards } from 'store/actions/azure-boards';
 import Card from 'common/component/Card';
 
 const useStyles = createUseStyles({
@@ -26,16 +26,16 @@ function getStagedForDelete(data, selected) {
     return staged.map((board) => ({ ...board, staged: true }));
 }
 
-const AzureBoardDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, setStatusMessage }) => {
+const AzureBoardsDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, setStatusMessage }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const { deleteStatus, error } = useSelector((state) => state.azure);
+    const { deleteStatus, error } = useSelector((state) => state.azureBoards);
     const [selectedAzureBoards, setSelectedAzureBoards] = useState(getStagedForDelete(data, selected));
     const [showLoader, setShowLoader] = useState(false);
     const isMultiDelete = selectedAzureBoards.length > 1;
 
     function handleClose() {
-        dispatch(fetchAzure());
+        dispatch(fetchAzureBoards());
         toggleModal(false);
     }
 
@@ -118,7 +118,7 @@ const AzureBoardDeleteModal = ({ isOpen, toggleModal, data, selected, setSelecte
     );
 };
 
-AzureBoardDeleteModal.propTypes = {
+AzureBoardsDeleteModal.propTypes = {
     data: PropTypes.object,
     isOpen: PropTypes.bool,
     toggleModal: PropTypes.func,
@@ -127,4 +127,4 @@ AzureBoardDeleteModal.propTypes = {
     setSelected: PropTypes.func
 };
 
-export default AzureBoardDeleteModal;
+export default AzureBoardsDeleteModal;

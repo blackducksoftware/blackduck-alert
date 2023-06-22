@@ -1,123 +1,123 @@
 import {
-    AZURE_GET_REQUEST,
-    AZURE_GET_SUCCESS,
-    AZURE_GET_FAIL,
-    AZURE_VALIDATE_REQUEST,
-    AZURE_VALIDATE_SUCCESS,
-    AZURE_VALIDATE_FAIL,
-    AZURE_SAVE_REQUEST,
-    AZURE_SAVE_SUCCESS,
-    AZURE_SAVE_FAIL,
-    AZURE_DELETE_REQUEST,
-    AZURE_DELETE_SUCCESS,
-    AZURE_DELETE_FAIL,
-    AZURE_TEST_REQUEST,
-    AZURE_TEST_SUCCESS,
-    AZURE_TEST_FAIL,
-    AZURE_OAUTH_REQUEST,
-    AZURE_OAUTH_SUCCESS,
-    AZURE_OAUTH_FAIL,
-    AZURE_CLEAR_FIELD_ERRORS
+    AZURE_BOARDS_CLEAR_FIELD_ERRORS,
+    AZURE_BOARDS_DELETE_FAIL,
+    AZURE_BOARDS_DELETE_REQUEST,
+    AZURE_BOARDS_DELETE_SUCCESS,
+    AZURE_BOARDS_GET_FAIL,
+    AZURE_BOARDS_GET_REQUEST,
+    AZURE_BOARDS_GET_SUCCESS,
+    AZURE_BOARDS_OAUTH_FAIL,
+    AZURE_BOARDS_OAUTH_REQUEST,
+    AZURE_BOARDS_OAUTH_SUCCESS,
+    AZURE_BOARDS_SAVE_FAIL,
+    AZURE_BOARDS_SAVE_REQUEST,
+    AZURE_BOARDS_SAVE_SUCCESS,
+    AZURE_BOARDS_TEST_FAIL,
+    AZURE_BOARDS_TEST_REQUEST,
+    AZURE_BOARDS_TEST_SUCCESS,
+    AZURE_BOARDS_VALIDATE_FAIL,
+    AZURE_BOARDS_VALIDATE_REQUEST,
+    AZURE_BOARDS_VALIDATE_SUCCESS
 } from 'store/actions/types';
 import * as ConfigRequestBuilder from 'common/util/configurationRequestBuilder';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import { unauthorized } from 'store/actions/session';
 
-function fetchAzureRequest() {
+function fetchAzureBoardsRequest() {
     return {
-        type: AZURE_GET_REQUEST
+        type: AZURE_BOARDS_GET_REQUEST
     };
 }
 
-function fetchAzureSuccess(azure) {
+function fetchAzureBoardsSuccess(azureBoards) {
     return {
-        type: AZURE_GET_SUCCESS,
-        data: azure
+        type: AZURE_BOARDS_GET_SUCCESS,
+        data: azureBoards
     };
 }
 
-function fetchAzureFail(error) {
+function fetchAzureBoardsFail(error) {
     return {
-        type: AZURE_GET_FAIL,
+        type: AZURE_BOARDS_GET_FAIL,
         error
     };
 }
 
-function validateAzureRequest() {
+function validateAzureBoardsRequest() {
     return {
-        type: AZURE_VALIDATE_REQUEST
+        type: AZURE_BOARDS_VALIDATE_REQUEST
     };
 }
 
-function validateAzureSuccess() {
+function validateAzureBoardsSuccess() {
     return {
-        type: AZURE_VALIDATE_SUCCESS
+        type: AZURE_BOARDS_VALIDATE_SUCCESS
     };
 }
 
-function validateAzureFail(message, errors) {
+function validateAzureBoardsFail(message, errors) {
     return {
-        type: AZURE_VALIDATE_FAIL,
+        type: AZURE_BOARDS_VALIDATE_FAIL,
         message,
         errors
     };
 }
 
-function saveAzureRequest() {
+function saveAzureBoardsRequest() {
     return {
-        type: AZURE_SAVE_REQUEST
+        type: AZURE_BOARDS_SAVE_REQUEST
     };
 }
 
-function saveAzureSuccess() {
+function saveAzureBoardsSuccess() {
     return {
-        type: AZURE_SAVE_SUCCESS
+        type: AZURE_BOARDS_SAVE_SUCCESS
     };
 }
 
-function saveAzureFail({ message, errors }) {
+function saveAzureBoardsFail({ message, errors }) {
     return {
-        type: AZURE_SAVE_FAIL,
+        type: AZURE_BOARDS_SAVE_FAIL,
         message,
         errors
 
     };
 }
 
-function deleteAzureRequest() {
+function deleteAzureBoardsRequest() {
     return {
-        type: AZURE_DELETE_REQUEST
+        type: AZURE_BOARDS_DELETE_REQUEST
     };
 }
 
-function deleteAzureSuccess() {
+function deleteAzureBoardsSuccess() {
     return {
-        type: AZURE_DELETE_SUCCESS
+        type: AZURE_BOARDS_DELETE_SUCCESS
     };
 }
 
-function deleteAzureError(errors) {
+function deleteAzureBoardsError(errors) {
     return {
-        type: AZURE_DELETE_FAIL,
+        type: AZURE_BOARDS_DELETE_FAIL,
         errors
     };
 }
 
-function testAzureRequest() {
+function testAzureBoardsRequest() {
     return {
-        type: AZURE_TEST_REQUEST
+        type: AZURE_BOARDS_TEST_REQUEST
     };
 }
 
-function testAzureSuccess() {
+function testAzureBoardsSuccess() {
     return {
-        type: AZURE_TEST_SUCCESS
+        type: AZURE_BOARDS_TEST_SUCCESS
     };
 }
 
-function testAzureFail(message, errors) {
+function testAzureBoardsFail(message, errors) {
     return {
-        type: AZURE_TEST_FAIL,
+        type: AZURE_BOARDS_TEST_FAIL,
         message,
         errors
     };
@@ -125,26 +125,26 @@ function testAzureFail(message, errors) {
 
 function sendOAuthRequest() {
     return {
-        type: AZURE_OAUTH_REQUEST
+        type: AZURE_BOARDS_OAUTH_REQUEST
     };
 }
 
 function sendOAuthSuccess(oAuthLink) {
     return {
-        type: AZURE_OAUTH_SUCCESS,
+        type: AZURE_BOARDS_OAUTH_SUCCESS,
         oAuthLink
     };
 }
 
 function sendOAuthError() {
     return {
-        type: AZURE_OAUTH_FAIL
+        type: AZURE_BOARDS_OAUTH_FAIL
     };
 }
 
 function clearFieldErrors() {
     return {
-        type: AZURE_CLEAR_FIELD_ERRORS
+        type: AZURE_BOARDS_CLEAR_FIELD_ERRORS
     };
 }
 
@@ -155,13 +155,13 @@ function handleValidationError(dispatch, errorHandlers, responseStatus, defaultH
     dispatch(handler(responseStatus));
 }
 
-export function fetchAzure(requestParams) {
+export function fetchAzureBoards(requestParams) {
     return (dispatch, getState) => {
-        dispatch(fetchAzureRequest());
+        dispatch(fetchAzureBoardsRequest());
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchAzureFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchAzureBoardsFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
 
         let request;
         if (requestParams) {
@@ -175,7 +175,7 @@ export function fetchAzure(requestParams) {
             response.json()
                 .then((responseData) => {
                     if (response.ok) {
-                        dispatch(fetchAzureSuccess(responseData));
+                        dispatch(fetchAzureBoardsSuccess(responseData));
                     } else {
                         errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
                             let message = '';
@@ -183,7 +183,7 @@ export function fetchAzure(requestParams) {
                                 // This is here to ensure the message is a string. We have gotten UI errors because it is somehow an object sometimes
                                 message = responseData.message.toString();
                             }
-                            return fetchAzureFail(message);
+                            return fetchAzureBoardsFail(message);
                         }));
                         const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
                         dispatch(handler(response.status));
@@ -191,58 +191,58 @@ export function fetchAzure(requestParams) {
                 });
         }).catch((error) => {
             console.log(error);
-            dispatch(fetchAzureFail(error));
+            dispatch(fetchAzureBoardsFail(error));
         });
     };
 }
 
-export function validateAzure(azureModel) {
+export function validateAzureBoards(azureBoardsModel) {
     return (dispatch, getState) => {
-        dispatch(validateAzureRequest());
+        dispatch(validateAzureBoardsRequest());
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => validateAzureFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
-        const validateRequest = ConfigRequestBuilder.createValidateRequest(ConfigRequestBuilder.AZURE_BOARDS_API_URL, csrfToken, azureModel);
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => validateAzureBoardsFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
+        const validateRequest = ConfigRequestBuilder.createValidateRequest(ConfigRequestBuilder.AZURE_BOARDS_API_URL, csrfToken, azureBoardsModel);
         validateRequest.then((response) => {
             if (response.ok) {
                 response.json()
                     .then((validationResponse) => {
                         // FIXME figure out the best way to handle warning statuses
                         if (!Object.keys(validationResponse.errors).length) {
-                            dispatch(validateAzureSuccess());
+                            dispatch(validateAzureBoardsSuccess());
                         } else {
-                            handleValidationError(dispatch, errorHandlers, response.status, () => validateAzureFail(validationResponse.message, validationResponse.errors));
+                            handleValidationError(dispatch, errorHandlers, response.status, () => validateAzureBoardsFail(validationResponse.message, validationResponse.errors));
                         }
                     });
             } else {
-                handleValidationError(dispatch, errorHandlers, response.status, () => validateAzureFail(response.message, HTTPErrorUtils.createEmptyErrorObject()));
+                handleValidationError(dispatch, errorHandlers, response.status, () => validateAzureBoardsFail(response.message, HTTPErrorUtils.createEmptyErrorObject()));
             }
         }).catch(console.error);
     };
 }
 
-export function saveAzureBoard(azureBoard) {
+export function saveAzureBoards(azureBoards) {
     return (dispatch, getState) => {
-        dispatch(saveAzureRequest());
-        const { id } = azureBoard;
+        dispatch(saveAzureBoardsRequest());
+        const { id } = azureBoards;
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveAzureFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveAzureBoardsFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         let saveRequest;
         if (id) {
-            saveRequest = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.AZURE_BOARDS_API_URL, csrfToken, id, azureBoard);
+            saveRequest = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.AZURE_BOARDS_API_URL, csrfToken, id, azureBoards);
         } else {
-            saveRequest = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.AZURE_BOARDS_API_URL, csrfToken, azureBoard);
+            saveRequest = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.AZURE_BOARDS_API_URL, csrfToken, azureBoards);
         }
         saveRequest.then((response) => {
             if (response.ok) {
-                dispatch(saveAzureSuccess());
+                dispatch(saveAzureBoardsSuccess());
             } else {
                 response.json()
                     .then((responseData) => {
-                        const defaultHandler = () => saveAzureFail(responseData);
+                        const defaultHandler = () => saveAzureBoardsFail(responseData);
                         errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
                         errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
                         const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
@@ -255,56 +255,55 @@ export function saveAzureBoard(azureBoard) {
 }
 export function deleteAzureBoards(azureBoards) {
     return (dispatch, getState) => {
-        dispatch(deleteAzureRequest());
+        dispatch(deleteAzureBoardsRequest());
         const { csrfToken } = getState().session;
 
         Promise.all(azureBoards.map((board) => { // eslint-disable-line
             return ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.AZURE_BOARDS_API_URL, csrfToken, board.id);
         })).catch((error) => {
-            dispatch(deleteAzureError(error));
+            dispatch(deleteAzureBoardsError(error));
             console.error; // eslint-disable-line
         }).then((response) => {
             if (response) {
-                dispatch(deleteAzureSuccess());
+                dispatch(deleteAzureBoardsSuccess());
             }
         });
     };
 }
 
-export function testAzureBoard(azureBoard) {
+export function testAzureBoards(azureBoards) {
     return (dispatch, getState) => {
-        dispatch(testAzureRequest());
+        dispatch(testAzureBoardsRequest());
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => testAzureFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION, {})));
-        const testRequest = ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.AZURE_BOARDS_API_URL, csrfToken, azureBoard);
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => testAzureBoardsFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION, {})));
+        const testRequest = ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.AZURE_BOARDS_API_URL, csrfToken, azureBoards);
         testRequest.then((response) => {
             if (response.ok) {
                 response.json()
                     .then((testResponse) => {
                         if (testResponse.hasErrors) {
-                            handleValidationError(dispatch, errorHandlers, response.status, () => testAzureFail(testResponse.message, testResponse.errors));
+                            handleValidationError(dispatch, errorHandlers, response.status, () => testAzureBoardsFail(testResponse.message, testResponse.errors));
                         } else {
-                            dispatch(testAzureSuccess());
+                            dispatch(testAzureBoardsSuccess());
                         }
                     });
             } else {
-                handleValidationError(dispatch, errorHandlers, response.status, () => testAzureFail(response.message, response.errors));
+                handleValidationError(dispatch, errorHandlers, response.status, () => testAzureBoardsFail(response.message, response.errors));
             }
-        })
-            .catch(console.error);
+        }).catch(console.error);
     };
 }
 
-export function sendOAuth(azureBoard) {
+export function sendOAuth(azureBoards) {
     return (dispatch, getState) => {
         dispatch(sendOAuthRequest());
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveAzureFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
-        const oAuthRequest = ConfigRequestBuilder.createNewConfigurationRequest('/alert/api/configuration/azure-boards/oauth/authenticate', csrfToken, azureBoard);
+        errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => saveAzureBoardsFail(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
+        const oAuthRequest = ConfigRequestBuilder.createNewConfigurationRequest('/alert/api/configuration/azure-boards/oauth/authenticate', csrfToken, azureBoards);
         oAuthRequest.then((response) => {
             response.json()
                 .then((responseData) => {
@@ -322,7 +321,7 @@ export function sendOAuth(azureBoard) {
     };
 }
 
-export function clearAzureFieldErrors() {
+export function clearAzureBoardsFieldErrors() {
     return (dispatch) => {
         dispatch(clearFieldErrors());
     };
