@@ -11,7 +11,8 @@ const useStyles = createUseStyles((theme) => ({
         backgroundColor: theme.colors.grey.lighterGrey,
         padding: '8px',
         margin: [0, '50px', '10px', '20px'],
-        width: '250px'
+        width: 'min-content',
+        minWidth: '250px'
     },
     icon: {
         flexBasis: '20%',
@@ -24,7 +25,8 @@ const useStyles = createUseStyles((theme) => ({
     },
     cardInfo: {
         flexGrow: 1,
-        padding: ['5px', 0, 0, '15px']
+        padding: ['5px', 0, 0, '15px'],
+        overflow: 'auto'
     }
 }));
 

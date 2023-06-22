@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { useDispatch } from 'react-redux';
-import { fetchCertificates, deleteCertificate } from 'store/actions/certificates';
+import { deleteCertificate, fetchCertificates } from 'store/actions/certificates';
 import Modal from 'common/component/modal/Modal';
 import Card from 'common/component/Card';
 
 const useStyles = createUseStyles({
     deleteConfirmMessage: {
-        margin: [0, 0, '20px', '30px'],
+        margin: [0, '20px', '20px', '30px'],
         fontSize: '14px',
         fontWeight: 'bold'
     },
