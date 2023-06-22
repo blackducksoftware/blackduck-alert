@@ -35,11 +35,26 @@ const radioOptions = [{
     label: 'Personal Access Token'
 }];
 
+function getInitialData(type, data) {
+    if (type === 'EDIT') {
+        return data;
+    } else if (type === 'COPY') {
+        const { name, url, authorizationMethod } = data;
+        return {
+            name,
+            url,
+            authorizationMethod
+        };
+    } else {
+        return {};
+    }
+}
+
 const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, successMessage, readonly }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { copyDescription, submitText, title, type } = modalOptions;
-    const [jiraServerModel, setJiraServerModel] = useState(type === 'CREATE' ? { authorizationMethod: 'BASIC' } : data);
+    const [jiraServerModel, setJiraServerModel] = useState(type === 'CREATE' ? { authorizationMethod: 'BASIC' } : getInitialData(type, data));
     const [showLoader, setShowLoader] = useState(false);
     const [requestType, setRequestType] = useState();
     const [notificationConfig, setNotificationConfig] = useState();
@@ -62,7 +77,6 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
         setRequestType(submitType);
         setShowNotification(false);
         setNotificationConfig();
-        dispatch(clearJiraServerFieldErrors());
         dispatch(validateJiraServer(jiraServerModel));
     }
 
