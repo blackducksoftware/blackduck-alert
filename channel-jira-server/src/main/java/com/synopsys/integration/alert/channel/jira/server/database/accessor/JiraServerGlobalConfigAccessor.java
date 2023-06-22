@@ -191,7 +191,7 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
             createdAtFormatted,
             lastUpdatedFormatted,
             url,
-            jiraConfiguration.getJiraServerAuthorizationMethod(),
+            jiraConfiguration.getAuthorizationMethod(),
             username,
             password,
             doesPasswordExist,

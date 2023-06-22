@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { useDispatch, useSelector } from 'react-redux';
 import Modal from 'common/component/modal/Modal';
-import { fetchAzure, deleteAzureBoards } from 'store/actions/azure';
+import { deleteAzureBoards, fetchAzure } from 'store/actions/azure';
 import Card from 'common/component/Card';
 
 const useStyles = createUseStyles({
     deleteConfirmMessage: {
-        margin: [0, 0, '20px', '30px'],
+        margin: [0, '20px', '20px', '30px'],
         fontSize: '16px',
         fontWeight: 'bold'
     },
