@@ -4,7 +4,7 @@ import StatusMessage from 'common/component/StatusMessage';
 import JiraServerModal from 'page/channel/jira/server/JiraServerModal';
 import JiraServerDeleteModal from 'page/channel/jira/server/JiraServerDeleteModal';
 import Button from 'common/component/button/Button';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { fetchJiraServer } from 'store/actions/jira-server';
 
 const JiraServerTableActions = ({ data, readonly, allowDelete, selected, setSelected }) => {
@@ -15,7 +15,7 @@ const JiraServerTableActions = ({ data, readonly, allowDelete, selected, setSele
     };
 
     const dispatch = useDispatch();
-    const [refreshDisabled, setRefreshDisabled] = useState(false);
+    const { fetching } = useSelector((state) => state.jiraServer);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
@@ -31,8 +31,6 @@ const JiraServerTableActions = ({ data, readonly, allowDelete, selected, setSele
     }
 
     function handleRefresh() {
-        setRefreshDisabled(true);
-        setTimeout(() => setRefreshDisabled(false), 1000);
         dispatch(fetchJiraServer());
     }
 
@@ -58,7 +56,7 @@ const JiraServerTableActions = ({ data, readonly, allowDelete, selected, setSele
                 />
             )}
 
-            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={refreshDisabled} />
+            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} />
 
             {showCreateModal && (
                 <JiraServerModal

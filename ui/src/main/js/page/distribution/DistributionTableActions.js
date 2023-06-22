@@ -6,12 +6,12 @@ import StatusMessage from 'common/component/StatusMessage';
 import { DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom';
 import { fetchDistribution } from 'store/actions/distribution';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const DistributionTableActions = ({ data, selected, setSelected }) => {
     const dispatch = useDispatch();
-    const [refreshDisabled, setRefreshDisabled] = useState(false);
     const history = useHistory();
+    const { fetching } = useSelector((state) => state.distribution);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
 
@@ -25,8 +25,6 @@ const DistributionTableActions = ({ data, selected, setSelected }) => {
     }
 
     function handleRefresh() {
-        setRefreshDisabled(true);
-        setTimeout(() => setRefreshDisabled(false), 1000);
         dispatch(fetchDistribution());
     }
 
@@ -50,7 +48,7 @@ const DistributionTableActions = ({ data, selected, setSelected }) => {
                 buttonStyle="delete"
             />
 
-            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={refreshDisabled} />
+            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} />
 
             {showDeleteModal && (
                 <DistributionDeleteModal

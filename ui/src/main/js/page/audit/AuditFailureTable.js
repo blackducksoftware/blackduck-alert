@@ -16,8 +16,7 @@ const emptyTableConfig = {
 
 const AuditFailureTable = () => {
     const dispatch = useDispatch();
-    const [refreshDisabled, setRefreshDisabled] = useState(false);
-    const { data } = useSelector((state) => state.audit);
+    const { data, fetching } = useSelector((state) => state.audit);
     const refreshStatus = JSON.parse(window.localStorage.getItem('AUDIT_FAILURE_REFRESH_STATUS') || true);
     const [autoRefresh, setAutoRefresh] = useState(refreshStatus);
     const [sortConfig, setSortConfig] = useState();
@@ -67,8 +66,6 @@ const AuditFailureTable = () => {
     }
 
     function handleRefresh() {
-        setRefreshDisabled(true);
-        setTimeout(() => setRefreshDisabled(false), 1000);
         dispatch(fetchAuditData(paramsConfig));
     }
 
@@ -165,7 +162,7 @@ const AuditFailureTable = () => {
             onPage={handlePagination}
             data={data}
             emptyTableConfig={emptyTableConfig}
-            tableActions={() => <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={refreshDisabled} />}
+            tableActions={() => <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} />}
         />
     );
 };

@@ -5,7 +5,7 @@ import RoleModal from 'page/usermgmt/roles/RoleModal';
 import StatusMessage from 'common/component/StatusMessage';
 import Button from 'common/component/button/Button';
 import { fetchRoles } from 'store/actions/roles';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const CREATE_MODAL_OPTIONS = {
     type: 'CREATE',
@@ -15,7 +15,7 @@ const CREATE_MODAL_OPTIONS = {
 
 const RoleTableActions = ({ canCreate, canDelete, data, selected, setSelected }) => {
     const dispatch = useDispatch();
-    const [refreshDisabled, setRefreshDisabled] = useState(false);
+    const { fetching } = useSelector((state) => state.roles);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
@@ -29,8 +29,6 @@ const RoleTableActions = ({ canCreate, canDelete, data, selected, setSelected })
     }
 
     function handleRefresh() {
-        setRefreshDisabled(true);
-        setTimeout(() => setRefreshDisabled(false), 1000);
         dispatch(fetchRoles());
     }
 
@@ -58,7 +56,7 @@ const RoleTableActions = ({ canCreate, canDelete, data, selected, setSelected })
                 />
             )}
 
-            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={refreshDisabled} />
+            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} />
 
             {showCreateModal && (
                 <RoleModal

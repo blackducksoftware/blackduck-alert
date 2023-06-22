@@ -4,11 +4,11 @@ import CertificateModal from 'page/certificates/CertificateModal';
 import DeleteCertificatesModal from 'page/certificates/DeleteCertificatesModal';
 import Button from 'common/component/button/Button';
 import { fetchCertificates } from 'store/actions/certificates';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const CertificatesTableActions = ({ data, selected, setSelected }) => {
     const dispatch = useDispatch();
-    const [refreshDisabled, setRefreshDisabled] = useState(false);
+    const { fetching } = useSelector((state) => state.certificates);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
@@ -27,8 +27,6 @@ const CertificatesTableActions = ({ data, selected, setSelected }) => {
     }
 
     function handleRefresh() {
-        setRefreshDisabled(true);
-        setTimeout(() => setRefreshDisabled(false), 1000);
         dispatch(fetchCertificates());
     }
 
@@ -36,7 +34,7 @@ const CertificatesTableActions = ({ data, selected, setSelected }) => {
         <>
             <Button onClick={handleCreateCertificateClick} type="button" icon="plus" text="Create Certificate" />
             <Button onClick={handleDeleteCertificateClick} isDisabled={selected.length === 0} icon="trash" text="Delete" buttonStyle="delete" />
-            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={refreshDisabled} />
+            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} />
 
             {showCreateModal && (
                 <CertificateModal

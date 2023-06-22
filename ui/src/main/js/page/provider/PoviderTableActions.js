@@ -5,7 +5,7 @@ import ProviderModal from 'page/provider/ProviderModal';
 import StatusMessage from 'common/component/StatusMessage';
 import Button from 'common/component/button/Button';
 import { fetchProviders } from 'store/actions/provider';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const PoviderTableActions = ({ data, selected, readonly, setSelected }) => {
     const modalOptions = {
@@ -15,7 +15,7 @@ const PoviderTableActions = ({ data, selected, readonly, setSelected }) => {
     };
 
     const dispatch = useDispatch();
-    const [refreshDisabled, setRefreshDisabled] = useState(false);
+    const { fetching } = useSelector((state) => state.provider);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
@@ -31,8 +31,6 @@ const PoviderTableActions = ({ data, selected, readonly, setSelected }) => {
     }
 
     function handleRefresh() {
-        setRefreshDisabled(true);
-        setTimeout(() => setRefreshDisabled(false), 1000);
         dispatch(fetchProviders());
     }
 
@@ -56,7 +54,7 @@ const PoviderTableActions = ({ data, selected, readonly, setSelected }) => {
                 buttonStyle="delete"
             />
 
-            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={refreshDisabled} />
+            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} />
 
             {showCreateModal && (
                 <ProviderModal

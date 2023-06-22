@@ -26,6 +26,7 @@ const emptyTableConfig = {
 
 const TaskManagementTable = () => {
     const dispatch = useDispatch();
+    const { fetching } = useSelector((state) => state.tasks);
     const [refreshDisabled, setRefreshDisabled] = useState(false);
     const refreshStatus = JSON.parse(window.localStorage.getItem('TASK_MANAGEMENT_REFRESH_STATUS') || true);
     const [autoRefresh, setAutoRefresh] = useState(refreshStatus);
@@ -60,8 +61,6 @@ const TaskManagementTable = () => {
     }
 
     function handleRefresh() {
-        setRefreshDisabled(true);
-        setTimeout(() => setRefreshDisabled(false), 1000);
         dispatch(fetchTasks());
     }
 
@@ -110,7 +109,7 @@ const TaskManagementTable = () => {
             onSort={onSort}
             sortConfig={sortConfig}
             emptyTableConfig={emptyTableConfig}
-            tableActions={() => <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={refreshDisabled} />}
+            tableActions={() => <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} />}
         />
     );
 };
