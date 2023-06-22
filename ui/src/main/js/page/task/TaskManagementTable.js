@@ -27,7 +27,6 @@ const emptyTableConfig = {
 const TaskManagementTable = () => {
     const dispatch = useDispatch();
     const { fetching } = useSelector((state) => state.tasks);
-    const [refreshDisabled, setRefreshDisabled] = useState(false);
     const refreshStatus = JSON.parse(window.localStorage.getItem('TASK_MANAGEMENT_REFRESH_STATUS') || true);
     const [autoRefresh, setAutoRefresh] = useState(refreshStatus);
     const [tableData, setTableData] = useState();
