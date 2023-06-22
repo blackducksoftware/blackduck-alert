@@ -4,6 +4,8 @@ import ProviderDeleteModal from 'page/provider/ProviderDeleteModal';
 import ProviderModal from 'page/provider/ProviderModal';
 import StatusMessage from 'common/component/StatusMessage';
 import Button from 'common/component/button/Button';
+import { fetchProviders } from 'store/actions/provider';
+import { useDispatch, useSelector } from 'react-redux';
 
 const PoviderTableActions = ({ data, selected, readonly, setSelected }) => {
     const modalOptions = {
@@ -12,6 +14,8 @@ const PoviderTableActions = ({ data, selected, readonly, setSelected }) => {
         title: 'Create Provider'
     };
 
+    const dispatch = useDispatch();
+    const { fetching } = useSelector((state) => state.provider);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
@@ -26,9 +30,13 @@ const PoviderTableActions = ({ data, selected, readonly, setSelected }) => {
         setShowDeleteModal(true);
     }
 
+    function handleRefresh() {
+        dispatch(fetchProviders());
+    }
+
     return (
         <>
-            { statusMessage && (
+            {statusMessage && (
                 <StatusMessage
                     actionMessage={statusMessage.type === 'success' ? statusMessage.message : null}
                     errorMessage={statusMessage.type === 'error' ? statusMessage.message : null}
@@ -37,7 +45,8 @@ const PoviderTableActions = ({ data, selected, readonly, setSelected }) => {
 
             <Button onClick={handleCreateProviderClick} type="button" icon="plus" text="Create Provider" />
 
-            <Button onClick={handleDeleteProviderClick}
+            <Button
+                onClick={handleDeleteProviderClick}
                 type="button"
                 icon="trash"
                 isDisabled={selected.length === 0}
@@ -45,7 +54,9 @@ const PoviderTableActions = ({ data, selected, readonly, setSelected }) => {
                 buttonStyle="delete"
             />
 
-            { showCreateModal && (
+            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} />
+
+            {showCreateModal && (
                 <ProviderModal
                     data={data}
                     isOpen={showCreateModal}

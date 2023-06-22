@@ -4,6 +4,8 @@ import StatusMessage from 'common/component/StatusMessage';
 import Button from 'common/component/button/Button';
 import AzureBoardModal from 'page/channel/azure/AzureBoardModal';
 import AzureBoardDeleteModal from 'page/channel/azure/AzureBoardDeleteModal';
+import { fetchAzure } from 'store/actions/azure';
+import { useDispatch, useSelector } from 'react-redux';
 
 const AzureBoardTableActions = ({ data, readonly, allowDelete, selected, setSelected }) => {
     const modalOptions = {
@@ -12,6 +14,8 @@ const AzureBoardTableActions = ({ data, readonly, allowDelete, selected, setSele
         title: 'Create Azure Board Connection'
     };
 
+    const dispatch = useDispatch();
+    const { fetching } = useSelector((state) => state.azure);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
@@ -25,9 +29,14 @@ const AzureBoardTableActions = ({ data, readonly, allowDelete, selected, setSele
         setStatusMessage();
         setShowDeleteModal(true);
     }
+
+    function handleRefresh() {
+        dispatch(fetchAzure());
+    }
+
     return (
         <>
-            { statusMessage && (
+            {statusMessage && (
                 <StatusMessage
                     actionMessage={statusMessage.type === 'success' ? statusMessage.message : null}
                     errorMessage={statusMessage.type === 'error' ? statusMessage.message : null}
@@ -36,7 +45,7 @@ const AzureBoardTableActions = ({ data, readonly, allowDelete, selected, setSele
 
             <Button onClick={handleCreateAzureBoardClick} type="button" icon="plus" text="Create Azure Board" />
 
-            { allowDelete && (
+            {allowDelete && (
                 <Button
                     onClick={handleDeleteAzureBoardClick}
                     isDisabled={selected.length === 0}
@@ -47,7 +56,9 @@ const AzureBoardTableActions = ({ data, readonly, allowDelete, selected, setSele
                 />
             )}
 
-            { showCreateModal && (
+            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} />
+
+            {showCreateModal && (
                 <AzureBoardModal
                     readonly={readonly}
                     isOpen={showCreateModal}

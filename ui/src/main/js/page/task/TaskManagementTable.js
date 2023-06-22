@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Table from 'common/component/table/Table';
 import ViewTaskCell from 'page/task/ViewTaskCell';
 import { fetchTasks } from 'store/actions/tasks';
+import Button from 'common/component/button/Button';
 
 const COLUMNS = [{
     key: 'type',
@@ -25,6 +26,7 @@ const emptyTableConfig = {
 
 const TaskManagementTable = () => {
     const dispatch = useDispatch();
+    const { fetching } = useSelector((state) => state.tasks);
     const refreshStatus = JSON.parse(window.localStorage.getItem('TASK_MANAGEMENT_REFRESH_STATUS') || true);
     const [autoRefresh, setAutoRefresh] = useState(refreshStatus);
     const [tableData, setTableData] = useState();
@@ -55,6 +57,10 @@ const TaskManagementTable = () => {
 
     function handleToggle() {
         setAutoRefresh(!autoRefresh);
+    }
+
+    function handleRefresh() {
+        dispatch(fetchTasks());
     }
 
     const onSort = (name) => {
@@ -102,6 +108,7 @@ const TaskManagementTable = () => {
             onSort={onSort}
             sortConfig={sortConfig}
             emptyTableConfig={emptyTableConfig}
+            tableActions={() => <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} />}
         />
     );
 };

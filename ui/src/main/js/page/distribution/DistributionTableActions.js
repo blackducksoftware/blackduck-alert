@@ -5,9 +5,13 @@ import DistributionDeleteModal from 'page/distribution/DistributionDeleteModal';
 import StatusMessage from 'common/component/StatusMessage';
 import { DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom';
+import { fetchDistribution } from 'store/actions/distribution';
+import { useDispatch, useSelector } from 'react-redux';
 
 const DistributionTableActions = ({ data, selected, setSelected }) => {
+    const dispatch = useDispatch();
     const history = useHistory();
+    const { fetching } = useSelector((state) => state.distribution);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
 
@@ -20,9 +24,13 @@ const DistributionTableActions = ({ data, selected, setSelected }) => {
         setShowDeleteModal(true);
     }
 
+    function handleRefresh() {
+        dispatch(fetchDistribution());
+    }
+
     return (
         <>
-            { statusMessage && (
+            {statusMessage && (
                 <StatusMessage
                     actionMessage={statusMessage.type === 'success' ? statusMessage.message : null}
                     errorMessage={statusMessage.type === 'error' ? statusMessage.message : null}
@@ -40,7 +48,9 @@ const DistributionTableActions = ({ data, selected, setSelected }) => {
                 buttonStyle="delete"
             />
 
-            { showDeleteModal && (
+            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} />
+
+            {showDeleteModal && (
                 <DistributionDeleteModal
                     data={data}
                     isOpen={showDeleteModal}

@@ -4,6 +4,8 @@ import UserDeleteModal from 'page/usermgmt/user/UserDeleteModal';
 import UserModal from 'page/usermgmt/user/UserModal';
 import StatusMessage from 'common/component/StatusMessage';
 import Button from 'common/component/button/Button';
+import { fetchUsers } from 'store/actions/users';
+import { useDispatch, useSelector } from 'react-redux';
 
 const UserTableActions = ({ canCreate, canDelete, data, selected, setSelected }) => {
     const modalOptions = {
@@ -12,6 +14,8 @@ const UserTableActions = ({ canCreate, canDelete, data, selected, setSelected })
         title: 'Create User'
     };
 
+    const dispatch = useDispatch();
+    const { fetching } = useSelector((state) => state.users);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
@@ -26,24 +30,30 @@ const UserTableActions = ({ canCreate, canDelete, data, selected, setSelected })
         setShowDeleteModal(true);
     }
 
+    function handleRefresh() {
+        dispatch(fetchUsers());
+    }
+
     return (
         <>
-            { statusMessage && (
+            {statusMessage && (
                 <StatusMessage
                     actionMessage={statusMessage.type === 'success' ? statusMessage.message : null}
                     errorMessage={statusMessage.type === 'error' ? statusMessage.message : null}
                 />
             )}
 
-            { canCreate && (
+            {canCreate && (
                 <Button onClick={handleCreateUserClick} type="button" icon="plus" text="Create User" />
             )}
 
-            { canDelete && (
+            {canDelete && (
                 <Button onClick={handleDeleteUserClick} isDisabled={selected.length === 0} type="button" icon="trash" text="Delete" buttonStyle="delete" />
             )}
 
-            { showCreateModal && (
+            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} />
+
+            {showCreateModal && (
                 <UserModal
                     data={data}
                     isOpen={showCreateModal}

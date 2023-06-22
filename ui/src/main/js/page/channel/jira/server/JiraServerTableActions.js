@@ -4,6 +4,8 @@ import StatusMessage from 'common/component/StatusMessage';
 import JiraServerModal from 'page/channel/jira/server/JiraServerModal';
 import JiraServerDeleteModal from 'page/channel/jira/server/JiraServerDeleteModal';
 import Button from 'common/component/button/Button';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchJiraServer } from 'store/actions/jira-server';
 
 const JiraServerTableActions = ({ data, readonly, allowDelete, selected, setSelected }) => {
     const modalOptions = {
@@ -12,6 +14,8 @@ const JiraServerTableActions = ({ data, readonly, allowDelete, selected, setSele
         title: 'Create Jira Server Connection'
     };
 
+    const dispatch = useDispatch();
+    const { fetching } = useSelector((state) => state.jiraServer);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
@@ -25,9 +29,14 @@ const JiraServerTableActions = ({ data, readonly, allowDelete, selected, setSele
         setStatusMessage();
         setShowDeleteModal(true);
     }
+
+    function handleRefresh() {
+        dispatch(fetchJiraServer());
+    }
+
     return (
         <>
-            { statusMessage && (
+            {statusMessage && (
                 <StatusMessage
                     actionMessage={statusMessage.type === 'success' ? statusMessage.message : null}
                     errorMessage={statusMessage.type === 'error' ? statusMessage.message : null}
@@ -36,7 +45,7 @@ const JiraServerTableActions = ({ data, readonly, allowDelete, selected, setSele
 
             <Button onClick={handleCreateJiraServerClick} type="button" icon="plus" text="Create Jira Server" />
 
-            { allowDelete && (
+            {allowDelete && (
                 <Button
                     onClick={handleJiraServerDeleteClick}
                     isDisabled={selected.length === 0}
@@ -47,7 +56,9 @@ const JiraServerTableActions = ({ data, readonly, allowDelete, selected, setSele
                 />
             )}
 
-            { showCreateModal && (
+            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} />
+
+            {showCreateModal && (
                 <JiraServerModal
                     readonly={readonly}
                     isOpen={showCreateModal}
