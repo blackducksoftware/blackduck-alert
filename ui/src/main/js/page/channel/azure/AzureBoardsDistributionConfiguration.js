@@ -8,9 +8,7 @@ import { createReadRequest } from 'common/util/configurationRequestBuilder';
 import { AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS } from 'page/channel/azure/AzureBoardsModel';
 import { DISTRIBUTION_COMMON_FIELD_KEYS } from 'page/distribution/DistributionModel';
 
-const AzureDistributionConfiguration = ({
-    csrfToken, data, setData, errors, readonly
-}) => {
+const AzureBoardsDistributionConfiguration = ({ csrfToken, data, setData, errors, readonly }) => {
     const readRequest = () => {
         const apiUrl = '/alert/api/configuration/azure-boards?pageNumber=0&pageSize=25';
         return createReadRequest(apiUrl, csrfToken);
@@ -108,7 +106,7 @@ const AzureDistributionConfiguration = ({
     );
 };
 
-AzureDistributionConfiguration.propTypes = {
+AzureBoardsDistributionConfiguration.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     data: PropTypes.object.isRequired,
     setData: PropTypes.func.isRequired,
@@ -116,4 +114,4 @@ AzureDistributionConfiguration.propTypes = {
     readonly: PropTypes.bool.isRequired
 };
 
-export default AzureDistributionConfiguration;
+export default AzureBoardsDistributionConfiguration;

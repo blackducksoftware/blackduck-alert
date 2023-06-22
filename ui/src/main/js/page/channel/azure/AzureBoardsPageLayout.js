@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import PageHeader from 'common/component/navigation/PageHeader';
-import AzureBoardTable from 'page/channel/azure/AzureBoardTable';
+import AzureBoardsTable from 'page/channel/azure/AzureBoardsTable';
 import { AZURE_BOARDS_INFO } from 'page/channel/azure/AzureBoardsModel';
 
 const AzureBoardsLayout = ({ readonly, allowDelete }) => (
@@ -11,7 +11,7 @@ const AzureBoardsLayout = ({ readonly, allowDelete }) => (
             description="Configure the Azure Boards instance that Alert will send issue updates to."
             icon={['fab', 'windows']}
         />
-        <AzureBoardTable readonly={readonly} allowDelete={allowDelete} />
+        <AzureBoardsTable readonly={readonly} allowDelete={allowDelete} />
     </div>
 );
 

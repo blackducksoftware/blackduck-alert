@@ -2,17 +2,16 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import StatusMessage from 'common/component/StatusMessage';
 import IconButton from 'common/component/button/IconButton';
-import AzureBoardModal from 'page/channel/azure/AzureBoardModal';
+import AzureBoardsModal from 'page/channel/azure/AzureBoardsModal';
 
-const AzureCopyCell = ({ data }) => {
+const AzureBoardsEditCell = ({ data }) => {
     const [showModal, setShowModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
 
     const modalOptions = {
-        type: 'COPY',
-        title: 'Copy Azure Board',
-        submitText: 'Save',
-        copyDescription: `Performing this action will create a new Azure Board by using the same settings as '${data.name}'`
+        type: 'EDIT',
+        title: 'Edit Azure Board',
+        submitText: 'Save'
     };
 
     function handleClick() {
@@ -27,11 +26,11 @@ const AzureCopyCell = ({ data }) => {
                     errorMessage={statusMessage.type === 'error' ? statusMessage.message : null}
                 />
             )}
-            
-            <IconButton icon="copy" onClick={() => handleClick()} />
+
+            <IconButton icon="pencil-alt" onClick={() => handleClick()} />
 
             { showModal && (
-                <AzureBoardModal
+                <AzureBoardsModal
                     data={data}
                     isOpen={showModal}
                     toggleModal={setShowModal}
@@ -44,8 +43,8 @@ const AzureCopyCell = ({ data }) => {
     );
 };
 
-AzureCopyCell.propTypes = {
+AzureBoardsEditCell.propTypes = {
     data: PropTypes.object
 };
 
-export default AzureCopyCell;
+export default AzureBoardsEditCell;

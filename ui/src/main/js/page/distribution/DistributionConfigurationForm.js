@@ -30,7 +30,7 @@ import { JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';
 import { JIRA_SERVER_INFO } from 'page/channel/jira/server/JiraServerModel';
 import { MSTEAMS_INFO } from 'page/channel/msteams/MSTeamsModel';
 import { SLACK_INFO } from 'page/channel/slack/SlackModels';
-import AzureDistributionConfiguration from 'page/channel/azure/AzureDistributionConfiguration';
+import AzureBoardsDistributionConfiguration from 'page/channel/azure/AzureBoardsDistributionConfiguration';
 import EmailDistributionConfiguration from 'page/channel/email/EmailDistributionConfiguration';
 import JiraCloudDistributionConfiguration from 'page/channel/jira/cloud/JiraCloudDistributionConfiguration';
 import JiraServerDistributionConfiguration from 'page/channel/jira/server/JiraServerDistributionConfiguration';
@@ -182,7 +182,7 @@ const DistributionConfigurationForm = ({
             case AZURE_BOARDS_INFO.key: {
                 globalConfigSetSpecificChannelModel();
                 return (
-                    <AzureDistributionConfiguration
+                    <AzureBoardsDistributionConfiguration
                         csrfToken={csrfToken}
                         data={specificChannelModel}
                         setData={setSpecificChannelModel}

@@ -2,20 +2,20 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import StatusMessage from 'common/component/StatusMessage';
 import Button from 'common/component/button/Button';
-import AzureBoardModal from 'page/channel/azure/AzureBoardModal';
-import AzureBoardDeleteModal from 'page/channel/azure/AzureBoardDeleteModal';
-import { fetchAzure } from 'store/actions/azure';
+import AzureBoardsModal from 'page/channel/azure/AzureBoardsModal';
+import AzureBoardsDeleteModal from 'page/channel/azure/AzureBoardsDeleteModal';
+import { fetchAzureBoards } from 'store/actions/azure-boards';
 import { useDispatch, useSelector } from 'react-redux';
 
-const AzureBoardTableActions = ({ data, readonly, allowDelete, selected, setSelected }) => {
+const AzureBoardsTableActions = ({ data, readonly, allowDelete, selected, setSelected }) => {
     const modalOptions = {
         type: 'CREATE',
         submitText: 'Create',
-        title: 'Create Azure Board Connection'
+        title: 'Create Azure Boards Connection'
     };
 
     const dispatch = useDispatch();
-    const { fetching } = useSelector((state) => state.azure);
+    const { fetching } = useSelector((state) => state.azureBoards);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
@@ -31,7 +31,7 @@ const AzureBoardTableActions = ({ data, readonly, allowDelete, selected, setSele
     }
 
     function handleRefresh() {
-        dispatch(fetchAzure());
+        dispatch(fetchAzureBoards());
     }
 
     return (
@@ -59,7 +59,7 @@ const AzureBoardTableActions = ({ data, readonly, allowDelete, selected, setSele
             <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} />
 
             {showCreateModal && (
-                <AzureBoardModal
+                <AzureBoardsModal
                     readonly={readonly}
                     isOpen={showCreateModal}
                     toggleModal={setShowCreateModal}
@@ -70,7 +70,7 @@ const AzureBoardTableActions = ({ data, readonly, allowDelete, selected, setSele
             )}
 
             { showDeleteModal && (
-                <AzureBoardDeleteModal
+                <AzureBoardsDeleteModal
                     data={data}
                     isOpen={showDeleteModal}
                     toggleModal={setShowDeleteModal}
@@ -83,7 +83,7 @@ const AzureBoardTableActions = ({ data, readonly, allowDelete, selected, setSele
     );
 };
 
-AzureBoardTableActions.propTypes = {
+AzureBoardsTableActions.propTypes = {
     data: PropTypes.object,
     selected: PropTypes.array,
     readonly: PropTypes.bool,
@@ -91,4 +91,4 @@ AzureBoardTableActions.propTypes = {
     setSelected: PropTypes.func
 };
 
-export default AzureBoardTableActions;
+export default AzureBoardsTableActions;

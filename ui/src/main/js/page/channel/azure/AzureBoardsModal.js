@@ -10,7 +10,7 @@ import TextInput from 'common/component/input/TextInput';
 import ButtonField from 'common/component/input/field/ButtonField';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import { AZURE_BOARDS_GLOBAL_FIELD_KEYS, AZURE_BOARDS_URLS } from 'page/channel/azure/AzureBoardsModel';
-import { clearAzureFieldErrors, fetchAzure, saveAzureBoard, sendOAuth, testAzureBoard, validateAzure } from 'store/actions/azure';
+import { clearAzureBoardsFieldErrors, fetchAzureBoards, saveAzureBoards, sendOAuth, testAzureBoards, validateAzureBoards } from 'store/actions/azure-boards';
 
 const useStyles = createUseStyles({
     descriptorContainer: {
@@ -38,7 +38,7 @@ function getInitialData(type, data) {
     }
 }
 
-const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, successMessage, readonly }) => {
+const AzureBoardsModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, successMessage, readonly }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const history = useHistory();
@@ -51,34 +51,34 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
     const [notificationConfig, setNotificationConfig] = useState();
     const [showNotification, setShowNotification] = useState(false);
     const [requestType, setRequestType] = useState();
-    const { saveStatus, testStatus, oAuthStatus, oAuthLink, error } = useSelector((state) => state.azure);
+    const { saveStatus, testStatus, oAuthStatus, oAuthLink, error } = useSelector((state) => state.azureBoards);
 
     function handleClose() {
         // Because the URL upon returning from the OAuthentication is `alert/channels/azure_boards/edit/{id}`, toggling the modal closed will
-        // result in the modal reopening (see L66-L85 of AzureBoardTable.js).  Therefore, if the modal is open based on a return from an OAuth 
+        // result in the modal reopening (see L66-L85 of AzureBoardsTable.js).  Therefore, if the modal is open based on a return from an OAuth
         // handshake and the user wants to close the modal, we need to refresh the page with the `alert/channels/azure_boards` being the new url
         if (openedAfterOAuthHandshake) {
             history.push(AZURE_BOARDS_URLS.mainUrl);
         }
 
         toggleModal(false);
-        dispatch(fetchAzure());
-        dispatch(clearAzureFieldErrors());
+        dispatch(fetchAzureBoards());
+        dispatch(clearAzureBoardsFieldErrors());
     }
 
     function handleSave() {
-        dispatch(saveAzureBoard(azureModel));
+        dispatch(saveAzureBoards(azureModel));
     }
 
     function handleSubmit(submitType) {
         setRequestType(submitType);
         setShowNotification(false);
         setNotificationConfig();
-        dispatch(validateAzure(azureModel));
+        dispatch(validateAzureBoards(azureModel));
     }
 
     function handleTest() {
-        dispatch(testAzureBoard(azureModel));
+        dispatch(testAzureBoards(azureModel));
     }
 
     function handleOAuth() {
@@ -153,7 +153,7 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                 type: 'success'
             });
             setShowNotification(true);
-            dispatch(clearAzureFieldErrors());
+            dispatch(clearAzureBoardsFieldErrors());
         }
 
         if (saveStatus === 'ERROR') {
@@ -252,7 +252,7 @@ const AzureBoardModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
     );
 };
 
-AzureBoardModal.propTypes = {
+AzureBoardsModal.propTypes = {
     readonly: PropTypes.bool,
     data: PropTypes.oneOfType([
         PropTypes.arrayOf(PropTypes.object),
@@ -270,4 +270,4 @@ AzureBoardModal.propTypes = {
     successMessage: PropTypes.string
 };
 
-export default AzureBoardModal;
+export default AzureBoardsModal;
