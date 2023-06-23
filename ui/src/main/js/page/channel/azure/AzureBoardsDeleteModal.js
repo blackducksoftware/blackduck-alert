@@ -40,7 +40,7 @@ const AzureBoardsDeleteModal = ({ isOpen, toggleModal, data, selected, setSelect
     }
 
     function handleDelete() {
-        dispatch(deleteAzureBoards(selectedAzureBoards));
+        dispatch(deleteAzureBoards(selectedAzureBoards.filter((board) => board.staged)));
     }
 
     useEffect(() => {
@@ -56,7 +56,7 @@ const AzureBoardsDeleteModal = ({ isOpen, toggleModal, data, selected, setSelect
             setShowLoader(false);
 
             const successMessage = isMultiDelete
-                ? `Successfully deleted ${selectedAzureBoards.length} Azure Boards.`
+                ? `Successfully deleted ${selectedAzureBoards.filter((board) => board.staged).length} Azure Boards.`
                 : 'Successfully deleted 1 Azure Board.';
 
             setStatusMessage({

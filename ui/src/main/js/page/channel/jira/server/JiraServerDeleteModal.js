@@ -37,7 +37,7 @@ const JiraServerDeleteModal = ({ isOpen, toggleModal, data, selected, setSelecte
     }
 
     function handleDelete() {
-        dispatch(deleteJiraServer(selectedJiraServers));
+        dispatch(deleteJiraServer(selectedJiraServers.filter((jiraServer) => jiraServer.staged)));
     }
 
     useEffect(() => {
@@ -53,7 +53,7 @@ const JiraServerDeleteModal = ({ isOpen, toggleModal, data, selected, setSelecte
             setShowLoader(false);
 
             const successMessage = isMultiDelete
-                ? `Successfully deleted ${selectedJiraServers.length} Jira Servers.`
+                ? `Successfully deleted ${selectedJiraServers.filter((jiraServer) => jiraServer.staged).length} Jira Servers.`
                 : 'Successfully deleted 1 Jira Server.';
 
             setStatusMessage({

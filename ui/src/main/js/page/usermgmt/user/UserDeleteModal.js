@@ -37,7 +37,7 @@ const UserDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, set
     }
 
     function handleDelete() {
-        dispatch(bulkDeleteUsers(selectedUsers));
+        dispatch(bulkDeleteUsers(selectedUsers.filter((user) => user.staged)));
     }
 
     useEffect(() => {
@@ -53,7 +53,7 @@ const UserDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, set
             setShowLoader(false);
 
             const successMessage = isMultiUserDelete
-                ? `Successfully deleted ${selectedUsers.length} users.`
+                ? `Successfully deleted ${selectedUsers.filter((user) => user.staged).length} users.`
                 : 'Successfully deleted 1 user.';
 
             setStatusMessage({

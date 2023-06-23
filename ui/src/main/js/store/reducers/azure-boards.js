@@ -50,21 +50,24 @@ const azureBoards = (state = initialState, action) => {
                 ...state,
                 fetching: true,
                 error: HTTPErrorUtils.createErrorObject(action),
-                fieldErrors: action.errors || {}
+                fieldErrors: action.errors || {},
+                deleteStatus: ''
             };
         case AZURE_BOARDS_GET_SUCCESS:
             return {
                 ...state,
                 fetching: false,
                 data: action.data,
-                fieldErrors: action.errors || {}
+                fieldErrors: action.errors || {},
+                deleteStatus: ''
             };
         case AZURE_BOARDS_GET_FAIL:
             return {
                 ...state,
                 fetching: false,
                 error: HTTPErrorUtils.createErrorObject(action),
-                fieldErrors: action.errors || {}
+                fieldErrors: action.errors || {},
+                deleteStatus: ''
             };
         case AZURE_BOARDS_VALIDATE_REQUEST:
             return {

@@ -88,18 +88,21 @@ const roles = (state = initialState, action) => {
             return {
                 ...state,
                 error: HTTPErrorUtils.createErrorObject(action),
-                fetching: false
+                fetching: false,
+                deleteStatus: ''
             };
         case USER_MANAGEMENT_ROLE_GET_SUCCESS:
             return {
                 ...state,
                 data: action.data,
-                fetching: false
+                fetching: false,
+                deleteStatus: ''
             };
         case USER_MANAGEMENT_ROLE_GET_REQUEST:
             return {
                 ...state,
-                fetching: true
+                fetching: true,
+                deleteStatus: ''
             };
         case USER_MANAGEMENT_ROLE_SAVE_ERROR:
             return {

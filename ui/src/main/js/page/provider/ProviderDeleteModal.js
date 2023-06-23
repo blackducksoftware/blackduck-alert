@@ -37,7 +37,7 @@ const ProviderDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMes
     }
 
     function handleDelete() {
-        dispatch(bulkDeleteProviders(selectedProviders));
+        dispatch(bulkDeleteProviders(selectedProviders.filter((provider) => provider.staged)));
     }
 
     useEffect(() => {
@@ -53,7 +53,7 @@ const ProviderDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMes
             setShowLoader(false);
 
             const successMessage = isMultiProviderDelete
-                ? `Successfully deleted ${selectedProviders.length} providers.`
+                ? `Successfully deleted ${selectedProviders.filter((provider) => provider.staged).length} providers.`
                 : 'Successfully deleted 1 provider.';
 
             setStatusMessage({

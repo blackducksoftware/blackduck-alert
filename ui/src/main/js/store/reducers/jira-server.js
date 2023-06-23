@@ -1,24 +1,24 @@
 import {
-    SERIALIZE,
-    JIRA_SERVER_GET_REQUEST,
-    JIRA_SERVER_GET_SUCCESS,
-    JIRA_SERVER_GET_FAIL,
-    JIRA_SERVER_VALIDATE_REQUEST,
-    JIRA_SERVER_VALIDATE_SUCCESS,
-    JIRA_SERVER_VALIDATE_FAIL,
-    JIRA_SERVER_SAVE_REQUEST,
-    JIRA_SERVER_SAVE_SUCCESS,
-    JIRA_SERVER_SAVE_FAIL,
+    JIRA_SERVER_CLEAR_FIELD_ERRORS,
+    JIRA_SERVER_DELETE_FAIL,
     JIRA_SERVER_DELETE_REQUEST,
     JIRA_SERVER_DELETE_SUCCESS,
-    JIRA_SERVER_DELETE_FAIL,
-    JIRA_SERVER_TEST_REQUEST,
-    JIRA_SERVER_TEST_SUCCESS,
-    JIRA_SERVER_TEST_FAIL,
+    JIRA_SERVER_GET_FAIL,
+    JIRA_SERVER_GET_REQUEST,
+    JIRA_SERVER_GET_SUCCESS,
+    JIRA_SERVER_PLUGIN_FAIL,
     JIRA_SERVER_PLUGIN_REQUEST,
     JIRA_SERVER_PLUGIN_SUCCESS,
-    JIRA_SERVER_PLUGIN_FAIL,
-    JIRA_SERVER_CLEAR_FIELD_ERRORS
+    JIRA_SERVER_SAVE_FAIL,
+    JIRA_SERVER_SAVE_REQUEST,
+    JIRA_SERVER_SAVE_SUCCESS,
+    JIRA_SERVER_TEST_FAIL,
+    JIRA_SERVER_TEST_REQUEST,
+    JIRA_SERVER_TEST_SUCCESS,
+    JIRA_SERVER_VALIDATE_FAIL,
+    JIRA_SERVER_VALIDATE_REQUEST,
+    JIRA_SERVER_VALIDATE_SUCCESS,
+    SERIALIZE
 } from 'store/actions/types';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 
@@ -40,21 +40,24 @@ const jiraServer = (state = initialState, action) => {
                 ...state,
                 fetching: true,
                 error: HTTPErrorUtils.createErrorObject(action),
-                fieldErrors: action.errors || {}
+                fieldErrors: action.errors || {},
+                deleteStatus: ''
             };
         case JIRA_SERVER_GET_SUCCESS:
             return {
                 ...state,
                 fetching: false,
                 data: action.data,
-                fieldErrors: action.errors || {}
+                fieldErrors: action.errors || {},
+                deleteStatus: ''
             };
         case JIRA_SERVER_GET_FAIL:
             return {
                 ...state,
                 fetching: false,
                 error: HTTPErrorUtils.createErrorObject(action),
-                fieldErrors: action.errors || {}
+                fieldErrors: action.errors || {},
+                deleteStatus: ''
             };
         case JIRA_SERVER_VALIDATE_REQUEST:
             return {

@@ -23,7 +23,7 @@ const useStyles = createUseStyles({
 });
 
 function getStagedForDelete(data, selected) {
-    const staged = data.models.filter((distribution) => selected.includes(distribution.id));
+    const staged = data.models.filter((distribution) => selected.includes(distribution.jobId));
     return staged.map((distribution) => ({ ...distribution, staged: true }));
 }
 
@@ -41,7 +41,7 @@ const DistributionDeleteModal = ({ isOpen, toggleModal, data, selected, setSelec
     }
 
     function handleDelete() {
-        dispatch(deleteDistribution(selectedJobs));
+        dispatch(deleteDistribution(selectedJobs.filter((job) => job.staged)));
     }
 
     useEffect(() => {
@@ -57,7 +57,7 @@ const DistributionDeleteModal = ({ isOpen, toggleModal, data, selected, setSelec
             setShowLoader(false);
 
             const successMessage = isMultiDelete
-                ? `Successfully deleted ${selectedJobs.length} distributions.`
+                ? `Successfully deleted ${selectedJobs.filter((jobs) => jobs.staged).length} distributions.`
                 : 'Successfully deleted 1 distribution.';
 
             setStatusMessage({
@@ -81,7 +81,7 @@ const DistributionDeleteModal = ({ isOpen, toggleModal, data, selected, setSelec
 
     function toggleSelect(selection) {
         const toggledDistributions = selectedJobs.map((distribution) => {
-            if (distribution.id === selection.id) {
+            if (distribution.jobId === selection.jobId) {
                 return { ...distribution, staged: !distribution.staged };
             }
             return distribution;
@@ -107,7 +107,7 @@ const DistributionDeleteModal = ({ isOpen, toggleModal, data, selected, setSelec
                 </div>
                 <div>
                     {selectedJobs?.map((distribution) => (
-                        <div className={classes.cardContainer} key={distribution.id}>
+                        <div className={classes.cardContainer} key={distribution.jobId}>
                             <input type="checkbox" checked={distribution.staged} onChange={() => toggleSelect(distribution)} />
                             <Card icon={['fas', 'tasks']} label={distribution.jobName} description={channelTranslation.label(distribution.channelName)} />
                         </div>

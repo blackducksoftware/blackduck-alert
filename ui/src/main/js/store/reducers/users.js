@@ -88,19 +88,22 @@ const users = (state = initialState, action) => {
         case USER_MANAGEMENT_GET_REQUEST:
             return {
                 ...state,
-                fetching: true
+                fetching: true,
+                deleteStatus: ''
             };
         case USER_MANAGEMENT_GET_SUCCESS:
             return {
                 ...state,
                 data: action.data,
-                fetching: false
+                fetching: false,
+                deleteStatus: ''
             };
         case USER_MANAGEMENT_GET_FAIL:
             return {
                 ...state,
                 error: HTTPErrorUtils.createErrorObject(action),
-                fetching: false
+                fetching: false,
+                deleteStatus: ''
             };
         case USER_MANAGEMENT_USER_SAVE_ERROR:
             return {
