@@ -31,16 +31,13 @@ const useStyles = createUseStyles((theme) => ({
         overflow: 'auto'
     },
     modalStyleLarge: {
-        maxWidth: 900,
-        width: 'auto'
+        maxWidth: 900
     },
     modalStyleMedium: {
-        maxWidth: 700,
-        width: 'auto'
+        maxWidth: 700
     },
     modalStyleSmall: {
-        maxWidth: 400,
-        width: 'auto'
+        maxWidth: 400
     },
     modalContent: {
         position: 'relative'
