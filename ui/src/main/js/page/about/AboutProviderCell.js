@@ -1,16 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { BLACKDUCK_URLS } from 'page/provider/blackduck/BlackDuckModel';
+import { NavLink } from 'react-router-dom';
 
 const AboutProviderCell = ({ data }) => (
-    <a href={BLACKDUCK_URLS.blackDuckTableUrl}>
+    <NavLink to={BLACKDUCK_URLS.blackDuckTableUrl} id={data.urlName}>
         {data.name}
-    </a>
+    </NavLink>
 );
 
 AboutProviderCell.propTypes = {
     data: PropTypes.shape({
-        name: PropTypes.string
+        name: PropTypes.string,
+        urlName: PropTypes.string
     })
 };
 

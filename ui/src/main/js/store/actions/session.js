@@ -98,7 +98,6 @@ export function verifyLogin() {
                     dispatch(loggedOut());
                 } else {
                     verifyResponse.json().then((verifyData) => {
-                        console.log("Verify Result: {}", verifyData);
                         if (verifyData.authenticated) {
                             dispatch(loggedIn({ csrfToken: csrfData.token }));
                         } else {
