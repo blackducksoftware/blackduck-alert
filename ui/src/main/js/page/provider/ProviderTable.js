@@ -5,7 +5,7 @@ import Table from 'common/component/table/Table';
 import ProviderEditCell from 'page/provider/ProviderEditCell';
 import ProviderCopyCell from 'page/provider/ProviderCopyCell';
 import ProviderEnabledCell from 'page/provider/ProviderEnabledCell';
-import PoviderTableActions from 'page/provider/PoviderTableActions';
+import ProviderTableActions from 'page/provider/ProviderTableActions';
 import { fetchProviders } from 'store/actions/provider';
 import { BLACKDUCK_GLOBAL_FIELD_KEYS } from 'page/provider/blackduck/BlackDuckModel';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
@@ -131,7 +131,11 @@ function ProviderTable({ readonly }) {
                 );
             });
         }
-        setTableData(!search ? convertedTableData : convertedTableData.filter((provider) => provider.name.toLowerCase().includes(search.toLowerCase())));
+
+        // Endpoints without search will need to look through ui column values
+        setTableData(!search ? convertedTableData : convertedTableData?.filter((provider) => provider.name.toLowerCase().includes(search.toLowerCase())
+            || provider.createdAt?.toLowerCase().includes(search.toLowerCase())
+            || provider.lastUpdated?.toLowerCase().includes(search.toLowerCase())));
     }, [data, search, sortConfig]);
 
     return (
@@ -148,7 +152,7 @@ function ProviderTable({ readonly }) {
             active={autoRefresh}
             onToggle={handleToggle}
             emptyTableConfig={emptyTableConfig}
-            tableActions={() => <PoviderTableActions data={tableData} selected={selected} readonly={readonly} setSelected={setSelected} />}
+            tableActions={() => <ProviderTableActions data={tableData} selected={selected} readonly={readonly} setSelected={setSelected} />}
         />
     );
 }

@@ -105,6 +105,7 @@ const RoleTable = ({ canCreate, canDelete }) => {
             });
         }
 
+        // Endpoints without search will need to look through ui column values
         setTableData(!search ? data : data.filter((role) => role.roleName.toLowerCase().includes(search.toLowerCase())));
     }, [roles, search, sortConfig]);
 
