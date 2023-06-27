@@ -53,8 +53,8 @@ const CertificatesTable = () => {
         return undefined;
     }, [autoRefresh]);
 
-    const handleSearchChange = (e) => {
-        setNewSearch(e.target.value);
+    const handleSearchChange = (searchValue) => {
+        setNewSearch(searchValue);
     };
 
     const onSelected = (selectedRow) => {
@@ -96,7 +96,9 @@ const CertificatesTable = () => {
             });
         }
 
-        setTableData(!search ? data : data.filter((certificate) => certificate.alias.toLowerCase().includes(search.toLowerCase())));
+        // Endpoints without search will need to look through ui column values
+        setTableData(!search ? data : data.filter((certificate) => certificate.alias.toLowerCase().includes(search.toLowerCase())
+            || certificate.lastUpdated?.toLowerCase().includes(search.toLowerCase())));
     }, [certificates, search, sortConfig]);
 
     return (

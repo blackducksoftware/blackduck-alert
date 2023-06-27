@@ -1,22 +1,39 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const useStyles = createUseStyles({
-    inputContainer: {
+    searchFilterContainer: {
+        marginLeft: 'auto',
+        marginRight: 0,
         display: 'flex',
-        height: '25px',
-        marginBottom: '5px'
+        columnGap: '5px'
+    },
+    inputContainer: {
+        position: 'relative'
     },
     inputStyle: {
-        margin: [0, '3px', 0, 'auto'],
         border: 'solid .5px',
-        padding: ['2px', '4px'],
+        maxWidth: '150px',
+        padding: ['4px', '20px', '4px', '10px'],
         font: 'inherit',
         cursor: 'text',
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
         '&:focus': {
             outline: 0
+        }
+    },
+    clearInputIcon: {
+        display: 'inline-block',
+        border: 'none',
+        background: 'none',
+        position: 'absolute',
+        right: '5px',
+        top: '5px',
+        '&:hover': {
+            cursor: 'default'
         }
     },
     searchIconContainer: {
@@ -32,28 +49,58 @@ const useStyles = createUseStyles({
     }
 });
 
-const SearchFilter = ({ searchBarPlaceholder, handleSearchChange, search }) => {
+const SearchFilter = ({ searchBarPlaceholder, handleSearchChange, defaultSearchValue }) => {
     const classes = useStyles();
+    const [searchValue, setSearchValue] = useState(null);
+
+    useEffect(() => {
+        setSearchValue(defaultSearchValue);
+    }, [defaultSearchValue]);
+
+    function handleChange(evt) {
+        setSearchValue(evt.target.value)
+    }
+
+    // Search when user presses enter (ASCII value for Enter/Return is 13)
+    function handleKeyDown(evt) {
+        if (evt.keyCode === 13) {
+            handleSearchChange(searchValue);
+        }
+    }
+
+    function handleClearSearchField() {
+        setSearchValue('');
+        handleSearchChange('');
+    }
 
     return (
-        <>
-            <input
-                className={classes.inputStyle}
-                onChange={handleSearchChange}
-                placeholder={searchBarPlaceholder}
-                value={search}
-            />
-            <span className={classes.searchIconContainer}>
+        <div className={classes.searchFilterContainer}>
+            <div className={classes.inputContainer}>
+                <input
+                    className={classes.inputStyle}
+                    placeholder={searchBarPlaceholder}
+                    value={searchValue === null ? '' : searchValue}
+                    onChange={handleChange}
+                    onKeyDown={handleKeyDown}
+                />
+                { searchValue && (
+                    <button className={classes.clearInputIcon} onClick={handleClearSearchField} role="button" >
+                        <FontAwesomeIcon icon="times" size='sm' />
+                    </button>
+                ) }
+            </div>
+                       
+            <button className={classes.searchIconContainer} onClick={() => handleSearchChange(searchValue)} role="button" >
                 <FontAwesomeIcon icon="search" />
-            </span>
-        </>
+            </button>
+        </div>
     );
 };
 
 SearchFilter.propTypes = {
     searchBarPlaceholder: PropTypes.string,
     handleSearchChange: PropTypes.func,
-    search: PropTypes.string
+    defaultSearchValue: PropTypes.string
 };
 
 export default SearchFilter;

@@ -7,7 +7,7 @@ import Button from 'common/component/button/Button';
 import { fetchProviders } from 'store/actions/provider';
 import { useDispatch, useSelector } from 'react-redux';
 
-const PoviderTableActions = ({ data, selected, readonly, setSelected }) => {
+const ProviderTableActions = ({ data, selected, readonly, setSelected }) => {
     const modalOptions = {
         type: 'CREATE',
         submitText: 'Create',
@@ -82,11 +82,11 @@ const PoviderTableActions = ({ data, selected, readonly, setSelected }) => {
     );
 };
 
-PoviderTableActions.propTypes = {
+ProviderTableActions.propTypes = {
     data: PropTypes.arrayOf(PropTypes.object),
     selected: PropTypes.array,
     readonly: PropTypes.bool,
     setSelected: PropTypes.func
 };
 
-export default PoviderTableActions;
+export default ProviderTableActions;

@@ -51,8 +51,8 @@ const TaskManagementTable = () => {
         return undefined;
     }, [autoRefresh]);
 
-    const handleSearchChange = (e) => {
-        setNewSearch(e.target.value);
+    const handleSearchChange = (searchValue) => {
+        setNewSearch(searchValue);
     };
 
     function handleToggle() {
@@ -94,7 +94,9 @@ const TaskManagementTable = () => {
             });
         }
 
-        setTableData(!search ? data : data.filter((task) => task.type.toLowerCase().includes(search.toLowerCase())));
+        // Endpoints without search will need to look through ui column values
+        setTableData(!search ? data : data.filter((task) => task.type.toLowerCase().includes(search.toLowerCase())
+            || task.nextRunTime?.toLowerCase().includes(search.toLowerCase())));
     }, [tasks, search, sortConfig]);
 
     return (

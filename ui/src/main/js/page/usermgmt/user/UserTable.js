@@ -79,8 +79,8 @@ const UserTable = ({ canCreate, canDelete }) => {
         setSelected(selectedRow);
     };
 
-    const handleSearchChange = (e) => {
-        setNewSearch(e.target.value);
+    const handleSearchChange = (searchValue) => {
+        setNewSearch(searchValue);
     };
 
     function handleToggle() {
@@ -118,7 +118,11 @@ const UserTable = ({ canCreate, canDelete }) => {
             });
         }
 
-        setTableData(!search ? data : data.filter((user) => user.username.toLowerCase().includes(search.toLowerCase())));
+        // Endpoints without search will need to look through ui column values
+        setTableData(!search ? data : data.filter((user) => user.username.toLowerCase().includes(search.toLowerCase())
+            || user.emailAddress?.toLowerCase().includes(search.toLowerCase())
+            || user.authenticationType?.toLowerCase().includes(search.toLowerCase())
+            || user.roleNames?.some(role => role.toLowerCase().includes(search.toLowerCase()))));
     }, [users, search, sortConfig]);
 
     return (
