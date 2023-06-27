@@ -113,6 +113,10 @@ const DistributionTable = ({ readonly }) => {
         setParamsConfig({ ...paramsConfig, pageNumber: page });
     }
 
+    function handlePageSize(count) {
+        setParamsConfig({ ...paramsConfig, pageSize: count });
+    }
+
     const onSort = (name) => {
         const { sortBy, sortOrder } = paramsConfig.mutatorData;
         if (name !== sortBy) {
@@ -168,6 +172,8 @@ const DistributionTable = ({ readonly }) => {
             selected={selected}
             onSelected={onSelected}
             onPage={handlePagination}
+            onPageSize={handlePageSize}
+            showPageSize
             data={data}
             emptyTableConfig={emptyTableConfig}
             tableActions={() => <DistributionTableActions data={data} readonly={readonly} selected={selected} setSelected={setSelected} />}

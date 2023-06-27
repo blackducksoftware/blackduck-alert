@@ -5,8 +5,8 @@ import SearchFilter from 'common/component/table/SearchFilter';
 import TableBody from 'common/component/table/TableBody';
 import TableHeader from 'common/component/table/TableHeader';
 import ToggleSwitch from 'common/component/input/ToggleSwitch';
-import Pagination from 'common/component/navigation/Pagination';
 import EmptyTableView from 'common/component/table/EmptyTableView';
+import TableFooter from 'common/component/table/TableFooter';
 
 const useStyles = createUseStyles({
     table: {
@@ -24,7 +24,9 @@ const useStyles = createUseStyles({
 });
 
 const Table = ({ columns, multiSelect, selected, onSelected, disableSelectOptions, tableData, handleSearchChange,
-    searchBarPlaceholder, tableActions, onToggle, active, onSort, sortConfig, data, onPage, emptyTableConfig, defaultSearchValue }) => {
+    searchBarPlaceholder, tableActions, onToggle, active, onSort, sortConfig, data, onPage, emptyTableConfig, 
+    defaultSearchValue, onPageSize, showPageSize
+ }) => {
     const classes = useStyles();
 
     return (
@@ -76,9 +78,7 @@ const Table = ({ columns, multiSelect, selected, onSelected, disableSelectOption
                 </table>
             )}
 
-            { data?.totalPages > 1 && (
-                <Pagination data={data} onPage={onPage} />
-            )}
+            <TableFooter data={data} onPage={onPage} onPageSize={onPageSize} showPageSize={showPageSize} />
         </>
     );
 };
@@ -105,9 +105,9 @@ Table.propTypes = {
         direction: PropTypes.string
     }),
     onPage: PropTypes.func,
-    data: PropTypes.shape({
-        totalPages: PropTypes.number
-    }),
+    onPageSize: PropTypes.func,
+    showPageSize: PropTypes.bool,
+    data: PropTypes.object,
     emptyTableConfig: PropTypes.shape({
         message: PropTypes.string
     })

@@ -65,6 +65,10 @@ const AuditFailureTable = () => {
         setParamsConfig({ ...paramsConfig, pageNumber: page });
     }
 
+    function handlePageSize(count) {
+        setParamsConfig({ ...paramsConfig, pageSize: count });
+    }
+
     function handleRefresh() {
         dispatch(fetchAuditData(paramsConfig));
     }
@@ -160,6 +164,8 @@ const AuditFailureTable = () => {
             onSort={onSort}
             sortConfig={sortConfig}
             onPage={handlePagination}
+            onPageSize={handlePageSize}
+            showPageSize
             data={data}
             emptyTableConfig={emptyTableConfig}
             tableActions={() => <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} />}

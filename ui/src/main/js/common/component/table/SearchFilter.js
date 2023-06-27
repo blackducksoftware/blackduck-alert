@@ -15,7 +15,6 @@ const useStyles = createUseStyles({
     },
     inputStyle: {
         border: 'solid .5px',
-        maxWidth: '150px',
         padding: ['4px', '20px', '4px', '10px'],
         font: 'inherit',
         cursor: 'text',

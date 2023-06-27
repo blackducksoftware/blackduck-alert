@@ -99,6 +99,10 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
         setParamsConfig({ ...paramsConfig, pageNumber: page });
     }
 
+    function handlePageSize(count) {
+        setParamsConfig({ ...paramsConfig, pageSize: count });
+    }
+
     const onSort = (name) => {
         const { sortName, sortOrder } = paramsConfig.mutatorData;
         if (name !== sortName) {
@@ -148,6 +152,8 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
             selected={selected}
             onSelected={onSelected}
             onPage={handlePagination}
+            onPageSize={handlePageSize}
+            showPageSize
             data={data}
             emptyTableConfig={emptyTableConfig}
             tableActions={() => <JiraServerTableActions data={data} readonly={readonly} allowDelete={allowDelete} selected={selected} setSelected={setSelected} />}
