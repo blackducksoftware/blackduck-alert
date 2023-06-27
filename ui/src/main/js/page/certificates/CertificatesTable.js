@@ -53,8 +53,8 @@ const CertificatesTable = () => {
         return undefined;
     }, [autoRefresh]);
 
-    const handleSearchChange = (e) => {
-        setNewSearch(e.target.value);
+    const handleSearchChange = (searchValue) => {
+        setNewSearch(searchValue);
     };
 
     const onSelected = (selectedRow) => {

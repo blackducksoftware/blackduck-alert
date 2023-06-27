@@ -51,8 +51,8 @@ const TaskManagementTable = () => {
         return undefined;
     }, [autoRefresh]);
 
-    const handleSearchChange = (e) => {
-        setNewSearch(e.target.value);
+    const handleSearchChange = (searchValue) => {
+        setNewSearch(searchValue);
     };
 
     function handleToggle() {

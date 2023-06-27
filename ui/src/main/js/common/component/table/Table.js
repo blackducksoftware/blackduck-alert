@@ -24,7 +24,7 @@ const useStyles = createUseStyles({
 });
 
 const Table = ({ columns, multiSelect, selected, onSelected, disableSelectOptions, tableData, handleSearchChange,
-    searchBarPlaceholder, tableActions, onToggle, active, onSort, sortConfig, data, onPage, emptyTableConfig }) => {
+    searchBarPlaceholder, tableActions, onToggle, active, onSort, sortConfig, data, onPage, emptyTableConfig, defaultSearchValue }) => {
     const classes = useStyles();
 
     return (
@@ -36,6 +36,7 @@ const Table = ({ columns, multiSelect, selected, onSelected, disableSelectOption
                         <SearchFilter
                             handleSearchChange={handleSearchChange}
                             searchBarPlaceholder={searchBarPlaceholder}
+                            defaultSearchValue={defaultSearchValue}
                         />
                     )}
 

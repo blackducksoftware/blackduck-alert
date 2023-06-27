@@ -81,12 +81,14 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
         return undefined;
     }, [autoRefresh]);
 
-    const handleSearchChange = (e) => {
-        setParamsConfig({ ...paramsConfig,
+    const handleSearchChange = (searchValue) => {
+        setParamsConfig({
+            ...paramsConfig,
             mutatorData: {
                 ...paramsConfig.mutatorData,
-                searchTerm: e.target.value
-            } });
+                searchTerm: searchValue
+            }
+        });
     };
 
     function handleToggle() {

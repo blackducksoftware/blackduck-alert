@@ -47,12 +47,12 @@ const AuditFailureTable = () => {
         return undefined;
     }, [autoRefresh]);
 
-    const handleSearchChange = (e) => {
+    const handleSearchChange = (searchValue) => {
         setParamsConfig({
             ...paramsConfig,
             mutatorData: {
                 ...paramsConfig.mutatorData,
-                searchTerm: e.target.value
+                searchTerm: searchValue
             }
         });
     };

@@ -76,8 +76,8 @@ function ProviderTable({ readonly }) {
         setSelected(selectedRow);
     };
 
-    const handleSearchChange = (e) => {
-        setNewSearch(e.target.value);
+    const handleSearchChange = (searchValue) => {
+        setNewSearch(searchValue);
     };
 
     function handleToggle() {
