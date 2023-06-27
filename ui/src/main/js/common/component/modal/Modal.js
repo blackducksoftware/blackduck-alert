@@ -25,26 +25,19 @@ const useStyles = createUseStyles((theme) => ({
         borderRadius: '5px',
         position: 'relative',
         width: '90%',
-        minWidth: 600,
-        maxWidth: '100%',
+        maxWidth: 600,
         margin: ['100px', 'auto'],
         maxHeight: '80%',
         overflow: 'auto'
     },
     modalStyleLarge: {
-        minWidth: 900,
-        maxWidth: '100%',
-        width: 'fit-content'
+        maxWidth: 900
     },
     modalStyleMedium: {
-        minWidth: 700,
-        maxWidth: '100%',
-        width: 'fit-content'
+        maxWidth: 700
     },
     modalStyleSmall: {
-        minWidth: 400,
-        maxWidth: '100%',
-        width: 'fit-content'
+        maxWidth: 400
     },
     modalContent: {
         position: 'relative'
