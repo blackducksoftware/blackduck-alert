@@ -15,11 +15,11 @@ export const AZURE_BOARDS_GLOBAL_FIELD_KEYS = {
 };
 
 export const AZURE_BOARDS_DISTRIBUTION_FIELD_KEYS = {
-    comment: 'channel.azureBoards.boards.work.item.comment',
-    project: 'channel.azureBoards.boards.project',
-    workItemType: 'channel.azureBoards.boards.work.item.type',
-    workItemCompleted: 'channel.azureBoards.boards.work.item.completed.state',
-    workItemReopen: 'channel.azureBoards.boards.work.item.reopen.state'
+    comment: 'channel.azure.boards.work.item.comment',
+    project: 'channel.azure.boards.project',
+    workItemType: 'channel.azure.boards.work.item.type',
+    workItemCompleted: 'channel.azure.boards.work.item.completed.state',
+    workItemReopen: 'channel.azure.boards.work.item.reopen.state'
 };
 
 export const AZURE_BOARDS_URLS = {
