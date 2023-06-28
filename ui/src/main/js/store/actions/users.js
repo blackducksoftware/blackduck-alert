@@ -1,14 +1,14 @@
 import {
-    USER_MANAGEMENT_USER_CLEAR_FIELD_ERRORS,
+    USER_MANAGEMENT_GET_FAIL,
+    USER_MANAGEMENT_GET_REQUEST,
+    USER_MANAGEMENT_GET_SUCCESS,
+    USER_MANAGEMENT_USER_BULK_DELETE_FAIL,
     USER_MANAGEMENT_USER_BULK_DELETE_FETCH,
     USER_MANAGEMENT_USER_BULK_DELETE_SUCCESS,
-    USER_MANAGEMENT_USER_BULK_DELETE_FAIL,
+    USER_MANAGEMENT_USER_CLEAR_FIELD_ERRORS,
     USER_MANAGEMENT_USER_DELETE_ERROR,
     USER_MANAGEMENT_USER_DELETED,
     USER_MANAGEMENT_USER_DELETING,
-    USER_MANAGEMENT_GET_REQUEST,
-    USER_MANAGEMENT_GET_SUCCESS,
-    USER_MANAGEMENT_GET_FAIL,
     USER_MANAGEMENT_USER_SAVE_ERROR,
     USER_MANAGEMENT_USER_SAVED,
     USER_MANAGEMENT_USER_SAVING,
@@ -280,9 +280,7 @@ export function bulkDeleteUsers(userIdArray) {
         const { csrfToken } = getState().session;
 
         Promise.all(userIdArray.map((user) => { // eslint-disable-line
-            if (user.staged) {
-                return ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user.id);
-            }
+            return ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user.id);
         })).catch((error) => {
             dispatch(bulkDeleteUserFail(error));
             console.error; // eslint-disable-line

@@ -52,18 +52,21 @@ const certificates = (state = initialState, action) => {
             return {
                 ...state,
                 error: HTTPErrorUtils.createErrorObject(action),
-                fetching: false
+                fetching: false,
+                saveStatus: ''
             };
         case CERTIFICATES_GET_SUCCESS:
             return {
                 ...state,
                 data: action.certificates,
-                fetching: false
+                fetching: false,
+                saveStatus: ''
             };
         case CERTIFICATES_GET_REQUEST:
             return {
                 ...state,
-                fetching: true
+                fetching: true,
+                saveStatus: ''
             };
         case CERTIFICATE_VALIDATING:
             return {

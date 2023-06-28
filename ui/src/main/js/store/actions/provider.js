@@ -1,27 +1,27 @@
 import {
-    PROVIDER_DELETE_REQUEST,
+    PROVIDER_CLEAR_FIELD_ERRORS,
     PROVIDER_DELETE_FAIL,
+    PROVIDER_DELETE_REQUEST,
     PROVIDER_DELETE_SUCCESS,
-    PROVIDER_GET_REQUEST,
     PROVIDER_GET_FAIL,
+    PROVIDER_GET_REQUEST,
     PROVIDER_GET_SUCCESS,
-    PROVIDER_POST_REQUEST,
     PROVIDER_POST_FAIL,
+    PROVIDER_POST_REQUEST,
     PROVIDER_POST_SUCCESS,
-    PROVIDER_VALIDATE_REQUEST,
-    PROVIDER_VALIDATE_FAIL,
-    PROVIDER_VALIDATE_SUCCESS,
-    PROVIDER_TEST_REQUEST,
     PROVIDER_TEST_FAIL,
+    PROVIDER_TEST_REQUEST,
     PROVIDER_TEST_SUCCESS,
-    PROVIDER_CLEAR_FIELD_ERRORS
+    PROVIDER_VALIDATE_FAIL,
+    PROVIDER_VALIDATE_REQUEST,
+    PROVIDER_VALIDATE_SUCCESS
 } from 'store/actions/types';
 import * as ConfigRequestBuilder from 'common/util/configurationRequestBuilder';
+import { CONFIG_API_URL } from 'common/util/configurationRequestBuilder';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import { unauthorized } from 'store/actions/session';
 import HeaderUtilities from 'common/util/HeaderUtilities';
 import { createRequestUrl } from 'common/util/RequestUtilities';
-import { CONFIG_API_URL } from 'common/util/configurationRequestBuilder';
 import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
 
 function fetchingProvider() {
@@ -246,9 +246,7 @@ export function bulkDeleteProviders(providerIdArray) {
         const { csrfToken } = getState().session;
 
         Promise.all(providerIdArray.map((provider) => { // eslint-disable-line
-            if (provider.staged) {
-                return ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, provider.id);
-            }
+            return ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, provider.id);
         })).catch((error) => {
             dispatch(bulkDeleteProvidersError(error));
             console.error; // eslint-disable-line
