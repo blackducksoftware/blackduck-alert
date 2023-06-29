@@ -15,12 +15,12 @@ public interface AuditFailedEntryRepository extends JpaRepository<AuditFailedEnt
     @Query(value = "SELECT failedAuditEntry "
         + "FROM AuditFailedEntity failedAuditEntry "
         + "LEFT JOIN failedAuditEntry.notification relation ON failedAuditEntry.notificationId = relation.notificationId "
-        + "WHERE LOWER(failedAuditEntry.providerName) LIKE %:searchTerm% OR "
-        + "LOWER(failedAuditEntry.notificationType) LIKE %:searchTerm% OR "
-        + "LOWER(relation.notificationContent) LIKE %:searchTerm% OR "
+        + "WHERE LOWER(failedAuditEntry.providerName) ILIKE %:searchTerm% OR "
+        + "LOWER(failedAuditEntry.notificationType) ILIKE %:searchTerm% OR "
+        + "LOWER(relation.notificationContent) ILIKE %:searchTerm% OR "
         + "COALESCE(to_char(failedAuditEntry.createdAt, 'MM/DD/YYYY, HH24:MI:SS'), '') LIKE %:searchTerm% OR "
-        + "LOWER(failedAuditEntry.jobName) LIKE %:searchTerm% OR "
-        + "LOWER(failedAuditEntry.channelName) LIKE %:searchTerm%"
+        + "LOWER(failedAuditEntry.jobName) ILIKE %:searchTerm% OR "
+        + "LOWER(failedAuditEntry.channelName) ILIKE %:searchTerm%"
     )
     Page<AuditFailedEntity> findAllWithSearchTerm(@Param("searchTerm") String searchTerm, Pageable pageable);
 
