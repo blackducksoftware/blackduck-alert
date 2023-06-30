@@ -113,6 +113,7 @@ const provider = (state = initialState, action) => {
                 ...state,
                 fetching: false,
                 saveStatus: 'ERROR',
+                testStatus: 'ERROR',
                 error: HTTPErrorUtils.createErrorObject(action)
             };
         case PROVIDER_VALIDATE_SUCCESS:
