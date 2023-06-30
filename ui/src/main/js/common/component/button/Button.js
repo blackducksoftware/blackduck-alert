@@ -86,7 +86,7 @@ const Button = ({ id, icon, type, isDisabled, onClick, role, buttonStyle = 'defa
             title={title}
             disabled={isDisabled}
         >
-            { icon && (
+            {icon && (
                 <FontAwesomeIcon icon={icon} size="sm" />
             )}
             <div>
@@ -94,7 +94,7 @@ const Button = ({ id, icon, type, isDisabled, onClick, role, buttonStyle = 'defa
             </div>
             {showLoader && (
                 <div className={classes.loader}>
-                    <FontAwesomeIcon icon="spinner" size="md" spin />
+                    <FontAwesomeIcon icon="spinner" size="sm" spin />
                 </div>
             )}
         </button>

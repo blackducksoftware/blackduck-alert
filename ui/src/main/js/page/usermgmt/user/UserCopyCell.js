@@ -8,6 +8,7 @@ const UserCopyCell = ({ data }) => {
     const [showModal, setShowModal] = useState(false);
     const [selectedData, setSelectedData] = useState(data);
     const [statusMessage, setStatusMessage] = useState();
+    const isExternalUser = data.authenticationType !== 'DATABASE';
 
     const modalOptions = {
         type: 'COPY',
@@ -32,16 +33,21 @@ const UserCopyCell = ({ data }) => {
 
     return (
         <>
-            { statusMessage && (
+            {statusMessage && (
                 <StatusMessage
                     actionMessage={statusMessage.type === 'success' ? statusMessage.message : null}
                     errorMessage={statusMessage.type === 'error' ? statusMessage.message : null}
                 />
             )}
 
-            <IconButton icon="copy" onClick={() => handleClick()} />
+            <IconButton
+                icon="copy"
+                onClick={() => handleClick()}
+                disabled={isExternalUser}
+                title={isExternalUser ? 'Cannot copy an externally managed user' : 'Copy'}
+            />
 
-            { showModal ? (
+            {showModal ? (
                 <UserModal
                     data={selectedData}
                     isOpen={showModal}
@@ -50,7 +56,7 @@ const UserCopyCell = ({ data }) => {
                     setStatusMessage={setStatusMessage}
                     successMessage="Successfully created one new user."
                 />
-            ) : null }
+            ) : null}
         </>
 
     );
