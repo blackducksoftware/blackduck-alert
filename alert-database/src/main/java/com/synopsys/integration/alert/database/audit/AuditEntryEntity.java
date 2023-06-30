@@ -19,7 +19,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
@@ -49,8 +48,7 @@ public class AuditEntryEntity extends BaseEntity implements DatabaseEntity {
 
     @Column(name = "error_message")
     private String errorMessage;
-
-    @Lob
+    
     @Column(name = "error_stack_trace", length = STACK_TRACE_CHAR_LIMIT)
     private String errorStackTrace;
 
