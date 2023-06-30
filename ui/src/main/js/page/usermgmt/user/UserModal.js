@@ -3,19 +3,24 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { saveUser, validateUser, fetchUsers, clearUserFieldErrors } from 'store/actions/users';
+import { clearUserFieldErrors, fetchUsers, saveUser, validateUser } from 'store/actions/users';
 import DynamicSelectInput from 'common/component/input/DynamicSelectInput';
 import Modal from 'common/component/modal/Modal';
 import PasswordInput from 'common/component/input/PasswordInput';
 import TextInput from 'common/component/input/TextInput';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import { USER_INPUT_FIELD_KEYS } from 'page/usermgmt/user/UserModel';
+import classNames from 'classnames';
 
-const useStyles = createUseStyles({
-    descriptorContainer: {
+const useStyles = createUseStyles((theme) => ({
+    messageContainer: {
         display: 'flex',
         alignItems: 'center',
-        padding: [0, 0, '20px', '60px']
+        padding: [0, 0, '20px', '70px'],
+        justifyContent: 'center'
+    },
+    warningStyle: {
+        color: theme.colors.warning
     },
     descriptor: {
         fontSize: '14px',
@@ -24,7 +29,7 @@ const useStyles = createUseStyles({
     userModalContent: {
         margin: ['30px', 0, '60px']
     }
-});
+}));
 
 const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, successMessage }) => {
     const classes = useStyles();
@@ -33,6 +38,9 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
     const { copyDescription, submitText, title, type } = modalOptions;
     const [userModel, setUserModel] = useState(type === 'CREATE' ? {} : data);
     const [showLoader, setShowLoader] = useState(false);
+    const messageContainerClass = classNames(classes.messageContainer, {
+        [classes.warningStyle]: type === 'EDIT'
+    });
 
     const fieldErrors = useSelector((state) => state.users.error.fieldErrors);
     const roles = useSelector((state) => state.roles.data);
@@ -125,15 +133,23 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
             submitText={submitText}
             showLoader={showLoader}
         >
-            { type === 'COPY' && (
-                <div className={classes.descriptorContainer}>
-                    <FontAwesomeIcon icon="exclamation-circle" size="2x" />
-                    <span className={classes.descriptor}>
-                        {copyDescription}
-                    </span>
-                </div>
-            )}
             <div className={classes.userModalContent}>
+                {type === 'COPY' && (
+                    <div className={messageContainerClass}>
+                        <FontAwesomeIcon icon="exclamation-circle" size="2x" />
+                        <span className={classes.descriptor}>
+                            {copyDescription}
+                        </span>
+                    </div>
+                )}
+                {type === 'EDIT' && external && (
+                    <div className={messageContainerClass}>
+                        <FontAwesomeIcon icon="exclamation-circle" size="2x" />
+                        <span className={classes.descriptor}>
+                            This user is managed by a system external to Alert. Only roles can be assigned.
+                        </span>
+                    </div>
+                )}
                 <TextInput
                     id={USER_INPUT_FIELD_KEYS.USERNAME_KEY}
                     name={USER_INPUT_FIELD_KEYS.USERNAME_KEY}
@@ -161,20 +177,22 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
                     errorName={USER_INPUT_FIELD_KEYS.PASSWORD_KEY}
                     errorValue={fieldErrors[USER_INPUT_FIELD_KEYS.PASSWORD_KEY]}
                 />
-                <PasswordInput
-                    id={USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY}
-                    name={USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY}
-                    label="Confirm Password"
-                    customDescription="The user's password."
-                    placeholder="Confirm password..."
-                    readOnly={false}
-                    required
-                    isSet={userModel[USER_INPUT_FIELD_KEYS.IS_PASSWORD_SET]}
-                    onChange={handleOnChange(USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY)}
-                    value={userModel[USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY] || undefined}
-                    errorName={USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY}
-                    errorValue={userModel[USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_ERROR_KEY]}
-                />
+                {!external && (
+                    <PasswordInput
+                        id={USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY}
+                        name={USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY}
+                        label="Confirm Password"
+                        customDescription="The user's password."
+                        placeholder="Confirm password..."
+                        readOnly={false}
+                        required
+                        isSet={userModel[USER_INPUT_FIELD_KEYS.IS_PASSWORD_SET]}
+                        onChange={handleOnChange(USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY)}
+                        value={userModel[USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY] || undefined}
+                        errorName={USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY}
+                        errorValue={userModel[USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_ERROR_KEY]}
+                    />
+                )}
                 <TextInput
                     id={USER_INPUT_FIELD_KEYS.EMAIL_KEY}
                     name={USER_INPUT_FIELD_KEYS.EMAIL_KEY}
