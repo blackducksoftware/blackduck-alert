@@ -27,7 +27,7 @@ const EmailGlobalConfiguration = ({
             id={EMAIL_TEST_FIELD.key}
             name={EMAIL_TEST_FIELD.key}
             label={EMAIL_TEST_FIELD.label}
-            description={EMAIL_TEST_FIELD.description}
+            customDescription={EMAIL_TEST_FIELD.description}
             onChange={({ target }) => setTestEmailAddress(target.value)}
             value={testEmailAddress}
         />
