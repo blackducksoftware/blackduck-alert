@@ -24,16 +24,20 @@ const UserEditCell = ({ data }) => {
 
     return (
         <>
-            { statusMessage && (
+            {statusMessage && (
                 <StatusMessage
                     actionMessage={statusMessage.type === 'success' ? statusMessage.message : null}
                     errorMessage={statusMessage.type === 'error' ? statusMessage.message : null}
                 />
             )}
 
-            <IconButton icon="pencil-alt" onClick={() => handleClick()} />
+            <IconButton
+                icon="pencil-alt"
+                onClick={() => handleClick()}
+                title="Edit"
+            />
 
-            { showModal && (
+            {showModal && (
                 <UserModal
                     data={selectedData}
                     isOpen={showModal}
