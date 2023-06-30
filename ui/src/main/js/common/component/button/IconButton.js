@@ -21,7 +21,7 @@ const useStyles = createUseStyles({
     }
 });
 
-const IconButton = ({ id, type, onClick, role, title, icon }) => {
+const IconButton = ({ id, type, onClick, role, title, icon, disabled }) => {
     const classes = useStyles();
     return (
         <button
@@ -31,6 +31,7 @@ const IconButton = ({ id, type, onClick, role, title, icon }) => {
             type={type}
             onClick={onClick}
             title={title}
+            disabled={disabled}
         >
             <FontAwesomeIcon icon={icon} />
         </button>
@@ -47,7 +48,8 @@ IconButton.propTypes = {
     role: PropTypes.string,
     title: PropTypes.string,
     type: PropTypes.string,
-    icon: PropTypes.string.isRequired
+    icon: PropTypes.string.isRequired,
+    disabled: PropTypes.bool
 };
 
 export default IconButton;
