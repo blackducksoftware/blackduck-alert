@@ -18,8 +18,6 @@ const UserCopyCell = ({ data }) => {
     };
 
     function handleClick() {
-        console.log(data);
-        console.log(data.authenticationType);
         setStatusMessage();
         setShowModal(true);
         setSelectedData((userData) => ({
@@ -46,7 +44,7 @@ const UserCopyCell = ({ data }) => {
                 icon="copy"
                 onClick={() => handleClick()}
                 disabled={isExternalUser}
-                title={isExternalUser ? 'Cannot copy an externally managed user' : undefined}
+                title={isExternalUser ? 'Cannot copy an externally managed user' : 'Copy'}
             />
 
             {showModal ? (
