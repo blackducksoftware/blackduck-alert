@@ -115,7 +115,7 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
             });
         }
 
-        if (testStatus === 'ERROR' && requestType === 'test') {
+        if (testStatus === 'ERROR' || saveStatus === 'ERROR') {
             setShowLoader();
             setNotificationConfig({
                 title: 'Provider Test Unsuccessful.',
@@ -134,10 +134,6 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
             });
             setShowNotification(true);
             dispatch(clearProviderFieldErrors());
-        }
-
-        if (saveStatus === 'ERROR') {
-            setShowLoader();
         }
     }, [saveStatus, testStatus]);
 
