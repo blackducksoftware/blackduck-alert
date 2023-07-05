@@ -38,16 +38,18 @@ const radioOptions = [{
 function getInitialData(type, data) {
     if (type === 'EDIT') {
         return data;
-    } else if (type === 'COPY') {
-        const { name, url, authorizationMethod } = data;
+    }
+    if (type === 'COPY') {
+        const { name, url, authorizationMethod, userName, disablePluginCheck } = data;
         return {
             name,
             url,
-            authorizationMethod
+            authorizationMethod,
+            userName,
+            disablePluginCheck
         };
-    } else {
-        return {};
     }
+    return {};
 }
 
 const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, successMessage, readonly }) => {
