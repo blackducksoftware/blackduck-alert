@@ -107,31 +107,37 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
         const { sortName, sortOrder } = paramsConfig.mutatorData;
         if (name !== sortName) {
             setSortConfig({ name, direction: 'ASC' });
-            return setParamsConfig({ ...paramsConfig,
+            return setParamsConfig({
+                ...paramsConfig,
                 mutatorData: {
                     ...paramsConfig.mutatorData,
                     sortName: name,
                     sortOrder: 'asc'
-                } });
+                }
+            });
         }
 
         if (name === sortName && sortOrder !== 'desc') {
             setSortConfig({ name, direction: 'DESC' });
-            return setParamsConfig({ ...paramsConfig,
+            return setParamsConfig({
+                ...paramsConfig,
                 mutatorData: {
                     ...paramsConfig.mutatorData,
                     sortName: name,
                     sortOrder: 'desc'
-                } });
+                }
+            });
         }
 
         setSortConfig();
-        return setParamsConfig({ ...paramsConfig,
+        return setParamsConfig({
+            ...paramsConfig,
             mutatorData: {
                 ...paramsConfig.mutatorData,
                 sortName: '',
                 sortOrder: ''
-            } });
+            }
+        });
     };
 
     const onSelected = (selectedRow) => {
