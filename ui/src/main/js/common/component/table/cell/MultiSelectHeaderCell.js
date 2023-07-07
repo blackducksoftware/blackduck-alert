@@ -25,7 +25,9 @@ const MultiSelectHeaderCell = ({ tableData, onSelected, selected, disableSelectO
         !disableSelectOptions?.disabledItems.includes(row[disableSelectOptions.key])
     )).map((item) => (
         // jobId added for distribution tables
-        item.id || item.jobId
+        // fieldName added for Advanced Jira Mapping Fields (in Distribution Config). This should eventually be removed and
+        //  replaced in favor of UUIDs once a concrete implementation of the distribution endpoint is available.
+        item.id || item.jobId || item.fieldName
     )), [tableData]);
 
     useEffect(() => {
