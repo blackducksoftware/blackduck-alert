@@ -1,9 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
-import IconButton from 'common/component/button/IconButton';
-import { DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
-import { useHistory } from 'react-router-dom/cjs/react-router-dom';
 import classNames from 'classnames';
 
 const useStyles = createUseStyles((theme) => ({
