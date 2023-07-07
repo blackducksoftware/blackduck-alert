@@ -41,7 +41,7 @@ function transformData(data, type) {
         descriptorName: 'provider_blackduck',
         keyToValues: {
             'provider.common.config.enabled': { isSet: true, values: [data.enabled] },
-            'provider.common.config.name': { isSet: !!data.name, values: [data.name] },
+            'provider.common.config.name': { isSet: Boolean(data.name), values: [data.name] },
             'blackduck.url': { isSet: true, values: [data.url] },
             'blackduck.timeout': { isSet: true, values: [data.timeout] }
         }
