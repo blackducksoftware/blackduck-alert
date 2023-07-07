@@ -8,7 +8,7 @@ const emptyTableConfig = {
     message: 'There are no records to display for this table.  Please add a Jira field mapping to use this table.'
 };
 
-function JiraFieldMapDistributionTable({ initialData, onFieldMappingUpdate }) {
+const JiraFieldMapDistributionTable = ({ initialData, onFieldMappingUpdate }) => {
     const [tableData, setTableData] = useState(initialData);
     const [selected, setSelected] = useState([]);
     const [data, setData] = useState();
@@ -53,7 +53,7 @@ function JiraFieldMapDistributionTable({ initialData, onFieldMappingUpdate }) {
             tableActions={() => <JiraFieldMapTableActions data={tableData} selected={selected} setSelected={setSelected} updateTableData={setTableData} />}
         />
     );
-}
+};
 
 JiraFieldMapDistributionTable.propTypes = {
     initialData: PropTypes.object,

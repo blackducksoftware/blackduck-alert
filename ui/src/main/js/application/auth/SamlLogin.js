@@ -28,7 +28,6 @@ const useStyles = createUseStyles((theme) => ({
     },
     samlLoginAction: {
         display: 'flex',
-        flexDirection: 'column',
         justifyContent: 'center'
     }
 }));

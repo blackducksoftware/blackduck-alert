@@ -18,6 +18,9 @@ const colors = {
     },
     defaultAlertColor: '#2E3B4E',
     darkGreyAlertColor: '#646E81',
+    statusFailure: '#E15241',
+    statusPending: '#F0AD4E',
+    statusSuccess: '#509D51',
     warning: '#E07C05'
 };
 

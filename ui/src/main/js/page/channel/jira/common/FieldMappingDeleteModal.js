@@ -35,7 +35,11 @@ const FieldMappingDeleteModal = ({ isOpen, toggleModal, data, selected, setSelec
     }
 
     function handleDelete() {
-        const updatedData = data.filter((fieldMapping) => !selected.includes(fieldMapping.fieldName));
+        const updatedData = data.filter((tableData) => (
+            !selectedFieldModels.find((model) => (
+                (model.fieldName === tableData.fieldName) && model.staged
+            ))
+        ));
         updateTableData(updatedData);
         setSelected([]);
         handleClose();
@@ -68,10 +72,10 @@ const FieldMappingDeleteModal = ({ isOpen, toggleModal, data, selected, setSelec
                 submitText="Delete"
             >
                 <div className={classes.deleteConfirmMessage}>
-                    { isMultiDelete ? 'Are you sure you want to delete these Jira Field?' : 'Are you sure you want to delete this Jira Field?' }
+                    {isMultiDelete ? 'Are you sure you want to delete these Jira Fields?' : 'Are you sure you want to delete this Jira Field?'}
                 </div>
                 <div>
-                    { selectedFieldModels?.map((fieldModel) => (
+                    {selectedFieldModels?.map((fieldModel) => (
                         <div className={classes.cardContainer} key={fieldModel.fieldName}>
                             <input type="checkbox" checked={fieldModel.staged} onChange={() => toggleSelect(fieldModel)} />
                             <Card icon={['fab', 'jira']} label={fieldModel.fieldName} description={fieldModel.fieldValue} />
