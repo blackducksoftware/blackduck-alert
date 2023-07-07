@@ -26,7 +26,7 @@ const useStyles = createUseStyles({
 });
 
 const ModalFooter = ({ handleCancel, handleSubmit, handleTest, submitText, buttonStyle = 'default',
-    showLoader, testText, disableSubmit, disableTest = 'false', submitTitle }) => {
+    showLoader, testText, disableSubmit, disableTest = false, submitTitle }) => {
     const classes = useStyles();
 
     return (
