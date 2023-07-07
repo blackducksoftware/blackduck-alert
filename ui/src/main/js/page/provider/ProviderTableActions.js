@@ -34,6 +34,18 @@ const ProviderTableActions = ({ data, selected, readonly, setSelected }) => {
         dispatch(fetchProviders());
     }
 
+    function getDeleteButtonTitle() {
+        if (readonly) {
+            return 'You do not have access to delete providers.'
+        }
+
+        if (selected.length === 0) {
+            return 'Select a provider to delete.'
+        }
+
+        return 'Delete provider.'
+    }
+
     return (
         <>
             {statusMessage && (
@@ -49,7 +61,8 @@ const ProviderTableActions = ({ data, selected, readonly, setSelected }) => {
                 onClick={handleDeleteProviderClick}
                 type="button"
                 icon="trash"
-                isDisabled={selected.length === 0}
+                isDisabled={selected.length === 0 || readonly}
+                title={getDeleteButtonTitle()}
                 text="Delete"
                 buttonStyle="delete"
             />

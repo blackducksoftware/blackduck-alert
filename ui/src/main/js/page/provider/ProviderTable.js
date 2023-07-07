@@ -53,7 +53,7 @@ function ProviderTable({ readonly }) {
         label: 'Copy',
         sortable: false,
         customCell: ProviderCopyCell,
-        settings: { alignment: 'center' }
+        settings: { alignment: 'center', readonly }
     }];
 
     useEffect(() => {
