@@ -7,7 +7,7 @@ import Button from 'common/component/button/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchJiraServer } from 'store/actions/jira-server';
 
-const JiraServerTableActions = ({ data, readonly, allowDelete, selected, setSelected }) => {
+const JiraServerTableActions = ({ data, readonly, allowDelete, selected, setSelected, paramsConfig }) => {
     const modalOptions = {
         type: 'CREATE',
         submitText: 'Create',
@@ -31,7 +31,7 @@ const JiraServerTableActions = ({ data, readonly, allowDelete, selected, setSele
     }
 
     function handleRefresh() {
-        dispatch(fetchJiraServer());
+        dispatch(fetchJiraServer(paramsConfig));
     }
 
     return (
@@ -88,7 +88,8 @@ JiraServerTableActions.propTypes = {
     allowDelete: PropTypes.bool,
     data: PropTypes.object,
     selected: PropTypes.array,
-    setSelected: PropTypes.func
+    setSelected: PropTypes.func,
+    paramsConfig: PropTypes.object
 };
 
 export default JiraServerTableActions;

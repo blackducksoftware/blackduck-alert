@@ -156,7 +156,16 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
             showPageSize
             data={data}
             emptyTableConfig={emptyTableConfig}
-            tableActions={() => <JiraServerTableActions data={data} readonly={readonly} allowDelete={allowDelete} selected={selected} setSelected={setSelected} />}
+            tableActions={() => 
+                <JiraServerTableActions 
+                    data={data}
+                    readonly={readonly}
+                    allowDelete={allowDelete}
+                    selected={selected}
+                    setSelected={setSelected}
+                    paramsConfig={paramsConfig}
+                />
+            }
         />
     );
 };

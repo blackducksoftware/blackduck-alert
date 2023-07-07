@@ -176,7 +176,15 @@ const DistributionTable = ({ readonly }) => {
             showPageSize
             data={data}
             emptyTableConfig={emptyTableConfig}
-            tableActions={() => <DistributionTableActions data={data} readonly={readonly} selected={selected} setSelected={setSelected} />}
+            tableActions={() =>
+                <DistributionTableActions
+                    data={data}
+                    readonly={readonly}
+                    selected={selected}
+                    setSelected={setSelected}
+                    paramsConfig={paramsConfig} 
+                />
+            }
         />
     );
 };
