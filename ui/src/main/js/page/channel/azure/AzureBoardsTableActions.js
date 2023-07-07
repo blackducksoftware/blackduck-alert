@@ -7,7 +7,7 @@ import AzureBoardsDeleteModal from 'page/channel/azure/AzureBoardsDeleteModal';
 import { fetchAzureBoards } from 'store/actions/azure-boards';
 import { useDispatch, useSelector } from 'react-redux';
 
-const AzureBoardsTableActions = ({ data, readonly, allowDelete, selected, setSelected }) => {
+const AzureBoardsTableActions = ({ data, readonly, allowDelete, selected, setSelected, paramsConfig }) => {
     const modalOptions = {
         type: 'CREATE',
         submitText: 'Create',
@@ -31,7 +31,7 @@ const AzureBoardsTableActions = ({ data, readonly, allowDelete, selected, setSel
     }
 
     function handleRefresh() {
-        dispatch(fetchAzureBoards());
+        dispatch(fetchAzureBoards(paramsConfig));
     }
 
     return (
@@ -88,7 +88,8 @@ AzureBoardsTableActions.propTypes = {
     selected: PropTypes.array,
     readonly: PropTypes.bool,
     allowDelete: PropTypes.bool,
-    setSelected: PropTypes.func
+    setSelected: PropTypes.func,
+    paramsConfig: PropTypes.object
 };
 
 export default AzureBoardsTableActions;

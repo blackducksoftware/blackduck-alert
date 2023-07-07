@@ -21,8 +21,7 @@ const useStyles = createUseStyles({
     },
     permissionTable: {
         width: '90%',
-        margin: 'auto',
-        overflowX: 'auto'
+        margin: 'auto'
     }
 });
 

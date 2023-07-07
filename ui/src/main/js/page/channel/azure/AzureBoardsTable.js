@@ -179,7 +179,16 @@ const AzureBoardsTable = ({ readonly, allowDelete }) => {
                 showPageSize
                 data={data}
                 emptyTableConfig={emptyTableConfig}
-                tableActions={() => <AzureBoardsTableActions data={data} readonly={readonly} allowDelete={allowDelete} selected={selected} setSelected={setSelected} />}
+                tableActions={() => 
+                    <AzureBoardsTableActions
+                        data={data}
+                        readonly={readonly}
+                        allowDelete={allowDelete}
+                        selected={selected}
+                        setSelected={setSelected}
+                        paramsConfig={paramsConfig}
+                    />
+                }
             />
             {statusMessage && (
                 <StatusMessage
