@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import Table from 'common/component/table/Table';
 import DistributionTableActions from 'page/distribution/DistributionTableActions';
 import DistributionActionCell from 'page/distribution/DistributionActionCell';
+import DistributionStatusCell from 'page/distribution/DistributionStatusCell';
 import ChannelCell from 'page/distribution/ChannelCell';
 import ProviderCell from 'page/distribution/ProviderCell';
 import FrequencyCell from 'page/distribution/FrequencyCell';
@@ -36,7 +37,8 @@ const COLUMNS = [{
 }, {
     key: 'auditStatus',
     label: 'Status',
-    sortable: false
+    sortable: false,
+    customCell: DistributionStatusCell
 }, {
     key: 'enabled',
     label: 'Enabled',
