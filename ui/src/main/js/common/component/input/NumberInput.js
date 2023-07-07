@@ -30,7 +30,7 @@ NumberInput.propTypes = {
     readOnly: PropTypes.bool,
     inputClass: PropTypes.string,
     name: PropTypes.string,
-    value: PropTypes.string,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     onChange: PropTypes.func,
     description: PropTypes.string,
     errorName: PropTypes.string,

@@ -150,6 +150,9 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
             showLoader={showLoader}
             notification={notificationConfig}
             showNotification={showNotification}
+            disableSubmit={readonly}
+            disableTest={readonly}
+            submitTitle={readonly ? 'You are not permitted to perform this action.' : 'Save congifuration.'}
         >
             { type === 'COPY' && (
                 <div className={classes.descriptorContainer}>

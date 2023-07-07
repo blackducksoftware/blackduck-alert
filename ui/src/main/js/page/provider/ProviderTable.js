@@ -10,38 +10,6 @@ import { fetchProviders } from 'store/actions/provider';
 import { BLACKDUCK_GLOBAL_FIELD_KEYS } from 'page/provider/blackduck/BlackDuckModel';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 
-const COLUMNS = [{
-    key: 'name',
-    label: 'Name',
-    sortable: true
-}, {
-    key: 'createdAt',
-    label: 'Created At',
-    sortable: true
-}, {
-    key: 'lastUpdated',
-    label: 'Last Updated',
-    sortable: true
-}, {
-    key: 'enabled',
-    label: 'Enabled',
-    sortable: false,
-    customCell: ProviderEnabledCell,
-    settings: { alignment: 'center' }
-}, {
-    key: 'editProvider',
-    label: 'Edit',
-    sortable: false,
-    customCell: ProviderEditCell,
-    settings: { alignment: 'center' }
-}, {
-    key: 'copyProvider',
-    label: 'Copy',
-    sortable: false,
-    customCell: ProviderCopyCell,
-    settings: { alignment: 'center' }
-}];
-
 const emptyTableConfig = {
     message: 'There are no records to display for this table.  Please create a Provider connection to use this table.'
 };
@@ -55,6 +23,38 @@ function ProviderTable({ readonly }) {
     const [selected, setSelected] = useState([]);
     const [sortConfig, setSortConfig] = useState();
     const { data } = useSelector((state) => state.provider);
+
+    const COLUMNS = [{
+        key: 'name',
+        label: 'Name',
+        sortable: true
+    }, {
+        key: 'createdAt',
+        label: 'Created At',
+        sortable: true
+    }, {
+        key: 'lastUpdated',
+        label: 'Last Updated',
+        sortable: true
+    }, {
+        key: 'enabled',
+        label: 'Enabled',
+        sortable: false,
+        customCell: ProviderEnabledCell,
+        settings: { alignment: 'center' }
+    }, {
+        key: 'editProvider',
+        label: 'Edit',
+        sortable: false,
+        customCell: ProviderEditCell,
+        settings: { alignment: 'center', readonly }
+    }, {
+        key: 'copyProvider',
+        label: 'Copy',
+        sortable: false,
+        customCell: ProviderCopyCell,
+        settings: { alignment: 'center', readonly }
+    }];
 
     useEffect(() => {
         dispatch(fetchProviders());
