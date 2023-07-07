@@ -43,6 +43,7 @@ const useStyles = createUseStyles((theme) => ({
         position: 'relative'
     },
     modalBody: {
+        overflowY: 'auto',
         maxHeight: 'calc(100vh - 355px)',
         padding: ['16px', 0]
     }
