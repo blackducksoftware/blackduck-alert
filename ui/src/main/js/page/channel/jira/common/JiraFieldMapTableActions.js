@@ -27,7 +27,7 @@ const JiraFieldMapTableActions = ({ data, selected, updateTableData, setSelected
 
             <Button onClick={handleDeleteClick} type="button" icon="trash" isDisabled={selected.length === 0} text="Delete" buttonStyle="delete" />
 
-            { showCreateModal && (
+            {showCreateModal && (
                 <FieldMappingModal
                     tableData={data}
                     isOpen={showCreateModal}
@@ -37,7 +37,7 @@ const JiraFieldMapTableActions = ({ data, selected, updateTableData, setSelected
                 />
             )}
 
-            { showDeleteModal && (
+            {showDeleteModal && (
                 <FieldMappingDeleteModal
                     data={data}
                     isOpen={showDeleteModal}
