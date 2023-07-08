@@ -217,7 +217,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
                     value={userModel[USER_INPUT_FIELD_KEYS.ROLENAMES_KEY] || undefined}
                     errorName={USER_INPUT_FIELD_KEYS.ROLENAMES_KEY}
                     errorValue={fieldErrors[USER_INPUT_FIELD_KEYS.ROLENAMES_KEY]}
-                    maxMenuHeight={115}
+                    maxMenuHeight={215}
                 />
             </div>
         </Modal>

@@ -28,7 +28,8 @@ const useStyles = createUseStyles((theme) => ({
     },
     samlLoginAction: {
         display: 'flex',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        paddingBottom: '15px'
     }
 }));
 
