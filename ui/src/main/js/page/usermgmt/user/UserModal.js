@@ -75,9 +75,6 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
 
     function handleSubmit() {
         dispatch(clearUserFieldErrors());
-        if (type === 'EDIT') {
-            handleSave();
-        }
 
         if (passwordsMatch(userModel)) {
             dispatch(validateUser(userModel));
