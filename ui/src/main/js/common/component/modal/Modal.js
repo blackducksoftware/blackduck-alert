@@ -61,12 +61,6 @@ const Modal = ({
     const classes = useStyles();
     const [style, setStyle] = useState(noOverflow ? classes.noOverflowModalBody : classes.modalBody);
 
-    const modalStyleClass = classNames(classes.modalStyle, {
-        [classes.modalStyleLarge]: size === 'lg',
-        [classes.modalStyleMedium]: size === 'md',
-        [classes.modalStyleSmall]: size === 'sm'
-    });
-
     function handleWindowResize() {
         if (window.innerHeight < 755) {
             setStyle(classes.modalBody);
@@ -77,6 +71,7 @@ const Modal = ({
 
     useEffect(() => {
         if (noOverflow) {
+            handleWindowResize();
             window.addEventListener('resize', handleWindowResize);
 
             return () => {
@@ -86,6 +81,12 @@ const Modal = ({
         return () => {
         };
     }, []);
+
+    const modalStyleClass = classNames(classes.modalStyle, {
+        [classes.modalStyleLarge]: size === 'lg',
+        [classes.modalStyleMedium]: size === 'md',
+        [classes.modalStyleSmall]: size === 'sm'
+    });
 
     if (!isOpen) {
         return null;
