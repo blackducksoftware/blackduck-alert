@@ -18,7 +18,8 @@ const useStyles = createUseStyles((theme) => ({
         position: 'fixed',
         zIndex: '10000',
         outline: 0,
-        cursor: 'default'
+        cursor: 'default',
+        overflow: 'auto'
     },
     modalStyle: {
         backgroundColor: theme.colors.white.default,
@@ -42,13 +43,21 @@ const useStyles = createUseStyles((theme) => ({
         position: 'relative'
     },
     modalBody: {
+        maxHeight: 'calc(100vh - 355px)',
+        padding: ['16px', 0],
+        overflowY: 'auto'
+    },
+    noOverflowModalBody: {
+        maxHeight: 'calc(100vh - 355px)',
         padding: ['16px', 0]
     }
 }));
 
-const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handleSubmit,
+const Modal = ({
+    isOpen, size, title, closeModal, children, handleCancel, handleSubmit,
     handleTest, submitText, testText, showLoader, notification, showNotification, buttonStyle,
-    disableSubmit, submitTitle }) => {
+    disableSubmit, submitTitle, noOverflow
+}) => {
     const classes = useStyles();
 
     const modalStyleClass = classNames(classes.modalStyle, {
@@ -69,8 +78,8 @@ const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handle
                         title={title}
                         closeModal={closeModal}
                     />
-                    <div className={classes.modalBody}>
-                        { showNotification && (
+                    <div className={noOverflow ? classes.noOverflowModalBody : classes.modalBody}>
+                        {showNotification && (
                             <Notification notification={notification} />
                         )}
                         {children}
@@ -116,7 +125,9 @@ Modal.propTypes = {
     testText: PropTypes.string,
     buttonStyle: PropTypes.string,
     disableSubmit: PropTypes.bool,
-    submitTitle: PropTypes.string
+    submitTitle: PropTypes.string,
+    noOverflow: PropTypes.bool,
+    children: PropTypes.any
 };
 
 export default Modal;
