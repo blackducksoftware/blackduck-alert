@@ -18,8 +18,7 @@ const useStyles = createUseStyles((theme) => ({
         position: 'fixed',
         zIndex: '10000',
         outline: 0,
-        cursor: 'default',
-        overflow: 'auto'
+        cursor: 'default'
     },
     modalStyle: {
         backgroundColor: theme.colors.white.default,
@@ -28,7 +27,8 @@ const useStyles = createUseStyles((theme) => ({
         width: '90%',
         maxWidth: 600,
         margin: ['100px', 'auto'],
-        maxHeight: '80%'
+        maxHeight: '80%',
+        overflow: 'auto'
     },
     modalStyleLarge: {
         maxWidth: 900
