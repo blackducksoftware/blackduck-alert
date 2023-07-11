@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import ReactDOM from 'react-dom';
@@ -59,12 +59,32 @@ const Modal = ({
     disableSubmit, submitTitle, noOverflow
 }) => {
     const classes = useStyles();
+    const [style, setStyle] = useState(noOverflow ? classes.noOverflowModalBody : classes.modalBody);
 
     const modalStyleClass = classNames(classes.modalStyle, {
         [classes.modalStyleLarge]: size === 'lg',
         [classes.modalStyleMedium]: size === 'md',
         [classes.modalStyleSmall]: size === 'sm'
     });
+
+    useEffect(() => {
+        if (noOverflow) {
+            function handleWindowResize() {
+                if (window.innerHeight < 755) {
+                    setStyle(classes.modalBody);
+                } else {
+                    setStyle(classes.noOverflowModalBody);
+                }
+            }
+
+            window.addEventListener('resize', handleWindowResize);
+
+            return () => {
+                window.removeEventListener('resize', handleWindowResize);
+            };
+        }
+        return {};
+    }, []);
 
     if (!isOpen) {
         return null;
@@ -78,7 +98,7 @@ const Modal = ({
                         title={title}
                         closeModal={closeModal}
                     />
-                    <div className={noOverflow ? classes.noOverflowModalBody : classes.modalBody}>
+                    <div className={style}>
                         {showNotification && (
                             <Notification notification={notification} />
                         )}

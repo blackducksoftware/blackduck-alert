@@ -129,6 +129,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
             handleSubmit={handleSubmit}
             submitText={submitText}
             showLoader={showLoader}
+            noOverflow
         >
             <div className={classes.userModalContent}>
                 {type === 'COPY' && (
