@@ -67,23 +67,24 @@ const Modal = ({
         [classes.modalStyleSmall]: size === 'sm'
     });
 
+    function handleWindowResize() {
+        if (window.innerHeight < 755) {
+            setStyle(classes.modalBody);
+        } else {
+            setStyle(classes.noOverflowModalBody);
+        }
+    }
+
     useEffect(() => {
         if (noOverflow) {
-            function handleWindowResize() {
-                if (window.innerHeight < 755) {
-                    setStyle(classes.modalBody);
-                } else {
-                    setStyle(classes.noOverflowModalBody);
-                }
-            }
-
             window.addEventListener('resize', handleWindowResize);
 
             return () => {
                 window.removeEventListener('resize', handleWindowResize);
             };
         }
-        return {};
+        return () => {
+        };
     }, []);
 
     if (!isOpen) {
