@@ -1,6 +1,6 @@
 const path = require('path');
 const merge = require('webpack-merge');
-const commonConfig = require("./webpack.common.config.js");
+const commonConfig = require('./webpack.common.config.js');
 
 const srcDir = path.resolve(__dirname, 'src');
 const jsDir = path.resolve(srcDir, 'main', 'js');
@@ -22,9 +22,9 @@ module.exports = merge.smart(commonConfig, {
         port: 9000,
         compress: true,
         historyApiFallback: true,
-        allowedHosts: "all",
+        allowedHosts: 'all',
         proxy: [{
-            context: ['/alert/api/**', '/alert/saml2/**'],
+            context: ['/alert'],
             target: 'https://localhost:8443',
             secure: false,
             cookieDomainRewrite: {
