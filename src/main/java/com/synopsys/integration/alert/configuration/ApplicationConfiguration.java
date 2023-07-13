@@ -20,6 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.web.filter.ForwardedHeaderFilter;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
@@ -80,5 +81,10 @@ public class ApplicationConfiguration {
     @Bean
     public AuthorizationManager authorizationManager(RoleAccessor roleAccessor) {
         return new AuthorizationManager(roleAccessor);
+    }
+
+    @Bean
+    ForwardedHeaderFilter forwardedHeaderFilter() {
+        return new ForwardedHeaderFilter();
     }
 }

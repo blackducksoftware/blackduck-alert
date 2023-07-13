@@ -66,8 +66,8 @@ const AzureBoardsTable = ({ readonly, allowDelete }) => {
     const [modalData, setModalData] = useState();
 
     useEffect(() => {
-        // If a user authenticates via OAuth, OAuth will redirect us back to Alert with a url path similar to the following: 
-        // `alert/channels/azure_boards/edit/{id}`.  If an ID is present as well as the string 'edit', we can assert that 
+        // If a user authenticates via OAuth, OAuth will redirect us back to Alert with a url path similar to the following:
+        // `alert/channels/azure_boards/edit/{id}`.  If an ID is present as well as the string 'edit', we can assert that
         // the modal should reopen with the data relevant to that ID.
 
         // split the url to determine if edit is present
@@ -77,12 +77,12 @@ const AzureBoardsTable = ({ readonly, allowDelete }) => {
             // obtain the id of the azureBoards board that OAuth just authenticated
             const modalDataID = parsedUrlArray.slice(-1)[0];
             // filter the table data and set the data for the modal to the one that matches the id from the line above
-            data.models.forEach(model => {
+            data.models.forEach((model) => {
                 if (model.id === modalDataID) {
                     setModalData(model);
                     setShowModal(true);
                 }
-            })
+            });
         }
     }, [location, data]);
 
@@ -179,7 +179,7 @@ const AzureBoardsTable = ({ readonly, allowDelete }) => {
                 showPageSize
                 data={data}
                 emptyTableConfig={emptyTableConfig}
-                tableActions={() => 
+                tableActions={() => (
                     <AzureBoardsTableActions
                         data={data}
                         readonly={readonly}
@@ -188,7 +188,7 @@ const AzureBoardsTable = ({ readonly, allowDelete }) => {
                         setSelected={setSelected}
                         paramsConfig={paramsConfig}
                     />
-                }
+                )}
             />
             {statusMessage && (
                 <StatusMessage

@@ -21,28 +21,28 @@ const TableFooter = ({ data, onPage, onPageSize, showPageSize }) => {
     const classes = useStyles();
 
     // Default table row amounts are 10, 25, 30, and 50 - these were collected from legacy code
-    const onPageOptions = [{label: '10 Rows', value: 10}, {label: '25 Rows', value: 25}, {label: '30 Rows', value: 30}, {label: '50 Rows', value: 50}];
+    const onPageOptions = [{ label: '10 Rows', value: 10 }, { label: '25 Rows', value: 25 }, { label: '30 Rows', value: 30 }, { label: '50 Rows', value: 50 }];
 
     return (
-            <div className={classes.tableFooter}>
-                { data?.totalPages > 1 && (
-                    <div>
-                        <Pagination data={data} onPage={onPage} />
-                    </div>
-                )}
-                {/* Until all endpoints are converted to HATEOAS, we need to use showPageSize prop to determine which tables should have this capability */}
-                { (data?.totalPages > 1 && showPageSize) && (
-                    <div className={classes.rowCountSelector}>
-                        <DropdownField options={onPageOptions} onChange={onPageSize}/>
-                    </div>
-                )}
-            </div>
-    )
-}
+        <div className={classes.tableFooter}>
+            { data?.totalPages > 1 && (
+                <div>
+                    <Pagination data={data} onPage={onPage} />
+                </div>
+            )}
+            {/* Until all endpoints are converted to HATEOAS, we need to use showPageSize prop to determine which tables should have this capability */}
+            {(showPageSize) && (
+                <div className={classes.rowCountSelector}>
+                    <DropdownField options={onPageOptions} onChange={onPageSize} />
+                </div>
+            )}
+        </div>
+    );
+};
 
 TableFooter.defaultProps = {
     showPageSize: false
-}
+};
 
 TableFooter.propTypes = {
     data: PropTypes.object,
