@@ -66,10 +66,7 @@ const AuditFailureTable = () => {
     }
 
     function handlePageSize(count) {
-        // If page size increases, the page number we show may decrease so recalculate page to the final element we show
-        const currentPageLastElement = (data?.currentPage * data?.pageSize) + data?.models.length;
-        const newPage = Math.ceil((currentPageLastElement / count)) - 1;
-        setParamsConfig({ ...paramsConfig, pageNumber: newPage, pageSize: count });
+        setParamsConfig({ ...paramsConfig, pageSize: count });
     }
 
     function handleRefresh() {
