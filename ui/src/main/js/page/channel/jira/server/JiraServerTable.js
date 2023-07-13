@@ -100,7 +100,10 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
     }
 
     function handlePageSize(count) {
-        setParamsConfig({ ...paramsConfig, pageSize: count });
+        // If page size increases, the page number we show may decrease so recalculate page to the final element we show
+        const currentPageLastElement = (data?.currentPage * data?.pageSize) + data?.models.length;
+        const newPage = Math.ceil((currentPageLastElement / count)) - 1;
+        setParamsConfig({ ...paramsConfig, pageNumber: newPage, pageSize: count });
     }
 
     const onSort = (name) => {
@@ -162,8 +165,8 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
             showPageSize
             data={data}
             emptyTableConfig={emptyTableConfig}
-            tableActions={() => 
-                <JiraServerTableActions 
+            tableActions={() => (
+                <JiraServerTableActions
                     data={data}
                     readonly={readonly}
                     allowDelete={allowDelete}
@@ -171,7 +174,7 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
                     setSelected={setSelected}
                     paramsConfig={paramsConfig}
                 />
-            }
+            )}
         />
     );
 };
