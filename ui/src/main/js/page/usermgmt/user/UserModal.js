@@ -75,9 +75,6 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
 
     function handleSubmit() {
         dispatch(clearUserFieldErrors());
-        if (type === 'EDIT') {
-            handleSave();
-        }
 
         if (passwordsMatch(userModel)) {
             dispatch(validateUser(userModel));
@@ -132,6 +129,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
             handleSubmit={handleSubmit}
             submitText={submitText}
             showLoader={showLoader}
+            noOverflow
         >
             <div className={classes.userModalContent}>
                 {type === 'COPY' && (
