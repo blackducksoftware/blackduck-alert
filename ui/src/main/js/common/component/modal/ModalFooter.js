@@ -26,13 +26,13 @@ const useStyles = createUseStyles({
 });
 
 const ModalFooter = ({ handleCancel, handleSubmit, handleTest, submitText, buttonStyle = 'default',
-    showLoader, testText, disableSubmit, submitTitle }) => {
+    showLoader, testText, disableSubmit, disableTest = false, submitTitle }) => {
     const classes = useStyles();
 
     return (
         <div className={classes.modalFooter}>
             <div className={classes.footerActions}>
-                { handleTest && (
+                { handleTest && !disableTest && (
                     <Button
                         onClick={handleTest}
                         text={testText}
@@ -71,6 +71,7 @@ ModalFooter.propTypes = {
     buttonStyle: PropTypes.string,
     testText: PropTypes.string,
     disableSubmit: PropTypes.bool,
+    disableTest: PropTypes.bool,
     submitTitle: PropTypes.string
 };
 

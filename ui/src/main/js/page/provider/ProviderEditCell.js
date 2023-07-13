@@ -4,7 +4,7 @@ import ProviderModal from 'page/provider/ProviderModal';
 import StatusMessage from 'common/component/StatusMessage';
 import IconButton from 'common/component/button/IconButton';
 
-const ProviderEditCell = ({ data }) => {
+const ProviderEditCell = ({ data, settings }) => {
     const [showModal, setShowModal] = useState(false);
     const [selectedData, setSelectedData] = useState(data);
     const [statusMessage, setStatusMessage] = useState();
@@ -41,6 +41,7 @@ const ProviderEditCell = ({ data }) => {
                     modalOptions={modalOptions}
                     setStatusMessage={setStatusMessage}
                     successMessage={successMessage}
+                    readonly={settings.readonly}
                 />
             )}
         </>
@@ -49,7 +50,10 @@ const ProviderEditCell = ({ data }) => {
 };
 
 ProviderEditCell.propTypes = {
-    data: PropTypes.object
+    data: PropTypes.object,
+    settings: PropTypes.shape({
+        readonly: PropTypes.bool
+    })
 };
 
 export default ProviderEditCell;
