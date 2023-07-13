@@ -165,6 +165,7 @@ const AuditFailureTable = () => {
             sortConfig={sortConfig}
             onPage={handlePagination}
             onPageSize={handlePageSize}
+            pageSize={data?.pageSize}
             showPageSize
             data={data}
             emptyTableConfig={emptyTableConfig}

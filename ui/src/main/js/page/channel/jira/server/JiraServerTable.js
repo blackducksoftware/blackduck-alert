@@ -159,6 +159,7 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
             onSelected={onSelected}
             onPage={handlePagination}
             onPageSize={handlePageSize}
+            pageSize={data?.pageSize}
             showPageSize
             data={data}
             emptyTableConfig={emptyTableConfig}
