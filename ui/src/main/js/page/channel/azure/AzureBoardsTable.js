@@ -10,36 +10,6 @@ import StatusMessage from 'common/component/StatusMessage';
 import { useLocation } from 'react-router-dom';
 import { fetchAzureBoards } from 'store/actions/azure-boards';
 
-const COLUMNS = [{
-    key: 'name',
-    label: 'Name',
-    sortable: true
-}, {
-    key: 'organizationName',
-    label: 'Organization Name',
-    sortable: true
-}, {
-    key: 'createdAt',
-    label: 'Created At',
-    sortable: true
-}, {
-    key: 'lastUpdated',
-    label: 'Last Updated',
-    sortable: true
-}, {
-    key: 'editAzureBoard',
-    label: 'Edit',
-    sortable: false,
-    customCell: AzureBoardsEditCell,
-    settings: { alignment: 'center' }
-}, {
-    key: 'copyAzureBoard',
-    label: 'Copy',
-    sortable: false,
-    customCell: AzureBoardsCopyCell,
-    settings: { alignment: 'center' }
-}];
-
 const emptyTableConfig = {
     message: 'There are no records to display for this table.  Please create an Azure Board connection to use this table.'
 };
@@ -64,6 +34,36 @@ const AzureBoardsTable = ({ readonly, allowDelete }) => {
     const [showModal, setShowModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
     const [modalData, setModalData] = useState();
+
+    const COLUMNS = [{
+        key: 'name',
+        label: 'Name',
+        sortable: true
+    }, {
+        key: 'organizationName',
+        label: 'Organization Name',
+        sortable: true
+    }, {
+        key: 'createdAt',
+        label: 'Created At',
+        sortable: true
+    }, {
+        key: 'lastUpdated',
+        label: 'Last Updated',
+        sortable: true
+    }, {
+        key: 'editAzureBoard',
+        label: 'Edit',
+        sortable: false,
+        customCell: AzureBoardsEditCell,
+        settings: { alignment: 'center', paramsConfig }
+    }, {
+        key: 'copyAzureBoard',
+        label: 'Copy',
+        sortable: false,
+        customCell: AzureBoardsCopyCell,
+        settings: { alignment: 'center', paramsConfig }
+    }];
 
     useEffect(() => {
         // If a user authenticates via OAuth, OAuth will redirect us back to Alert with a url path similar to the following:

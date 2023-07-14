@@ -27,7 +27,7 @@ function getStagedForDelete(data, selected) {
     return staged.map((distribution) => ({ ...distribution, staged: true }));
 }
 
-const DistributionDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, setStatusMessage }) => {
+const DistributionDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, setStatusMessage, paramsConfig, setParamsConfig }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { deleteStatus, error } = useSelector((state) => state.distribution);
@@ -36,7 +36,18 @@ const DistributionDeleteModal = ({ isOpen, toggleModal, data, selected, setSelec
     const isMultiDelete = selectedJobs.length > 1;
 
     function handleClose() {
-        dispatch(fetchDistribution());
+        const params = {
+            pageNumber: 0,
+            pageSize: paramsConfig?.pageSize,
+            mutatorData: {
+                searchTerm: paramsConfig?.mutatorData?.searchTerm,
+                sortName: paramsConfig?.mutatorData?.name,
+                sortOrder: paramsConfig?.mutatorData?.direction
+            }
+        };
+
+        dispatch(fetchDistribution(params));
+        setParamsConfig(params);
         toggleModal(false);
     }
 
@@ -125,7 +136,9 @@ DistributionDeleteModal.propTypes = {
     toggleModal: PropTypes.func,
     selected: PropTypes.array,
     setStatusMessage: PropTypes.func,
-    setSelected: PropTypes.func
+    setSelected: PropTypes.func,
+    paramsConfig: PropTypes.object,
+    setParamsConfig: PropTypes.func
 };
 
 export default DistributionDeleteModal;

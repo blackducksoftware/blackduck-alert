@@ -38,7 +38,7 @@ function getInitialData(type, data) {
     }
 }
 
-const AzureBoardsModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, successMessage, readonly }) => {
+const AzureBoardsModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, successMessage, readonly, paramsConfig }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const history = useHistory();
@@ -62,7 +62,7 @@ const AzureBoardsModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMe
         }
 
         toggleModal(false);
-        dispatch(fetchAzureBoards());
+        dispatch(fetchAzureBoards(paramsConfig));
         dispatch(clearAzureBoardsFieldErrors());
     }
 
@@ -267,7 +267,8 @@ AzureBoardsModal.propTypes = {
         copyDescription: PropTypes.string
     }),
     setStatusMessage: PropTypes.func,
-    successMessage: PropTypes.string
+    successMessage: PropTypes.string,
+    paramsConfig: PropTypes.object
 };
 
 export default AzureBoardsModal;

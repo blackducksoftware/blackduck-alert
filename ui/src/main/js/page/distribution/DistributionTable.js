@@ -186,6 +186,7 @@ const DistributionTable = ({ readonly }) => {
                     selected={selected}
                     setSelected={setSelected}
                     paramsConfig={paramsConfig}
+                    setParamsConfig={setParamsConfig}
                 />
             )}
         />

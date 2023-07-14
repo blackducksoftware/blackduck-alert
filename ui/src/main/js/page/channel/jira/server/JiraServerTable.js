@@ -8,41 +8,6 @@ import JiraServerTableActions from 'page/channel/jira/server/JiraServerTableActi
 import JiraServerCopyCell from 'page/channel/jira/server/JiraServerCopyCell';
 import { fetchJiraServer } from 'store/actions/jira-server';
 
-const COLUMNS = [{
-    key: 'name',
-    label: 'Name',
-    sortable: true
-}, {
-    key: 'url',
-    label: 'Url',
-    sortable: true
-}, {
-    key: 'authorizationMethod',
-    label: 'Authentication Type',
-    sortable: true,
-    customCell: AuthenticationTypeCell
-}, {
-    key: 'createdAt',
-    label: 'Created At',
-    sortable: true
-}, {
-    key: 'lastUpdated',
-    label: 'Last Updated',
-    sortable: true
-}, {
-    key: 'editJiraServer',
-    label: 'Edit',
-    sortable: false,
-    customCell: JiraServerEditCell,
-    settings: { alignment: 'center' }
-}, {
-    key: 'copyJiraServer',
-    label: 'Copy',
-    sortable: false,
-    customCell: JiraServerCopyCell,
-    settings: { alignment: 'center' }
-}];
-
 const emptyTableConfig = {
     message: 'There are no records to display for this table.  Please create a Jira Server connection to use this table.'
 };
@@ -63,6 +28,41 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
             sortOrder: data?.mutatorData?.direction
         }
     });
+
+    const COLUMNS = [{
+        key: 'name',
+        label: 'Name',
+        sortable: true
+    }, {
+        key: 'url',
+        label: 'Url',
+        sortable: true
+    }, {
+        key: 'authorizationMethod',
+        label: 'Authentication Type',
+        sortable: true,
+        customCell: AuthenticationTypeCell
+    }, {
+        key: 'createdAt',
+        label: 'Created At',
+        sortable: true
+    }, {
+        key: 'lastUpdated',
+        label: 'Last Updated',
+        sortable: true
+    }, {
+        key: 'editJiraServer',
+        label: 'Edit',
+        sortable: false,
+        customCell: JiraServerEditCell,
+        settings: { alignment: 'center', paramsConfig }
+    }, {
+        key: 'copyJiraServer',
+        label: 'Copy',
+        sortable: false,
+        customCell: JiraServerCopyCell,
+        settings: { alignment: 'center', paramsConfig }
+    }];
 
     useEffect(() => {
         dispatch(fetchJiraServer(paramsConfig));
@@ -171,6 +171,7 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
                     selected={selected}
                     setSelected={setSelected}
                     paramsConfig={paramsConfig}
+                    setParamsConfig={setParamsConfig}
                 />
             )}
         />
