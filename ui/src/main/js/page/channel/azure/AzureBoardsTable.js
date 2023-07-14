@@ -122,7 +122,7 @@ const AzureBoardsTable = ({ readonly, allowDelete }) => {
     }
 
     function handlePageSize(count) {
-        setParamsConfig({ ...paramsConfig, pageSize: count });
+        setParamsConfig({ ...paramsConfig, pageSize: count, pageNumber: 0 });
     }
 
     const onSort = (name) => {
