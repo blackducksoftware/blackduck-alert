@@ -101,7 +101,7 @@ const AzureBoardsTable = ({ readonly, allowDelete }) => {
         }
 
         return undefined;
-    }, [autoRefresh]);
+    }, [autoRefresh, paramsConfig]);
 
     const handleSearchChange = (searchValue) => {
         setParamsConfig({

@@ -95,7 +95,7 @@ const DistributionTable = ({ readonly }) => {
         }
 
         return undefined;
-    }, [autoRefresh]);
+    }, [autoRefresh, paramsConfig]);
 
     const handleSearchChange = (searchValue) => {
         setParamsConfig({
