@@ -52,7 +52,7 @@ function getInitialData(type, data) {
     return {};
 }
 
-const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, successMessage, readonly }) => {
+const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, successMessage, readonly, paramsConfig }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { copyDescription, submitText, title, type } = modalOptions;
@@ -68,7 +68,7 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
     function handleClose() {
         toggleModal(false);
         dispatch(clearJiraServerFieldErrors());
-        dispatch(fetchJiraServer());
+        dispatch(fetchJiraServer(paramsConfig));
     }
 
     function handleSave() {
@@ -322,7 +322,8 @@ JiraServerModal.propTypes = {
         copyDescription: PropTypes.string
     }),
     setStatusMessage: PropTypes.func,
-    successMessage: PropTypes.string
+    successMessage: PropTypes.string,
+    paramsConfig: PropTypes.object
 };
 
 export default JiraServerModal;

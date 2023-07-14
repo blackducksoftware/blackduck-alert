@@ -7,7 +7,7 @@ import Button from 'common/component/button/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchJiraServer } from 'store/actions/jira-server';
 
-const JiraServerTableActions = ({ data, readonly, allowDelete, selected, setSelected, paramsConfig }) => {
+const JiraServerTableActions = ({ data, readonly, allowDelete, selected, setSelected, paramsConfig, setParamsConfig }) => {
     const modalOptions = {
         type: 'CREATE',
         submitText: 'Create',
@@ -66,6 +66,7 @@ const JiraServerTableActions = ({ data, readonly, allowDelete, selected, setSele
                     modalOptions={modalOptions}
                     setStatusMessage={setStatusMessage}
                     successMessage="Successfully added 1 new Jira Server connection."
+                    paramsConfig={paramsConfig}
                 />
             )}
 
@@ -77,6 +78,8 @@ const JiraServerTableActions = ({ data, readonly, allowDelete, selected, setSele
                     selected={selected}
                     setStatusMessage={setStatusMessage}
                     setSelected={setSelected}
+                    paramsConfig={paramsConfig}
+                    setParamsConfig={setParamsConfig}
                 />
             )}
         </>
@@ -89,7 +92,8 @@ JiraServerTableActions.propTypes = {
     data: PropTypes.object,
     selected: PropTypes.array,
     setSelected: PropTypes.func,
-    paramsConfig: PropTypes.object
+    paramsConfig: PropTypes.object,
+    setParamsConfig: PropTypes.func
 };
 
 export default JiraServerTableActions;

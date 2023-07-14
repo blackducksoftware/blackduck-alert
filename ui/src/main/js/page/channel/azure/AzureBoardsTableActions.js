@@ -7,7 +7,7 @@ import AzureBoardsDeleteModal from 'page/channel/azure/AzureBoardsDeleteModal';
 import { fetchAzureBoards } from 'store/actions/azure-boards';
 import { useDispatch, useSelector } from 'react-redux';
 
-const AzureBoardsTableActions = ({ data, readonly, allowDelete, selected, setSelected, paramsConfig }) => {
+const AzureBoardsTableActions = ({ data, readonly, allowDelete, selected, setSelected, paramsConfig, setParamsConfig }) => {
     const modalOptions = {
         type: 'CREATE',
         submitText: 'Create',
@@ -66,6 +66,8 @@ const AzureBoardsTableActions = ({ data, readonly, allowDelete, selected, setSel
                     modalOptions={modalOptions}
                     setStatusMessage={setStatusMessage}
                     successMessage="Successfully added 1 new Azure Board connection."
+                    paramsConfig={paramsConfig}
+                    setParamsConfig={setParamsConfig}
                 />
             )}
 
@@ -77,6 +79,8 @@ const AzureBoardsTableActions = ({ data, readonly, allowDelete, selected, setSel
                     selected={selected}
                     setStatusMessage={setStatusMessage}
                     setSelected={setSelected}
+                    paramsConfig={paramsConfig}
+                    setParamsConfig={setParamsConfig}
                 />
             )}
         </>

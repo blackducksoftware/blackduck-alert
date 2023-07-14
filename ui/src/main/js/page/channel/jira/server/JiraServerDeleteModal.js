@@ -23,7 +23,7 @@ function getStagedForDelete(data, selected) {
     return staged.map((server) => ({ ...server, staged: true }));
 }
 
-const JiraServerDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, setStatusMessage }) => {
+const JiraServerDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, setStatusMessage, paramsConfig, setParamsConfig }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { deleteStatus, error } = useSelector((state) => state.jiraServer);
@@ -32,7 +32,18 @@ const JiraServerDeleteModal = ({ isOpen, toggleModal, data, selected, setSelecte
     const isMultiDelete = selectedJiraServers.length > 1;
 
     function handleClose() {
-        dispatch(fetchJiraServer());
+        const params = {
+            pageNumber: 0,
+            pageSize: paramsConfig?.pageSize,
+            mutatorData: {
+                searchTerm: paramsConfig?.mutatorData?.searchTerm,
+                sortName: paramsConfig?.mutatorData?.name,
+                sortOrder: paramsConfig?.mutatorData?.direction
+            }
+        };
+
+        dispatch(fetchJiraServer(params));
+        setParamsConfig(params)
         toggleModal(false);
     }
 
@@ -121,7 +132,9 @@ JiraServerDeleteModal.propTypes = {
     toggleModal: PropTypes.func,
     selected: PropTypes.array,
     setStatusMessage: PropTypes.func,
-    setSelected: PropTypes.func
+    setSelected: PropTypes.func,
+    paramsConfig: PropTypes.object,
+    setParamsConfig: PropTypes.func
 };
 
 export default JiraServerDeleteModal;

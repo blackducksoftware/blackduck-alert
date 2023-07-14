@@ -58,6 +58,8 @@ const DistributionTableActions = ({ data, selected, setSelected, paramsConfig })
                     selected={selected}
                     setStatusMessage={setStatusMessage}
                     setSelected={setSelected}
+                    paramsConfig={paramsConfig}
+                    setParamsConfig={setParamsConfig}
                 />
             )}
         </>
@@ -68,7 +70,8 @@ DistributionTableActions.propTypes = {
     data: PropTypes.arrayOf(PropTypes.object),
     selected: PropTypes.array,
     setSelected: PropTypes.func,
-    paramsConfig: PropTypes.object
+    paramsConfig: PropTypes.object,
+    setParamsConfig: PropTypes.func
 };
 
 export default DistributionTableActions;
