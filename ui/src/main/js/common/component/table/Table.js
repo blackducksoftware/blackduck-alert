@@ -14,6 +14,9 @@ const useStyles = createUseStyles({
         border: 0,
         '& tr:nth-child(even)': {
             backgroundColor: '#f0f0fb'
+        },
+        '& tr:hover': {
+            backgroundColor: '#c6c6c6'
         }
     },
     tableActions: {
