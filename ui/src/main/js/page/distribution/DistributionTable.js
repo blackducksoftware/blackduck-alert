@@ -88,7 +88,7 @@ const DistributionTable = ({ readonly }) => {
         localStorage.setItem('DISTRIBUTION_REFRESH_STATUS', JSON.stringify(autoRefresh));
 
         if (autoRefresh) {
-            const refreshIntervalId = setInterval(() => dispatch(fetchDistribution()), 30000);
+            const refreshIntervalId = setInterval(() => dispatch(fetchDistribution(paramsConfig)), 30000);
             return function clearRefreshInterval() {
                 clearInterval(refreshIntervalId);
             };

@@ -94,7 +94,7 @@ const AzureBoardsTable = ({ readonly, allowDelete }) => {
         localStorage.setItem('AZURE_BOARDS_REFRESH_STATUS', JSON.stringify(autoRefresh));
 
         if (autoRefresh) {
-            const refreshIntervalId = setInterval(() => dispatch(fetchAzureBoards()), 30000);
+            const refreshIntervalId = setInterval(() => dispatch(fetchAzureBoards(paramsConfig)), 30000);
             return function clearRefreshInterval() {
                 clearInterval(refreshIntervalId);
             };
