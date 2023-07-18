@@ -118,6 +118,7 @@ const AzureBoardsTable = ({ readonly, allowDelete }) => {
     }
 
     function handlePagination(page) {
+        setSelected([]);
         setParamsConfig({ ...paramsConfig, pageNumber: page });
     }
 
@@ -188,6 +189,7 @@ const AzureBoardsTable = ({ readonly, allowDelete }) => {
                         selected={selected}
                         setSelected={setSelected}
                         paramsConfig={paramsConfig}
+                        setParamsConfig={setParamsConfig}
                     />
                 )}
             />

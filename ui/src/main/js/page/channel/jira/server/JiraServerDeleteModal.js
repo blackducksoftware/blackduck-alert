@@ -43,7 +43,7 @@ const JiraServerDeleteModal = ({ isOpen, toggleModal, data, selected, setSelecte
         };
 
         dispatch(fetchJiraServer(params));
-        setParamsConfig(params)
+        setParamsConfig(params);
         toggleModal(false);
     }
 
@@ -63,15 +63,17 @@ const JiraServerDeleteModal = ({ isOpen, toggleModal, data, selected, setSelecte
         if (deleteStatus === 'DELETED') {
             setShowLoader(false);
 
-            const successMessage = isMultiDelete
-                ? `Successfully deleted ${selectedJiraServers.filter((jiraServer) => jiraServer.staged).length} Jira Servers.`
-                : 'Successfully deleted 1 Jira Server.';
+            const stagedCount = selectedJiraServers.filter((jiraServer) => jiraServer.staged).length;
+            if (stagedCount > 0) {
+                const successMessage = isMultiDelete
+                    ? `Successfully deleted ${stagedCount} Jira Servers.`
+                    : 'Successfully deleted 1 Jira Server.';
 
-            setStatusMessage({
-                message: successMessage,
-                type: 'success'
-            });
-
+                setStatusMessage({
+                    message: successMessage,
+                    type: 'success'
+                });
+            }
             setSelected([]);
             handleClose();
         }
