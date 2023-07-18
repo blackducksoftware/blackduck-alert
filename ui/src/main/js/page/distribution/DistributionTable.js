@@ -112,6 +112,7 @@ const DistributionTable = ({ readonly }) => {
     }
 
     function handlePagination(page) {
+        setSelected([]);
         setParamsConfig({ ...paramsConfig, pageNumber: page });
     }
 

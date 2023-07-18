@@ -96,6 +96,7 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
     }
 
     function handlePagination(page) {
+        setSelected([]);
         setParamsConfig({ ...paramsConfig, pageNumber: page });
     }
 
