@@ -69,7 +69,7 @@ const AzureBoardsDeleteModal = ({ isOpen, toggleModal, data, selected, setSelect
             const stagedCount = selectedAzureBoards.filter((board) => board.staged).length;
             if (stagedCount > 0) {
                 const successMessage = isMultiDelete
-                    ? `Successfully deleted ${selectedAzureBoards.filter((board) => board.staged).length} Azure Boards.`
+                    ? `Successfully deleted ${stagedCount} Azure Boards.`
                     : 'Successfully deleted 1 Azure Board.';
 
                 setStatusMessage({

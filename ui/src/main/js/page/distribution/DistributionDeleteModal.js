@@ -70,7 +70,7 @@ const DistributionDeleteModal = ({ isOpen, toggleModal, data, selected, setSelec
             const stagedCount = selectedJobs.filter((jobs) => jobs.staged).length;
             if (stagedCount > 0) {
                 const successMessage = isMultiDelete
-                    ? `Successfully deleted ${selectedJobs.filter((jobs) => jobs.staged).length} distributions.`
+                    ? `Successfully deleted ${stagedCount} distributions.`
                     : 'Successfully deleted 1 distribution.';
 
                 setStatusMessage({
