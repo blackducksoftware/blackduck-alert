@@ -4,10 +4,11 @@ import StatusMessage from 'common/component/StatusMessage';
 import IconButton from 'common/component/button/IconButton';
 import JiraServerModal from 'page/channel/jira/server/JiraServerModal';
 
-const JiraServerEditCell = ({ data }) => {
+const JiraServerEditCell = ({ data, settings }) => {
     const [showModal, setShowModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
-
+    const { paramsConfig } = settings;
+    
     const modalOptions = {
         type: 'EDIT',
         title: 'Edit Jira Server',
@@ -37,6 +38,7 @@ const JiraServerEditCell = ({ data }) => {
                     modalOptions={modalOptions}
                     setStatusMessage={setStatusMessage}
                     statusMessage="Successfully edited 1 Jira Server."
+                    paramsConfig={paramsConfig}
                 />
             )}
         </>
@@ -44,7 +46,10 @@ const JiraServerEditCell = ({ data }) => {
 };
 
 JiraServerEditCell.propTypes = {
-    data: PropTypes.object
+    data: PropTypes.object,
+    settings: PropTypes.shape({
+        paramsConfig: PropTypes.object
+    })
 };
 
 export default JiraServerEditCell;

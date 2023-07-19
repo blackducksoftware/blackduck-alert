@@ -14,6 +14,9 @@ const useStyles = createUseStyles({
         border: 0,
         '& tr:nth-child(even)': {
             backgroundColor: '#f0f0fb'
+        },
+        '& tr:hover': {
+            backgroundColor: '#c6c6c6'
         }
     },
     tableActions: {
@@ -23,18 +26,19 @@ const useStyles = createUseStyles({
     }
 });
 
-const Table = ({ columns, multiSelect, selected, onSelected, disableSelectOptions, tableData, handleSearchChange,
-    searchBarPlaceholder, tableActions, onToggle, active, onSort, sortConfig, data, onPage, emptyTableConfig, 
-    defaultSearchValue, onPageSize, showPageSize
- }) => {
+const Table = ({
+    columns, multiSelect, selected, onSelected, disableSelectOptions, tableData, handleSearchChange,
+    searchBarPlaceholder, tableActions, onToggle, active, onSort, sortConfig, data, onPage, emptyTableConfig,
+    defaultSearchValue, onPageSize, showPageSize, pageSize
+}) => {
     const classes = useStyles();
 
     return (
         <>
-            { (tableActions || handleSearchChange || onToggle) && (
+            {(tableActions || handleSearchChange || onToggle) && (
                 <div className={classes.tableActions}>
                     {tableActions ? tableActions() : null}
-                    { handleSearchChange && (
+                    {handleSearchChange && (
                         <SearchFilter
                             handleSearchChange={handleSearchChange}
                             searchBarPlaceholder={searchBarPlaceholder}
@@ -78,7 +82,7 @@ const Table = ({ columns, multiSelect, selected, onSelected, disableSelectOption
                 </table>
             )}
 
-            <TableFooter data={data} onPage={onPage} onPageSize={onPageSize} showPageSize={showPageSize} />
+            <TableFooter data={data} onPage={onPage} onPageSize={onPageSize} showPageSize={showPageSize} pageSize={pageSize} />
         </>
     );
 };

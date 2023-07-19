@@ -52,15 +52,17 @@ const ProviderDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMes
         if (deleteStatus === 'SUCCESS') {
             setShowLoader(false);
 
-            const successMessage = isMultiProviderDelete
-                ? `Successfully deleted ${selectedProviders.filter((provider) => provider.staged).length} providers.`
-                : 'Successfully deleted 1 provider.';
+            const stagedCount = selectedProviders.filter((provider) => provider.staged).length;
+            if (stagedCount > 0) {
+                const successMessage = isMultiProviderDelete
+                    ? `Successfully deleted ${stagedCount} providers.`
+                    : 'Successfully deleted 1 provider.';
 
-            setStatusMessage({
-                message: successMessage,
-                type: 'success'
-            });
-
+                setStatusMessage({
+                    message: successMessage,
+                    type: 'success'
+                });
+            }
             setSelected([]);
             handleClose();
         }

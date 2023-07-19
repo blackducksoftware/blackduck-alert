@@ -61,15 +61,17 @@ const RoleDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, set
         if (deleteStatus === 'SUCCESS') {
             setShowLoader(false);
 
-            const successMessage = isMultiRoleDelete
-                ? `Successfully deleted ${selectedRoles.filter((role) => role.staged).length} roles.`
-                : 'Successfully deleted 1 role.';
+            const stagedCount = selectedRoles.filter((role) => role.staged).length;
+            if (stagedCount > 0) {
+                const successMessage = isMultiRoleDelete
+                    ? `Successfully deleted ${stagedCount} roles.`
+                    : 'Successfully deleted 1 role.';
 
-            setStatusMessage({
-                message: successMessage,
-                type: 'success'
-            });
-
+                setStatusMessage({
+                    message: successMessage,
+                    type: 'success'
+                });
+            }
             setSelected([]);
             handleClose();
         }

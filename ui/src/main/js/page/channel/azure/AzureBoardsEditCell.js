@@ -4,9 +4,10 @@ import StatusMessage from 'common/component/StatusMessage';
 import IconButton from 'common/component/button/IconButton';
 import AzureBoardsModal from 'page/channel/azure/AzureBoardsModal';
 
-const AzureBoardsEditCell = ({ data }) => {
+const AzureBoardsEditCell = ({ data, settings }) => {
     const [showModal, setShowModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
+    const { paramsConfig } = settings;
 
     const modalOptions = {
         type: 'EDIT',
@@ -37,6 +38,7 @@ const AzureBoardsEditCell = ({ data }) => {
                     modalOptions={modalOptions}
                     setStatusMessage={setStatusMessage}
                     statusMessage="Successfully edited 1 Azure Board."
+                    paramsConfig={paramsConfig}
                 />
             )}
         </>
@@ -44,7 +46,10 @@ const AzureBoardsEditCell = ({ data }) => {
 };
 
 AzureBoardsEditCell.propTypes = {
-    data: PropTypes.object
+    data: PropTypes.object,
+    settings: PropTypes.shape({
+        paramsConfig: PropTypes.object
+    })
 };
 
 export default AzureBoardsEditCell;

@@ -8,7 +8,7 @@ import { useHistory } from 'react-router-dom/cjs/react-router-dom';
 import { fetchDistribution } from 'store/actions/distribution';
 import { useDispatch, useSelector } from 'react-redux';
 
-const DistributionTableActions = ({ data, selected, setSelected, paramsConfig }) => {
+const DistributionTableActions = ({ data, selected, setSelected, paramsConfig, setParamsConfig }) => {
     const dispatch = useDispatch();
     const history = useHistory();
     const { fetching } = useSelector((state) => state.distribution);
@@ -58,6 +58,8 @@ const DistributionTableActions = ({ data, selected, setSelected, paramsConfig })
                     selected={selected}
                     setStatusMessage={setStatusMessage}
                     setSelected={setSelected}
+                    paramsConfig={paramsConfig}
+                    setParamsConfig={setParamsConfig}
                 />
             )}
         </>
@@ -68,7 +70,8 @@ DistributionTableActions.propTypes = {
     data: PropTypes.arrayOf(PropTypes.object),
     selected: PropTypes.array,
     setSelected: PropTypes.func,
-    paramsConfig: PropTypes.object
+    paramsConfig: PropTypes.object,
+    setParamsConfig: PropTypes.func
 };
 
 export default DistributionTableActions;

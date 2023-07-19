@@ -36,14 +36,14 @@ const ProviderTableActions = ({ data, selected, readonly, setSelected }) => {
 
     function getDeleteButtonTitle() {
         if (readonly) {
-            return 'You do not have access to delete providers.'
+            return 'You do not have access to delete providers.';
         }
 
         if (selected.length === 0) {
-            return 'Select a provider to delete.'
+            return 'Select a provider to delete.';
         }
 
-        return 'Delete provider.'
+        return 'Delete provider.';
     }
 
     return (

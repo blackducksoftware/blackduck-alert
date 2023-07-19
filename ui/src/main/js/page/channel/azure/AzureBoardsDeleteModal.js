@@ -26,7 +26,7 @@ function getStagedForDelete(data, selected) {
     return staged.map((board) => ({ ...board, staged: true }));
 }
 
-const AzureBoardsDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, setStatusMessage }) => {
+const AzureBoardsDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, setStatusMessage, paramsConfig, setParamsConfig }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { deleteStatus, error } = useSelector((state) => state.azureBoards);
@@ -35,7 +35,18 @@ const AzureBoardsDeleteModal = ({ isOpen, toggleModal, data, selected, setSelect
     const isMultiDelete = selectedAzureBoards.length > 1;
 
     function handleClose() {
-        dispatch(fetchAzureBoards());
+        const params = {
+            pageNumber: 0,
+            pageSize: paramsConfig?.pageSize,
+            mutatorData: {
+                searchTerm: paramsConfig?.mutatorData?.searchTerm,
+                sortName: paramsConfig?.mutatorData?.name,
+                sortOrder: paramsConfig?.mutatorData?.direction
+            }
+        };
+
+        dispatch(fetchAzureBoards(params));
+        setParamsConfig(params);
         toggleModal(false);
     }
 
@@ -55,15 +66,17 @@ const AzureBoardsDeleteModal = ({ isOpen, toggleModal, data, selected, setSelect
         if (deleteStatus === 'DELETED') {
             setShowLoader(false);
 
-            const successMessage = isMultiDelete
-                ? `Successfully deleted ${selectedAzureBoards.filter((board) => board.staged).length} Azure Boards.`
-                : 'Successfully deleted 1 Azure Board.';
+            const stagedCount = selectedAzureBoards.filter((board) => board.staged).length;
+            if (stagedCount > 0) {
+                const successMessage = isMultiDelete
+                    ? `Successfully deleted ${stagedCount} Azure Boards.`
+                    : 'Successfully deleted 1 Azure Board.';
 
-            setStatusMessage({
-                message: successMessage,
-                type: 'success'
-            });
-
+                setStatusMessage({
+                    message: successMessage,
+                    type: 'success'
+                });
+            }
             setSelected([]);
             handleClose();
         }
@@ -124,7 +137,9 @@ AzureBoardsDeleteModal.propTypes = {
     toggleModal: PropTypes.func,
     selected: PropTypes.array,
     setStatusMessage: PropTypes.func,
-    setSelected: PropTypes.func
+    setSelected: PropTypes.func,
+    paramsConfig: PropTypes.object,
+    setParamsConfig: PropTypes.func
 };
 
 export default AzureBoardsDeleteModal;
