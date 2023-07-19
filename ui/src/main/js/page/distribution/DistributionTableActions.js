@@ -8,7 +8,7 @@ import { useHistory } from 'react-router-dom/cjs/react-router-dom';
 import { fetchDistribution } from 'store/actions/distribution';
 import { useDispatch, useSelector } from 'react-redux';
 
-const DistributionTableActions = ({ data, selected, setSelected, paramsConfig }) => {
+const DistributionTableActions = ({ data, selected, setSelected, paramsConfig, setParamsConfig }) => {
     const dispatch = useDispatch();
     const history = useHistory();
     const { fetching } = useSelector((state) => state.distribution);
