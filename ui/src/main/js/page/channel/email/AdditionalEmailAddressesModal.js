@@ -71,9 +71,16 @@ export default function AdditionalEmailAddressesModal({ isOpen, handleClose, csr
                             setSearchTerm(newSearchTerm);
                         }}
                         selected={selected}
-                        onSelected={(selectedRow) => { setSelected(selectedRow); }}
-                        onPage={(newPageNumber) => { setPageNumber(newPageNumber); }}
-                        onPageSize={(newPageSize) => { setPageSize(newPageSize); }}
+                        onSelected={(selectedRow) => {
+                            setSelected(selectedRow);
+                        }}
+                        onPage={(newPageNumber) => {
+                            setPageNumber(newPageNumber);
+                        }}
+                        onPageSize={(newPageSize) => {
+                            setPageNumber(0);
+                            setPageSize(newPageSize);
+                        }}
                         pageSize={data?.pageSize}
                         showPageSize
                         data={data}
