@@ -1,33 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import TextInput from 'common/component/input/TextInput';
 import { EMAIL_DISTRIBUTION_ATTACHMENT_OPTIONS, EMAIL_DISTRIBUTION_FIELD_KEYS } from 'page/channel/email/EmailModels';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import CheckboxInput from 'common/component/input/CheckboxInput';
 import DynamicSelectInput from 'common/component/input/DynamicSelectInput';
-import { DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
-import { createNewConfigurationRequest } from 'common/util/configurationRequestBuilder';
-import EndpointSelectField from 'common/component/input/EndpointSelectField';
+import Select from 'react-select';
+import AdditionalEmailAddressesModal from './AdditionalEmailAddressesModal';
 
 const EmailDistributionConfiguration = ({
     csrfToken, data, setData, errors, readonly, createAdditionalEmailRequestBody
 }) => {
-    const getEmailsRequest = () => {
-        const apiUrl = '/alert/api/function/email.additional.addresses?pageNumber=0&pageSize=10&searchTerm=';
-        return createNewConfigurationRequest(apiUrl, csrfToken, createAdditionalEmailRequestBody());
-    };
+    const [showAdditionalEmailAddressesModal, setShowAdditionalEmailAddressesModal] = useState(false);
 
-    const convertDataToOptions = (responseData) => {
-        const { models } = responseData;
-        return models.map((emailModel) => {
-            const { emailAddress } = emailModel;
-            return {
-                key: emailAddress,
-                label: emailAddress,
-                value: emailAddress
-            };
-        });
-    };
+    function additionalEmailsPlaceholderValue() {
+        const additionalEmailAddressesLength = FieldModelUtilities.getFieldModelValues(data, EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses).length;
+        return additionalEmailAddressesLength === 0 ? 'Choose a value' : `${additionalEmailAddressesLength} items selected`;
+    }
 
     return (
         <>
@@ -43,23 +32,50 @@ const EmailDistributionConfiguration = ({
                 errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_DISTRIBUTION_FIELD_KEYS.subject)}
                 errorValue={errors.fieldErrors[EMAIL_DISTRIBUTION_FIELD_KEYS.subject]}
             />
-            <EndpointSelectField
-                searchable
+            <DynamicSelectInput
                 id={EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses}
-                csrfToken={csrfToken}
-                endpoint={DISTRIBUTION_URLS.endpointSelectPath}
-                fieldKey={EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses}
                 label="Additional Email Addresses"
                 description="Any additional email addresses (for valid users of the provider) that notifications from this job should be sent to."
-                multiSelect
-                readOnly={readonly}
-                readOptionsRequest={getEmailsRequest}
-                convertDataToOptions={convertDataToOptions}
-                onChange={FieldModelUtilities.handleChange(data, setData)}
-                value={FieldModelUtilities.getFieldModelValues(data, EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses)}
-                errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses)}
-                errorValue={errors.fieldErrors[EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses]}
+                customSelect={(
+                    /* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */
+                    <div className="typeAheadField" onClick={() => setShowAdditionalEmailAddressesModal(true)}>
+                        <Select
+                            openMenuOnClick={false}
+                            isSearchable={false}
+                            placeholder={additionalEmailsPlaceholderValue()}
+                        />
+                    </div>
+                )}
+                onChange={() => {
+                }}
             />
+            {showAdditionalEmailAddressesModal && (
+                <AdditionalEmailAddressesModal
+                    isOpen={showAdditionalEmailAddressesModal}
+                    handleClose={() => setShowAdditionalEmailAddressesModal(false)}
+                    csrfToken={csrfToken}
+                    createAdditionalEmailRequestBody={createAdditionalEmailRequestBody}
+                    handleSubmit={FieldModelUtilities.handleChange(data, setData)}
+                    formData={data}
+                />
+            )}
+            {/* <EndpointSelectField */}
+            {/*    searchable */}
+            {/*    id={EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses} */}
+            {/*    csrfToken={csrfToken} */}
+            {/*    endpoint={DISTRIBUTION_URLS.endpointSelectPath} */}
+            {/*    fieldKey={EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses} */}
+            {/*    label="Additional Email Addresses" */}
+            {/*    description="Any additional email addresses (for valid users of the provider) that notifications from this job should be sent to." */}
+            {/*    multiSelect */}
+            {/*    readOnly={readonly} */}
+            {/*    readOptionsRequest={getEmailsRequest} */}
+            {/*    convertDataToOptions={convertDataToOptions} */}
+            {/*    onChange={FieldModelUtilities.handleChange(data, setData)} */}
+            {/*    value={FieldModelUtilities.getFieldModelValues(data, EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses)} */}
+            {/*    errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses)} */}
+            {/*    errorValue={errors.fieldErrors[EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses]} */}
+            {/* /> */}
             <CheckboxInput
                 id={EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddressesOnly}
                 name={EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddressesOnly}

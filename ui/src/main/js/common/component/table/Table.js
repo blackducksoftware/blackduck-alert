@@ -29,7 +29,7 @@ const useStyles = createUseStyles({
 const Table = ({
     columns, multiSelect, selected, onSelected, disableSelectOptions, tableData, handleSearchChange,
     searchBarPlaceholder, tableActions, onToggle, active, onSort, sortConfig, data, onPage, emptyTableConfig,
-    defaultSearchValue, onPageSize, showPageSize, pageSize
+    defaultSearchValue, onPageSize, showPageSize, pageSize, cellId
 }) => {
     const classes = useStyles();
 
@@ -78,6 +78,7 @@ const Table = ({
                         selected={selected}
                         onSelected={onSelected}
                         disableSelectOptions={disableSelectOptions}
+                        cellId={cellId}
                     />
                 </table>
             )}
@@ -114,7 +115,10 @@ Table.propTypes = {
     data: PropTypes.object,
     emptyTableConfig: PropTypes.shape({
         message: PropTypes.string
-    })
+    }),
+    defaultSearchValue: PropTypes.string,
+    pageSize: PropTypes.number,
+    cellId: PropTypes.string
 };
 
 export default Table;

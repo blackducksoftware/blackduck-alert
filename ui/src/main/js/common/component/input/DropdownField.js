@@ -25,7 +25,7 @@ const DropdownField = ({ id, isDisabled = false, onChange, options, selectedValu
             id={id}
         >
             {options.map((option) => (
-                <option selected={selectedValue === option.value} value={option.value} id={option.value}>
+                <option key={option.value} value={selectedValue === option.value ? selectedValue : option.value} id={option.value}>
                     {option.label}
                 </option>
             ))}
