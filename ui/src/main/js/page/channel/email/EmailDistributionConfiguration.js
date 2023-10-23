@@ -59,23 +59,6 @@ const EmailDistributionConfiguration = ({
                     formData={data}
                 />
             )}
-            {/* <EndpointSelectField */}
-            {/*    searchable */}
-            {/*    id={EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses} */}
-            {/*    csrfToken={csrfToken} */}
-            {/*    endpoint={DISTRIBUTION_URLS.endpointSelectPath} */}
-            {/*    fieldKey={EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses} */}
-            {/*    label="Additional Email Addresses" */}
-            {/*    description="Any additional email addresses (for valid users of the provider) that notifications from this job should be sent to." */}
-            {/*    multiSelect */}
-            {/*    readOnly={readonly} */}
-            {/*    readOptionsRequest={getEmailsRequest} */}
-            {/*    convertDataToOptions={convertDataToOptions} */}
-            {/*    onChange={FieldModelUtilities.handleChange(data, setData)} */}
-            {/*    value={FieldModelUtilities.getFieldModelValues(data, EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses)} */}
-            {/*    errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses)} */}
-            {/*    errorValue={errors.fieldErrors[EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses]} */}
-            {/* /> */}
             <CheckboxInput
                 id={EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddressesOnly}
                 name={EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddressesOnly}

@@ -36,7 +36,7 @@ export default function AdditionalEmailAddressesModal({ isOpen, handleClose, csr
         });
     }
 
-    const handleFieldValueChange = (option) => {
+    function handleFieldValueChange(option) {
         const name = EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses;
         handleSubmit({
             target: {
@@ -45,7 +45,7 @@ export default function AdditionalEmailAddressesModal({ isOpen, handleClose, csr
             }
         });
         handleClose();
-    };
+    }
 
     useEffect(() => {
         fetchAdditionalEmails();
