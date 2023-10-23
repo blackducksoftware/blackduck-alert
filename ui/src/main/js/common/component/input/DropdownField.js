@@ -40,7 +40,8 @@ DropdownField.propTypes = {
     })),
     onChange: PropTypes.func,
     isDisabled: PropTypes.bool,
-    id: PropTypes.string
+    id: PropTypes.string,
+    selectedValue: PropTypes.string
 };
 
 export default DropdownField;

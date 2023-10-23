@@ -20,22 +20,6 @@ export default function AdditionalEmailAddressesModal({ isOpen, handleClose, csr
     const [selected, setSelected] = useState(FieldModelUtilities.getFieldModelValues(formData, EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses));
     const [errorMessage, setErrorMessage] = useState({ message: 'No Email Addresses Available' });
 
-    function fetchAdditionalEmails() {
-        const apiUrl = `/alert/api/function/email.additional.addresses?pageNumber=${pageNumber}&pageSize=${pageSize}&searchTerm=${searchTerm}`;
-        const request = createNewConfigurationRequest(apiUrl, csrfToken, createAdditionalEmailRequestBody());
-        request.then((response) => {
-            if (response.ok) {
-                response.json().then((resJson) => {
-                    setData(resJson);
-                });
-            } else {
-                response.json().then((resJson) => {
-                    setErrorMessage(resJson);
-                });
-            }
-        });
-    }
-
     function handleFieldValueChange(option) {
         const name = EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses;
         handleSubmit({
@@ -48,8 +32,24 @@ export default function AdditionalEmailAddressesModal({ isOpen, handleClose, csr
     }
 
     useEffect(() => {
+        function fetchAdditionalEmails() {
+            const apiUrl = `/alert/api/function/email.additional.addresses?pageNumber=${pageNumber}&pageSize=${pageSize}&searchTerm=${searchTerm}`;
+            const request = createNewConfigurationRequest(apiUrl, csrfToken, createAdditionalEmailRequestBody());
+            request.then((response) => {
+                if (response.ok) {
+                    response.json().then((resJson) => {
+                        setData(resJson);
+                    });
+                } else {
+                    response.json().then((resJson) => {
+                        setErrorMessage(resJson);
+                    });
+                }
+            });
+        }
+
         fetchAdditionalEmails();
-    }, [pageNumber, pageSize, searchTerm]);
+    }, [pageNumber, pageSize, searchTerm, csrfToken, createAdditionalEmailRequestBody]);
 
     return (
         <>
@@ -81,7 +81,7 @@ export default function AdditionalEmailAddressesModal({ isOpen, handleClose, csr
                             setPageNumber(0);
                             setPageSize(newPageSize);
                         }}
-                        pageSize={data?.pageSize}
+                        pageSize={pageSize}
                         showPageSize
                         data={data}
                         emptyTableConfig={errorMessage}
