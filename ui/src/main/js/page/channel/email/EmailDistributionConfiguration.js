@@ -15,7 +15,7 @@ const EmailDistributionConfiguration = ({
 
     function additionalEmailsPlaceholderValue() {
         const additionalEmailAddressesLength = FieldModelUtilities.getFieldModelValues(data, EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses).length;
-        return additionalEmailAddressesLength === 0 ? 'Choose a value' : `${additionalEmailAddressesLength} items selected`;
+        return additionalEmailAddressesLength === 0 ? 'Choose a value' : `${additionalEmailAddressesLength} item(s) selected`;
     }
 
     return (
