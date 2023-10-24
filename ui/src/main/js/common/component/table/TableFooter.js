@@ -48,7 +48,8 @@ TableFooter.propTypes = {
     data: PropTypes.object,
     onPage: PropTypes.func,
     onPageSize: PropTypes.func,
-    showPageSize: PropTypes.bool
+    showPageSize: PropTypes.bool,
+    pageSize: PropTypes.number
 };
 
 export default TableFooter;

@@ -14,13 +14,13 @@ const useStyles = createUseStyles({
     }
 });
 
-const MultiSelectCell = ({ selected, onSelected, data, disableSelectOptions }) => {
+const MultiSelectCell = ({ selected, onSelected, data, disableSelectOptions, cellId }) => {
     const classes = useStyles();
     // jobId added for distribution tables
     // fieldName added for Advanced Jira Mapping Fields (in Distribution Config). This should eventually be removed and
     //  replaced in favor of UUIDs once a concrete implementation of the distribution endpoint is available.
     const { id, jobId, fieldName } = data;
-    const identifier = id || jobId || fieldName;
+    const identifier = id || jobId || fieldName || data[cellId];
     const isSelected = useMemo(() => selected.includes(identifier), [selected, data]);
     const isDisabled = disableSelectOptions?.disabledItems.includes(data[disableSelectOptions.key]);
 
@@ -59,7 +59,8 @@ MultiSelectCell.propTypes = {
         disabledItems: PropTypes.arrayOf(PropTypes.string),
         title: PropTypes.string
     }),
-    title: PropTypes.string
+    title: PropTypes.string,
+    cellId: PropTypes.string
 };
 
 export default MultiSelectCell;
