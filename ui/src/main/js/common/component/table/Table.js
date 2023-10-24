@@ -117,7 +117,7 @@ Table.propTypes = {
         message: PropTypes.string
     }),
     defaultSearchValue: PropTypes.string,
-    pageSize: PropTypes.number,
+    pageSize: PropTypes.string,
     cellId: PropTypes.string
 };
 
