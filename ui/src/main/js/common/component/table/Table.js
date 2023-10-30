@@ -70,6 +70,7 @@ const Table = ({
                         onSort={onSort}
                         sortConfig={sortConfig}
                         disableSelectOptions={disableSelectOptions}
+                        cellId={cellId}
                     />
                     <TableBody
                         columns={columns}
@@ -117,7 +118,7 @@ Table.propTypes = {
         message: PropTypes.string
     }),
     defaultSearchValue: PropTypes.string,
-    pageSize: PropTypes.string,
+    pageSize: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     cellId: PropTypes.string
 };
 
