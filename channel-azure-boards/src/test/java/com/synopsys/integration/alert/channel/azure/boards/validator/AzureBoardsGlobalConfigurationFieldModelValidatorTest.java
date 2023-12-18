@@ -17,7 +17,7 @@ import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestVal
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
+import com.synopsys.integration.alert.api.descriptor.AzureBoardsChannelKey;
 import com.synopsys.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
 
 class AzureBoardsGlobalConfigurationFieldModelValidatorTest {

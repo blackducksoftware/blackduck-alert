@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
-import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
+import com.synopsys.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
 
 class IssueTrackerFieldModelTestActionTest {
     private static final String CLASS_NAME = IssueTrackerFieldModelTestActionTest.class.getSimpleName();

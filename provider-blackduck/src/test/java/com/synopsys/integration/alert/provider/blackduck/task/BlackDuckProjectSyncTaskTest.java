@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
+import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.MockProviderDataAccessor;
 import com.synopsys.integration.blackduck.api.core.ResourceLink;

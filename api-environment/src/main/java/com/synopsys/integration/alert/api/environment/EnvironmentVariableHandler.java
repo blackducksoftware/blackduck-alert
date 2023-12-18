@@ -5,17 +5,16 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.environment;
-
-import java.util.Optional;
-import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package com.synopsys.integration.alert.api.environment;
 
 import com.synopsys.integration.alert.api.common.model.Obfuscated;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Optional;
+import java.util.Set;
 
 public abstract class EnvironmentVariableHandler<T extends Obfuscated<T>> {
     private final Logger logger = LoggerFactory.getLogger(getClass());

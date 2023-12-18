@@ -21,7 +21,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
+import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
 

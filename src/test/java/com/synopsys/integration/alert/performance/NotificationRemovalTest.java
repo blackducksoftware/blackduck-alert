@@ -40,7 +40,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 import com.synopsys.integration.alert.component.scheduling.workflow.PurgeTask;
-import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
+import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerLegacy;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;

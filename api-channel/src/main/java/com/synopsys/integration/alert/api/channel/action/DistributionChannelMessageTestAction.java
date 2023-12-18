@@ -21,7 +21,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKey;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;

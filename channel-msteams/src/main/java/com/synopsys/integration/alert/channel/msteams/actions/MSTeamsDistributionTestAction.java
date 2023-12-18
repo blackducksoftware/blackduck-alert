@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.channel.action.DistributionChannelMessageTestAction;
 import com.synopsys.integration.alert.channel.msteams.distribution.MSTeamsChannel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
-import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
+import com.synopsys.integration.alert.api.descriptor.MsTeamsKey;
 
 @Component
 public class MSTeamsDistributionTestAction extends DistributionChannelMessageTestAction<MSTeamsJobDetailsModel> {

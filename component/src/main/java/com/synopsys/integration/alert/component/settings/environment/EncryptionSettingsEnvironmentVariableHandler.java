@@ -7,18 +7,17 @@
  */
 package com.synopsys.integration.alert.component.settings.environment;
 
-import java.util.Optional;
-import java.util.Set;
-
+import com.synopsys.integration.alert.api.common.model.AlertConstants;
+import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.synopsys.integration.alert.api.environment.EnvironmentProcessingResult;
+import com.synopsys.integration.alert.api.environment.EnvironmentVariableHandler;
+import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
+import com.synopsys.integration.alert.component.settings.encryption.model.SettingsEncryptionModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.common.model.AlertConstants;
-import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.component.settings.encryption.model.SettingsEncryptionModel;
-import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
-import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
-import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
+import java.util.Optional;
+import java.util.Set;
 
 @Component
 public class EncryptionSettingsEnvironmentVariableHandler extends EnvironmentVariableHandler<SettingsEncryptionModel> {

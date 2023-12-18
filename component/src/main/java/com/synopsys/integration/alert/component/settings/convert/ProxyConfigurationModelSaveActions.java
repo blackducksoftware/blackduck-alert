@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.component.settings.proxy.action.SettingsProxyCrudActions;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 
 /**
  * @deprecated This class is required for converting an old ConfigurationModel into the new GlobalConfigModel classes. This is a temporary class that should be removed once we

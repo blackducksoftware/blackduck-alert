@@ -14,7 +14,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
+import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;

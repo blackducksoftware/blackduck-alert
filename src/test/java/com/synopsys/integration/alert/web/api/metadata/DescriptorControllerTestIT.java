@@ -25,7 +25,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 import com.synopsys.integration.alert.web.api.metadata.model.DescriptorsResponseModel;

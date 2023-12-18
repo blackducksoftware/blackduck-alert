@@ -14,7 +14,7 @@ import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreate
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerCreationEventGenerator;
 import com.synopsys.integration.alert.channel.jira.server.distribution.event.JiraServerCreateIssueEvent;
-import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
+import com.synopsys.integration.alert.api.descriptor.JiraServerChannelKey;
 
 public class JiraServerCreateEventGenerator implements IssueTrackerCreationEventGenerator {
     private final JiraServerChannelKey channelKey;

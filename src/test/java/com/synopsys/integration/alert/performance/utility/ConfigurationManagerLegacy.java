@@ -20,7 +20,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobPagedModel;
 import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldModel;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.exception.IntegrationException;
 

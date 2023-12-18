@@ -28,7 +28,7 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
-import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
+import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.processor.api.NotificationMappingProcessor;
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;

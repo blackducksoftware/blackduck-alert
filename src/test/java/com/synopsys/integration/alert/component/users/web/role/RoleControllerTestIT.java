@@ -26,7 +26,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.alert.database.user.RoleRepository;
-import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
+import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 

@@ -14,7 +14,7 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKey;
 import com.synopsys.integration.alert.processor.api.distribute.DistributionEvent;
 
 class DistributionEventHandlerTest {

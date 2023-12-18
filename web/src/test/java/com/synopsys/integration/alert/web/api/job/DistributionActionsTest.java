@@ -22,10 +22,10 @@ import com.synopsys.integration.alert.common.persistence.accessor.DistributionAc
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.DistributionWithAuditInfo;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
-import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
-import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.JiraCloudChannelKey;
+import com.synopsys.integration.alert.api.descriptor.MsTeamsKey;
+import com.synopsys.integration.alert.api.descriptor.SlackChannelKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 import com.synopsys.integration.alert.test.common.MockDescriptorMap;
 
 public class DistributionActionsTest {

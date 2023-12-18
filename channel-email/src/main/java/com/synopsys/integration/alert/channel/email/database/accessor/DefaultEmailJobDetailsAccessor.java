@@ -24,8 +24,8 @@ import com.synopsys.integration.alert.channel.email.database.job.additional.Emai
 import com.synopsys.integration.alert.common.persistence.accessor.EmailJobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
-import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.EmailChannelKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 
 @Component
 public class DefaultEmailJobDetailsAccessor implements EmailJobDetailsAccessor {

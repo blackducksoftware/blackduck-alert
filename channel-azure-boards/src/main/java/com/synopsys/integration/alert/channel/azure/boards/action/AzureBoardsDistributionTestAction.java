@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.channel.issue.action.IssueTrackerTestAction;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.AzureBoardsMessageSenderFactory;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
-import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
+import com.synopsys.integration.alert.api.descriptor.AzureBoardsChannelKey;
 
 @Component
 public class AzureBoardsDistributionTestAction extends IssueTrackerTestAction<AzureBoardsJobDetailsModel, Integer> {

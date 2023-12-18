@@ -1,23 +1,22 @@
 package com.synopsys.integration.alert.authentication.ldap.environment;
 
-import java.util.Set;
-
+import com.synopsys.integration.alert.api.common.model.AlertConstants;
+import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.api.environment.EnvironmentProcessingResult;
+import com.synopsys.integration.alert.api.environment.EnvironmentVariableHandler;
+import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
+import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
+import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
+import com.synopsys.integration.alert.authentication.ldap.validator.LDAPConfigurationValidator;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.common.model.AlertConstants;
-import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
-import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
-import com.synopsys.integration.alert.authentication.ldap.validator.LDAPConfigurationValidator;
-import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
-import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
-import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
+import java.util.Set;
 
 @Component
 public class LDAPEnvironmentVariableHandler extends EnvironmentVariableHandler<LDAPConfigModel> {

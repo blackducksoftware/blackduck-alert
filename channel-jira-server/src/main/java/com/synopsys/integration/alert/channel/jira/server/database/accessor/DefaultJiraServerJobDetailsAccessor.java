@@ -25,8 +25,8 @@ import com.synopsys.integration.alert.common.persistence.accessor.JiraServerJobD
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
-import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.JiraServerChannelKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 
 @Component
 public class DefaultJiraServerJobDetailsAccessor implements JiraServerJobDetailsAccessor {

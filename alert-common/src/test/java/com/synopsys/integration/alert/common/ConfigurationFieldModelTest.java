@@ -21,7 +21,7 @@ import com.synopsys.integration.alert.common.persistence.util.ConfigurationField
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 import com.synopsys.integration.alert.mock.MockDescriptorAccessor;
 
 class ConfigurationFieldModelTest {

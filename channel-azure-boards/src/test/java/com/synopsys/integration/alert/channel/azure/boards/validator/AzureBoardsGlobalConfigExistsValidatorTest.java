@@ -16,7 +16,7 @@ import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlob
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.database.MockRepositorySorter;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;

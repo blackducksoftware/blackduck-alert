@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.rest.model.Config;
 import com.synopsys.integration.alert.common.rest.model.MultiResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 
 public abstract class AbstractResourceActions<T extends Config, D extends AlertSerializableModel, M extends MultiResponseModel<T>> {
     private final DescriptorKey descriptorKey;

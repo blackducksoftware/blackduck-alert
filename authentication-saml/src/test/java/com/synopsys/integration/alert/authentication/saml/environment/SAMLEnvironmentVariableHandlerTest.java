@@ -1,17 +1,20 @@
 package com.synopsys.integration.alert.authentication.saml.environment;
 
+import com.synopsys.integration.alert.api.environment.EnvironmentProcessingResult;
+import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
 import com.synopsys.integration.alert.authentication.saml.SAMLTestHelper;
 import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
 import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
 import com.synopsys.integration.alert.authentication.saml.model.SAMLMetadataMode;
 import com.synopsys.integration.alert.authentication.saml.validator.SAMLConfigurationValidator;
-import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
-import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.env.MockEnvironment;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SAMLEnvironmentVariableHandlerTest {
     private SAMLConfigModel samlConfigModel;

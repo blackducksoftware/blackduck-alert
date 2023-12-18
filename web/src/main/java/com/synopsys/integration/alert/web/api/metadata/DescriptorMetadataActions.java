@@ -28,7 +28,7 @@ import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 import com.synopsys.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
 
 @Component

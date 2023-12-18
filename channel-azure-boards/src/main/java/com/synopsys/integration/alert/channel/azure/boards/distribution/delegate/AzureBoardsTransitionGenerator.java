@@ -14,7 +14,7 @@ import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerTransi
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTransitionModel;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerTransitionEventGenerator;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.event.AzureBoardsTransitionEvent;
-import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
+import com.synopsys.integration.alert.api.descriptor.AzureBoardsChannelKey;
 
 public class AzureBoardsTransitionGenerator implements IssueTrackerTransitionEventGenerator<Integer> {
     private final AzureBoardsChannelKey channelKey;

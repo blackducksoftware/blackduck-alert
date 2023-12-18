@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 
 @Component
 public class SlackDescriptor extends ChannelDescriptor {

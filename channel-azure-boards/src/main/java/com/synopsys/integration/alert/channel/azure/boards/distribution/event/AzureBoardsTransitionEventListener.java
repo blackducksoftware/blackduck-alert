@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerTransitionEventListener;
-import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
+import com.synopsys.integration.alert.api.descriptor.AzureBoardsChannelKey;
 
 @Component
 public class AzureBoardsTransitionEventListener extends IssueTrackerTransitionEventListener<AzureBoardsTransitionEvent> {

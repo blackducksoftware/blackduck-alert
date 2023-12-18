@@ -11,7 +11,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
+import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.project.MessageReason;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;

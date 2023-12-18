@@ -20,8 +20,8 @@ import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobMan
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKey;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.processor.api.extract.model.ProcessedProviderMessageHolder;
 
 @Component

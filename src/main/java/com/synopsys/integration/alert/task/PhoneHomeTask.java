@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
-import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
+import com.synopsys.integration.alert.api.descriptor.model.ProviderKey;
 import com.synopsys.integration.alert.web.api.about.AboutReader;
 import com.synopsys.integration.blackduck.phonehome.BlackDuckPhoneHomeHelper;
 import com.synopsys.integration.log.IntLogger;

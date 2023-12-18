@@ -17,7 +17,7 @@ import com.synopsys.integration.alert.api.provider.Provider;
 import com.synopsys.integration.alert.api.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.api.provider.state.StatefulProvider;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
+import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
 import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckTaskFactory;
 import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;

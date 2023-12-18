@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 
 @Component
 public class DescriptorMap {

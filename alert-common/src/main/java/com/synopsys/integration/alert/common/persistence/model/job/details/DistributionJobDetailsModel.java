@@ -13,8 +13,8 @@ import java.util.UUID;
 
 import com.google.gson.annotations.JsonAdapter;
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKey;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 
 @JsonAdapter(DistributionJobDetailsModelJsonAdapter.class)
 public abstract class DistributionJobDetailsModel extends AlertSerializableModel {

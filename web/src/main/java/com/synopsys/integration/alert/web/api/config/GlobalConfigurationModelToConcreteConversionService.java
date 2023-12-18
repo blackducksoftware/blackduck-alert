@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 
 /**
  * @deprecated Once unsupported global endpoints are removed in 8.0.0 we will no longer need the conversion service to translate between the old and new actions.

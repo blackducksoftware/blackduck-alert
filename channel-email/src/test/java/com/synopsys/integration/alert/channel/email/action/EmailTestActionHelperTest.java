@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModelBuilder;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
+import com.synopsys.integration.alert.api.descriptor.EmailChannelKey;
 
 @ExtendWith(SpringExtension.class)
 public class EmailTestActionHelperTest {

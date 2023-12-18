@@ -13,7 +13,7 @@ import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 
 public class DescriptorMetadata extends AlertSerializableModel {
     private final String name;

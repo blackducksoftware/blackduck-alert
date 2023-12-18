@@ -13,7 +13,7 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.descriptor.action.DescriptorAction;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 
 public abstract class DistributionChannelTestAction extends DescriptorAction {
     protected DistributionChannelTestAction(DescriptorKey descriptorKey) {

@@ -1,18 +1,17 @@
 package com.synopsys.integration.alert.component.settings.environment;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Set;
-
+import com.synopsys.integration.alert.api.common.model.AlertConstants;
+import com.synopsys.integration.alert.api.environment.EnvironmentProcessingResult;
+import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
-import com.synopsys.integration.alert.api.common.model.AlertConstants;
-import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
-import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EncryptionSettingsEnvironmentVariableHandlerTest {
     @Test

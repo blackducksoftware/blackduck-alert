@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.component.certificates;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 
 @Component
 public class CertificatesDescriptorKey extends DescriptorKey {

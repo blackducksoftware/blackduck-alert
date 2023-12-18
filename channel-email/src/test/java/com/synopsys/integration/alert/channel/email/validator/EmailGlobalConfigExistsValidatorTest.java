@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
-import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
+import com.synopsys.integration.alert.api.descriptor.EmailChannelKey;
 
 class EmailGlobalConfigExistsValidatorTest {
 

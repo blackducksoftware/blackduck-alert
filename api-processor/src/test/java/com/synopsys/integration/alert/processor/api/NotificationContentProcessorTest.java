@@ -16,7 +16,7 @@ import com.google.gson.GsonBuilder;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
+import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.synopsys.integration.alert.processor.api.digest.ProjectMessageDigester;
 import com.synopsys.integration.alert.processor.api.extract.ProviderMessageExtractionDelegator;
 import com.synopsys.integration.alert.processor.api.extract.model.ProcessedProviderMessage;

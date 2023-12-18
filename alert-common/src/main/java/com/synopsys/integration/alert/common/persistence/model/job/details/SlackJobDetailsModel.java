@@ -11,7 +11,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 
 public class SlackJobDetailsModel extends DistributionJobDetailsModel {
     private final String webhook;

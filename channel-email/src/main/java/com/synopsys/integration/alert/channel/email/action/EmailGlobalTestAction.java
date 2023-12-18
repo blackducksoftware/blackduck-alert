@@ -28,7 +28,7 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationTestHelper;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationValidationHelper;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.service.email.EmailTarget;
 import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
 import com.synopsys.integration.alert.service.email.SmtpConfig;

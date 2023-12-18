@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
-import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
+import com.synopsys.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 
 public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsModel, T extends Serializable> extends DistributionChannelTestAction {

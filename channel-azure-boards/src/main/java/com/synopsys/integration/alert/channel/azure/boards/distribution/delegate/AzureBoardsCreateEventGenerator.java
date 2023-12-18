@@ -14,7 +14,7 @@ import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreate
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerCreationEventGenerator;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.event.AzureBoardsCreateIssueEvent;
-import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
+import com.synopsys.integration.alert.api.descriptor.AzureBoardsChannelKey;
 
 public class AzureBoardsCreateEventGenerator implements IssueTrackerCreationEventGenerator {
     private final AzureBoardsChannelKey channelKey;

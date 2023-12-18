@@ -42,9 +42,9 @@ import com.synopsys.integration.alert.common.persistence.model.job.executions.Jo
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.DistributionWithAuditInfo;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
-import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.MsTeamsKey;
+import com.synopsys.integration.alert.api.descriptor.SlackChannelKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @AlertIntegrationTest

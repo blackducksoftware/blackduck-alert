@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.common.persistence.model.job.details;
 
 import java.util.UUID;
 
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 
 public class AzureBoardsJobDetailsModel extends DistributionJobDetailsModel {
     private final boolean addComments;

@@ -5,7 +5,11 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.environment;
+package com.synopsys.integration.alert.api.environment;
+
+import com.synopsys.integration.util.Stringable;
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,11 +18,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.Nullable;
-
-import com.synopsys.integration.util.Stringable;
 
 public class EnvironmentProcessingResult extends Stringable {
     private final Set<String> variableNames;

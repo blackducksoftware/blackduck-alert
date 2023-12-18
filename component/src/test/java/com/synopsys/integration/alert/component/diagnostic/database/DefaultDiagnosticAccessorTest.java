@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.component.diagnostic.utility.RabbitMQDiagn
 import com.synopsys.integration.alert.database.api.StaticJobAccessor;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 
 class DefaultDiagnosticAccessorTest {
     public static final String TEST_JOB_NAME = "Job Name";

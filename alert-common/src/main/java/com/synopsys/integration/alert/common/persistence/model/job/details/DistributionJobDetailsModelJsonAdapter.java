@@ -16,7 +16,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKey;
 
 public class DistributionJobDetailsModelJsonAdapter implements JsonSerializer<DistributionJobDetailsModel>, JsonDeserializer<DistributionJobDetailsModel> {
     @Override

@@ -14,7 +14,7 @@ import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCommen
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCommentModel;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerCommentEventGenerator;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.event.AzureBoardsCommentEvent;
-import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
+import com.synopsys.integration.alert.api.descriptor.AzureBoardsChannelKey;
 
 public class AzureBoardsCommentGenerator implements IssueTrackerCommentEventGenerator<Integer> {
 

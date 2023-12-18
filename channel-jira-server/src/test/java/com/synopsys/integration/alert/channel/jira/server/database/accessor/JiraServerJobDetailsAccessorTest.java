@@ -18,8 +18,8 @@ import com.synopsys.integration.alert.channel.jira.server.database.job.custom_fi
 import com.synopsys.integration.alert.channel.jira.server.database.job.custom_field.JiraServerJobCustomFieldRepository;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
-import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.api.descriptor.JiraServerChannelKey;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 
 class JiraServerJobDetailsAccessorTest {
     private final JiraServerChannelKey channelKey = ChannelKeys.JIRA_SERVER;

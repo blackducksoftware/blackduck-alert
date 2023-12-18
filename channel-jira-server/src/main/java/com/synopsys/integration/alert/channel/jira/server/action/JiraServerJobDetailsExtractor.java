@@ -20,7 +20,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
-import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
+import com.synopsys.integration.alert.api.descriptor.JiraServerChannelKey;
 
 @Component
 public class JiraServerJobDetailsExtractor extends JiraJobDetailsExtractor {

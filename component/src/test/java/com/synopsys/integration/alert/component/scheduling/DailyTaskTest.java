@@ -17,7 +17,7 @@ import com.synopsys.integration.alert.component.scheduling.descriptor.Scheduling
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 import com.synopsys.integration.alert.component.scheduling.workflow.DailyTask;
 import com.synopsys.integration.alert.database.api.StaticJobAccessor;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 
 class DailyTaskTest {
     private static final SchedulingDescriptorKey SCHEDULING_DESCRIPTOR_KEY = new SchedulingDescriptorKey();

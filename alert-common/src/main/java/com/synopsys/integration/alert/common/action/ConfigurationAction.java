@@ -11,7 +11,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 
 @Deprecated(forRemoval = true)
 public abstract class ConfigurationAction {

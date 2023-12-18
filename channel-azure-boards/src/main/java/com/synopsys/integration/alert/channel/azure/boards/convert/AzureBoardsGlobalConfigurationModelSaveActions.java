@@ -12,8 +12,8 @@ import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlob
 import com.synopsys.integration.alert.common.action.api.GlobalConfigurationModelToConcreteSaveActions;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 
 /**
  * @deprecated This class is required for converting an old ConfigurationModel into the new GlobalConfigModel classes. This is a temporary class that should be removed once we

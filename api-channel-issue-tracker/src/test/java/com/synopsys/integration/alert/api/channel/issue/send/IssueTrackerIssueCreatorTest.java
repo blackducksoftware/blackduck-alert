@@ -17,7 +17,7 @@ import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDeta
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
+import com.synopsys.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
 
 public class IssueTrackerIssueCreatorTest {
     private static final IssueTrackerChannelKey ISSUE_TRACKER_CHANNEL_KEY = new IssueTrackerChannelKey("key", "name") {};

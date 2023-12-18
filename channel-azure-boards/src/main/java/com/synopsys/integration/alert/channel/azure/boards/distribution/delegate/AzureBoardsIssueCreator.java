@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsHttpExcept
 import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsAlertIssuePropertiesManager;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsUILinkUtils;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
-import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
+import com.synopsys.integration.alert.api.descriptor.AzureBoardsChannelKey;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.service.query.AzureWorkItemQueryService;
 import com.synopsys.integration.azure.boards.common.service.workitem.AzureWorkItemService;

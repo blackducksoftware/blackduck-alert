@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
-import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
+import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckDistributionConfigurationValidator;
 import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckGlobalConfigurationFieldModelValidator;
 

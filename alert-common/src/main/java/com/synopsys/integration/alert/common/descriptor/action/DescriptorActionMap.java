@@ -14,7 +14,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 
 public final class DescriptorActionMap<T extends DescriptorAction> {
     private final Map<String, T> universalKeyToAction;

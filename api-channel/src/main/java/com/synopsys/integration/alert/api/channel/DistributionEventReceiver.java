@@ -12,7 +12,7 @@ import org.springframework.core.task.TaskExecutor;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.event.AlertMessageListener;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKey;
 import com.synopsys.integration.alert.processor.api.distribute.DistributionEvent;
 
 public abstract class DistributionEventReceiver<D extends DistributionJobDetailsModel> extends AlertMessageListener<DistributionEvent> {

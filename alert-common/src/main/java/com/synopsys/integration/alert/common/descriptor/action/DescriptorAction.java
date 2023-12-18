@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.common.descriptor.action;
 
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 
 public abstract class DescriptorAction {
     private final DescriptorKey descriptorKey;

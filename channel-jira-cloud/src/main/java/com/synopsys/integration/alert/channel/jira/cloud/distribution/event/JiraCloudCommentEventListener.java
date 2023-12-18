@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCommentEventListener;
-import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
+import com.synopsys.integration.alert.api.descriptor.JiraCloudChannelKey;
 
 @Component
 public class JiraCloudCommentEventListener extends IssueTrackerCommentEventListener<JiraCloudCommentEvent> {

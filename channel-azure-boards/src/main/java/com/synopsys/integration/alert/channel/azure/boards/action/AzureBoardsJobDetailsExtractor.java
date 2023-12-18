@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobDetailsExtractor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
-import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
+import com.synopsys.integration.alert.api.descriptor.AzureBoardsChannelKey;
 
 @Component
 public class AzureBoardsJobDetailsExtractor extends DistributionJobDetailsExtractor {

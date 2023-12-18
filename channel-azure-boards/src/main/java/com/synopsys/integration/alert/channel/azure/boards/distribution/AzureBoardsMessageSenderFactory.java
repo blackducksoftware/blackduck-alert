@@ -38,7 +38,7 @@ import com.synopsys.integration.alert.channel.azure.boards.distribution.delegate
 import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsAlertIssuePropertiesManager;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
-import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
+import com.synopsys.integration.alert.api.descriptor.AzureBoardsChannelKey;
 import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreator;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreatorFactory;

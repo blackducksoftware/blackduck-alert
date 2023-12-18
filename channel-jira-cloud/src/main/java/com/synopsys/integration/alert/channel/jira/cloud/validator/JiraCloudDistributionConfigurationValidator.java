@@ -20,7 +20,7 @@ import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDes
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
-import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
+import com.synopsys.integration.alert.api.descriptor.JiraCloudChannelKey;
 
 @Component
 public class JiraCloudDistributionConfigurationValidator implements DistributionConfigurationValidator {

@@ -23,7 +23,7 @@ import com.synopsys.integration.alert.api.channel.rest.RestChannelUtility;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
-import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
+import com.synopsys.integration.alert.api.descriptor.MsTeamsKey;
 import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.request.Request;
 

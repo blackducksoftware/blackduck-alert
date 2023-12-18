@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobDetailsExtractor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
-import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
+import com.synopsys.integration.alert.api.descriptor.EmailChannelKey;
 
 @Component
 public class EmailJobDetailsExtractor extends DistributionJobDetailsExtractor {

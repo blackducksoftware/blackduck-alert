@@ -10,7 +10,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
+import com.synopsys.integration.alert.api.descriptor.SlackChannelKey;
 import com.synopsys.integration.alert.processor.api.MockProcessingAuditAccessor;
 import com.synopsys.integration.alert.processor.api.extract.model.ProcessedProviderMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.ProcessedProviderMessageHolder;

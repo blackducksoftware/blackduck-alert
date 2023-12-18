@@ -14,7 +14,7 @@ import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerTransi
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTransitionModel;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerTransitionEventGenerator;
 import com.synopsys.integration.alert.channel.jira.server.distribution.event.JiraServerTransitionEvent;
-import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
+import com.synopsys.integration.alert.api.descriptor.JiraServerChannelKey;
 
 public class JiraServerTransitionGenerator implements IssueTrackerTransitionEventGenerator<String> {
     private final JiraServerChannelKey channelKey;

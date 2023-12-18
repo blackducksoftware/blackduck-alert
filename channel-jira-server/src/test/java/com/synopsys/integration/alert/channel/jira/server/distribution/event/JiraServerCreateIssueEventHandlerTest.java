@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.channel.jira.server.database.accessor.mock
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;

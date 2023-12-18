@@ -12,7 +12,7 @@ import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
+import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;

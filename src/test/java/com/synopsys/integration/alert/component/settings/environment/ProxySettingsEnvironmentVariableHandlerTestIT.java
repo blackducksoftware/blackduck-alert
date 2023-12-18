@@ -1,12 +1,15 @@
 package com.synopsys.integration.alert.component.settings.environment;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.List;
-import java.util.function.Predicate;
-
+import com.synopsys.integration.alert.api.common.model.AlertConstants;
+import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.api.environment.EnvironmentProcessingResult;
+import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
+import com.synopsys.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;
+import com.synopsys.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
+import com.synopsys.integration.alert.test.common.EnvironmentVariableMockingUtil;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,16 +18,12 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
-import com.synopsys.integration.alert.api.common.model.AlertConstants;
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
-import com.synopsys.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;
-import com.synopsys.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
-import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
-import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
-import com.synopsys.integration.alert.test.common.EnvironmentVariableMockingUtil;
-import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import java.util.List;
+import java.util.function.Predicate;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @AlertIntegrationTest
 class ProxySettingsEnvironmentVariableHandlerTestIT {

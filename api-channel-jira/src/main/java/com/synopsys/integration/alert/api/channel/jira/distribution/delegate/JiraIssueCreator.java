@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.api.channel.jira.util.JiraCallbackUtils;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
+import com.synopsys.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentPolicy;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;

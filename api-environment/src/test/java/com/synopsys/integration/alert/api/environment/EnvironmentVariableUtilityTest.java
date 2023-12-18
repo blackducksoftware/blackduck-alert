@@ -1,16 +1,15 @@
-package com.synopsys.integration.alert.environment;
+package com.synopsys.integration.alert.api.environment;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Optional;
-
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EnvironmentVariableUtilityTest {
     private static final String WORKING_PROPERTY_KEY = "ALERT_DESCRIPTORTYPE_NAME_SPECIFIC_PROPERTY_KEY";

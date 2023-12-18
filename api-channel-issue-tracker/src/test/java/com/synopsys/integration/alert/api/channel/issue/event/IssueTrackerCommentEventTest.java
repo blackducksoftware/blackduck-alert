@@ -10,7 +10,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCommentModel;
-import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
+import com.synopsys.integration.alert.api.descriptor.JiraServerChannelKey;
 
 class IssueTrackerCommentEventTest {
     @Test

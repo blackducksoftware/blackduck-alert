@@ -5,17 +5,17 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.descriptor.api.model;
+package com.synopsys.integration.alert.api.descriptor.model;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
-import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
-import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
-import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
-import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
-import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
+import com.synopsys.integration.alert.api.descriptor.AzureBoardsChannelKey;
+import com.synopsys.integration.alert.api.descriptor.EmailChannelKey;
+import com.synopsys.integration.alert.api.descriptor.JiraCloudChannelKey;
+import com.synopsys.integration.alert.api.descriptor.JiraServerChannelKey;
+import com.synopsys.integration.alert.api.descriptor.MsTeamsKey;
+import com.synopsys.integration.alert.api.descriptor.SlackChannelKey;
 
 public final class ChannelKeys {
     public static final AzureBoardsChannelKey AZURE_BOARDS = new AzureBoardsChannelKey();
