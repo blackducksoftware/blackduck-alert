@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.channel.action.DistributionChannelMessageTestAction;
 import com.synopsys.integration.alert.channel.slack.distribution.SlackChannel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
-import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
+import com.synopsys.integration.alert.api.descriptor.SlackChannelKey;
 
 @Component
 public class SlackDistributionTestAction extends DistributionChannelMessageTestAction<SlackJobDetailsModel> {
