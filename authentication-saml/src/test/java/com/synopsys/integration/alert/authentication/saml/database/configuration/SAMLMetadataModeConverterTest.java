@@ -4,7 +4,9 @@ import com.synopsys.integration.alert.authentication.saml.database.SAMLMetadataM
 import com.synopsys.integration.alert.authentication.saml.model.SAMLMetadataMode;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SAMLMetadataModeConverterTest {
     @Test
