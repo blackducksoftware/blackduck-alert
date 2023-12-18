@@ -5,16 +5,15 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.environment;
+package com.synopsys.integration.alert.api.environment;
 
-import java.util.Optional;
-
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import java.util.Optional;
 
 @Component
 public class EnvironmentVariableUtility {
