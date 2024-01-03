@@ -8,7 +8,6 @@ dependencies {
     implementation project(':api-task')
 
     implementation 'com.synopsys.integration:integration-rest'
-    implementation 'com.synopsys.integration:phone-home-client'
 
     implementation 'org.springframework:spring-web'
     implementation 'org.springframework.amqp:spring-amqp'
