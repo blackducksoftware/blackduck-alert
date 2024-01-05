@@ -13,7 +13,7 @@ const useStyles = createUseStyles({
     }
 });
 
-const TableHeader = ({ columns, multiSelect, selected, onSelected, tableData, onSort, sortConfig, disableSelectOptions }) => {
+const TableHeader = ({ columns, multiSelect, selected, onSelected, tableData, onSort, sortConfig, disableSelectOptions, cellId }) => {
     const classes = useStyles();
 
     return (
@@ -25,6 +25,7 @@ const TableHeader = ({ columns, multiSelect, selected, onSelected, tableData, on
                         onSelected={onSelected}
                         tableData={tableData}
                         disableSelectOptions={disableSelectOptions}
+                        cellId={cellId}
                     />
                 )}
 
@@ -59,7 +60,8 @@ TableHeader.propTypes = {
         name: PropTypes.string,
         direction: PropTypes.string
     }),
-    disableSelectOptions: PropTypes.object
+    disableSelectOptions: PropTypes.object,
+    cellId: PropTypes.string
 };
 
 export default TableHeader;

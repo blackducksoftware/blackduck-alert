@@ -23,9 +23,10 @@ const DropdownField = ({ id, isDisabled = false, onChange, options, selectedValu
             onChange={handleChange}
             disabled={isDisabled}
             id={id}
+            value={selectedValue}
         >
             {options.map((option) => (
-                <option selected={selectedValue === option.value} value={option.value} id={option.value}>
+                <option key={option.value} value={option.value} id={option.value}>
                     {option.label}
                 </option>
             ))}
@@ -40,7 +41,8 @@ DropdownField.propTypes = {
     })),
     onChange: PropTypes.func,
     isDisabled: PropTypes.bool,
-    id: PropTypes.string
+    id: PropTypes.string,
+    selectedValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
 };
 
 export default DropdownField;

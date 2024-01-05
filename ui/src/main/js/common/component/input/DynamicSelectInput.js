@@ -32,7 +32,8 @@ const DynamicSelectInput = ({
     required,
     creatable,
     maxMenuHeight,
-    customVal
+    customVal,
+    customSelect
 }) => {
     const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
     const selectedOptions = options.filter((option) => value.includes(option.value));
@@ -63,18 +64,21 @@ const DynamicSelectInput = ({
     };
 
     const typeOptionLabel = ({ data, ...rest }) => (
+        // eslint-disable-next-line react/jsx-props-no-spreading
         <Option {...rest}>
             <DescriptorOption label={data.label} value={data.value} />
         </Option>
     );
 
     const typeLabel = ({ data, ...rest }) => (
+        // eslint-disable-next-line react/jsx-props-no-spreading
         <SingleValue {...rest}>
             <DescriptorOption label={data.label} value={data.value} />
         </SingleValue>
     );
 
     const multiTypeLabel = ({ data, ...rest }) => (
+        // eslint-disable-next-line react/jsx-props-no-spreading
         <MultiValue {...rest}>
             <DescriptorOption label={data.label} value={data.value} />
         </MultiValue>
@@ -155,7 +159,7 @@ const DynamicSelectInput = ({
             showDescriptionPlaceHolder={showDescriptionPlaceHolder}
         >
             <div className={selectClasses}>
-                {selectComponent}
+                {customSelect || selectComponent}
             </div>
         </LabeledField>
     );
@@ -186,7 +190,8 @@ DynamicSelectInput.propTypes = {
     creatable: PropTypes.bool,
     maxMenuHeight: PropTypes.number,
     customDescription: PropTypes.string,
-    customVal: PropTypes.oneOfType([ PropTypes.array, PropTypes.object ])
+    customVal: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
+    customSelect: PropTypes.element
 };
 
 DynamicSelectInput.defaultProps = {
@@ -209,7 +214,8 @@ DynamicSelectInput.defaultProps = {
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
     showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT,
-    creatable: false
+    creatable: false,
+    customSelect: null
 };
 
 export default DynamicSelectInput;
