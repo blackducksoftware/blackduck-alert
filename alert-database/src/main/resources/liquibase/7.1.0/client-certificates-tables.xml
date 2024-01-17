@@ -18,6 +18,9 @@
                 <constraints nullable="false"/>
             </column>
             <column name="certificate_content" type="VARCHAR"/>
+            <column name="last_updated" type="TIMESTAMP WITH TIMEZONE" defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
     <changeSet author="mau" id="create-client-certificate-keys-table">
@@ -37,6 +40,9 @@
                 <constraints nullable="false"/>
             </column>
             <column name="key_content" type="VARCHAR"/>
+            <column name="last_updated" type="TIMESTAMP WITH TIMEZONE" defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
     <changeSet author="mau" id="create-foreign-key-client-certificate-private-key-id">
