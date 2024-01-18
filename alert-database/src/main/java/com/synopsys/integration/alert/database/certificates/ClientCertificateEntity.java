@@ -4,7 +4,6 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.database.BaseEntity;
-import com.synopsys.integration.alert.database.DatabaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,7 +20,6 @@ public class ClientCertificateEntity extends BaseEntity {
     @Column(name = "alias")
     private String alias;
 
-    @Id
     @Column(name = "private_key_id")
     private UUID privateKeyId;
 
