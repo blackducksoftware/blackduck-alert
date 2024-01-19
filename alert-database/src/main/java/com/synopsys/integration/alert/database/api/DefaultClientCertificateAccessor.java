@@ -23,18 +23,18 @@ public class DefaultClientCertificateAccessor implements ClientCertificateAccess
     public List<ClientCertificateModel> getCertificates() {
         return clientCertificateRepository.findAll()
                 .stream()
-                .map(this::createModel)
+                .map(this::toModel)
                 .collect(Collectors.toList());
     }
 
     @Override
     public Optional<ClientCertificateModel> getCertificate(UUID id) {
         return clientCertificateRepository.findById(id)
-                .map(this::createModel);
+                .map(this::toModel);
     }
 
     @Override
-    public ClientCertificateModel storeCertificate(ClientCertificateModel certificateModel) throws AlertConfigurationException {
+    public ClientCertificateModel saveCertificate(ClientCertificateModel certificateModel) throws AlertConfigurationException {
         String alias = certificateModel.getAlias();
         String certificateContent = certificateModel.getCertificateContent();
 
@@ -47,10 +47,10 @@ public class DefaultClientCertificateAccessor implements ClientCertificateAccess
         }
 
         ClientCertificateEntity entityToSave =
-                new ClientCertificateEntity(null, alias, certificateModel.getPrivateKeyId(), certificateContent, DateUtils.createCurrentDateTimestamp());
+                new ClientCertificateEntity(id, alias, certificateModel.getPrivateKeyId(), certificateContent, DateUtils.createCurrentDateTimestamp());
 
         ClientCertificateEntity updatedEntity = clientCertificateRepository.save(entityToSave);
-        return createModel(updatedEntity);
+        return toModel(updatedEntity);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class DefaultClientCertificateAccessor implements ClientCertificateAccess
         clientCertificateRepository.deleteById(certificateId);
     }
 
-    private ClientCertificateModel createModel(ClientCertificateEntity entity) {
+    private ClientCertificateModel toModel(ClientCertificateEntity entity) {
         return new ClientCertificateModel(entity.getId(), entity.getAlias(), entity.getPrivateKeyId(), entity.getCertificateContent(),
                 DateUtils.formatDate(entity.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
     }

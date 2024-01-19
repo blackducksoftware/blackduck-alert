@@ -12,7 +12,7 @@ public interface ClientCertificateAccessor {
 
     Optional<ClientCertificateModel> getCertificate(UUID id);
 
-    ClientCertificateModel storeCertificate(ClientCertificateModel certificateModel) throws AlertConfigurationException;
+    ClientCertificateModel saveCertificate(ClientCertificateModel certificateModel) throws AlertConfigurationException;
 
     void deleteCertificate(String certificateAlias);
 
