@@ -13,31 +13,18 @@ public class LDAPConfigModel extends ConfigWithMetadata implements Obfuscated<LD
     private static final long serialVersionUID = -3340739050525348445L;
 
     private Boolean enabled;
-
     private String serverName;
-
     private String managerDn;
-
     private String managerPassword;
-
     private Boolean isManagerPasswordSet;
-
     private String authenticationType;
-
     private String referral;
-
     private String userSearchBase;
-
     private String userSearchFilter;
-
     private String userDnPatterns;
-
     private String userAttributes;
-
     private String groupSearchBase;
-
     private String groupSearchFilter;
-
     private String groupRoleAttribute;
 
     public LDAPConfigModel() {
@@ -53,23 +40,24 @@ public class LDAPConfigModel extends ConfigWithMetadata implements Obfuscated<LD
     }
 
     public LDAPConfigModel(
-            String id,
-            String createdAt,
-            String lastUpdated,
-            Boolean enabled,
-            String serverName,
-            String managerDn,
-            String managerPassword,
-            Boolean isManagerPasswordSet,
-            String authenticationType,
-            String referral,
-            String userSearchBase,
-            String userSearchFilter,
-            String userDnPatterns,
-            String userAttributes,
-            String groupSearchBase,
-            String groupSearchFilter,
-            String groupRoleAttribute) {
+        String id,
+        String createdAt,
+        String lastUpdated,
+        Boolean enabled,
+        String serverName,
+        String managerDn,
+        String managerPassword,
+        Boolean isManagerPasswordSet,
+        String authenticationType,
+        String referral,
+        String userSearchBase,
+        String userSearchFilter,
+        String userDnPatterns,
+        String userAttributes,
+        String groupSearchBase,
+        String groupSearchFilter,
+        String groupRoleAttribute
+    ) {
         this(id, serverName, managerDn, managerPassword);
         this.enabled = enabled;
         this.isManagerPasswordSet = isManagerPasswordSet;
@@ -90,23 +78,24 @@ public class LDAPConfigModel extends ConfigWithMetadata implements Obfuscated<LD
     @Override
     public LDAPConfigModel obfuscate() {
         return new LDAPConfigModel(
-                getId(),
-                getCreatedAt(),
-                getLastUpdated(),
-                enabled,
-                serverName,
-                managerDn,
-                null,
-                StringUtils.isNotBlank(managerPassword),
-                authenticationType,
-                referral,
-                userSearchBase,
-                userSearchFilter,
-                userDnPatterns,
-                userAttributes,
-                groupSearchBase,
-                groupSearchFilter,
-                groupRoleAttribute);
+            getId(),
+            getCreatedAt(),
+            getLastUpdated(),
+            enabled,
+            serverName,
+            managerDn,
+            null,
+            StringUtils.isNotBlank(managerPassword),
+            authenticationType,
+            referral,
+            userSearchBase,
+            userSearchFilter,
+            userDnPatterns,
+            userAttributes,
+            groupSearchBase,
+            groupSearchFilter,
+            groupRoleAttribute
+        );
     }
 
     public Boolean getEnabled() {
