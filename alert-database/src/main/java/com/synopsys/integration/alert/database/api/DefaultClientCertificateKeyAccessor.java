@@ -1,14 +1,15 @@
 package com.synopsys.integration.alert.database.api;
 
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.accessor.ClientCertificateKeyAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ClientCertificateKeyModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.certificates.ClientCertificateKeyEntity;
 import com.synopsys.integration.alert.database.certificates.ClientCertificateKeyRepository;
 
@@ -28,8 +29,8 @@ public class DefaultClientCertificateKeyAccessor implements ClientCertificateKey
     }
 
     @Override
-    public ClientCertificateKeyModel saveCertificateKey(ClientCertificateKeyModel certificateKeyModel) throws AlertConfigurationException {
-        ClientCertificateKeyEntity entityToSave = toEntity(certificateKeyModel);
+    public ClientCertificateKeyModel saveCertificateKey(ClientCertificateKeyModel certificateKeyModel) {
+        ClientCertificateKeyEntity entityToSave = toEntity(certificateKeyModel, DateUtils.createCurrentDateTimestamp());
         ClientCertificateKeyEntity updatedEntity = clientCertificateKeyRepository.save(entityToSave);
 
         return toModel(updatedEntity);
@@ -40,10 +41,10 @@ public class DefaultClientCertificateKeyAccessor implements ClientCertificateKey
         clientCertificateKeyRepository.deleteById(certificateKeyId);
     }
 
-    private ClientCertificateKeyEntity toEntity(ClientCertificateKeyModel model) {
+    private ClientCertificateKeyEntity toEntity(ClientCertificateKeyModel model, OffsetDateTime lastUpdated) {
         String password = model.getPassword().map(encryptionUtility::encrypt).orElse(null);
 
-        return new ClientCertificateKeyEntity(model.getId(), model.getName(), password, model.getKeyContent(), model.getLastUpdated());
+        return new ClientCertificateKeyEntity(model.getId(), model.getName(), password, model.getKeyContent(), lastUpdated);
     }
 
     private ClientCertificateKeyModel toModel(ClientCertificateKeyEntity entity) {
@@ -53,6 +54,7 @@ public class DefaultClientCertificateKeyAccessor implements ClientCertificateKey
             password = encryptionUtility.decrypt(password);
         }
 
-        return new ClientCertificateKeyModel(entity.getId(), entity.getName(), password, doesPasswordExist, entity.getKeyContent(), entity.getLastUpdated());
+        return new ClientCertificateKeyModel(entity.getId(), entity.getName(), password, doesPasswordExist, entity.getKeyContent(),
+                DateUtils.formatDate(entity.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
     }
 }

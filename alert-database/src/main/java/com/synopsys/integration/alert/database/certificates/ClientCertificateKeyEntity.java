@@ -59,4 +59,12 @@ public class ClientCertificateKeyEntity extends BaseEntity {
     public OffsetDateTime getLastUpdated() {
         return lastUpdated;
     }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public void setLastUpdated(final OffsetDateTime lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
 }

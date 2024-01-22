@@ -1,6 +1,5 @@
 package com.synopsys.integration.alert.common.persistence.model;
 
-import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,9 +19,9 @@ public class ClientCertificateKeyModel extends AlertSerializableModel implements
 
     private String keyContent;
 
-    private OffsetDateTime lastUpdated;
+    private String lastUpdated;
 
-    public ClientCertificateKeyModel(UUID id, String name, String password, Boolean isPasswordSet, String keyContent, OffsetDateTime lastUpdated) {
+    public ClientCertificateKeyModel(UUID id, String name, String password, Boolean isPasswordSet, String keyContent, String lastUpdated) {
         this.id = id;
         this.name = name;
         this.password = password;
@@ -51,7 +50,7 @@ public class ClientCertificateKeyModel extends AlertSerializableModel implements
         return keyContent;
     }
 
-    public OffsetDateTime getLastUpdated() {
+    public String getLastUpdated() {
         return lastUpdated;
     }
 

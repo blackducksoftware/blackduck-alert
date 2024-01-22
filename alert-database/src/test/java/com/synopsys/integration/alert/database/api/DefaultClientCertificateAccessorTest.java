@@ -20,19 +20,19 @@ import com.synopsys.integration.alert.database.api.mock.MockClientCertificateRep
 class DefaultClientCertificateAccessorTest {
     private ClientCertificateAccessor clientCertificateAccessor;
 
-    private ClientCertificateModel certificateModel;
+    private ClientCertificateModel clientCertificateModel;
 
     @BeforeEach
     void init() {
         MockClientCertificateRepository mockClientCertificateRepository = new MockClientCertificateRepository();
         clientCertificateAccessor = new DefaultClientCertificateAccessor(mockClientCertificateRepository);
-        certificateModel = new ClientCertificateModel(null, "alias", UUID.randomUUID(), "certificate_content",
+        clientCertificateModel = new ClientCertificateModel(null, "alias", UUID.randomUUID(), "certificate_content",
                 DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
     }
 
     @Test
     void getCertificate() throws AlertConfigurationException {
-        ClientCertificateModel savedModel = clientCertificateAccessor.saveCertificate(certificateModel);
+        ClientCertificateModel savedModel = clientCertificateAccessor.saveCertificate(clientCertificateModel);
         ClientCertificateModel queryModel = clientCertificateAccessor.getCertificate(savedModel.getId())
                 .orElseThrow(() -> new AlertConfigurationException("Model does not exist."));
 
@@ -41,7 +41,7 @@ class DefaultClientCertificateAccessorTest {
 
     @Test
     void getCertificates() throws AlertConfigurationException {
-        ClientCertificateModel firstSavedModel = clientCertificateAccessor.saveCertificate(certificateModel);
+        ClientCertificateModel firstSavedModel = clientCertificateAccessor.saveCertificate(clientCertificateModel);
         ClientCertificateModel secondSavedModel =
                 clientCertificateAccessor.saveCertificate(new ClientCertificateModel(null, "alias1", UUID.randomUUID(), "certificate_content1",
                         DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE)));
@@ -54,7 +54,7 @@ class DefaultClientCertificateAccessorTest {
 
     @Test
     void saveCertificateUpdates() throws AlertConfigurationException {
-        ClientCertificateModel savedModel = clientCertificateAccessor.saveCertificate(certificateModel);
+        ClientCertificateModel savedModel = clientCertificateAccessor.saveCertificate(clientCertificateModel);
 
         ClientCertificateModel changedModel = new ClientCertificateModel(savedModel.getId(), "new_alias", savedModel.getPrivateKeyId(),
                 "new_certificate_content", DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
@@ -64,13 +64,13 @@ class DefaultClientCertificateAccessorTest {
         assertEquals(changedModel.getAlias(), updatedModel.getAlias());
         assertEquals(changedModel.getCertificateContent(), updatedModel.getCertificateContent());
 
-        assertNotEquals(certificateModel.getAlias(), updatedModel.getAlias());
-        assertNotEquals(certificateModel.getCertificateContent(), updatedModel.getCertificateContent());
+        assertNotEquals(savedModel.getAlias(), updatedModel.getAlias());
+        assertNotEquals(savedModel.getCertificateContent(), updatedModel.getCertificateContent());
     }
 
     @Test
     void saveCertificateUpdatesByAlias() throws AlertConfigurationException {
-        ClientCertificateModel savedModel = clientCertificateAccessor.saveCertificate(certificateModel);
+        ClientCertificateModel savedModel = clientCertificateAccessor.saveCertificate(clientCertificateModel);
         // Null id here to search by alias
         ClientCertificateModel changedModel = new ClientCertificateModel(null, "new_alias", savedModel.getPrivateKeyId(),
                 "new_certificate_content", DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
@@ -79,13 +79,13 @@ class DefaultClientCertificateAccessorTest {
         assertEquals(changedModel.getAlias(), updatedModel.getAlias());
         assertEquals(changedModel.getCertificateContent(), updatedModel.getCertificateContent());
 
-        assertNotEquals(certificateModel.getAlias(), updatedModel.getAlias());
-        assertNotEquals(certificateModel.getCertificateContent(), updatedModel.getCertificateContent());
+        assertNotEquals(savedModel.getAlias(), updatedModel.getAlias());
+        assertNotEquals(savedModel.getCertificateContent(), updatedModel.getCertificateContent());
     }
 
     @Test
     void saveCertificateThrowsOnNonexistentId() throws AlertConfigurationException {
-        ClientCertificateModel savedModel = clientCertificateAccessor.saveCertificate(certificateModel);
+        ClientCertificateModel savedModel = clientCertificateAccessor.saveCertificate(clientCertificateModel);
         // A new random id here
         ClientCertificateModel changedModel = new ClientCertificateModel(UUID.randomUUID(), "new_alias", savedModel.getPrivateKeyId(),
                 "new_certificate_content", DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
@@ -94,7 +94,7 @@ class DefaultClientCertificateAccessorTest {
 
     @Test
     void deleteCertificateByAlias() throws AlertConfigurationException {
-        ClientCertificateModel savedModel = clientCertificateAccessor.saveCertificate(certificateModel);
+        ClientCertificateModel savedModel = clientCertificateAccessor.saveCertificate(clientCertificateModel);
         clientCertificateAccessor.deleteCertificate(savedModel.getAlias());
 
         assertTrue(clientCertificateAccessor.getCertificate(savedModel.getId()).isEmpty());
@@ -102,7 +102,7 @@ class DefaultClientCertificateAccessorTest {
 
     @Test
     void deleteCertificateById() throws AlertConfigurationException {
-        ClientCertificateModel savedModel = clientCertificateAccessor.saveCertificate(certificateModel);
+        ClientCertificateModel savedModel = clientCertificateAccessor.saveCertificate(clientCertificateModel);
         clientCertificateAccessor.deleteCertificate(savedModel.getId());
 
         assertTrue(clientCertificateAccessor.getCertificate(savedModel.getId()).isEmpty());
