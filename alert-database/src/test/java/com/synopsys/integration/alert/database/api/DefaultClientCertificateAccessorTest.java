@@ -1,24 +1,23 @@
 package com.synopsys.integration.alert.database.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.persistence.accessor.ClientCertificateAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.mock.MockClientCertificateRepository;
 
 class DefaultClientCertificateAccessorTest {
-    private ClientCertificateAccessor clientCertificateAccessor;
+    private DefaultClientCertificateAccessor clientCertificateAccessor;
 
     private ClientCertificateModel clientCertificateModel;
 
@@ -32,79 +31,55 @@ class DefaultClientCertificateAccessorTest {
 
     @Test
     void getCertificate() throws AlertConfigurationException {
-        ClientCertificateModel savedModel = clientCertificateAccessor.saveCertificate(clientCertificateModel);
-        ClientCertificateModel queryModel = clientCertificateAccessor.getCertificate(savedModel.getId())
+        ClientCertificateModel savedModel = clientCertificateAccessor.createConfiguration(clientCertificateModel);
+        ClientCertificateModel queryModel = clientCertificateAccessor.getConfiguration()
                 .orElseThrow(() -> new AlertConfigurationException("Model does not exist."));
 
         assertEquals(savedModel.getId(), queryModel.getId());
     }
 
     @Test
-    void getCertificates() throws AlertConfigurationException {
-        ClientCertificateModel firstSavedModel = clientCertificateAccessor.saveCertificate(clientCertificateModel);
-        ClientCertificateModel secondSavedModel =
-                clientCertificateAccessor.saveCertificate(new ClientCertificateModel(null, "alias1", UUID.randomUUID(), "certificate_content1",
-                        DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE)));
+    void doesConfigurationExist() throws AlertConfigurationException {
+        assertFalse(clientCertificateAccessor.doesConfigurationExist());
 
-        List<ClientCertificateModel> certificateModelList = clientCertificateAccessor.getCertificates();
-        assertEquals(2, certificateModelList.size());
-        assertTrue(certificateModelList.stream().anyMatch(model -> model.getId().equals(firstSavedModel.getId())));
-        assertTrue(certificateModelList.stream().anyMatch(model -> model.getId().equals(secondSavedModel.getId())));
+        clientCertificateAccessor.createConfiguration(clientCertificateModel);
+        assertTrue(clientCertificateAccessor.doesConfigurationExist());
     }
 
     @Test
-    void saveCertificateUpdates() throws AlertConfigurationException {
-        ClientCertificateModel savedModel = clientCertificateAccessor.saveCertificate(clientCertificateModel);
+    void createConfigurationThrowsOnExistingConfig() throws AlertConfigurationException {
+        UUID createdId = clientCertificateAccessor.createConfiguration(clientCertificateModel).getId();
+        assertTrue(clientCertificateAccessor.doesConfigurationExist());
 
-        ClientCertificateModel changedModel = new ClientCertificateModel(savedModel.getId(), "new_alias", savedModel.getPrivateKeyId(),
+        ClientCertificateModel duplicateCreateModel = new ClientCertificateModel(null, "new_alias", UUID.randomUUID(), "new_certificate_content",
+                DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
+        assertThrows(AlertConfigurationException.class, () -> clientCertificateAccessor.createConfiguration(duplicateCreateModel));
+        UUID currentConfigId = clientCertificateAccessor.getConfiguration().orElseThrow().getId();
+        assertNotEquals(currentConfigId, duplicateCreateModel.getId());
+        assertEquals(currentConfigId, createdId);
+    }
+
+    @Test
+    void updateConfiguration() throws AlertConfigurationException {
+        ClientCertificateModel createdModel = clientCertificateAccessor.createConfiguration(clientCertificateModel);
+
+        ClientCertificateModel changedModel = new ClientCertificateModel(createdModel.getId(), "new_alias", createdModel.getPrivateKeyId(),
                 "new_certificate_content", DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
-        ClientCertificateModel updatedModel = clientCertificateAccessor.saveCertificate(changedModel);
+        ClientCertificateModel updatedModel = clientCertificateAccessor.updateConfiguration(changedModel);
 
         assertEquals(changedModel.getId(), updatedModel.getId());
         assertEquals(changedModel.getAlias(), updatedModel.getAlias());
         assertEquals(changedModel.getCertificateContent(), updatedModel.getCertificateContent());
 
-        assertNotEquals(savedModel.getAlias(), updatedModel.getAlias());
-        assertNotEquals(savedModel.getCertificateContent(), updatedModel.getCertificateContent());
+        assertNotEquals(createdModel.getAlias(), updatedModel.getAlias());
+        assertNotEquals(createdModel.getCertificateContent(), updatedModel.getCertificateContent());
     }
 
     @Test
-    void saveCertificateUpdatesByAlias() throws AlertConfigurationException {
-        ClientCertificateModel savedModel = clientCertificateAccessor.saveCertificate(clientCertificateModel);
-        // Null id here to search by alias
-        ClientCertificateModel changedModel = new ClientCertificateModel(null, "new_alias", savedModel.getPrivateKeyId(),
-                "new_certificate_content", DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
-        ClientCertificateModel updatedModel = clientCertificateAccessor.saveCertificate(changedModel);
+    void deleteConfiguration() throws AlertConfigurationException {
+        clientCertificateAccessor.createConfiguration(clientCertificateModel);
+        clientCertificateAccessor.deleteConfiguration();
 
-        assertEquals(changedModel.getAlias(), updatedModel.getAlias());
-        assertEquals(changedModel.getCertificateContent(), updatedModel.getCertificateContent());
-
-        assertNotEquals(savedModel.getAlias(), updatedModel.getAlias());
-        assertNotEquals(savedModel.getCertificateContent(), updatedModel.getCertificateContent());
-    }
-
-    @Test
-    void saveCertificateThrowsOnNonexistentId() throws AlertConfigurationException {
-        ClientCertificateModel savedModel = clientCertificateAccessor.saveCertificate(clientCertificateModel);
-        // A new random id here
-        ClientCertificateModel changedModel = new ClientCertificateModel(UUID.randomUUID(), "new_alias", savedModel.getPrivateKeyId(),
-                "new_certificate_content", DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
-        assertThrows(AlertConfigurationException.class, () -> clientCertificateAccessor.saveCertificate(changedModel));
-    }
-
-    @Test
-    void deleteCertificateByAlias() throws AlertConfigurationException {
-        ClientCertificateModel savedModel = clientCertificateAccessor.saveCertificate(clientCertificateModel);
-        clientCertificateAccessor.deleteCertificate(savedModel.getAlias());
-
-        assertTrue(clientCertificateAccessor.getCertificate(savedModel.getId()).isEmpty());
-    }
-
-    @Test
-    void deleteCertificateById() throws AlertConfigurationException {
-        ClientCertificateModel savedModel = clientCertificateAccessor.saveCertificate(clientCertificateModel);
-        clientCertificateAccessor.deleteCertificate(savedModel.getId());
-
-        assertTrue(clientCertificateAccessor.getCertificate(savedModel.getId()).isEmpty());
+        assertFalse(clientCertificateAccessor.doesConfigurationExist());
     }
 }

@@ -1,18 +1,17 @@
 package com.synopsys.integration.alert.database.api;
 
-import java.util.List;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.persistence.accessor.ClientCertificateAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.UniqueConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.certificates.ClientCertificateEntity;
 import com.synopsys.integration.alert.database.certificates.ClientCertificateRepository;
 
-public class DefaultClientCertificateAccessor implements ClientCertificateAccessor {
+public class DefaultClientCertificateAccessor implements UniqueConfigurationAccessor<ClientCertificateModel> {
     private final ClientCertificateRepository clientCertificateRepository;
 
     public DefaultClientCertificateAccessor(ClientCertificateRepository clientCertificateRepository) {
@@ -20,53 +19,62 @@ public class DefaultClientCertificateAccessor implements ClientCertificateAccess
     }
 
     @Override
-    public List<ClientCertificateModel> getCertificates() {
+    public Optional<ClientCertificateModel> getConfiguration() {
         return clientCertificateRepository.findAll()
                 .stream()
-                .map(this::toModel)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public Optional<ClientCertificateModel> getCertificate(UUID id) {
-        return clientCertificateRepository.findById(id)
+                .findFirst()
                 .map(this::toModel);
     }
 
     @Override
-    public ClientCertificateModel saveCertificate(ClientCertificateModel certificateModel) throws AlertConfigurationException {
-        String alias = certificateModel.getAlias();
-        String certificateContent = certificateModel.getCertificateContent();
+    public boolean doesConfigurationExist() {
+        return clientCertificateRepository.findAll()
+                .stream()
+                .findFirst()
+                .isPresent();
+    }
 
-        UUID id = certificateModel.getId();
-        if (null == id) {
-            // Mimic keystore functionality
-            id = clientCertificateRepository.findByAlias(alias).map(ClientCertificateEntity::getId).orElse(null);
-        } else if (!clientCertificateRepository.existsById(id)) {
-            throw new AlertConfigurationException("A client certificate with that id did not exist");
+    @Override
+    public ClientCertificateModel createConfiguration(ClientCertificateModel configuration) throws AlertConfigurationException {
+        if (doesConfigurationExist()) {
+            throw new AlertConfigurationException("A client certificate already exists.");
         }
 
-        ClientCertificateEntity entityToSave =
-                new ClientCertificateEntity(id, alias, certificateModel.getPrivateKeyId(), certificateContent, DateUtils.createCurrentDateTimestamp());
+        ClientCertificateEntity configurationEntity =
+                toEntity(UUID.randomUUID(), configuration.getPrivateKeyId(), configuration, DateUtils.createCurrentDateTimestamp());
 
+        return toModel(clientCertificateRepository.save(configurationEntity));
+    }
+
+    @Override
+    public ClientCertificateModel updateConfiguration(ClientCertificateModel configuration) throws AlertConfigurationException {
+        ClientCertificateEntity existingConfigurationEntity = clientCertificateRepository.findAll()
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new AlertConfigurationException("Client certificate does not exist"));
+
+        // Use existing config id and private key id
+        ClientCertificateEntity entityToSave = toEntity(
+                existingConfigurationEntity.getId(),
+                existingConfigurationEntity.getPrivateKeyId(),
+                configuration,
+                DateUtils.createCurrentDateTimestamp());
         ClientCertificateEntity updatedEntity = clientCertificateRepository.save(entityToSave);
+
         return toModel(updatedEntity);
     }
 
     @Override
-    public void deleteCertificate(String certificateAlias) {
-        clientCertificateRepository.findByAlias(certificateAlias)
-                .map(ClientCertificateEntity::getId)
-                .ifPresent(this::deleteCertificate);
-    }
-
-    @Override
-    public void deleteCertificate(UUID certificateId) {
-        clientCertificateRepository.deleteById(certificateId);
+    public void deleteConfiguration() {
+        clientCertificateRepository.deleteAll();
     }
 
     private ClientCertificateModel toModel(ClientCertificateEntity entity) {
         return new ClientCertificateModel(entity.getId(), entity.getAlias(), entity.getPrivateKeyId(), entity.getCertificateContent(),
                 DateUtils.formatDate(entity.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
     }
+
+    private ClientCertificateEntity toEntity(UUID id, UUID privateKeyId, ClientCertificateModel model, OffsetDateTime lastUpdated) {
+        return new ClientCertificateEntity(id, model.getAlias(), privateKeyId, model.getCertificateContent(), lastUpdated);
+    };
 }
