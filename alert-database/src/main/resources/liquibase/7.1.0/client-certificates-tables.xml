@@ -17,7 +17,9 @@
             <column name="private_key_id" type="UUID">
                 <constraints nullable="false"/>
             </column>
-            <column name="certificate_content" type="VARCHAR"/>
+            <column name="certificate_content" type="VARCHAR">
+                    <constraints nullable="false"/>
+            </column>
             <column name="last_updated" type="TIMESTAMP WITH TIMEZONE" defaultValueComputed="now()">
                 <constraints nullable="false"/>
             </column>
@@ -39,7 +41,9 @@
             <column name="password" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
-            <column name="key_content" type="VARCHAR"/>
+            <column name="key_content" type="VARCHAR">
+                    <constraints nullable="false"/>
+            </column>
             <column name="last_updated" type="TIMESTAMP WITH TIMEZONE" defaultValueComputed="now()">
                 <constraints nullable="false"/>
             </column>
