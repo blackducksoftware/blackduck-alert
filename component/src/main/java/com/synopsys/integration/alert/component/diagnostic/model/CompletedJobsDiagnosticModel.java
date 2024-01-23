@@ -1,10 +1,12 @@
 package com.synopsys.integration.alert.component.diagnostic.model;
 
-import java.util.List;
-
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
+import java.util.List;
+
 public class CompletedJobsDiagnosticModel extends AlertSerializableModel {
+    private static final long serialVersionUID = 8057080793182640630L;
+
     private final List<CompletedJobDiagnosticModel> completedJobs;
 
     public CompletedJobsDiagnosticModel(List<CompletedJobDiagnosticModel> completedJobs) {
