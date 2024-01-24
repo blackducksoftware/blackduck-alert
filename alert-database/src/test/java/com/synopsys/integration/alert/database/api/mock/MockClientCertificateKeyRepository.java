@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.database.api.mock;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.jetbrains.annotations.NotNull;
@@ -24,5 +25,13 @@ public class MockClientCertificateKeyRepository extends MockRepositoryContainer<
         }
         getDataMap().put(id, entity);
         return getDataMap().get(id);
+    }
+
+    @Override
+    public Optional<ClientCertificateKeyEntity> findByName(final String name) {
+        return findAll()
+                .stream()
+                .filter(entity -> entity.getName().equals(name))
+                .findFirst();
     }
 }

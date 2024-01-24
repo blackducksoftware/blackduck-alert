@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.accessor.UniqueConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.certificates.ClientCertificateEntity;
 import com.synopsys.integration.alert.database.certificates.ClientCertificateRepository;
@@ -20,18 +21,12 @@ public class DefaultClientCertificateAccessor implements UniqueConfigurationAcce
 
     @Override
     public Optional<ClientCertificateModel> getConfiguration() {
-        return clientCertificateRepository.findAll()
-                .stream()
-                .findFirst()
-                .map(this::toModel);
+        return clientCertificateRepository.findByAlias(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS).map(this::toModel);
     }
 
     @Override
     public boolean doesConfigurationExist() {
-        return clientCertificateRepository.findAll()
-                .stream()
-                .findFirst()
-                .isPresent();
+        return clientCertificateRepository.findByAlias(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS).isPresent();
     }
 
     @Override
@@ -48,9 +43,7 @@ public class DefaultClientCertificateAccessor implements UniqueConfigurationAcce
 
     @Override
     public ClientCertificateModel updateConfiguration(ClientCertificateModel configuration) throws AlertConfigurationException {
-        ClientCertificateEntity existingConfigurationEntity = clientCertificateRepository.findAll()
-                .stream()
-                .findFirst()
+        ClientCertificateEntity existingConfigurationEntity = clientCertificateRepository.findByAlias(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS)
                 .orElseThrow(() -> new AlertConfigurationException("Client certificate does not exist"));
 
         // Use existing config id and private key id
@@ -70,11 +63,15 @@ public class DefaultClientCertificateAccessor implements UniqueConfigurationAcce
     }
 
     private ClientCertificateModel toModel(ClientCertificateEntity entity) {
-        return new ClientCertificateModel(entity.getId(), entity.getAlias(), entity.getPrivateKeyId(), entity.getCertificateContent(),
+        return new ClientCertificateModel(
+                entity.getId(),
+                AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS,
+                entity.getPrivateKeyId(),
+                entity.getCertificateContent(),
                 DateUtils.formatDate(entity.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
     }
 
     private ClientCertificateEntity toEntity(UUID id, UUID privateKeyId, ClientCertificateModel model, OffsetDateTime lastUpdated) {
-        return new ClientCertificateEntity(id, model.getAlias(), privateKeyId, model.getCertificateContent(), lastUpdated);
+        return new ClientCertificateEntity(id, AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS, privateKeyId, model.getCertificateContent(), lastUpdated);
     };
 }

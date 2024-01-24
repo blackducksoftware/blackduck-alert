@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.mock.MockClientCertificateRepository;
 
@@ -25,7 +26,11 @@ class DefaultClientCertificateAccessorTest {
     void init() {
         MockClientCertificateRepository mockClientCertificateRepository = new MockClientCertificateRepository();
         clientCertificateAccessor = new DefaultClientCertificateAccessor(mockClientCertificateRepository);
-        clientCertificateModel = new ClientCertificateModel(null, "alias", UUID.randomUUID(), "certificate_content",
+        clientCertificateModel = new ClientCertificateModel(
+                null,
+                AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS,
+                UUID.randomUUID(),
+                "certificate_content",
                 DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
     }
 
@@ -51,7 +56,11 @@ class DefaultClientCertificateAccessorTest {
         UUID createdId = clientCertificateAccessor.createConfiguration(clientCertificateModel).getId();
         assertTrue(clientCertificateAccessor.doesConfigurationExist());
 
-        ClientCertificateModel duplicateCreateModel = new ClientCertificateModel(null, "new_alias", UUID.randomUUID(), "new_certificate_content",
+        ClientCertificateModel duplicateCreateModel = new ClientCertificateModel(
+                null,
+                AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS,
+                UUID.randomUUID(),
+                "new_certificate_content",
                 DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
         assertThrows(AlertConfigurationException.class, () -> clientCertificateAccessor.createConfiguration(duplicateCreateModel));
         UUID currentConfigId = clientCertificateAccessor.getConfiguration().orElseThrow().getId();
@@ -63,15 +72,18 @@ class DefaultClientCertificateAccessorTest {
     void updateConfiguration() throws AlertConfigurationException {
         ClientCertificateModel createdModel = clientCertificateAccessor.createConfiguration(clientCertificateModel);
 
-        ClientCertificateModel changedModel = new ClientCertificateModel(createdModel.getId(), "new_alias", createdModel.getPrivateKeyId(),
-                "new_certificate_content", DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
+        ClientCertificateModel changedModel = new ClientCertificateModel(
+                createdModel.getId(),
+                AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS,
+                createdModel.getPrivateKeyId(),
+                "new_certificate_content",
+                DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
         ClientCertificateModel updatedModel = clientCertificateAccessor.updateConfiguration(changedModel);
 
         assertEquals(changedModel.getId(), updatedModel.getId());
         assertEquals(changedModel.getAlias(), updatedModel.getAlias());
         assertEquals(changedModel.getCertificateContent(), updatedModel.getCertificateContent());
 
-        assertNotEquals(createdModel.getAlias(), updatedModel.getAlias());
         assertNotEquals(createdModel.getCertificateContent(), updatedModel.getCertificateContent());
     }
 
