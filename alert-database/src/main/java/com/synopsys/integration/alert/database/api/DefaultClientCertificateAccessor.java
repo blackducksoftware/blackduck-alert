@@ -26,7 +26,7 @@ public class DefaultClientCertificateAccessor implements UniqueConfigurationAcce
 
     @Override
     public boolean doesConfigurationExist() {
-        return clientCertificateRepository.findByAlias(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS).isPresent();
+        return clientCertificateRepository.existsByAlias(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class DefaultClientCertificateAccessor implements UniqueConfigurationAcce
 
     @Override
     public void deleteConfiguration() {
-        clientCertificateRepository.deleteAll();
+        clientCertificateRepository.deleteByAlias(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS);
     }
 
     private ClientCertificateModel toModel(ClientCertificateEntity entity) {

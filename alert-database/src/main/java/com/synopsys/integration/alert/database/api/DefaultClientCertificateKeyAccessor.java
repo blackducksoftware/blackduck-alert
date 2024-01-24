@@ -27,13 +27,12 @@ public class DefaultClientCertificateKeyAccessor implements UniqueConfigurationA
 
     @Override
     public Optional<ClientCertificateKeyModel> getConfiguration() {
-        return clientCertificateKeyRepository.findByName(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_KEY_NAME)
-                .map(this::toModel);
+        return clientCertificateKeyRepository.findByName(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_KEY_NAME).map(this::toModel);
     }
 
     @Override
     public boolean doesConfigurationExist() {
-        return clientCertificateKeyRepository.findByName(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_KEY_NAME).isPresent();
+        return clientCertificateKeyRepository.existsByName(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_KEY_NAME);
     }
 
     @Override
@@ -62,7 +61,7 @@ public class DefaultClientCertificateKeyAccessor implements UniqueConfigurationA
 
     @Override
     public void deleteConfiguration() {
-        clientCertificateKeyRepository.deleteAll();
+        clientCertificateKeyRepository.deleteByName(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_KEY_NAME);
     }
 
     private ClientCertificateKeyEntity toEntity(UUID id, ClientCertificateKeyModel model, OffsetDateTime lastUpdated) {

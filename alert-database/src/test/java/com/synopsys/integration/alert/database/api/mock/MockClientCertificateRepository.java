@@ -34,4 +34,18 @@ public class MockClientCertificateRepository extends MockRepositoryContainer<UUI
                 .filter(entity -> entity.getAlias().equals(alias))
                 .findFirst();
     }
+
+    @Override
+    public boolean existsByAlias(String alias) {
+        return findAll()
+                .stream()
+                .anyMatch(entity -> entity.getAlias().equals(alias));
+    }
+
+    @Override
+    public void deleteByAlias(String alias) {
+        findByAlias(alias)
+                .map(ClientCertificateEntity::getId)
+                .ifPresent(this::deleteById);
+    }
 }

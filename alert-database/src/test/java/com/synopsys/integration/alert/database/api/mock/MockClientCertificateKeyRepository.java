@@ -28,10 +28,24 @@ public class MockClientCertificateKeyRepository extends MockRepositoryContainer<
     }
 
     @Override
-    public Optional<ClientCertificateKeyEntity> findByName(final String name) {
+    public Optional<ClientCertificateKeyEntity> findByName(String name) {
         return findAll()
                 .stream()
                 .filter(entity -> entity.getName().equals(name))
                 .findFirst();
+    }
+
+    @Override
+    public boolean existsByName(String name) {
+        return findAll()
+                .stream()
+                .anyMatch(entity -> entity.getName().equals(name));
+    }
+
+    @Override
+    public void deleteByName(String name) {
+        findByName(name)
+                .map(ClientCertificateKeyEntity::getId)
+                .ifPresent(this::deleteById);
     }
 }
