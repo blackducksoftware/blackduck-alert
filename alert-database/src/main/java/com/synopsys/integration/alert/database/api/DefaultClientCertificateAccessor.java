@@ -65,13 +65,12 @@ public class DefaultClientCertificateAccessor implements UniqueConfigurationAcce
     private ClientCertificateModel toModel(ClientCertificateEntity entity) {
         return new ClientCertificateModel(
                 entity.getId(),
-                AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS,
                 entity.getPrivateKeyId(),
                 entity.getCertificateContent(),
                 DateUtils.formatDate(entity.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
     }
 
     private ClientCertificateEntity toEntity(UUID id, UUID privateKeyId, ClientCertificateModel model, OffsetDateTime lastUpdated) {
-        return new ClientCertificateEntity(id, AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS, privateKeyId, model.getCertificateContent(), lastUpdated);
+        return new ClientCertificateEntity(id, privateKeyId, model.getCertificateContent(), lastUpdated);
     };
 }

@@ -10,20 +10,13 @@ import com.synopsys.integration.alert.api.common.model.Obfuscated;
 
 public class ClientCertificateKeyModel extends AlertSerializableModel implements Obfuscated<ClientCertificateKeyModel> {
     private UUID id;
-
-    private String name;
-
     private String password;
-
     private Boolean isPasswordSet;
-
     private String keyContent;
-
     private String lastUpdated;
 
-    public ClientCertificateKeyModel(UUID id, String name, String password, Boolean isPasswordSet, String keyContent, String lastUpdated) {
+    public ClientCertificateKeyModel(UUID id, String password, Boolean isPasswordSet, String keyContent, String lastUpdated) {
         this.id = id;
-        this.name = name;
         this.password = password;
         this.isPasswordSet = isPasswordSet;
         this.keyContent = keyContent;
@@ -32,10 +25,6 @@ public class ClientCertificateKeyModel extends AlertSerializableModel implements
 
     public UUID getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public Optional<String> getPassword() {
@@ -58,7 +47,6 @@ public class ClientCertificateKeyModel extends AlertSerializableModel implements
     public ClientCertificateKeyModel obfuscate() {
         return new ClientCertificateKeyModel(
                 id,
-                name,
                 null,
                 StringUtils.isNotBlank(password),
                 keyContent,

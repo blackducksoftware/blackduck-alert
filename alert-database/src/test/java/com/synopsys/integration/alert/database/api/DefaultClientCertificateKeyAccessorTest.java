@@ -16,7 +16,6 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurat
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.model.ClientCertificateKeyModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.mock.MockClientCertificateKeyRepository;
@@ -26,11 +25,8 @@ import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 class DefaultClientCertificateKeyAccessorTest {
     private DefaultClientCertificateKeyAccessor clientCertificateKeyAccessor;
-
     private ClientCertificateKeyModel clientCertificateKeyModel;
-
     private MockClientCertificateKeyRepository mockClientCertificateKeyRepository;
-
     private EncryptionUtility encryptionUtility;
 
     @BeforeEach
@@ -43,7 +39,6 @@ class DefaultClientCertificateKeyAccessorTest {
         clientCertificateKeyAccessor = new DefaultClientCertificateKeyAccessor(encryptionUtility, mockClientCertificateKeyRepository);
         clientCertificateKeyModel = new ClientCertificateKeyModel(
                 null,
-                AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_KEY_NAME,
                 "password",
                 true,
                 "key_content",
@@ -73,8 +68,8 @@ class DefaultClientCertificateKeyAccessorTest {
         assertTrue(clientCertificateKeyAccessor.doesConfigurationExist());
 
         ClientCertificateKeyModel duplicateCreateModel =
-                new ClientCertificateKeyModel(null, AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_KEY_NAME, "new_password",
-                        true, "new_key_content", DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
+                new ClientCertificateKeyModel(null, "new_password", true, "new_key_content",
+                        DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
         assertThrows(AlertConfigurationException.class, () -> clientCertificateKeyAccessor.createConfiguration(duplicateCreateModel));
         UUID currentConfigId = clientCertificateKeyAccessor.getConfiguration().orElseThrow().getId();
         assertNotEquals(currentConfigId, duplicateCreateModel.getId());
@@ -87,7 +82,6 @@ class DefaultClientCertificateKeyAccessorTest {
 
         ClientCertificateKeyModel changedModel = new ClientCertificateKeyModel(
                 createdModel.getId(),
-                AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_KEY_NAME,
                 createdModel.getPassword().orElse(""),
                 createdModel.getIsPasswordSet(),
                 "new_key_content",
@@ -97,8 +91,6 @@ class DefaultClientCertificateKeyAccessorTest {
         assertEquals(changedModel.getId(), updatedModel.getId());
         assertEquals(changedModel.getPassword(), changedModel.getPassword());
         assertEquals(changedModel.getIsPasswordSet(), updatedModel.getIsPasswordSet());
-        assertEquals(createdModel.getName(), updatedModel.getName());
-
         assertNotEquals(createdModel.getKeyContent(), updatedModel.getKeyContent());
     }
 
@@ -114,7 +106,6 @@ class DefaultClientCertificateKeyAccessorTest {
 
         ClientCertificateKeyModel changedModel = new ClientCertificateKeyModel(
                 createdModel.getId(),
-                AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_KEY_NAME,
                 "new_password",
                 true,
                 "new_key_content",

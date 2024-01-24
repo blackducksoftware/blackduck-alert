@@ -13,13 +13,11 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.mock.MockClientCertificateRepository;
 
 class DefaultClientCertificateAccessorTest {
     private DefaultClientCertificateAccessor clientCertificateAccessor;
-
     private ClientCertificateModel clientCertificateModel;
 
     @BeforeEach
@@ -28,7 +26,6 @@ class DefaultClientCertificateAccessorTest {
         clientCertificateAccessor = new DefaultClientCertificateAccessor(mockClientCertificateRepository);
         clientCertificateModel = new ClientCertificateModel(
                 null,
-                AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS,
                 UUID.randomUUID(),
                 "certificate_content",
                 DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
@@ -58,7 +55,6 @@ class DefaultClientCertificateAccessorTest {
 
         ClientCertificateModel duplicateCreateModel = new ClientCertificateModel(
                 null,
-                AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS,
                 UUID.randomUUID(),
                 "new_certificate_content",
                 DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
@@ -74,14 +70,12 @@ class DefaultClientCertificateAccessorTest {
 
         ClientCertificateModel changedModel = new ClientCertificateModel(
                 createdModel.getId(),
-                AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS,
                 createdModel.getPrivateKeyId(),
                 "new_certificate_content",
                 DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
         ClientCertificateModel updatedModel = clientCertificateAccessor.updateConfiguration(changedModel);
 
         assertEquals(changedModel.getId(), updatedModel.getId());
-        assertEquals(changedModel.getAlias(), updatedModel.getAlias());
         assertEquals(changedModel.getCertificateContent(), updatedModel.getCertificateContent());
 
         assertNotEquals(createdModel.getCertificateContent(), updatedModel.getCertificateContent());

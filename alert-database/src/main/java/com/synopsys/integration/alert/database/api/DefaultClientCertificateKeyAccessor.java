@@ -17,7 +17,6 @@ import com.synopsys.integration.alert.database.certificates.ClientCertificateKey
 
 public class DefaultClientCertificateKeyAccessor implements UniqueConfigurationAccessor<ClientCertificateKeyModel> {
     private final EncryptionUtility encryptionUtility;
-
     private final ClientCertificateKeyRepository clientCertificateKeyRepository;
 
     public DefaultClientCertificateKeyAccessor(EncryptionUtility encryptionUtility, ClientCertificateKeyRepository clientCertificateKeyRepository) {
@@ -27,12 +26,12 @@ public class DefaultClientCertificateKeyAccessor implements UniqueConfigurationA
 
     @Override
     public Optional<ClientCertificateKeyModel> getConfiguration() {
-        return clientCertificateKeyRepository.findByName(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_KEY_NAME).map(this::toModel);
+        return clientCertificateKeyRepository.findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME).map(this::toModel);
     }
 
     @Override
     public boolean doesConfigurationExist() {
-        return clientCertificateKeyRepository.existsByName(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_KEY_NAME);
+        return clientCertificateKeyRepository.existsByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
     }
 
     @Override
@@ -50,7 +49,7 @@ public class DefaultClientCertificateKeyAccessor implements UniqueConfigurationA
     @Override
     public ClientCertificateKeyModel updateConfiguration(ClientCertificateKeyModel configuration) throws AlertConfigurationException {
         ClientCertificateKeyEntity existingConfigurationEntity =
-                clientCertificateKeyRepository.findByName(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_KEY_NAME)
+                clientCertificateKeyRepository.findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
                         .orElseThrow(() -> new AlertConfigurationException("Client certificate key does not exist"));
 
         ClientCertificateKeyEntity entityToSave = toEntity(existingConfigurationEntity.getId(), configuration, DateUtils.createCurrentDateTimestamp());
@@ -61,13 +60,13 @@ public class DefaultClientCertificateKeyAccessor implements UniqueConfigurationA
 
     @Override
     public void deleteConfiguration() {
-        clientCertificateKeyRepository.deleteByName(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_KEY_NAME);
+        clientCertificateKeyRepository.deleteByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
     }
 
     private ClientCertificateKeyEntity toEntity(UUID id, ClientCertificateKeyModel model, OffsetDateTime lastUpdated) {
         String password = model.getPassword().map(encryptionUtility::encrypt).orElse(null);
 
-        return new ClientCertificateKeyEntity(id, AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_KEY_NAME, password, model.getKeyContent(), lastUpdated);
+        return new ClientCertificateKeyEntity(id, password, model.getKeyContent(), lastUpdated);
     }
 
     private ClientCertificateKeyModel toModel(ClientCertificateKeyEntity entity) {
@@ -79,7 +78,6 @@ public class DefaultClientCertificateKeyAccessor implements UniqueConfigurationA
 
         return new ClientCertificateKeyModel(
                 entity.getId(),
-                AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_KEY_NAME,
                 password,
                 doesPasswordExist,
                 entity.getKeyContent(),

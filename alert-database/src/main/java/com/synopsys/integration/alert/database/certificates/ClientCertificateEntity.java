@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.database.certificates;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.database.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -16,28 +17,25 @@ public class ClientCertificateEntity extends BaseEntity {
     @Id
     @Column(name = "id")
     private UUID id;
-
     @Column(name = "alias")
     private String alias;
-
     @Column(name = "private_key_id")
     private UUID privateKeyId;
-
     @Column(name = "certificate_content")
     private String certificateContent;
-
     @Column(name = "last_updated")
     private OffsetDateTime lastUpdated;
 
     public ClientCertificateEntity() {
     }
 
-    public ClientCertificateEntity(UUID id, String alias, UUID privateKeyId, String certificateContent, OffsetDateTime lastUpdated) {
+    public ClientCertificateEntity(UUID id, UUID privateKeyId, String certificateContent, OffsetDateTime lastUpdated) {
         this.id = id;
         this.privateKeyId = privateKeyId;
         this.certificateContent = certificateContent;
         this.lastUpdated = lastUpdated;
-        this.alias = alias;
+
+        this.alias = AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS;
     }
 
     public UUID getId() {
