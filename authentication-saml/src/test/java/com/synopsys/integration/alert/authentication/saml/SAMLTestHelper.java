@@ -155,10 +155,6 @@ public class SAMLTestHelper {
             return this;
         }
 
-        public SAMLConfigModelBuilder setWantAssertionsSigned(Boolean wantAssertionsSigned) {
-            return this;
-        }
-
         public SAMLConfigModelBuilder setEncryptionCertFileName(String encryptionCertFileName) {
             this.encryptionCertFileName = encryptionCertFileName;
             return this;
