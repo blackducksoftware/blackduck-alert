@@ -24,7 +24,8 @@ public class DefaultAuthenticationTypeAccessorTest {
 
         Mockito.when(authenticationTypeRepository.findById(Mockito.any())).thenReturn(Optional.of(authenticationTypeEntity));
 
-        Optional<AuthenticationTypeDetails> testAuthenticationTypeDetails = authenticationTypeAccessor.getAuthenticationTypeDetails(AuthenticationType.DATABASE);
+        Optional<AuthenticationTypeDetails> testAuthenticationTypeDetails =
+                authenticationTypeAccessor.getAuthenticationTypeDetails(AuthenticationType.DATABASE);
 
         assertTrue(testAuthenticationTypeDetails.isPresent());
         AuthenticationTypeDetails authenticationTypeDetails = testAuthenticationTypeDetails.get();
@@ -39,7 +40,8 @@ public class DefaultAuthenticationTypeAccessorTest {
 
         Mockito.when(authenticationTypeRepository.findById(Mockito.any())).thenReturn(Optional.empty());
 
-        Optional<AuthenticationTypeDetails> testAuthenticationTypeDetails = authenticationTypeAccessor.getAuthenticationTypeDetails(AuthenticationType.DATABASE);
+        Optional<AuthenticationTypeDetails> testAuthenticationTypeDetails =
+                authenticationTypeAccessor.getAuthenticationTypeDetails(AuthenticationType.DATABASE);
         assertFalse(testAuthenticationTypeDetails.isPresent());
     }
 
