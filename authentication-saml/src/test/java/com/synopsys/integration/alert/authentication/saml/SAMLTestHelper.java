@@ -80,8 +80,7 @@ public class SAMLTestHelper {
         return authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet(
             "admin",
             "admin",
-            () -> new PermissionMatrixModel(permissions)
-        );
+            () -> new PermissionMatrixModel(permissions));
     }
 
     public static FilePersistenceUtil createFilePersistenceUtil() {
@@ -110,7 +109,6 @@ public class SAMLTestHelper {
         private String metadataUrl = "";
         private String metadataFileName = "";
         private SAMLMetadataMode metadataMode = SAMLMetadataMode.URL;
-        private Boolean wantAssertionsSigned = false;
         private String encryptionCertFileName = "";
         private String encryptionPrivateKeyFileName = "";
         private String signingCertFileName = "";
@@ -157,11 +155,6 @@ public class SAMLTestHelper {
             return this;
         }
 
-        public SAMLConfigModelBuilder setWantAssertionsSigned(Boolean wantAssertionsSigned) {
-            this.wantAssertionsSigned = wantAssertionsSigned;
-            return this;
-        }
-
         public SAMLConfigModelBuilder setEncryptionCertFileName(String encryptionCertFileName) {
             this.encryptionCertFileName = encryptionCertFileName;
             return this;
@@ -189,20 +182,19 @@ public class SAMLTestHelper {
 
         public SAMLConfigModel build() {
             return new SAMLConfigModel(
-                id,
-                this.createdAt,
-                this.lastUpdated,
-                this.enabled,
-                this.forceAuth,
-                this.metadataUrl,
-                this.metadataFileName,
-                this.metadataMode,
-                this.encryptionCertFileName,
-                this.encryptionPrivateKeyFileName,
-                this.signingCertFileName,
-                this.signingPrivateKeyFileName,
-                this.verificationCertFileName
-            );
+                    id,
+                    this.createdAt,
+                    this.lastUpdated,
+                    this.enabled,
+                    this.forceAuth,
+                    this.metadataUrl,
+                    this.metadataFileName,
+                    this.metadataMode,
+                    this.encryptionCertFileName,
+                    this.encryptionPrivateKeyFileName,
+                    this.signingCertFileName,
+                    this.signingPrivateKeyFileName,
+                    this.verificationCertFileName);
         }
     }
 }
