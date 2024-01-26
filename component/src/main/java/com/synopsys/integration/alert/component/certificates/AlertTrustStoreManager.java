@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.common.persistence.model.CustomCertificate
 
 @Component
 public class AlertTrustStoreManager {
-    private final Logger logger = LoggerFactory.getLogger(AlertTrustStoreManager.class);
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final AlertProperties alertProperties;
     private final KeyStoreManager keyStoreManager;
 
