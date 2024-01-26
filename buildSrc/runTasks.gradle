@@ -1,6 +1,13 @@
 String keystoreFile = "${project.buildDir}/certs/blackduck-alert.keystore"
+String mtlsClientKeystoreFile = "${project.buildDir}/certs/mtls-client.keystore"
 
 task createKeystore(type: com.synopsys.integration.alert.build.CreateKeystoreTask) {
+    doFirst {
+        mkdir "${project.buildDir}/certs"
+    }
+}
+
+task createMtlsClientKeystore(type: com.synopsys.integration.alert.build.CreateMtlsClientKeystoreTask) {
     doFirst {
         mkdir "${project.buildDir}/certs"
     }
@@ -13,10 +20,13 @@ task createTruststore(type: Copy) {
     rename 'cacerts', 'blackduck-alert.truststore'
 }
 
-task runServer(type: com.synopsys.integration.alert.build.RunServerTask, dependsOn: [build, createKeystore, createTruststore]) {
+task runServer(type: com.synopsys.integration.alert.build.RunServerTask, dependsOn: [build, createKeystore, createTruststore, createMtlsClientKeystore]) {
     doFirst {
         if (!file(keystoreFile).exists()) {
             throw new GradleException("Required keystore does not exist --> ${keystoreFile}")
+        }
+        if (!file(mtlsClientKeystoreFile).exists()) {
+            throw new GradleException("Required keystore does not exist --> ${mtlsClientKeystoreFile}")
         }
     }
     postgresVersion = project.ext.postgresContainerVersionCurrent
@@ -24,5 +34,7 @@ task runServer(type: com.synopsys.integration.alert.build.RunServerTask, depends
 
 tasks.createKeystore.onlyIf { !file(keystoreFile).exists() }
 tasks.createTruststore.onlyIf { !file("${project.buildDir}/certs/blackduck-alert.truststore").exists() }
+tasks.createMtlsClientKeystore.onlyIf { !file(mtlsClientKeystoreFile).exists() }
 tasks.runServer.mustRunAfter(createKeystore)
 tasks.runServer.mustRunAfter(createTruststore)
+tasks.runServer.mustRunAfter(createMtlsClientKeystore)

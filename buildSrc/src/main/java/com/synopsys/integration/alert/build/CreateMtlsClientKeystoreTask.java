@@ -1,0 +1,48 @@
+package com.synopsys.integration.alert.build;
+
+import java.util.List;
+
+import org.gradle.api.tasks.Exec;
+import org.gradle.api.tasks.Internal;
+
+public class CreateMtlsClientKeystoreTask extends Exec {
+    
+    @Override
+    protected void exec() {
+        String workingDir = getProject().getBuildDir().getAbsolutePath() + "/certs";
+        setWorkingDir(workingDir);
+        commandLine(getKeytoolVariables());
+        super.exec();
+    }
+
+    @Internal
+    public List<String> getKeytoolVariables() {
+        return List.of(
+                "keytool",
+                "-genkeypair",
+                "-v",
+                "-keystore",
+                "mtls-client.keystore",
+                "-alias",
+                "mtls-client",
+                "-keyalg",
+                "RSA",
+                "-keysize",
+                "2048",
+                "-storetype",
+                "PKCS12",
+                "-validity",
+                "365",
+                "-storepass",
+                "changeit",
+                "-dname",
+                "CN=localhost, OU=Engineering, O=Synopsys, C=US",
+                "-ext",
+                "eku=sa,ca",
+                "-ext",
+                "BasicConstraints=ca:true",
+                "-ext",
+                "san=dns:localhost,dns:localhost.localdomain,dns:lvh.me,ip:127.0.0.1,ip:FE80:0:0:0:0:0:0:1"
+        );
+    }
+}
