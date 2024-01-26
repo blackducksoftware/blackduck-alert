@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="dmaxfield" id="update-job-completion-status-timestamp">
+        <sql dbms="postgresql" stripComments="true">
+            alter table alert.job_completion_status alter column last_run type timestamp with time zone;
+        </sql>
+    </changeSet>
+</databaseChangeLog>
