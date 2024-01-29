@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '3.0.7'
+        springBootVersion = '3.1.8'
     }
 
     apply from: 'https://raw.githubusercontent.com/blackducksoftware/integration-resources/master/gradle_common/buildscript-repositories.gradle', to: buildscript
@@ -30,8 +30,8 @@ ext {
     moduleName = 'com.synopsys.integration.alert.main'
 
     // This version is also in src/test/resources/spring-test.properties for the test jdbc connection
-    postgresContainerVersionMigration = '14.5'
-    postgresContainerVersionCurrent = '14.8'
+    postgresContainerVersionMigration = '14.8'
+    postgresContainerVersionCurrent = '14.10'
 
     // Docker Variables
     dockerBuildParam_POSTGRESIMAGEVERSION_MIGRATION = 'postgres:' + postgresContainerVersionMigration + '-alpine'

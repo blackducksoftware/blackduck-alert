@@ -3,16 +3,17 @@ import PropTypes from 'prop-types';
 import MultiSelectCell from 'common/component/table/cell/MultiSelectCell';
 import WrapperCell from 'common/component/table/cell/WrapperCell';
 
-const TableBody = ({ columns, multiSelect, tableData, selected, onSelected, disableSelectOptions }) => (
+const TableBody = ({ columns, multiSelect, tableData, selected, onSelected, disableSelectOptions, cellId }) => (
     <tbody>
-        { tableData?.map((rowData, rowIndex) => (
+        {tableData?.map((rowData, rowIndex) => (
             <tr key={`${rowIndex}-table-row`}>
-                { multiSelect && (
+                {multiSelect && (
                     <MultiSelectCell
                         data={rowData}
                         selected={selected}
                         onSelected={onSelected}
                         disableSelectOptions={disableSelectOptions}
+                        cellId={cellId}
                     />
                 )}
 
@@ -49,7 +50,8 @@ TableBody.propTypes = {
     selected: PropTypes.arrayOf(PropTypes.string),
     onSelected: PropTypes.func,
     tableData: PropTypes.arrayOf(PropTypes.object),
-    disableSelectOptions: PropTypes.object
+    disableSelectOptions: PropTypes.object,
+    cellId: PropTypes.string
 };
 
 export default TableBody;

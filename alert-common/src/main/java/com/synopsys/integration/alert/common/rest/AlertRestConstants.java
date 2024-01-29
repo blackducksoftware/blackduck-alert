@@ -29,6 +29,7 @@ public final class AlertRestConstants {
     public static final String LDAP_PATH = AlertRestConstants.AUTHENTICATION_PATH + "/ldap";
 
     public static final String DEFAULT_CONFIGURATION_NAME = "default-configuration";
+    public static final String DEFAULT_CLIENT_CERTIFICATE_ALIAS = "default-alert-client-certificate";
 
     private AlertRestConstants() {
         // This class should not be instantiated
