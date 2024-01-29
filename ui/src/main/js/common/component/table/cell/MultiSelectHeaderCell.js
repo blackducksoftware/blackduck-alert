@@ -14,7 +14,7 @@ const useStyles = createUseStyles({
     }
 });
 
-const MultiSelectHeaderCell = ({ tableData, onSelected, selected, disableSelectOptions }) => {
+const MultiSelectHeaderCell = ({ tableData, onSelected, selected, disableSelectOptions, cellId }) => {
     const classes = useStyles();
     const checkboxRef = useRef();
 
@@ -27,7 +27,7 @@ const MultiSelectHeaderCell = ({ tableData, onSelected, selected, disableSelectO
         // jobId added for distribution tables
         // fieldName added for Advanced Jira Mapping Fields (in Distribution Config). This should eventually be removed and
         //  replaced in favor of UUIDs once a concrete implementation of the distribution endpoint is available.
-        item.id || item.jobId || item.fieldName
+        item.id || item.jobId || item.fieldName || item[cellId]
     )), [tableData]);
 
     useEffect(() => {
@@ -69,7 +69,8 @@ MultiSelectHeaderCell.propTypes = {
     selected: PropTypes.arrayOf(PropTypes.string),
     disableSelectOptions: PropTypes.shape({
         disabledItems: PropTypes.array
-    })
+    }),
+    cellId: PropTypes.string
 };
 
 export default MultiSelectHeaderCell;

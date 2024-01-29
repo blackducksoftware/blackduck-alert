@@ -45,7 +45,7 @@ const AuditFailureTable = () => {
         }
 
         return undefined;
-    }, [autoRefresh]);
+    }, [autoRefresh, paramsConfig]);
 
     const handleSearchChange = (searchValue) => {
         setParamsConfig({
@@ -66,7 +66,7 @@ const AuditFailureTable = () => {
     }
 
     function handlePageSize(count) {
-        setParamsConfig({ ...paramsConfig, pageSize: count });
+        setParamsConfig({ ...paramsConfig, pageSize: count, pageNumber: 0 });
     }
 
     function handleRefresh() {
@@ -165,6 +165,7 @@ const AuditFailureTable = () => {
             sortConfig={sortConfig}
             onPage={handlePagination}
             onPageSize={handlePageSize}
+            pageSize={data?.pageSize}
             showPageSize
             data={data}
             emptyTableConfig={emptyTableConfig}

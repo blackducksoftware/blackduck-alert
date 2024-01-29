@@ -88,14 +88,14 @@ const DistributionTable = ({ readonly }) => {
         localStorage.setItem('DISTRIBUTION_REFRESH_STATUS', JSON.stringify(autoRefresh));
 
         if (autoRefresh) {
-            const refreshIntervalId = setInterval(() => dispatch(fetchDistribution()), 30000);
+            const refreshIntervalId = setInterval(() => dispatch(fetchDistribution(paramsConfig)), 30000);
             return function clearRefreshInterval() {
                 clearInterval(refreshIntervalId);
             };
         }
 
         return undefined;
-    }, [autoRefresh]);
+    }, [autoRefresh, paramsConfig]);
 
     const handleSearchChange = (searchValue) => {
         setParamsConfig({
@@ -112,11 +112,12 @@ const DistributionTable = ({ readonly }) => {
     }
 
     function handlePagination(page) {
+        setSelected([]);
         setParamsConfig({ ...paramsConfig, pageNumber: page });
     }
 
     function handlePageSize(count) {
-        setParamsConfig({ ...paramsConfig, pageSize: count });
+        setParamsConfig({ ...paramsConfig, pageSize: count, pageNumber: 0 });
     }
 
     const onSort = (name) => {
@@ -175,18 +176,20 @@ const DistributionTable = ({ readonly }) => {
             onSelected={onSelected}
             onPage={handlePagination}
             onPageSize={handlePageSize}
+            pageSize={data?.pageSize}
             showPageSize
             data={data}
             emptyTableConfig={emptyTableConfig}
-            tableActions={() =>
+            tableActions={() => (
                 <DistributionTableActions
                     data={data}
                     readonly={readonly}
                     selected={selected}
                     setSelected={setSelected}
-                    paramsConfig={paramsConfig} 
+                    paramsConfig={paramsConfig}
+                    setParamsConfig={setParamsConfig}
                 />
-            }
+            )}
         />
     );
 };

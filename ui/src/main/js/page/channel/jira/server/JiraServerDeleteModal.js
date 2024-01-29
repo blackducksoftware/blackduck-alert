@@ -23,7 +23,7 @@ function getStagedForDelete(data, selected) {
     return staged.map((server) => ({ ...server, staged: true }));
 }
 
-const JiraServerDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, setStatusMessage }) => {
+const JiraServerDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, setStatusMessage, paramsConfig, setParamsConfig }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { deleteStatus, error } = useSelector((state) => state.jiraServer);
@@ -32,7 +32,18 @@ const JiraServerDeleteModal = ({ isOpen, toggleModal, data, selected, setSelecte
     const isMultiDelete = selectedJiraServers.length > 1;
 
     function handleClose() {
-        dispatch(fetchJiraServer());
+        const params = {
+            pageNumber: 0,
+            pageSize: paramsConfig?.pageSize,
+            mutatorData: {
+                searchTerm: paramsConfig?.mutatorData?.searchTerm,
+                sortName: paramsConfig?.mutatorData?.name,
+                sortOrder: paramsConfig?.mutatorData?.direction
+            }
+        };
+
+        dispatch(fetchJiraServer(params));
+        setParamsConfig(params);
         toggleModal(false);
     }
 
@@ -52,15 +63,17 @@ const JiraServerDeleteModal = ({ isOpen, toggleModal, data, selected, setSelecte
         if (deleteStatus === 'DELETED') {
             setShowLoader(false);
 
-            const successMessage = isMultiDelete
-                ? `Successfully deleted ${selectedJiraServers.filter((jiraServer) => jiraServer.staged).length} Jira Servers.`
-                : 'Successfully deleted 1 Jira Server.';
+            const stagedCount = selectedJiraServers.filter((jiraServer) => jiraServer.staged).length;
+            if (stagedCount > 0) {
+                const successMessage = isMultiDelete
+                    ? `Successfully deleted ${stagedCount} Jira Servers.`
+                    : 'Successfully deleted 1 Jira Server.';
 
-            setStatusMessage({
-                message: successMessage,
-                type: 'success'
-            });
-
+                setStatusMessage({
+                    message: successMessage,
+                    type: 'success'
+                });
+            }
             setSelected([]);
             handleClose();
         }
@@ -121,7 +134,9 @@ JiraServerDeleteModal.propTypes = {
     toggleModal: PropTypes.func,
     selected: PropTypes.array,
     setStatusMessage: PropTypes.func,
-    setSelected: PropTypes.func
+    setSelected: PropTypes.func,
+    paramsConfig: PropTypes.object,
+    setParamsConfig: PropTypes.func
 };
 
 export default JiraServerDeleteModal;

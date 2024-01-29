@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import ReactDOM from 'react-dom';
@@ -27,7 +27,8 @@ const useStyles = createUseStyles((theme) => ({
         width: '90%',
         maxWidth: 600,
         margin: ['100px', 'auto'],
-        maxHeight: '80%'
+        maxHeight: '80%',
+        overflow: 'auto'
     },
     modalStyleLarge: {
         maxWidth: 900
@@ -42,14 +43,44 @@ const useStyles = createUseStyles((theme) => ({
         position: 'relative'
     },
     modalBody: {
+        maxHeight: 'calc(100vh - 355px)',
+        padding: ['16px', 0],
+        overflowY: 'auto'
+    },
+    noOverflowModalBody: {
+        maxHeight: 'calc(100vh - 355px)',
         padding: ['16px', 0]
     }
 }));
 
-const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handleSubmit,
+const Modal = ({
+    isOpen, size, title, closeModal, children, handleCancel, handleSubmit,
     handleTest, submitText, testText, showLoader, notification, showNotification, buttonStyle,
-    disableSubmit, submitTitle }) => {
+    disableSubmit, submitTitle, noOverflow
+}) => {
     const classes = useStyles();
+    const [style, setStyle] = useState(noOverflow ? classes.noOverflowModalBody : classes.modalBody);
+
+    function handleWindowResize() {
+        if (window.innerHeight < 755) {
+            setStyle(classes.modalBody);
+        } else {
+            setStyle(classes.noOverflowModalBody);
+        }
+    }
+
+    useEffect(() => {
+        if (noOverflow) {
+            handleWindowResize();
+            window.addEventListener('resize', handleWindowResize);
+
+            return () => {
+                window.removeEventListener('resize', handleWindowResize);
+            };
+        }
+        return () => {
+        };
+    }, []);
 
     const modalStyleClass = classNames(classes.modalStyle, {
         [classes.modalStyleLarge]: size === 'lg',
@@ -69,8 +100,8 @@ const Modal = ({ isOpen, size, title, closeModal, children, handleCancel, handle
                         title={title}
                         closeModal={closeModal}
                     />
-                    <div className={classes.modalBody}>
-                        { showNotification && (
+                    <div className={style}>
+                        {showNotification && (
                             <Notification notification={notification} />
                         )}
                         {children}
@@ -116,7 +147,9 @@ Modal.propTypes = {
     testText: PropTypes.string,
     buttonStyle: PropTypes.string,
     disableSubmit: PropTypes.bool,
-    submitTitle: PropTypes.string
+    submitTitle: PropTypes.string,
+    noOverflow: PropTypes.bool,
+    children: PropTypes.any
 };
 
 export default Modal;

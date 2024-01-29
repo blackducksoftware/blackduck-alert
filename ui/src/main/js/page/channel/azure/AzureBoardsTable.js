@@ -10,36 +10,6 @@ import StatusMessage from 'common/component/StatusMessage';
 import { useLocation } from 'react-router-dom';
 import { fetchAzureBoards } from 'store/actions/azure-boards';
 
-const COLUMNS = [{
-    key: 'name',
-    label: 'Name',
-    sortable: true
-}, {
-    key: 'organizationName',
-    label: 'Organization Name',
-    sortable: true
-}, {
-    key: 'createdAt',
-    label: 'Created At',
-    sortable: true
-}, {
-    key: 'lastUpdated',
-    label: 'Last Updated',
-    sortable: true
-}, {
-    key: 'editAzureBoard',
-    label: 'Edit',
-    sortable: false,
-    customCell: AzureBoardsEditCell,
-    settings: { alignment: 'center' }
-}, {
-    key: 'copyAzureBoard',
-    label: 'Copy',
-    sortable: false,
-    customCell: AzureBoardsCopyCell,
-    settings: { alignment: 'center' }
-}];
-
 const emptyTableConfig = {
     message: 'There are no records to display for this table.  Please create an Azure Board connection to use this table.'
 };
@@ -65,9 +35,39 @@ const AzureBoardsTable = ({ readonly, allowDelete }) => {
     const [statusMessage, setStatusMessage] = useState();
     const [modalData, setModalData] = useState();
 
+    const COLUMNS = [{
+        key: 'name',
+        label: 'Name',
+        sortable: true
+    }, {
+        key: 'organizationName',
+        label: 'Organization Name',
+        sortable: true
+    }, {
+        key: 'createdAt',
+        label: 'Created At',
+        sortable: true
+    }, {
+        key: 'lastUpdated',
+        label: 'Last Updated',
+        sortable: true
+    }, {
+        key: 'editAzureBoard',
+        label: 'Edit',
+        sortable: false,
+        customCell: AzureBoardsEditCell,
+        settings: { alignment: 'center', paramsConfig }
+    }, {
+        key: 'copyAzureBoard',
+        label: 'Copy',
+        sortable: false,
+        customCell: AzureBoardsCopyCell,
+        settings: { alignment: 'center', paramsConfig }
+    }];
+
     useEffect(() => {
-        // If a user authenticates via OAuth, OAuth will redirect us back to Alert with a url path similar to the following: 
-        // `alert/channels/azure_boards/edit/{id}`.  If an ID is present as well as the string 'edit', we can assert that 
+        // If a user authenticates via OAuth, OAuth will redirect us back to Alert with a url path similar to the following:
+        // `alert/channels/azure_boards/edit/{id}`.  If an ID is present as well as the string 'edit', we can assert that
         // the modal should reopen with the data relevant to that ID.
 
         // split the url to determine if edit is present
@@ -77,12 +77,12 @@ const AzureBoardsTable = ({ readonly, allowDelete }) => {
             // obtain the id of the azureBoards board that OAuth just authenticated
             const modalDataID = parsedUrlArray.slice(-1)[0];
             // filter the table data and set the data for the modal to the one that matches the id from the line above
-            data.models.forEach(model => {
+            data.models.forEach((model) => {
                 if (model.id === modalDataID) {
                     setModalData(model);
                     setShowModal(true);
                 }
-            })
+            });
         }
     }, [location, data]);
 
@@ -94,14 +94,14 @@ const AzureBoardsTable = ({ readonly, allowDelete }) => {
         localStorage.setItem('AZURE_BOARDS_REFRESH_STATUS', JSON.stringify(autoRefresh));
 
         if (autoRefresh) {
-            const refreshIntervalId = setInterval(() => dispatch(fetchAzureBoards()), 30000);
+            const refreshIntervalId = setInterval(() => dispatch(fetchAzureBoards(paramsConfig)), 30000);
             return function clearRefreshInterval() {
                 clearInterval(refreshIntervalId);
             };
         }
 
         return undefined;
-    }, [autoRefresh]);
+    }, [autoRefresh, paramsConfig]);
 
     const handleSearchChange = (searchValue) => {
         setParamsConfig({
@@ -118,11 +118,12 @@ const AzureBoardsTable = ({ readonly, allowDelete }) => {
     }
 
     function handlePagination(page) {
+        setSelected([]);
         setParamsConfig({ ...paramsConfig, pageNumber: page });
     }
 
     function handlePageSize(count) {
-        setParamsConfig({ ...paramsConfig, pageSize: count });
+        setParamsConfig({ ...paramsConfig, pageSize: count, pageNumber: 0 });
     }
 
     const onSort = (name) => {
@@ -176,10 +177,11 @@ const AzureBoardsTable = ({ readonly, allowDelete }) => {
                 onSelected={onSelected}
                 onPage={handlePagination}
                 onPageSize={handlePageSize}
+                pageSize={data?.pageSize}
                 showPageSize
                 data={data}
                 emptyTableConfig={emptyTableConfig}
-                tableActions={() => 
+                tableActions={() => (
                     <AzureBoardsTableActions
                         data={data}
                         readonly={readonly}
@@ -187,8 +189,9 @@ const AzureBoardsTable = ({ readonly, allowDelete }) => {
                         selected={selected}
                         setSelected={setSelected}
                         paramsConfig={paramsConfig}
+                        setParamsConfig={setParamsConfig}
                     />
-                }
+                )}
             />
             {statusMessage && (
                 <StatusMessage

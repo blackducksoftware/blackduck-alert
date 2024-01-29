@@ -10,11 +10,11 @@ const useStyles = createUseStyles({
     }
 });
 
-const DropdownField = ({ id, isDisabled = false, onChange, options }) => {
+const DropdownField = ({ id, isDisabled = false, onChange, options, selectedValue }) => {
     const classes = useStyles();
 
     function handleChange(e) {
-        onChange(e.target.value)
+        onChange(e.target.value);
     }
 
     return (
@@ -23,26 +23,26 @@ const DropdownField = ({ id, isDisabled = false, onChange, options }) => {
             onChange={handleChange}
             disabled={isDisabled}
             id={id}
+            value={selectedValue}
         >
-            { options.map((option) =>
-                <option value={option.value} id={option.value}>
+            {options.map((option) => (
+                <option key={option.value} value={option.value} id={option.value}>
                     {option.label}
                 </option>
-            )}
+            ))}
         </select>
-    )
+    );
 };
 
 DropdownField.propTypes = {
-    options: PropTypes.arrayOf(
-        PropTypes.shape({
-            label: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-            value: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-        })
-    ),
+    options: PropTypes.arrayOf(PropTypes.shape({
+        label: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        value: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    })),
     onChange: PropTypes.func,
     isDisabled: PropTypes.bool,
-    id: PropTypes.string
+    id: PropTypes.string,
+    selectedValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
 };
 
 export default DropdownField;

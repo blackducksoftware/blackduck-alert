@@ -52,15 +52,17 @@ const UserDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, set
         if (deleteStatus === 'SUCCESS') {
             setShowLoader(false);
 
-            const successMessage = isMultiUserDelete
-                ? `Successfully deleted ${selectedUsers.filter((user) => user.staged).length} users.`
-                : 'Successfully deleted 1 user.';
+            const stagedCount = selectedUsers.filter((user) => user.staged).length;
+            if (stagedCount > 0) {
+                const successMessage = isMultiUserDelete
+                    ? `Successfully deleted ${stagedCount} users.`
+                    : 'Successfully deleted 1 user.';
 
-            setStatusMessage({
-                message: successMessage,
-                type: 'success'
-            });
-
+                setStatusMessage({
+                    message: successMessage,
+                    type: 'success'
+                });
+            }
             setSelected([]);
             handleClose();
         }
