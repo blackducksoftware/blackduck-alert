@@ -4,6 +4,8 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.stereotype.Component;
+
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.accessor.UniqueConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
@@ -12,6 +14,10 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.certificates.ClientCertificateEntity;
 import com.synopsys.integration.alert.database.certificates.ClientCertificateRepository;
 
+import jakarta.transaction.Transactional;
+
+@Component
+@Transactional
 public class DefaultClientCertificateAccessor implements UniqueConfigurationAccessor<ClientCertificateModel> {
     private final ClientCertificateRepository clientCertificateRepository;
 

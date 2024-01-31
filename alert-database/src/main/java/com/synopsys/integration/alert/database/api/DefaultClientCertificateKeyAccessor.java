@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.accessor.UniqueConfigurationAccessor;
@@ -15,6 +16,10 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.certificates.ClientCertificateKeyEntity;
 import com.synopsys.integration.alert.database.certificates.ClientCertificateKeyRepository;
 
+import jakarta.transaction.Transactional;
+
+@Component
+@Transactional
 public class DefaultClientCertificateKeyAccessor implements UniqueConfigurationAccessor<ClientCertificateKeyModel> {
     private final EncryptionUtility encryptionUtility;
     private final ClientCertificateKeyRepository clientCertificateKeyRepository;
