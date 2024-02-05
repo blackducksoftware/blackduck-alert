@@ -81,19 +81,6 @@ public class AlertProperties {
     @Value("${alert.hostname:}")
     private String alertHostName;
 
-    // MTLS properties
-    @Value("${alert.mtls.client.key-store:}")
-    private String mtlsClientKeyStoreFile;
-
-    @Value("${alert.mtls.client.key-store-password:}")
-    private String mtlsClientKeyStorePass;
-
-    @Value("${alert.mtls.client.key-store-type:}")
-    private String mtlsClientKeyStoreType;
-
-    @Value("${alert.mtls.client.key-alias:}")
-    private String mtlsClientKeyAlias;
-
     public String getAlertConfigHome() {
         return StringUtils.trimToNull(alertConfigHome);
     }
@@ -177,22 +164,6 @@ public class AlertProperties {
 
     public Optional<String> getTrustStoreType() {
         return getOptionalString(trustStoreType);
-    }
-
-    public Optional<String> getMtlsClientKeyStoreFile() {
-        return getOptionalString(mtlsClientKeyStoreFile);
-    }
-
-    public Optional<String> getMtlsClientKeyStorePass() {
-        return getOptionalString(mtlsClientKeyStorePass);
-    }
-
-    public Optional<String> getMtlsClientKeyStoreType() {
-        return getOptionalString(mtlsClientKeyStoreType);
-    }
-
-    public Optional<String> getMtlsClientKeyAlias() {
-        return getOptionalString(mtlsClientKeyAlias);
     }
 
     public Optional<String> getAlertHostName() {
