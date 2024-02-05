@@ -155,7 +155,7 @@ export function sendNotification(notificationId, requestParams) {
 export function sendJob(notificationId, jobId) {
     return (dispatch, getState) => {
         dispatch(sendJobRequest());
-        const resendUrl = `${AUDIT_URLS.resend}${notificationId}/job/${jobId}/`;
+        const resendUrl = `${AUDIT_URLS.resend}${notificationId}/job/${jobId}`;
         const { csrfToken } = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
