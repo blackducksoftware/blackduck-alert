@@ -170,7 +170,6 @@ public class RunServerTask extends Exec {
         List<String> commonVariables = List.of(
             String.format("--server.ssl.key-store=%s/certs/blackduck-alert.keystore", buildDirectory),
             String.format("--server.ssl.trust-store=%s/certs/blackduck-alert.truststore", buildDirectory),
-            String.format("--alert.mtls.client.key-store=%s/certs/mtls-client.keystore", buildDirectory),
             "--server.port=8443",
 
             "--hibernate.default_schema=alert",

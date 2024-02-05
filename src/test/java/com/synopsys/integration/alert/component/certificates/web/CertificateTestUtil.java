@@ -32,8 +32,6 @@ public class CertificateTestUtil {
     public static final String TEST_ALIAS = "test-alias";
     public static final String TRUSTSTORE_FILE_PATH = "./build/certs/blackduck-alert-test.truststore";
     public static final String TRUSTSTORE_PASSWORD = "changeit";
-
-    public static final String MTLS_KEYSTORE_FILE_PATH = "./build/certs/mtls-client-test.keystore";
     public static final String MTLS_CERTIFICATE_PASSWORD = "changeit";
 
     protected File trustStoreFile;
