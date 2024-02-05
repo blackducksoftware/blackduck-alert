@@ -65,6 +65,16 @@ public class AlertTrustStoreManager {
         }
     }
 
+    public synchronized KeyStore getTrustStore() throws AlertException {
+        Optional<String> optionalTrustStoreFileName = alertProperties.getTrustStoreFile();
+        if (optionalTrustStoreFileName.isPresent()) {
+            return keyStoreManager.getAsKeyStore(keyStoreManager.getAndValidateKeyStoreFile(optionalTrustStoreFileName.get()), getTrustStorePassword());
+        } else {
+            throw new AlertConfigurationException("No trust store file has been provided.");
+        }
+
+    }
+
     public synchronized void validateCertificateContent(CustomCertificateModel customCertificateModel) throws AlertException {
         // Result is ignored, but we continue to throw an AlertException if one occurs
         getAsJavaCertificate(customCertificateModel);
