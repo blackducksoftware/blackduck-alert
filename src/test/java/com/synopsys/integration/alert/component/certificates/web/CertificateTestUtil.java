@@ -28,6 +28,8 @@ public class CertificateTestUtil {
     // server.pem = "server-cert-test.xxx.blackduck.alert.example.com"
     // client.pem = "client-cert-test.xxx.blackduck.alert.example.com"
     public static final String CERTIFICATE_MTLS_CLIENT_FILE_PATH = "certificates/mtls/client.pem";
+    public static final String CERTIFICATE_MTLS_SERVER_FILE_PATH = "certificates/mtls/server.pem";
+    public static final String CERTIFICATE_MTLS_ROOT_CA_FILE_PATH = "certificates/mtls/rootCA.pem";
     public static final String KEY_MTLS_CLIENT_FILE_PATH = "certificates/mtls/client.key";
     public static final String TEST_ALIAS = "test-alias";
     public static final String TRUSTSTORE_FILE_PATH = "./build/certs/blackduck-alert-test.truststore";

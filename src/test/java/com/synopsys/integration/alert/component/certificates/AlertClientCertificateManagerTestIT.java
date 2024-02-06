@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
@@ -167,6 +168,7 @@ class AlertClientCertificateManagerTestIT {
         Certificate validationCertificate = certTestUtil.loadCertificate(model.getCertificateContent());
         clientCertificateManager.importCertificate(model, keyModel);
         KeyStore clientKeystore = clientCertificateManager.getClientKeyStore().orElseThrow(() -> new AssertionError("Keystore missing when it should exist"));
+        assertEquals(keyModel.getPassword(), clientCertificateManager.getClientKeyPassword());
         assertTrue(clientKeystore.containsAlias(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS));
         Certificate clientCertificate = clientKeystore.getCertificate(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS);
 
@@ -184,5 +186,15 @@ class AlertClientCertificateManagerTestIT {
         clientCertificateManager.importCertificate(model, keyModel);
         clientCertificateManager.removeCertificate();
         assertTrue(clientCertificateManager.getClientKeyStore().isEmpty());
+        assertTrue(clientCertificateManager.getClientKeyPassword().isEmpty());
+    }
+
+    @Test
+    void clientCertificateNotSetTest() {
+        clientCertificateManager = new AlertClientCertificateManager();
+        Optional<KeyStore> keystore = clientCertificateManager.getClientKeyStore();
+        Optional<String> password = clientCertificateManager.getClientKeyPassword();
+        assertTrue(keystore.isEmpty());
+        assertTrue(password.isEmpty());
     }
 }

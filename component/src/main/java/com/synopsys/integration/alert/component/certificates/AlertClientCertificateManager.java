@@ -21,16 +21,18 @@ public class AlertClientCertificateManager {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private PemSslStoreBundle clientSslStoreBundle;
+    private String clientKeyPassword;
 
     public synchronized void importCertificate(ClientCertificateModel clientCertificateModel, ClientCertificateKeyModel clientCertificateKeyModel)
         throws AlertException {
         logger.debug("Importing certificate into key store.");
         validateClientCertificateHasValues(clientCertificateModel);
         validateCertificateKeyHasValues(clientCertificateKeyModel);
+        clientKeyPassword = clientCertificateKeyModel.getPassword()
+            .orElseThrow(() -> new AlertException("Missing private key password for client certificate"));
         PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate(clientCertificateModel.getCertificateContent())
             .withPrivateKey(clientCertificateKeyModel.getKeyContent())
-            .withPrivateKeyPassword(clientCertificateKeyModel.getPassword()
-                .orElseThrow(() -> new AlertException("Missing private key password for client certificate")));
+            .withPrivateKeyPassword(clientKeyPassword);
         PemSslStoreDetails trustStoreDetails = PemSslStoreDetails.forCertificate(null);
         clientSslStoreBundle = new PemSslStoreBundle(keyStoreDetails, trustStoreDetails, AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS);
     }
@@ -49,11 +51,16 @@ public class AlertClientCertificateManager {
         }
         // clean up the reference
         clientSslStoreBundle = null;
+        clientKeyPassword = null;
     }
 
     public Optional<KeyStore> getClientKeyStore() {
         return Optional.ofNullable(clientSslStoreBundle)
             .map(PemSslStoreBundle::getKeyStore);
+    }
+
+    public Optional<String> getClientKeyPassword() {
+        return Optional.ofNullable(clientKeyPassword);
     }
 
     private void validateClientCertificateHasValues(ClientCertificateModel clientCertificateModel) throws AlertException {

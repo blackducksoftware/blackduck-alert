@@ -1,20 +1,21 @@
 package com.synopsys.integration.alert.component.certificates;
 
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
+import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
 import java.util.Optional;
 
-import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ssl.SslBundleKey;
+import org.springframework.boot.ssl.SslManagerBundle;
+import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 
 @Component
 public class AlertSSLContextManager {
@@ -34,15 +35,26 @@ public class AlertSSLContextManager {
     public Optional<SSLContext> buildSslContext() throws AlertConfigurationException {
         SSLContext sslContext;
         try {
-            sslContext = SSLContext.getInstance("TLS");
-            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            keyManagerFactory.init(clientCertificateManager.getClientKeyStore().orElseThrow(), "".toCharArray());
-            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            trustManagerFactory.init(trustStoreManager.getTrustStore());
-            sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
-        } catch (AlertException | KeyManagementException | KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException ex) {
+            if (clientCertificateManager.getClientKeyStore().isPresent() && clientCertificateManager.getClientKeyPassword().isPresent()) {
+                SslManagerBundle sslManagerBundle = getSslManagerBundle();
+                sslContext = sslManagerBundle.createSslContext("TLS");
+            } else {
+                sslContext = SSLContext.getDefault();
+            }
+        } catch (AlertException | NoSuchAlgorithmException ex) {
             throw new AlertConfigurationException(ex);
         }
         return Optional.ofNullable(sslContext);
+    }
+
+    @NotNull
+    private SslManagerBundle getSslManagerBundle() throws AlertException {
+        KeyStore trustStore = trustStoreManager.getTrustStore();
+        // when the client keystore is created the password is changed to null by the implementation class used to read the certificate and key data.
+        // pass null in order to create the manager bundle.
+        KeyStore clientKeystore = clientCertificateManager.getClientKeyStore().orElse(null);
+        SslBundleKey sslBundleKey = SslBundleKey.of(null, AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS);
+        SslStoreBundle sslStoreBundle = SslStoreBundle.of(clientKeystore, null, trustStore);
+        return SslManagerBundle.from(sslStoreBundle, sslBundleKey);
     }
 }
