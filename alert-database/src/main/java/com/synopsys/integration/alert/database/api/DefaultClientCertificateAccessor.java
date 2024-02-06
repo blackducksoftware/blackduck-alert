@@ -78,5 +78,5 @@ public class DefaultClientCertificateAccessor implements UniqueConfigurationAcce
 
     private ClientCertificateEntity toEntity(UUID id, UUID privateKeyId, ClientCertificateModel model, OffsetDateTime lastUpdated) {
         return new ClientCertificateEntity(id, privateKeyId, model.getCertificateContent(), lastUpdated);
-    };
+    }
 }
