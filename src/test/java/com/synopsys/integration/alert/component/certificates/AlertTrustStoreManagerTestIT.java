@@ -18,7 +18,6 @@ import org.springframework.test.context.TestPropertySource;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.component.certificates.web.CertificateTestUtil;
@@ -32,9 +31,6 @@ class AlertTrustStoreManagerTestIT {
     public static final String EMPTY_STRING_CONTENT = " \n\t\r  \n\t\r  \n";
     @Autowired
     private AlertProperties alertProperties;
-
-    @Autowired
-    private CustomCertificateAccessor certificateAccessor;
 
     private final CertificateTestUtil certTestUtil = new CertificateTestUtil();
 
@@ -179,13 +175,13 @@ class AlertTrustStoreManagerTestIT {
         MockAlertProperties mockAlertProperties = new MockAlertProperties();
         mockAlertProperties.setTrustStoreFile("badprotocol:a_file-that-does-not-exist");
         AlertTrustStoreManager trustStoreManager = new AlertTrustStoreManager(mockAlertProperties);
-        assertThrows(AlertConfigurationException.class, () -> trustStoreManager.getAndValidateTrustStoreFile());
+        assertThrows(AlertConfigurationException.class, trustStoreManager::getAndValidateTrustStoreFile);
     }
 
     @Test
     void getAndValidateFileMissingTest() {
         AlertTrustStoreManager trustStoreManager = new AlertTrustStoreManager(new MockAlertProperties());
-        assertThrows(AlertConfigurationException.class, () -> trustStoreManager.getAndValidateTrustStoreFile());
+        assertThrows(AlertConfigurationException.class, trustStoreManager::getAndValidateTrustStoreFile);
     }
 }
 
