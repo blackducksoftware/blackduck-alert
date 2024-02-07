@@ -178,7 +178,6 @@ class AlertClientCertificateManagerTestIT {
         KeyStore clientKeystore = clientCertificateManager.getClientKeyStore().orElseThrow(() -> new AssertionError("Keystore missing when it should exist"));
 
         assertTrue(clientCertificateManager.containsClientCertificate());
-        assertEquals(keyModel.getPassword(), clientCertificateManager.getClientKeyPassword());
         assertTrue(clientKeystore.containsAlias(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS));
         Certificate clientCertificate = clientKeystore.getCertificate(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS);
 
@@ -197,16 +196,13 @@ class AlertClientCertificateManagerTestIT {
         clientCertificateManager.removeCertificate();
         assertFalse(clientCertificateManager.containsClientCertificate());
         assertTrue(clientCertificateManager.getClientKeyStore().isEmpty());
-        assertTrue(clientCertificateManager.getClientKeyPassword().isEmpty());
     }
 
     @Test
     void clientCertificateNotSetTest() {
         clientCertificateManager = new AlertClientCertificateManager();
         Optional<KeyStore> keystore = clientCertificateManager.getClientKeyStore();
-        Optional<String> password = clientCertificateManager.getClientKeyPassword();
         assertFalse(clientCertificateManager.containsClientCertificate());
         assertTrue(keystore.isEmpty());
-        assertTrue(password.isEmpty());
     }
 }

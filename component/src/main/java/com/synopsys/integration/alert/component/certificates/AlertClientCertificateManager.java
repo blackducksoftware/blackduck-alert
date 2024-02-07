@@ -21,14 +21,13 @@ public class AlertClientCertificateManager {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private PemSslStoreBundle clientSslStoreBundle;
-    private String clientKeyPassword;
 
     public synchronized void importCertificate(ClientCertificateModel clientCertificateModel, ClientCertificateKeyModel clientCertificateKeyModel)
         throws AlertException {
         logger.debug("Importing certificate into key store.");
         validateClientCertificateHasValues(clientCertificateModel);
         validateCertificateKeyHasValues(clientCertificateKeyModel);
-        clientKeyPassword = clientCertificateKeyModel.getPassword()
+        String clientKeyPassword = clientCertificateKeyModel.getPassword()
             .orElseThrow(() -> new AlertException("Missing private key password for client certificate"));
         PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate(clientCertificateModel.getCertificateContent())
             .withPrivateKey(clientCertificateKeyModel.getKeyContent())
@@ -51,20 +50,15 @@ public class AlertClientCertificateManager {
         }
         // clean up the reference
         clientSslStoreBundle = null;
-        clientKeyPassword = null;
     }
 
     public boolean containsClientCertificate() {
-        return null != clientSslStoreBundle && null != clientKeyPassword;
+        return null != clientSslStoreBundle;
     }
 
     public Optional<KeyStore> getClientKeyStore() {
         return Optional.ofNullable(clientSslStoreBundle)
             .map(PemSslStoreBundle::getKeyStore);
-    }
-
-    public Optional<String> getClientKeyPassword() {
-        return Optional.ofNullable(clientKeyPassword);
     }
 
     private void validateClientCertificateHasValues(ClientCertificateModel clientCertificateModel) throws AlertException {
