@@ -159,11 +159,33 @@ class AlertTrustStoreManagerTestIT {
     }
 
     @Test
-    void validateCertificateContent() throws Exception {
+    void getTrustStoreWithInvalidFilePathTest() {
+        MockAlertProperties mockAlertProperties = new MockAlertProperties();
+        mockAlertProperties.setTrustStoreFile("badprotocol:a_file-that-does-not-exist");
+        AlertTrustStoreManager trustStoreManager = new AlertTrustStoreManager(mockAlertProperties);
+        assertTrue(trustStoreManager.getTrustStore().isEmpty());
+    }
+
+    @Test
+    void validateCertificateContentTest() throws Exception {
         CustomCertificateModel customCertificateModel = createCertificateModel();
         AlertTrustStoreManager trustStoreManager = new AlertTrustStoreManager(alertProperties);
 
         assertDoesNotThrow(() -> trustStoreManager.validateCertificateContent(customCertificateModel));
+    }
+
+    @Test
+    void getAndValidateFileThrowsExceptionTest() {
+        MockAlertProperties mockAlertProperties = new MockAlertProperties();
+        mockAlertProperties.setTrustStoreFile("badprotocol:a_file-that-does-not-exist");
+        AlertTrustStoreManager trustStoreManager = new AlertTrustStoreManager(mockAlertProperties);
+        assertThrows(AlertConfigurationException.class, () -> trustStoreManager.getAndValidateTrustStoreFile());
+    }
+
+    @Test
+    void getAndValidateFileMissingTest() {
+        AlertTrustStoreManager trustStoreManager = new AlertTrustStoreManager(new MockAlertProperties());
+        assertThrows(AlertConfigurationException.class, () -> trustStoreManager.getAndValidateTrustStoreFile());
     }
 }
 
