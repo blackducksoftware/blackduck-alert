@@ -65,12 +65,17 @@ public class AlertTrustStoreManager {
         }
     }
 
-    public synchronized KeyStore getTrustStore() throws AlertException {
+    public synchronized Optional<KeyStore> getTrustStore() {
         Optional<String> optionalTrustStoreFileName = alertProperties.getTrustStoreFile();
         if (optionalTrustStoreFileName.isPresent()) {
-            return keyStoreManager.getAsKeyStore(keyStoreManager.getAndValidateKeyStoreFile(optionalTrustStoreFileName.get()), getTrustStorePassword());
+            try {
+                return Optional.of(keyStoreManager.getAsKeyStore(keyStoreManager.getAndValidateKeyStoreFile(optionalTrustStoreFileName.get()), getTrustStorePassword()));
+            } catch (AlertException ex) {
+                logger.error("Error getting trust store", ex);
+                return Optional.empty();
+            }
         } else {
-            throw new AlertConfigurationException("No trust store file has been provided.");
+            return Optional.empty();
         }
 
     }
