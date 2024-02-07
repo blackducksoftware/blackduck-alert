@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
-import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,10 +17,8 @@ import org.springframework.test.context.TestPropertySource;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.persistence.model.ClientCertificateKeyModel;
-import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
+import com.synopsys.integration.alert.common.persistence.model.ClientCertificateAndKeyModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.component.certificates.web.CertificateTestUtil;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
@@ -44,128 +41,103 @@ class AlertClientCertificateManagerTestIT {
         certTestUtil.cleanup();
     }
 
-    private ClientCertificateKeyModel createClientKeyModel() throws IOException {
-        UUID id = UUID.randomUUID();
-        String content = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.KEY_MTLS_CLIENT_FILE_PATH);
-        ClientCertificateKeyModel keyModel = new ClientCertificateKeyModel(
-            id,
+    private ClientCertificateAndKeyModel createClientCertificateAndKeyModel() throws IOException {
+        String keyContent = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.KEY_MTLS_CLIENT_FILE_PATH);
+        String certificateContent = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.CERTIFICATE_MTLS_CLIENT_FILE_PATH);
+
+        return new ClientCertificateAndKeyModel(
             CertificateTestUtil.MTLS_CERTIFICATE_PASSWORD,
-            false,
-            content,
-            DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE)
+            keyContent,
+            certificateContent
         );
-
-        return keyModel;
-    }
-
-    private ClientCertificateModel createClientModel(ClientCertificateKeyModel keyModel) throws IOException {
-        UUID id = UUID.randomUUID();
-        String content = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.CERTIFICATE_MTLS_CLIENT_FILE_PATH);
-        ClientCertificateModel certificateModel = new ClientCertificateModel(
-            id,
-            keyModel.getId(),
-            content,
-            DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE)
-        );
-        return certificateModel;
     }
 
     @Test
-    void importCertificateNullTest() throws Exception {
+    void importCertificateNullTest() {
         clientCertificateManager = new AlertClientCertificateManager();
-        ClientCertificateKeyModel keyModel = createClientKeyModel();
-        assertThrows(AlertException.class, () -> clientCertificateManager.importCertificate(null, keyModel));
+        assertThrows(AlertException.class, () -> clientCertificateManager.importCertificate(null));
     }
 
     @Test
-    void importCertificateNullContentTest() throws Exception {
+    void importCertificateNullContentTest() {
         clientCertificateManager = new AlertClientCertificateManager();
-        ClientCertificateKeyModel keyModel = createClientKeyModel();
-        UUID id = UUID.randomUUID();
-        ClientCertificateModel model = new ClientCertificateModel(
-            id,
-            keyModel.getId(),
+        ClientCertificateAndKeyModel model = new ClientCertificateAndKeyModel(
+            CertificateTestUtil.MTLS_CERTIFICATE_PASSWORD,
             null,
-            DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE)
+            EMPTY_STRING_CONTENT
         );
-        assertThrows(AlertException.class, () -> clientCertificateManager.importCertificate(model, keyModel));
+        assertThrows(AlertException.class, () -> clientCertificateManager.importCertificate(model));
     }
 
     @Test
     void importCertificateEmptyContentTest() throws Exception {
         clientCertificateManager = new AlertClientCertificateManager();
-        ClientCertificateKeyModel keyModel = createClientKeyModel();
-        UUID id = UUID.randomUUID();
-        ClientCertificateModel model = new ClientCertificateModel(
-            id,
-            keyModel.getId(),
-            EMPTY_STRING_CONTENT,
-            DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE)
-        );
-        assertThrows(AlertException.class, () -> clientCertificateManager.importCertificate(model, keyModel));
-    }
-
-    @Test
-    void importCertificateKeyNullTest() throws Exception {
-        clientCertificateManager = new AlertClientCertificateManager();
-        ClientCertificateKeyModel keyModel = createClientKeyModel();
-        ClientCertificateModel model = createClientModel(keyModel);
-        assertThrows(AlertException.class, () -> clientCertificateManager.importCertificate(model, null));
-    }
-
-    @Test
-    void importCertificateKeyNullContentTest() throws Exception {
-        clientCertificateManager = new AlertClientCertificateManager();
-        UUID id = UUID.randomUUID();
-        ClientCertificateKeyModel keyModel = new ClientCertificateKeyModel(
-            id,
-            CertificateTestUtil.MTLS_CERTIFICATE_PASSWORD,
-            false,
-            null,
-            DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE)
-        );
-        ClientCertificateModel model = createClientModel(keyModel);
-        assertThrows(AlertException.class, () -> clientCertificateManager.importCertificate(model, keyModel));
-    }
-
-    @Test
-    void importCertificateKeyEmptyContentTest() throws Exception {
-        clientCertificateManager = new AlertClientCertificateManager();
-        UUID id = UUID.randomUUID();
-        ClientCertificateKeyModel keyModel = new ClientCertificateKeyModel(
-            id,
-            CertificateTestUtil.MTLS_CERTIFICATE_PASSWORD,
-            false,
-            EMPTY_STRING_CONTENT,
-            DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE)
-        );
-        ClientCertificateModel model = createClientModel(keyModel);
-        assertThrows(AlertException.class, () -> clientCertificateManager.importCertificate(model, keyModel));
-    }
-
-    @Test
-    void importCertificateKeyEmptyPasswordContentTest() throws Exception {
-        clientCertificateManager = new AlertClientCertificateManager();
-        UUID id = UUID.randomUUID();
         String keyContent = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.KEY_MTLS_CLIENT_FILE_PATH);
-        ClientCertificateKeyModel keyModel = new ClientCertificateKeyModel(
-            id,
-            EMPTY_STRING_CONTENT,
-            false,
+        ClientCertificateAndKeyModel model = new ClientCertificateAndKeyModel(
+            CertificateTestUtil.MTLS_CERTIFICATE_PASSWORD,
             keyContent,
-            DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE)
+            EMPTY_STRING_CONTENT
         );
-        ClientCertificateModel model = createClientModel(keyModel);
-        assertThrows(AlertException.class, () -> clientCertificateManager.importCertificate(model, keyModel));
+
+        assertThrows(AlertException.class, () -> clientCertificateManager.importCertificate(model));
+    }
+
+    @Test
+    void importCertificateNullKeyContentTest() throws Exception {
+        clientCertificateManager = new AlertClientCertificateManager();
+        String certificateContent = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.CERTIFICATE_MTLS_CLIENT_FILE_PATH);
+        ClientCertificateAndKeyModel model = new ClientCertificateAndKeyModel(
+            CertificateTestUtil.MTLS_CERTIFICATE_PASSWORD,
+            null,
+            certificateContent
+        );
+        assertThrows(AlertException.class, () -> clientCertificateManager.importCertificate(model));
+    }
+
+    @Test
+    void importCertificateEmptyKeyContentTest() throws Exception {
+        clientCertificateManager = new AlertClientCertificateManager();
+        String certificateContent = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.CERTIFICATE_MTLS_CLIENT_FILE_PATH);
+        ClientCertificateAndKeyModel model = new ClientCertificateAndKeyModel(
+            CertificateTestUtil.MTLS_CERTIFICATE_PASSWORD,
+            EMPTY_STRING_CONTENT,
+            certificateContent
+        );
+        assertThrows(AlertException.class, () -> clientCertificateManager.importCertificate(model));
+    }
+
+    @Test
+    void importCertificateNullKeyPasswordTest() throws Exception {
+        clientCertificateManager = new AlertClientCertificateManager();
+        String keyContent = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.KEY_MTLS_CLIENT_FILE_PATH);
+        String certificateContent = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.CERTIFICATE_MTLS_CLIENT_FILE_PATH);
+        ClientCertificateAndKeyModel model = new ClientCertificateAndKeyModel(
+            null,
+            keyContent,
+            certificateContent
+        );
+        assertThrows(AlertException.class, () -> clientCertificateManager.importCertificate(model));
+    }
+
+    @Test
+    void importCertificateEmptyKeyPasswordTest() throws Exception {
+        clientCertificateManager = new AlertClientCertificateManager();
+        String keyContent = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.KEY_MTLS_CLIENT_FILE_PATH);
+        String certificateContent = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.CERTIFICATE_MTLS_CLIENT_FILE_PATH);
+        ClientCertificateAndKeyModel model = new ClientCertificateAndKeyModel(
+            EMPTY_STRING_CONTENT,
+            keyContent,
+            certificateContent
+        );
+        assertThrows(AlertException.class, () -> clientCertificateManager.importCertificate(model));
     }
 
     @Test
     void importCertificateTest() throws Exception {
         clientCertificateManager = new AlertClientCertificateManager();
-        ClientCertificateKeyModel keyModel = createClientKeyModel();
-        ClientCertificateModel model = createClientModel(keyModel);
+        ClientCertificateAndKeyModel model = createClientCertificateAndKeyModel();
         Certificate validationCertificate = certTestUtil.loadCertificate(model.getCertificateContent());
-        clientCertificateManager.importCertificate(model, keyModel);
+        clientCertificateManager.importCertificate(model);
         KeyStore clientKeystore = clientCertificateManager.getClientKeyStore().orElseThrow(() -> new AssertionError("Keystore missing when it should exist"));
         assertTrue(clientKeystore.containsAlias(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS));
         Certificate clientCertificate = clientKeystore.getCertificate(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS);
@@ -179,9 +151,8 @@ class AlertClientCertificateManagerTestIT {
     @Test
     void removeCertificateTest() throws Exception {
         clientCertificateManager = new AlertClientCertificateManager();
-        ClientCertificateKeyModel keyModel = createClientKeyModel();
-        ClientCertificateModel model = createClientModel(keyModel);
-        clientCertificateManager.importCertificate(model, keyModel);
+        ClientCertificateAndKeyModel model = createClientCertificateAndKeyModel();
+        clientCertificateManager.importCertificate(model);
         clientCertificateManager.removeCertificate();
         assertTrue(clientCertificateManager.getClientKeyStore().isEmpty());
     }
