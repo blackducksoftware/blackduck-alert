@@ -19,9 +19,6 @@ public class AlertSSLContextManager {
         this.clientCertificateManager = clientCertificateManager;
     }
 
-    public void initialize() {
-    }
-
     public SSLContext buildSslContext() throws NoSuchAlgorithmException {
         return SSLContext.getDefault();
     }
