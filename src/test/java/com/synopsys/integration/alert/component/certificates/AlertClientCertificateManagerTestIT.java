@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.component.certificates;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -76,6 +77,7 @@ class AlertClientCertificateManagerTestIT {
         clientCertificateManager = new AlertClientCertificateManager();
         ClientCertificateKeyModel keyModel = createClientKeyModel();
         assertThrows(AlertException.class, () -> clientCertificateManager.importCertificate(null, keyModel));
+        assertFalse(clientCertificateManager.containsClientCertificate());
     }
 
     @Test
@@ -90,6 +92,7 @@ class AlertClientCertificateManagerTestIT {
             DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE)
         );
         assertThrows(AlertException.class, () -> clientCertificateManager.importCertificate(model, keyModel));
+        assertFalse(clientCertificateManager.containsClientCertificate());
     }
 
     @Test
@@ -104,6 +107,7 @@ class AlertClientCertificateManagerTestIT {
             DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE)
         );
         assertThrows(AlertException.class, () -> clientCertificateManager.importCertificate(model, keyModel));
+        assertFalse(clientCertificateManager.containsClientCertificate());
     }
 
     @Test
@@ -112,6 +116,7 @@ class AlertClientCertificateManagerTestIT {
         ClientCertificateKeyModel keyModel = createClientKeyModel();
         ClientCertificateModel model = createClientModel(keyModel);
         assertThrows(AlertException.class, () -> clientCertificateManager.importCertificate(model, null));
+        assertFalse(clientCertificateManager.containsClientCertificate());
     }
 
     @Test
@@ -127,6 +132,7 @@ class AlertClientCertificateManagerTestIT {
         );
         ClientCertificateModel model = createClientModel(keyModel);
         assertThrows(AlertException.class, () -> clientCertificateManager.importCertificate(model, keyModel));
+        assertFalse(clientCertificateManager.containsClientCertificate());
     }
 
     @Test
@@ -142,6 +148,7 @@ class AlertClientCertificateManagerTestIT {
         );
         ClientCertificateModel model = createClientModel(keyModel);
         assertThrows(AlertException.class, () -> clientCertificateManager.importCertificate(model, keyModel));
+        assertFalse(clientCertificateManager.containsClientCertificate());
     }
 
     @Test
@@ -158,6 +165,7 @@ class AlertClientCertificateManagerTestIT {
         );
         ClientCertificateModel model = createClientModel(keyModel);
         assertThrows(AlertException.class, () -> clientCertificateManager.importCertificate(model, keyModel));
+        assertFalse(clientCertificateManager.containsClientCertificate());
     }
 
     @Test
@@ -168,6 +176,8 @@ class AlertClientCertificateManagerTestIT {
         Certificate validationCertificate = certTestUtil.loadCertificate(model.getCertificateContent());
         clientCertificateManager.importCertificate(model, keyModel);
         KeyStore clientKeystore = clientCertificateManager.getClientKeyStore().orElseThrow(() -> new AssertionError("Keystore missing when it should exist"));
+
+        assertTrue(clientCertificateManager.containsClientCertificate());
         assertEquals(keyModel.getPassword(), clientCertificateManager.getClientKeyPassword());
         assertTrue(clientKeystore.containsAlias(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS));
         Certificate clientCertificate = clientKeystore.getCertificate(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS);
@@ -185,6 +195,7 @@ class AlertClientCertificateManagerTestIT {
         ClientCertificateModel model = createClientModel(keyModel);
         clientCertificateManager.importCertificate(model, keyModel);
         clientCertificateManager.removeCertificate();
+        assertFalse(clientCertificateManager.containsClientCertificate());
         assertTrue(clientCertificateManager.getClientKeyStore().isEmpty());
         assertTrue(clientCertificateManager.getClientKeyPassword().isEmpty());
     }
@@ -194,6 +205,7 @@ class AlertClientCertificateManagerTestIT {
         clientCertificateManager = new AlertClientCertificateManager();
         Optional<KeyStore> keystore = clientCertificateManager.getClientKeyStore();
         Optional<String> password = clientCertificateManager.getClientKeyPassword();
+        assertFalse(clientCertificateManager.containsClientCertificate());
         assertTrue(keystore.isEmpty());
         assertTrue(password.isEmpty());
     }

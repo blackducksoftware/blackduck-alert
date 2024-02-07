@@ -44,8 +44,7 @@ public class AlertSSLContextManager {
 
     private Optional<SslManagerBundle> getSslManagerBundle() {
         Optional<KeyStore> trustStore = trustStoreManager.getTrustStore();
-        if (clientCertificateManager.getClientKeyStore().isPresent() && clientCertificateManager.getClientKeyPassword().isPresent()
-            && trustStore.isPresent()) {
+        if (clientCertificateManager.containsClientCertificate() && trustStore.isPresent()) {
             // when the client keystore is created the password is changed to null by the implementation class used to read the certificate and key data.
             // pass null in order to create the manager bundle.
             KeyStore clientKeystore = clientCertificateManager.getClientKeyStore().orElse(null);

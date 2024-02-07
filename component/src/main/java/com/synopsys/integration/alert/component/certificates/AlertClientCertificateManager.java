@@ -54,6 +54,10 @@ public class AlertClientCertificateManager {
         clientKeyPassword = null;
     }
 
+    public boolean containsClientCertificate() {
+        return null != clientSslStoreBundle && null != clientKeyPassword;
+    }
+
     public Optional<KeyStore> getClientKeyStore() {
         return Optional.ofNullable(clientSslStoreBundle)
             .map(PemSslStoreBundle::getKeyStore);

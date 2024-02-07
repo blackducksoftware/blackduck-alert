@@ -22,6 +22,7 @@ import com.synopsys.integration.alert.common.persistence.model.ClientCertificate
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.component.certificates.web.CertificateTestUtil;
+import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @AlertIntegrationTest
@@ -50,7 +51,7 @@ class AlertSSLContextManagerTestIT {
             trustStoreManager.removeCertificate(SERVER_CERTIFICATE_ALIAS);
             clientCertificateManager.removeCertificate();
         } catch (AlertException e) {
-
+            // ignore the exception and just continue to clean up.
         }
         certTestUtil.cleanup();
     }
@@ -111,5 +112,16 @@ class AlertSSLContextManagerTestIT {
         assertTrue(sslContext.isPresent());
         assertEquals(SSLContext.getDefault(), sslContext.get());
     }
+
+    @Test
+    void createDefaultSSLContextFromMissingTrustStoreTest() throws Exception {
+        AlertTrustStoreManager missingFileTrustStoreManager = new AlertTrustStoreManager(new MockAlertProperties());
+        AlertSSLContextManager sslContextManager = new AlertSSLContextManager(missingFileTrustStoreManager, clientCertificateManager);
+
+        Optional<SSLContext> sslContext = sslContextManager.buildSslContext();
+        assertTrue(sslContext.isPresent());
+        assertEquals(SSLContext.getDefault(), sslContext.get());
+    }
+
 
 }
