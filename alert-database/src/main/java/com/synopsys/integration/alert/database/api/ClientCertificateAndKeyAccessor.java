@@ -39,10 +39,8 @@ public class ClientCertificateAndKeyAccessor implements UniqueConfigurationAcces
 
     @Override
     public Optional<ClientCertificateAndKeyModel> getConfiguration() {
-        Optional<ClientCertificateKeyEntity> optionalKeyEntity =
-            keyRepository.findByName(DEFAULT_CONFIGURATION_NAME);
-        Optional<ClientCertificateEntity> optionalCertificateEntity =
-            certificateRepository.findByAlias(DEFAULT_CLIENT_CERTIFICATE_ALIAS);
+        Optional<ClientCertificateKeyEntity> optionalKeyEntity = keyRepository.findByName(DEFAULT_CONFIGURATION_NAME);
+        Optional<ClientCertificateEntity> optionalCertificateEntity = certificateRepository.findByAlias(DEFAULT_CLIENT_CERTIFICATE_ALIAS);
 
         if (optionalKeyEntity.isPresent() && optionalCertificateEntity.isPresent()) {
             return Optional.of(toModel(optionalKeyEntity.get(), optionalCertificateEntity.get()));
