@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.certificates.AlertSSLContextManager;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -30,12 +31,19 @@ public class JiraCloudPropertiesFactory {
     private final JiraCloudChannelKey channelKey;
     private final ProxyManager proxyManager;
     private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
+    private final AlertSSLContextManager alertSSLContextManager;
 
     @Autowired
-    public JiraCloudPropertiesFactory(JiraCloudChannelKey channelKey, ProxyManager proxyManager, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor) {
+    public JiraCloudPropertiesFactory(
+        JiraCloudChannelKey channelKey,
+        ProxyManager proxyManager,
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
+        AlertSSLContextManager alertSSLContextManager
+    ) {
         this.channelKey = channelKey;
         this.proxyManager = proxyManager;
         this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
+        this.alertSSLContextManager = alertSSLContextManager;
     }
 
     public JiraCloudProperties createJiraProperties(FieldUtility fieldUtility) {
@@ -44,28 +52,29 @@ public class JiraCloudPropertiesFactory {
         String accessToken = fieldUtility.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
         boolean pluginCheckDisabled = fieldUtility.getBooleanOrFalse(JiraCloudDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK);
         ProxyInfo proxy = proxyManager.createProxyInfoForHost(url);
-        return new JiraCloudProperties(url, accessToken, username, pluginCheckDisabled, proxy);
+
+        return new JiraCloudProperties(url, accessToken, username, pluginCheckDisabled, proxy, alertSSLContextManager.buildWithClientCertificate().orElse(null));
     }
 
     public JiraCloudProperties createJiraProperties(FieldModel fieldModel) {
         String url = fieldModel.getFieldValue(JiraCloudDescriptor.KEY_JIRA_URL).orElse("");
         String username = fieldModel.getFieldValue(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS).orElse("");
         String accessToken = fieldModel.getFieldValueModel(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN)
-                                 .map(this::getAppropriateAccessToken)
-                                 .orElse("");
+            .map(this::getAppropriateAccessToken)
+            .orElse("");
         boolean pluginCheckDisabled = fieldModel.getFieldValue(JiraCloudDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK)
-                                          .map(Boolean::parseBoolean)
-                                          .orElse(false);
+            .map(Boolean::parseBoolean)
+            .orElse(false);
 
         ProxyInfo proxy = proxyManager.createProxyInfoForHost(url);
-        return new JiraCloudProperties(url, accessToken, username, pluginCheckDisabled, proxy);
+        return new JiraCloudProperties(url, accessToken, username, pluginCheckDisabled, proxy, alertSSLContextManager.buildWithClientCertificate().orElse(null));
     }
 
     public JiraCloudProperties createJiraProperties() throws AlertConfigurationException {
         ConfigurationModel jiraServerGlobalConfig = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(channelKey, ConfigContextEnum.GLOBAL)
-                                                        .stream()
-                                                        .findAny()
-                                                        .orElseThrow(() -> new AlertConfigurationException("Missing Jira Cloud global configuration"));
+            .stream()
+            .findAny()
+            .orElseThrow(() -> new AlertConfigurationException("Missing Jira Cloud global configuration"));
 
         FieldUtility fieldUtility = new FieldUtility(jiraServerGlobalConfig.getCopyOfKeyToFieldMap());
         return createJiraProperties(fieldUtility);
@@ -76,11 +85,11 @@ public class JiraCloudPropertiesFactory {
         boolean accessTokenSet = fieldAccessToken.getIsSet();
         if (StringUtils.isBlank(accessToken) && accessTokenSet) {
             return configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKeys.JIRA_CLOUD, ConfigContextEnum.GLOBAL)
-                       .stream()
-                       .findFirst()
-                       .flatMap(configurationModel -> configurationModel.getField(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN))
-                       .flatMap(ConfigurationFieldModel::getFieldValue)
-                       .orElse("");
+                .stream()
+                .findFirst()
+                .flatMap(configurationModel -> configurationModel.getField(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN))
+                .flatMap(ConfigurationFieldModel::getFieldValue)
+                .orElse("");
         }
         return accessToken;
     }
