@@ -17,7 +17,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.persistence.model.ClientCertificateAndKeyModel;
+import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.component.certificates.web.CertificateTestUtil;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
@@ -41,11 +41,11 @@ class AlertClientCertificateManagerTestIT {
         certTestUtil.cleanup();
     }
 
-    private ClientCertificateAndKeyModel createClientCertificateAndKeyModel() throws IOException {
+    private ClientCertificateModel createClientCertificateModel() throws IOException {
         String keyContent = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.KEY_MTLS_CLIENT_FILE_PATH);
         String certificateContent = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.CERTIFICATE_MTLS_CLIENT_FILE_PATH);
 
-        return new ClientCertificateAndKeyModel(
+        return new ClientCertificateModel(
             CertificateTestUtil.MTLS_CERTIFICATE_PASSWORD,
             keyContent,
             certificateContent
@@ -61,7 +61,7 @@ class AlertClientCertificateManagerTestIT {
     @Test
     void importCertificateNullContentTest() {
         clientCertificateManager = new AlertClientCertificateManager();
-        ClientCertificateAndKeyModel model = new ClientCertificateAndKeyModel(
+        ClientCertificateModel model = new ClientCertificateModel(
             CertificateTestUtil.MTLS_CERTIFICATE_PASSWORD,
             null,
             EMPTY_STRING_CONTENT
@@ -73,7 +73,7 @@ class AlertClientCertificateManagerTestIT {
     void importCertificateEmptyContentTest() throws Exception {
         clientCertificateManager = new AlertClientCertificateManager();
         String keyContent = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.KEY_MTLS_CLIENT_FILE_PATH);
-        ClientCertificateAndKeyModel model = new ClientCertificateAndKeyModel(
+        ClientCertificateModel model = new ClientCertificateModel(
             CertificateTestUtil.MTLS_CERTIFICATE_PASSWORD,
             keyContent,
             EMPTY_STRING_CONTENT
@@ -86,7 +86,7 @@ class AlertClientCertificateManagerTestIT {
     void importCertificateNullKeyContentTest() throws Exception {
         clientCertificateManager = new AlertClientCertificateManager();
         String certificateContent = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.CERTIFICATE_MTLS_CLIENT_FILE_PATH);
-        ClientCertificateAndKeyModel model = new ClientCertificateAndKeyModel(
+        ClientCertificateModel model = new ClientCertificateModel(
             CertificateTestUtil.MTLS_CERTIFICATE_PASSWORD,
             null,
             certificateContent
@@ -98,7 +98,7 @@ class AlertClientCertificateManagerTestIT {
     void importCertificateEmptyKeyContentTest() throws Exception {
         clientCertificateManager = new AlertClientCertificateManager();
         String certificateContent = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.CERTIFICATE_MTLS_CLIENT_FILE_PATH);
-        ClientCertificateAndKeyModel model = new ClientCertificateAndKeyModel(
+        ClientCertificateModel model = new ClientCertificateModel(
             CertificateTestUtil.MTLS_CERTIFICATE_PASSWORD,
             EMPTY_STRING_CONTENT,
             certificateContent
@@ -111,7 +111,7 @@ class AlertClientCertificateManagerTestIT {
         clientCertificateManager = new AlertClientCertificateManager();
         String keyContent = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.KEY_MTLS_CLIENT_FILE_PATH);
         String certificateContent = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.CERTIFICATE_MTLS_CLIENT_FILE_PATH);
-        ClientCertificateAndKeyModel model = new ClientCertificateAndKeyModel(
+        ClientCertificateModel model = new ClientCertificateModel(
             null,
             keyContent,
             certificateContent
@@ -124,7 +124,7 @@ class AlertClientCertificateManagerTestIT {
         clientCertificateManager = new AlertClientCertificateManager();
         String keyContent = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.KEY_MTLS_CLIENT_FILE_PATH);
         String certificateContent = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.CERTIFICATE_MTLS_CLIENT_FILE_PATH);
-        ClientCertificateAndKeyModel model = new ClientCertificateAndKeyModel(
+        ClientCertificateModel model = new ClientCertificateModel(
             EMPTY_STRING_CONTENT,
             keyContent,
             certificateContent
@@ -135,7 +135,7 @@ class AlertClientCertificateManagerTestIT {
     @Test
     void importCertificateTest() throws Exception {
         clientCertificateManager = new AlertClientCertificateManager();
-        ClientCertificateAndKeyModel model = createClientCertificateAndKeyModel();
+        ClientCertificateModel model = createClientCertificateModel();
         Certificate validationCertificate = certTestUtil.loadCertificate(model.getCertificateContent());
         clientCertificateManager.importCertificate(model);
         KeyStore clientKeystore = clientCertificateManager.getClientKeyStore().orElseThrow(() -> new AssertionError("Keystore missing when it should exist"));
@@ -151,7 +151,7 @@ class AlertClientCertificateManagerTestIT {
     @Test
     void removeCertificateTest() throws Exception {
         clientCertificateManager = new AlertClientCertificateManager();
-        ClientCertificateAndKeyModel model = createClientCertificateAndKeyModel();
+        ClientCertificateModel model = createClientCertificateModel();
         clientCertificateManager.importCertificate(model);
         clientCertificateManager.removeCertificate();
         assertTrue(clientCertificateManager.getClientKeyStore().isEmpty());

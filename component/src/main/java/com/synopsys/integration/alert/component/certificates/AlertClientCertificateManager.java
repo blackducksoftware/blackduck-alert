@@ -12,7 +12,7 @@ import org.springframework.boot.ssl.pem.PemSslStoreDetails;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.model.ClientCertificateAndKeyModel;
+import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 
 @Component
@@ -21,13 +21,13 @@ public class AlertClientCertificateManager {
 
     private PemSslStoreBundle clientSslStoreBundle;
 
-    public synchronized void importCertificate(ClientCertificateAndKeyModel clientCertificateAndKeyModel)
+    public synchronized void importCertificate(ClientCertificateModel clientCertificateModel)
         throws AlertException {
         logger.debug("Importing certificate into key store.");
-        validateClientCertificateAndKeyHasValues(clientCertificateAndKeyModel);
-        PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate(clientCertificateAndKeyModel.getCertificateContent())
-            .withPrivateKey(clientCertificateAndKeyModel.getKeyContent())
-            .withPrivateKeyPassword(clientCertificateAndKeyModel.getKeyPassword());
+        validateClientCertificateHasValues(clientCertificateModel);
+        PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate(clientCertificateModel.getCertificateContent())
+            .withPrivateKey(clientCertificateModel.getKeyContent())
+            .withPrivateKeyPassword(clientCertificateModel.getKeyPassword());
         PemSslStoreDetails trustStoreDetails = PemSslStoreDetails.forCertificate(null);
         clientSslStoreBundle = new PemSslStoreBundle(keyStoreDetails, trustStoreDetails, AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS);
     }
@@ -53,20 +53,20 @@ public class AlertClientCertificateManager {
             .map(PemSslStoreBundle::getKeyStore);
     }
 
-    private void validateClientCertificateAndKeyHasValues(ClientCertificateAndKeyModel clientCertificateAndKeyModel) throws AlertException {
-        if (null == clientCertificateAndKeyModel) {
+    private void validateClientCertificateHasValues(ClientCertificateModel clientCertificateModel) throws AlertException {
+        if (null == clientCertificateModel) {
             throw new AlertException("The client certificate and key configuration cannot be null.");
         }
 
-        if (StringUtils.isBlank(clientCertificateAndKeyModel.getCertificateContent())) {
+        if (StringUtils.isBlank(clientCertificateModel.getCertificateContent())) {
             throw new AlertException("The certificate content cannot be blank.");
         }
 
-        if (StringUtils.isBlank(clientCertificateAndKeyModel.getKeyContent())) {
+        if (StringUtils.isBlank(clientCertificateModel.getKeyContent())) {
             throw new AlertException("The certificate key content cannot be blank.");
         }
 
-        if (StringUtils.isBlank(clientCertificateAndKeyModel.getKeyPassword())) {
+        if (StringUtils.isBlank(clientCertificateModel.getKeyPassword())) {
             throw new AlertException("The certificate key password cannot be blank.");
         }
     }

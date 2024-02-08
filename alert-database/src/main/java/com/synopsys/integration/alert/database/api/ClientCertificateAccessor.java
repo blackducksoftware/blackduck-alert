@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.accessor.UniqueConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ClientCertificateAndKeyModel;
+import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.certificates.ClientCertificateEntity;
@@ -24,19 +24,19 @@ import jakarta.transaction.Transactional;
 
 @Component
 @Transactional
-public class ClientCertificateAndKeyAccessor implements UniqueConfigurationAccessor<ClientCertificateAndKeyModel> {
+public class ClientCertificateAccessor implements UniqueConfigurationAccessor<ClientCertificateModel> {
     private final EncryptionUtility encryptionUtility;
     private final ClientCertificateKeyRepository keyRepository;
     private final ClientCertificateRepository certificateRepository;
 
-    public ClientCertificateAndKeyAccessor(EncryptionUtility encryptionUtility, ClientCertificateKeyRepository keyRepository, ClientCertificateRepository certificateRepository) {
+    public ClientCertificateAccessor(EncryptionUtility encryptionUtility, ClientCertificateKeyRepository keyRepository, ClientCertificateRepository certificateRepository) {
         this.encryptionUtility = encryptionUtility;
         this.keyRepository = keyRepository;
         this.certificateRepository = certificateRepository;
     }
 
     @Override
-    public Optional<ClientCertificateAndKeyModel> getConfiguration() {
+    public Optional<ClientCertificateModel> getConfiguration() {
         Optional<ClientCertificateKeyEntity> optionalKeyEntity = keyRepository.findByName(DEFAULT_CONFIGURATION_NAME);
         Optional<ClientCertificateEntity> optionalCertificateEntity = certificateRepository.findByAlias(DEFAULT_CLIENT_CERTIFICATE_ALIAS);
 
@@ -53,7 +53,7 @@ public class ClientCertificateAndKeyAccessor implements UniqueConfigurationAcces
     }
 
     @Override
-    public ClientCertificateAndKeyModel createConfiguration(ClientCertificateAndKeyModel configuration) throws AlertConfigurationException {
+    public ClientCertificateModel createConfiguration(ClientCertificateModel configuration) throws AlertConfigurationException {
         if (doesConfigurationExist()) {
             throw new AlertConfigurationException("A client certificate and key configuration already exists.");
         }
@@ -67,7 +67,7 @@ public class ClientCertificateAndKeyAccessor implements UniqueConfigurationAcces
     }
 
     @Override
-    public ClientCertificateAndKeyModel updateConfiguration(ClientCertificateAndKeyModel configuration) throws AlertConfigurationException {
+    public ClientCertificateModel updateConfiguration(ClientCertificateModel configuration) throws AlertConfigurationException {
         ClientCertificateKeyEntity existingKeyEntity = keyRepository.findByName(DEFAULT_CONFIGURATION_NAME)
             .orElseThrow(() -> new AlertConfigurationException("Client certificate key does not exist"));
         ClientCertificateEntity existingCertificateEntity = certificateRepository.findByAlias(DEFAULT_CLIENT_CERTIFICATE_ALIAS)
@@ -90,7 +90,7 @@ public class ClientCertificateAndKeyAccessor implements UniqueConfigurationAcces
         keyRepository.deleteByName(DEFAULT_CONFIGURATION_NAME);
     }
 
-    private Pair<ClientCertificateKeyEntity, ClientCertificateEntity> toEntity(UUID keyId, UUID certificateId, ClientCertificateAndKeyModel model, OffsetDateTime lastUpdated) {
+    private Pair<ClientCertificateKeyEntity, ClientCertificateEntity> toEntity(UUID keyId, UUID certificateId, ClientCertificateModel model, OffsetDateTime lastUpdated) {
         String password = encryptionUtility.encrypt(model.getKeyPassword());
         String keyContent = encryptionUtility.encrypt(model.getKeyContent());
         String certificateContent = encryptionUtility.encrypt(model.getCertificateContent());
@@ -100,10 +100,10 @@ public class ClientCertificateAndKeyAccessor implements UniqueConfigurationAcces
         return Pair.of(keyEntity, certificateEntity);
     }
 
-    private ClientCertificateAndKeyModel toModel(ClientCertificateKeyEntity certificateKeyEntity, ClientCertificateEntity certificateEntity) {
+    private ClientCertificateModel toModel(ClientCertificateKeyEntity certificateKeyEntity, ClientCertificateEntity certificateEntity) {
         String password = encryptionUtility.decrypt(certificateKeyEntity.getPassword());
         String keyContent = encryptionUtility.decrypt(certificateKeyEntity.getKeyContent());
         String certificateContent = encryptionUtility.decrypt(certificateEntity.getCertificateContent());
-        return new ClientCertificateAndKeyModel(password, keyContent, certificateContent);
+        return new ClientCertificateModel(password, keyContent, certificateContent);
     }
 }
