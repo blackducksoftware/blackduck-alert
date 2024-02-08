@@ -27,10 +27,11 @@ public class AlertClientCertificateManager {
         logger.debug("Importing certificate into key store.");
         validateClientCertificateHasValues(clientCertificateModel);
         validateCertificateKeyHasValues(clientCertificateKeyModel);
+        String clientKeyPassword = clientCertificateKeyModel.getPassword()
+            .orElseThrow(() -> new AlertException("Missing private key password for client certificate"));
         PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate(clientCertificateModel.getCertificateContent())
             .withPrivateKey(clientCertificateKeyModel.getKeyContent())
-            .withPrivateKeyPassword(clientCertificateKeyModel.getPassword()
-                .orElseThrow(() -> new AlertException("Missing private key password for client certificate")));
+            .withPrivateKeyPassword(clientKeyPassword);
         PemSslStoreDetails trustStoreDetails = PemSslStoreDetails.forCertificate(null);
         clientSslStoreBundle = new PemSslStoreBundle(keyStoreDetails, trustStoreDetails, AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS);
     }
@@ -49,6 +50,10 @@ public class AlertClientCertificateManager {
         }
         // clean up the reference
         clientSslStoreBundle = null;
+    }
+
+    public boolean containsClientCertificate() {
+        return null != clientSslStoreBundle;
     }
 
     public Optional<KeyStore> getClientKeyStore() {
