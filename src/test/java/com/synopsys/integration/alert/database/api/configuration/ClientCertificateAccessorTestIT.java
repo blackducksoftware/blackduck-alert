@@ -12,14 +12,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.persistence.model.ClientCertificateAndKeyModel;
-import com.synopsys.integration.alert.database.api.ClientCertificateAndKeyAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
+import com.synopsys.integration.alert.database.api.ClientCertificateAccessor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @AlertIntegrationTest
-class ClientCertificateAndKeyAccessorTestIT {
+class ClientCertificateAccessorTestIT {
     @Autowired
-    ClientCertificateAndKeyAccessor accessor;
+    ClientCertificateAccessor accessor;
 
     @AfterEach
     public void cleanUp() {
@@ -31,9 +31,9 @@ class ClientCertificateAndKeyAccessorTestIT {
 
     @Test
     void getConfiguration() throws AlertConfigurationException {
-        ClientCertificateAndKeyModel createdModel =
-            accessor.createConfiguration(new ClientCertificateAndKeyModel("key_password", "key_content", "certificate_content"));
-        ClientCertificateAndKeyModel getModel = accessor.getConfiguration()
+        ClientCertificateModel createdModel =
+            accessor.createConfiguration(new ClientCertificateModel("key_password", "key_content", "certificate_content"));
+        ClientCertificateModel getModel = accessor.getConfiguration()
             .orElseThrow(() -> new AlertConfigurationException("Configuration does not exist"));
 
         assertEquals(createdModel.getKeyPassword(), getModel.getKeyPassword());
@@ -45,20 +45,20 @@ class ClientCertificateAndKeyAccessorTestIT {
     void doesConfigurationExist() throws AlertConfigurationException {
         Assertions.assertFalse(accessor.doesConfigurationExist());
 
-        accessor.createConfiguration(new ClientCertificateAndKeyModel("key_password", "key_content", "certificate_content"));
+        accessor.createConfiguration(new ClientCertificateModel("key_password", "key_content", "certificate_content"));
         assertTrue(accessor.doesConfigurationExist());
     }
 
     @Test
     void createConfigurationThrowsOnExistingConfig() throws AlertConfigurationException {
-        accessor.createConfiguration(new ClientCertificateAndKeyModel("key_password", "key_content", "certificate_content"));
+        accessor.createConfiguration(new ClientCertificateModel("key_password", "key_content", "certificate_content"));
         assertTrue(accessor.doesConfigurationExist());
 
-        ClientCertificateAndKeyModel duplicateCreateModel =
-            new ClientCertificateAndKeyModel("new_key_password", "new_key_content", "new_certificate_content");
+        ClientCertificateModel duplicateCreateModel =
+            new ClientCertificateModel("new_key_password", "new_key_content", "new_certificate_content");
         assertThrows(AlertConfigurationException.class, () -> accessor.createConfiguration(duplicateCreateModel));
 
-        ClientCertificateAndKeyModel getModel = accessor.getConfiguration()
+        ClientCertificateModel getModel = accessor.getConfiguration()
             .orElseThrow(() -> new AlertConfigurationException("Configuration does not exist"));
 
         assertNotEquals(getModel.getKeyPassword(), duplicateCreateModel.getKeyPassword());
@@ -68,10 +68,10 @@ class ClientCertificateAndKeyAccessorTestIT {
 
     @Test
     void updateConfiguration() throws AlertConfigurationException {
-        ClientCertificateAndKeyModel createdModel =
-            accessor.createConfiguration(new ClientCertificateAndKeyModel("key_password", "key_content", "certificate_content"));
-        ClientCertificateAndKeyModel updatedModel = accessor.updateConfiguration(
-            new ClientCertificateAndKeyModel(
+        ClientCertificateModel createdModel =
+            accessor.createConfiguration(new ClientCertificateModel("key_password", "key_content", "certificate_content"));
+        ClientCertificateModel updatedModel = accessor.updateConfiguration(
+            new ClientCertificateModel(
                 "new_key_password",
                 "new_key_content",
                 "certificate_content"   // unchanged
@@ -86,7 +86,7 @@ class ClientCertificateAndKeyAccessorTestIT {
 
     @Test
     void deleteConfiguration() throws AlertConfigurationException {
-        accessor.createConfiguration(new ClientCertificateAndKeyModel("key_password", "key_content", "certificate_content"));
+        accessor.createConfiguration(new ClientCertificateModel("key_password", "key_content", "certificate_content"));
         assertTrue(accessor.doesConfigurationExist());
         accessor.deleteConfiguration();
 
