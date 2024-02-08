@@ -65,6 +65,21 @@ public class AlertTrustStoreManager {
         }
     }
 
+    public synchronized Optional<KeyStore> getTrustStore() {
+        Optional<String> optionalTrustStoreFileName = alertProperties.getTrustStoreFile();
+        if (optionalTrustStoreFileName.isPresent()) {
+            try {
+                return Optional.of(keyStoreManager.getAsKeyStore(keyStoreManager.getAndValidateKeyStoreFile(optionalTrustStoreFileName.get()), getTrustStorePassword()));
+            } catch (AlertException ex) {
+                logger.error("Error getting trust store", ex);
+                return Optional.empty();
+            }
+        } else {
+            return Optional.empty();
+        }
+
+    }
+
     public synchronized void validateCertificateContent(CustomCertificateModel customCertificateModel) throws AlertException {
         // Result is ignored, but we continue to throw an AlertException if one occurs
         getAsJavaCertificate(customCertificateModel);
