@@ -10,6 +10,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.core.io.ClassPathResource;
@@ -17,6 +18,8 @@ import org.springframework.core.io.ClassPathResource;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.synopsys.integration.alert.common.persistence.model.ClientCertificateKeyModel;
+import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 
 import io.micrometer.common.util.StringUtils;
@@ -35,6 +38,7 @@ public class CertificateTestUtil {
     public static final String TRUSTSTORE_FILE_PATH = "./build/certs/blackduck-alert-test.truststore";
     public static final String TRUSTSTORE_PASSWORD = "changeit";
     public static final String MTLS_CERTIFICATE_PASSWORD = "changeit";
+    public static final String EMPTY_STRING_CONTENT = " \n\t\r  \n\t\r  \n";
 
     protected File trustStoreFile;
 
@@ -87,6 +91,29 @@ public class CertificateTestUtil {
         } catch (CertificateException | IOException e) {
             throw new AlertException("The custom certificate could not be read.", e);
         }
+    }
+
+    public ClientCertificateKeyModel createClientKeyModel() throws IOException {
+        UUID id = UUID.randomUUID();
+        String content = readCertificateOrKeyContents(CertificateTestUtil.KEY_MTLS_CLIENT_FILE_PATH);
+        return new ClientCertificateKeyModel(
+            id,
+            CertificateTestUtil.MTLS_CERTIFICATE_PASSWORD,
+            false,
+            content,
+            DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE)
+        );
+    }
+
+    public ClientCertificateModel createClientModel(ClientCertificateKeyModel keyModel) throws IOException {
+        UUID id = UUID.randomUUID();
+        String content = readCertificateOrKeyContents(CertificateTestUtil.CERTIFICATE_MTLS_CLIENT_FILE_PATH);
+        return new ClientCertificateModel(
+            id,
+            keyModel.getId(),
+            content,
+            DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE)
+        );
     }
 
 }
