@@ -8,12 +8,4 @@ dependencies {
     implementation project(':alert-database')
 
     implementation 'org.springframework.boot:spring-boot'
-
-    implementation 'com.synopsys.integration:blackduck-common'
-
-    testImplementation 'org.springframework.data:spring-data-commons'
-    testImplementation project(':test-common-channel')
-    testImplementation project(':provider-blackduck')
-    testImplementation 'com.synopsys.integration:blackduck-common'
-
 }
