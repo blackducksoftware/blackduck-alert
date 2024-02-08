@@ -25,6 +25,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.component.certificates.AlertTrustStoreManager;
@@ -87,7 +88,7 @@ class CertificateControllerTestIT {
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     void readAllTest() throws Exception {
-        String url = CertificatesController.API_BASE_URL;
+        String url = AlertRestConstants.CERTIFICATE_PATH;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -100,7 +101,7 @@ class CertificateControllerTestIT {
         CertificateModel expectedCertificate = certTestUtil.createCertificate(certificateActions)
                                                    .orElseThrow(AssertionFailedError::new);
 
-        String url = CertificatesController.API_BASE_URL + String.format("/%s", expectedCertificate.getId());
+        String url = AlertRestConstants.CERTIFICATE_PATH + String.format("/%s", expectedCertificate.getId());
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -112,7 +113,7 @@ class CertificateControllerTestIT {
     void createTest() throws Exception {
         String certificateContent = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.CERTIFICATE_FILE_PATH);
         CertificateModel certificateModel = new CertificateModel(CertificateTestUtil.TEST_ALIAS, certificateContent, DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
-        String url = CertificatesController.API_BASE_URL;
+        String url = AlertRestConstants.CERTIFICATE_PATH;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf())
@@ -127,7 +128,7 @@ class CertificateControllerTestIT {
         CertificateModel expectedCertificate = certTestUtil.createCertificate(certificateActions)
                                                    .orElseThrow(AssertionFailedError::new);
         CertificateModel updatedCertificate = new CertificateModel(expectedCertificate.getId(), "new-alias", expectedCertificate.getCertificateContent(), expectedCertificate.getLastUpdated());
-        String url = CertificatesController.API_BASE_URL + String.format("/%s", expectedCertificate.getId());
+        String url = AlertRestConstants.CERTIFICATE_PATH + String.format("/%s", expectedCertificate.getId());
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf())
@@ -141,7 +142,7 @@ class CertificateControllerTestIT {
     void deleteTest() throws Exception {
         CertificateModel expectedCertificate = certTestUtil.createCertificate(certificateActions)
                                                    .orElseThrow(AssertionFailedError::new);
-        String url = CertificatesController.API_BASE_URL + String.format("/%s", expectedCertificate.getId());
+        String url = AlertRestConstants.CERTIFICATE_PATH + String.format("/%s", expectedCertificate.getId());
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -150,7 +151,7 @@ class CertificateControllerTestIT {
 
     @Test
     void readAllForbiddenTest() throws Exception {
-        String url = CertificatesController.API_BASE_URL;
+        String url = AlertRestConstants.CERTIFICATE_PATH;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("badUser"))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -162,7 +163,7 @@ class CertificateControllerTestIT {
         CertificateModel expectedCertificate = certTestUtil.createCertificate(certificateActions)
                                                    .orElseThrow(AssertionFailedError::new);
 
-        String url = CertificatesController.API_BASE_URL + String.format("/%s", expectedCertificate.getId());
+        String url = AlertRestConstants.CERTIFICATE_PATH + String.format("/%s", expectedCertificate.getId());
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("badUser"))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -173,7 +174,7 @@ class CertificateControllerTestIT {
     void createForbiddenTest() throws Exception {
         String certificateContent = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.CERTIFICATE_FILE_PATH);
         CertificateModel certificateModel = new CertificateModel(CertificateTestUtil.TEST_ALIAS, certificateContent, DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
-        String url = CertificatesController.API_BASE_URL;
+        String url = AlertRestConstants.CERTIFICATE_PATH;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("badUser"))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf())
@@ -187,7 +188,7 @@ class CertificateControllerTestIT {
         CertificateModel expectedCertificate = certTestUtil.createCertificate(certificateActions)
                                                    .orElseThrow(AssertionFailedError::new);
         CertificateModel updatedCertificate = new CertificateModel(expectedCertificate.getId(), "new-alias", expectedCertificate.getCertificateContent());
-        String url = CertificatesController.API_BASE_URL + String.format("/%s", expectedCertificate.getId());
+        String url = AlertRestConstants.CERTIFICATE_PATH + String.format("/%s", expectedCertificate.getId());
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("badUser"))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf())
@@ -200,7 +201,7 @@ class CertificateControllerTestIT {
     void deleteForbiddenTest() throws Exception {
         CertificateModel expectedCertificate = certTestUtil.createCertificate(certificateActions)
                                                    .orElseThrow(AssertionFailedError::new);
-        String url = CertificatesController.API_BASE_URL + String.format("/%s", expectedCertificate.getId());
+        String url = AlertRestConstants.CERTIFICATE_PATH + String.format("/%s", expectedCertificate.getId());
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("badUser"))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
