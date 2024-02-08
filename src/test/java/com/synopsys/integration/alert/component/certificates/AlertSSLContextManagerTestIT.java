@@ -1,6 +1,5 @@
 package com.synopsys.integration.alert.component.certificates;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -103,17 +102,8 @@ class AlertSSLContextManagerTestIT {
         trustStoreManager.importCertificate(serverCertificate);
         clientCertificateManager.importCertificate(model, keyModel);
 
-        Optional<SSLContext> sslContext = sslContextManager.buildSslContext();
+        Optional<SSLContext> sslContext = sslContextManager.buildWithClientCertificate();
         assertTrue(sslContext.isPresent());
-    }
-
-    @Test
-    void createDefaultSSLContextTest() throws Exception {
-        AlertSSLContextManager sslContextManager = new AlertSSLContextManager(trustStoreManager, clientCertificateManager);
-
-        Optional<SSLContext> sslContext = sslContextManager.buildSslContext();
-        assertTrue(sslContext.isPresent());
-        assertEquals(SSLContext.getDefault(), sslContext.get());
     }
 
     @Test
@@ -121,9 +111,8 @@ class AlertSSLContextManagerTestIT {
         AlertTrustStoreManager missingFileTrustStoreManager = new AlertTrustStoreManager(new MockAlertProperties());
         AlertSSLContextManager sslContextManager = new AlertSSLContextManager(missingFileTrustStoreManager, clientCertificateManager);
 
-        Optional<SSLContext> sslContext = sslContextManager.buildSslContext();
-        assertTrue(sslContext.isPresent());
-        assertEquals(SSLContext.getDefault(), sslContext.get());
+        Optional<SSLContext> sslContext = sslContextManager.buildWithClientCertificate();
+        assertTrue(sslContext.isEmpty());
     }
 
 

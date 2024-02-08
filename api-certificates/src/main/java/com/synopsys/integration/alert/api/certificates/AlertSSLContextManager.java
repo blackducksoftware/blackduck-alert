@@ -1,7 +1,6 @@
 package com.synopsys.integration.alert.api.certificates;
 
 import java.security.KeyStore;
-import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
 import javax.net.ssl.SSLContext;
@@ -12,7 +11,6 @@ import org.springframework.boot.ssl.SslManagerBundle;
 import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 
 @Component
@@ -27,19 +25,9 @@ public class AlertSSLContextManager {
         this.clientCertificateManager = clientCertificateManager;
     }
 
-    public Optional<SSLContext> buildSslContext() throws AlertConfigurationException {
-        SSLContext sslContext;
-        try {
-            Optional<SslManagerBundle> sslManagerBundle = getSslManagerBundle();
-            if (sslManagerBundle.isPresent()) {
-                sslContext = sslManagerBundle.get().createSslContext("TLS");
-            } else {
-                sslContext = SSLContext.getDefault();
-            }
-        } catch (NoSuchAlgorithmException ex) {
-            throw new AlertConfigurationException(ex);
-        }
-        return Optional.ofNullable(sslContext);
+    public Optional<SSLContext> buildWithClientCertificate() {
+        Optional<SslManagerBundle> sslManagerBundle = getSslManagerBundle();
+        return sslManagerBundle.map(bundle -> bundle.createSslContext("TLS"));
     }
 
     private Optional<SslManagerBundle> getSslManagerBundle() {
