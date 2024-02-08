@@ -87,6 +87,7 @@ class ClientCertificateAndKeyAccessorTestIT {
     @Test
     void deleteConfiguration() throws AlertConfigurationException {
         accessor.createConfiguration(new ClientCertificateAndKeyModel("key_password", "key_content", "certificate_content"));
+        assertTrue(accessor.doesConfigurationExist());
         accessor.deleteConfiguration();
 
         Assertions.assertFalse(accessor.doesConfigurationExist());
