@@ -7,7 +7,6 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 
@@ -98,7 +97,7 @@ public class ClientCertificateAndKeyAccessor implements UniqueConfigurationAcces
         ClientCertificateKeyEntity keyEntity = new ClientCertificateKeyEntity(keyId, password, keyContent, lastUpdated);
         ClientCertificateEntity certificateEntity = new ClientCertificateEntity(certificateId, keyId, certificateContent, lastUpdated);
 
-        return new ImmutablePair<>(keyEntity, certificateEntity);
+        return Pair.of(keyEntity, certificateEntity);
     }
 
     private ClientCertificateAndKeyModel toModel(ClientCertificateKeyEntity certificateKeyEntity, ClientCertificateEntity certificateEntity) {
