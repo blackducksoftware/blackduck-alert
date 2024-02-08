@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.component.certificates;
+package com.synopsys.integration.alert.api.certificates;
 
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
