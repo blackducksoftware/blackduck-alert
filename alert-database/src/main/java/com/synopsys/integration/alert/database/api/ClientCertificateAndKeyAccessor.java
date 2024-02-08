@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.accessor.UniqueConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ClientCertificateAndKeyModel;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.certificates.ClientCertificateEntity;
@@ -70,7 +69,7 @@ public class ClientCertificateAndKeyAccessor implements UniqueConfigurationAcces
 
     @Override
     public ClientCertificateAndKeyModel updateConfiguration(ClientCertificateAndKeyModel configuration) throws AlertConfigurationException {
-        ClientCertificateKeyEntity existingKeyEntity = keyRepository.findByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME)
+        ClientCertificateKeyEntity existingKeyEntity = keyRepository.findByName(DEFAULT_CONFIGURATION_NAME)
             .orElseThrow(() -> new AlertConfigurationException("Client certificate key does not exist"));
         ClientCertificateEntity existingCertificateEntity = certificateRepository.findByAlias(DEFAULT_CLIENT_CERTIFICATE_ALIAS)
             .orElseThrow(() -> new AlertConfigurationException("Client certificate does not exist"));
@@ -89,7 +88,7 @@ public class ClientCertificateAndKeyAccessor implements UniqueConfigurationAcces
 
     @Override
     public void deleteConfiguration() {
-        keyRepository.deleteByName(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
+        keyRepository.deleteByName(DEFAULT_CONFIGURATION_NAME);
     }
 
     private Pair<ClientCertificateKeyEntity, ClientCertificateEntity> toEntity(UUID keyId, UUID certificateId, ClientCertificateAndKeyModel model, OffsetDateTime lastUpdated) {
