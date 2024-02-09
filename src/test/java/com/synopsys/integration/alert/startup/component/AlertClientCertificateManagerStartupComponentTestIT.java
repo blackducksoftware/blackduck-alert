@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.security.KeyStore;
 import java.security.cert.Certificate;
-import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,13 +16,10 @@ import org.springframework.test.context.TestPropertySource;
 import com.synopsys.integration.alert.api.certificates.AlertClientCertificateManager;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.persistence.model.ClientCertificateKeyModel;
 import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.component.certificates.web.CertificateTestUtil;
-import com.synopsys.integration.alert.database.api.DefaultClientCertificateAccessor;
-import com.synopsys.integration.alert.database.api.DefaultClientCertificateKeyAccessor;
+import com.synopsys.integration.alert.database.api.ClientCertificateAccessor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @AlertIntegrationTest
@@ -36,9 +32,7 @@ class AlertClientCertificateManagerStartupComponentTestIT {
     @Autowired
     private AlertClientCertificateManager alertClientCertificateManager;
     @Autowired
-    private DefaultClientCertificateKeyAccessor clientCertificateKeyAccessor;
-    @Autowired
-    private DefaultClientCertificateAccessor clientCertificateAccessor;
+    private ClientCertificateAccessor clientCertificateAccessor;
     private final CertificateTestUtil certTestUtil = new CertificateTestUtil();
 
     @BeforeEach
@@ -49,15 +43,13 @@ class AlertClientCertificateManagerStartupComponentTestIT {
     @AfterEach
     void cleanup() throws AlertException {
         certTestUtil.cleanup();
-        clientCertificateKeyAccessor.deleteConfiguration();
         clientCertificateAccessor.deleteConfiguration();
         alertClientCertificateManager.removeCertificate();
     }
 
     @Test
     void initializeWithClientCertificatePersistedTest() throws Exception {
-        ClientCertificateKeyModel clientCertificateKeyModel = clientCertificateKeyAccessor.createConfiguration(certTestUtil.createClientKeyModel());
-        ClientCertificateModel clientCertificateModel = clientCertificateAccessor.createConfiguration(certTestUtil.createClientModel(clientCertificateKeyModel));
+        ClientCertificateModel clientCertificateModel = clientCertificateAccessor.createConfiguration(certTestUtil.createClientModel());
         assertTrue(alertClientCertificateManager.getClientKeyStore().isEmpty());
 
         alertClientCertificateManagerStartupComponent.initialize();
@@ -80,8 +72,7 @@ class AlertClientCertificateManagerStartupComponentTestIT {
     }
 
     @Test
-    void initializeWithoutCertificatePersistedTest() throws Exception {
-        clientCertificateKeyAccessor.createConfiguration(certTestUtil.createClientKeyModel());
+    void initializeWithoutCertificatePersistedTest() {
         assertTrue(alertClientCertificateManager.getClientKeyStore().isEmpty());
         alertClientCertificateManagerStartupComponent.initialize();
         assertTrue(alertClientCertificateManager.getClientKeyStore().isEmpty());
@@ -89,17 +80,7 @@ class AlertClientCertificateManagerStartupComponentTestIT {
 
     @Test
     void certificateManagerThrowsExceptionTest() throws Exception {
-        UUID id = UUID.randomUUID();
-        ClientCertificateKeyModel keyModelWithoutPassword = new ClientCertificateKeyModel(
-            id,
-            CertificateTestUtil.MTLS_CERTIFICATE_PASSWORD,
-            false,
-            CertificateTestUtil.EMPTY_STRING_CONTENT,
-            DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE)
-        );
-
-        ClientCertificateKeyModel clientCertificateKeyModel = clientCertificateKeyAccessor.createConfiguration(keyModelWithoutPassword);
-        clientCertificateAccessor.createConfiguration(certTestUtil.createClientModel(clientCertificateKeyModel));
+        clientCertificateAccessor.createConfiguration(certTestUtil.createClientModel(CertificateTestUtil.MTLS_CERTIFICATE_PASSWORD, CertificateTestUtil.EMPTY_STRING_CONTENT));
         assertTrue(alertClientCertificateManager.getClientKeyStore().isEmpty());
 
         alertClientCertificateManagerStartupComponent.initialize();
