@@ -103,7 +103,7 @@ public class JiraCloudSummaryFieldLengthTestIT {
         String userEmail = testProperties.getProperty(TestPropertyKey.TEST_JIRA_CLOUD_USER_EMAIL);
 
         JiraCloudPropertiesFactory jiraCloudPropertiesFactory = Mockito.mock(JiraCloudPropertiesFactory.class);
-        JiraCloudProperties jiraCloudProperties = new JiraCloudProperties(url, apiToken, userEmail, true, ProxyInfo.NO_PROXY_INFO);
+        JiraCloudProperties jiraCloudProperties = new JiraCloudProperties(url, apiToken, userEmail, true, ProxyInfo.NO_PROXY_INFO, null);
         Mockito.when(jiraCloudPropertiesFactory.createJiraProperties()).thenReturn(jiraCloudProperties);
 
         return jiraCloudPropertiesFactory;
@@ -125,7 +125,8 @@ public class JiraCloudSummaryFieldLengthTestIT {
             resolveTransition,
             reopenTransition,
             List.of(),
-            null);
+            null
+        );
     }
 
 }
