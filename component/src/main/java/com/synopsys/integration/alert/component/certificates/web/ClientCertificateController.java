@@ -29,7 +29,7 @@ public class ClientCertificateController implements StaticUniqueConfigResourceCo
 
     @Override
     public void update(ClientCertificateModel resource) {
-        throw ResponseFactory.createNotImplementedException("Updates of client certificate not support, please delete and create a new configuration.");
+        throw ResponseFactory.createMethodNotAllowedException("Updates of client certificate not support, please delete and create a new configuration.");
     }
 
     @Override
