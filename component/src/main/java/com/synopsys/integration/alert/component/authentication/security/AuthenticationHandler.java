@@ -112,11 +112,11 @@ public class AuthenticationHandler {
 
     private void configureSAML(HttpSecurity http) throws Exception {
         //eventually configure SAML
-        OpenSaml4AuthenticationProvider authenticationProvider = new OpenSaml4AuthenticationProvider();
-        authenticationProvider.setResponseAuthenticationConverter(samlGroupConverter.groupsConverter());
+        OpenSaml4AuthenticationProvider openSaml4AuthenticationProvider = new OpenSaml4AuthenticationProvider();
+        openSaml4AuthenticationProvider.setResponseAuthenticationConverter(samlGroupConverter.groupsConverter());
 
         http.saml2Login(saml2 -> {
-                saml2.authenticationManager(new ProviderManager(authenticationProvider));
+                saml2.authenticationManager(new ProviderManager(openSaml4AuthenticationProvider));
                 saml2.loginPage("/");
             })
             .saml2Logout(Customizer.withDefaults());

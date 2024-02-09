@@ -7,8 +7,6 @@
  */
 package com.synopsys.integration.alert.configuration;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -32,8 +30,6 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 @Configuration
 @AutoConfigureOrder(1)
 public class ApplicationConfiguration {
-    private final Logger logger = LoggerFactory.getLogger(ApplicationConfiguration.class);
-
     private final Gson gson;
 
     @Autowired

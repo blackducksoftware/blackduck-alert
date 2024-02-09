@@ -10,7 +10,6 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.core.io.ClassPathResource;
@@ -18,7 +17,6 @@ import org.springframework.core.io.ClassPathResource;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.persistence.model.ClientCertificateKeyModel;
 import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 
@@ -93,27 +91,30 @@ public class CertificateTestUtil {
         }
     }
 
-    public ClientCertificateKeyModel createClientKeyModel() throws IOException {
-        UUID id = UUID.randomUUID();
-        String content = readCertificateOrKeyContents(CertificateTestUtil.KEY_MTLS_CLIENT_FILE_PATH);
-        return new ClientCertificateKeyModel(
-            id,
+    public ClientCertificateModel createClientModel() throws IOException {
+        String keyContent = readCertificateOrKeyContents(CertificateTestUtil.KEY_MTLS_CLIENT_FILE_PATH);
+        String certificateContent = readCertificateOrKeyContents(CertificateTestUtil.CERTIFICATE_MTLS_CLIENT_FILE_PATH);
+        return createClientModel(
             CertificateTestUtil.MTLS_CERTIFICATE_PASSWORD,
-            false,
-            content,
-            DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE)
+            keyContent,
+            certificateContent
         );
     }
 
-    public ClientCertificateModel createClientModel(ClientCertificateKeyModel keyModel) throws IOException {
-        UUID id = UUID.randomUUID();
-        String content = readCertificateOrKeyContents(CertificateTestUtil.CERTIFICATE_MTLS_CLIENT_FILE_PATH);
+    public ClientCertificateModel createClientModel(String keyPassword, String keyContent) throws IOException {
+        String certificateContent = readCertificateOrKeyContents(CertificateTestUtil.CERTIFICATE_MTLS_CLIENT_FILE_PATH);
+        return createClientModel(
+            keyPassword,
+            keyContent,
+            certificateContent
+        );
+    }
+
+    public ClientCertificateModel createClientModel(String keyPassword, String keyContent, String certificateContent) {
         return new ClientCertificateModel(
-            id,
-            keyModel.getId(),
-            content,
-            DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE)
+            keyPassword,
+            keyContent,
+            certificateContent
         );
     }
-
 }

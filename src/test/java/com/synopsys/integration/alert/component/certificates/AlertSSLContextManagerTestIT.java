@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.Optional;
-import java.util.UUID;
 
 import javax.net.ssl.SSLContext;
 
@@ -19,7 +18,6 @@ import com.synopsys.integration.alert.api.certificates.AlertSSLContextManager;
 import com.synopsys.integration.alert.api.certificates.AlertTrustStoreManager;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.persistence.model.ClientCertificateKeyModel;
 import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
@@ -58,32 +56,6 @@ class AlertSSLContextManagerTestIT {
         certTestUtil.cleanup();
     }
 
-    private ClientCertificateKeyModel createClientKeyModel() throws IOException {
-        UUID id = UUID.randomUUID();
-        String content = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.KEY_MTLS_CLIENT_FILE_PATH);
-        ClientCertificateKeyModel keyModel = new ClientCertificateKeyModel(
-            id,
-            CertificateTestUtil.MTLS_CERTIFICATE_PASSWORD,
-            false,
-            content,
-            DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE)
-        );
-
-        return keyModel;
-    }
-
-    private ClientCertificateModel createClientModel(ClientCertificateKeyModel keyModel) throws IOException {
-        UUID id = UUID.randomUUID();
-        String content = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.CERTIFICATE_MTLS_CLIENT_FILE_PATH);
-        ClientCertificateModel certificateModel = new ClientCertificateModel(
-            id,
-            keyModel.getId(),
-            content,
-            DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE)
-        );
-        return certificateModel;
-    }
-
     private CustomCertificateModel createTrustStoreCertificate(String alias, String certificateFilePath) throws IOException {
         String content = certTestUtil.readCertificateOrKeyContents(certificateFilePath);
         return new CustomCertificateModel(alias, content, DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
@@ -93,14 +65,13 @@ class AlertSSLContextManagerTestIT {
     void createValidSSLContextTest() throws Exception {
         AlertSSLContextManager sslContextManager = new AlertSSLContextManager(trustStoreManager, clientCertificateManager);
         // load certificate data.
-        ClientCertificateKeyModel keyModel = createClientKeyModel();
-        ClientCertificateModel model = createClientModel(keyModel);
+        ClientCertificateModel model = certTestUtil.createClientModel();
         CustomCertificateModel rootCertificate = createTrustStoreCertificate(ROOT_CERTIFICATE_ALIAS, CertificateTestUtil.CERTIFICATE_MTLS_ROOT_CA_FILE_PATH);
         CustomCertificateModel serverCertificate = createTrustStoreCertificate(SERVER_CERTIFICATE_ALIAS, CertificateTestUtil.CERTIFICATE_MTLS_SERVER_FILE_PATH);
 
         trustStoreManager.importCertificate(rootCertificate);
         trustStoreManager.importCertificate(serverCertificate);
-        clientCertificateManager.importCertificate(model, keyModel);
+        clientCertificateManager.importCertificate(model);
 
         Optional<SSLContext> sslContext = sslContextManager.buildWithClientCertificate();
         assertTrue(sslContext.isPresent());
