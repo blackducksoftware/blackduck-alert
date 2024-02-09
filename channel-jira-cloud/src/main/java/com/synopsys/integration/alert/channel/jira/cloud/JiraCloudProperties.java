@@ -50,7 +50,7 @@ public class JiraCloudProperties {
         this.sslContext = sslContext;
     }
 
-    public JiraCloudRestConfig createJiraServerConfig() throws IssueTrackerException {
+    public JiraCloudRestConfig createJiraCloudConfig() throws IssueTrackerException {
         JiraCloudRestConfigBuilder jiraCloudConfigBuilder = new JiraCloudRestConfigBuilder();
 
         jiraCloudConfigBuilder.setUrl(url);
@@ -68,9 +68,9 @@ public class JiraCloudProperties {
     }
 
     public JiraCloudServiceFactory createJiraServicesCloudFactory(Logger logger, Gson gson) throws IssueTrackerException {
-        JiraCloudRestConfig jiraServerConfig = createJiraServerConfig();
+        JiraCloudRestConfig jiraCloudConfig = createJiraCloudConfig();
         Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
-        JiraHttpClient jiraHttpClient = jiraServerConfig.createJiraHttpClient(intLogger);
+        JiraHttpClient jiraHttpClient = jiraCloudConfig.createJiraHttpClient(intLogger);
         return new JiraCloudServiceFactory(intLogger, jiraHttpClient, gson);
     }
 

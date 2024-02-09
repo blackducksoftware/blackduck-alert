@@ -71,12 +71,12 @@ public class JiraCloudPropertiesFactory {
     }
 
     public JiraCloudProperties createJiraProperties() throws AlertConfigurationException {
-        ConfigurationModel jiraServerGlobalConfig = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(channelKey, ConfigContextEnum.GLOBAL)
+        ConfigurationModel jiraCloudGlobalConfig = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(channelKey, ConfigContextEnum.GLOBAL)
             .stream()
             .findAny()
             .orElseThrow(() -> new AlertConfigurationException("Missing Jira Cloud global configuration"));
 
-        FieldUtility fieldUtility = new FieldUtility(jiraServerGlobalConfig.getCopyOfKeyToFieldMap());
+        FieldUtility fieldUtility = new FieldUtility(jiraCloudGlobalConfig.getCopyOfKeyToFieldMap());
         return createJiraProperties(fieldUtility);
     }
 

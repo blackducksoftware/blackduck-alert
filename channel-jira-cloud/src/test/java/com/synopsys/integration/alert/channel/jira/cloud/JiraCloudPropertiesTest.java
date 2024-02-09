@@ -27,7 +27,7 @@ class JiraCloudPropertiesTest {
             assertNull(properties.getAccessToken());
             assertNull(properties.getUsername());
             assertFalse(properties.isPluginCheckDisabled());
-            properties.createJiraServerConfig();
+            properties.createJiraCloudConfig();
             fail();
         } catch (IssueTrackerException ex) {
             ex.printStackTrace();
@@ -46,7 +46,7 @@ class JiraCloudPropertiesTest {
             assertEquals(token, properties.getAccessToken());
             assertEquals(user, properties.getUsername());
             assertEquals(pluginCheckDisabled, properties.isPluginCheckDisabled());
-            JiraCloudRestConfig config = properties.createJiraServerConfig();
+            JiraCloudRestConfig config = properties.createJiraCloudConfig();
             assertNotNull(config);
         } catch (IssueTrackerException ex) {
             ex.printStackTrace();
@@ -66,7 +66,7 @@ class JiraCloudPropertiesTest {
             assertEquals(token, properties.getAccessToken());
             assertEquals(user, properties.getUsername());
             assertEquals(pluginCheckDisabled, properties.isPluginCheckDisabled());
-            JiraCloudRestConfig config = properties.createJiraServerConfig();
+            JiraCloudRestConfig config = properties.createJiraCloudConfig();
             assertNotNull(config);
             assertTrue(config.getSslContext().isPresent());
         } catch (Exception ex) {
