@@ -52,6 +52,7 @@ class ClientCertificateControllerTestIT {
     @AfterEach
     public void cleanup() throws IOException {
         accessor.deleteConfiguration();
+        certTestUtil.cleanup();
     }
 
     @Test
