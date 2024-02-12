@@ -10,9 +10,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -61,7 +63,7 @@ class ClientCertificateCrudActionsTest {
     }
 
     @Test
-    void createConfig() {
+    void createConfig() throws AlertException {
         ActionResponse<ClientCertificateModel> actionResponseGetOne = crudActions.getOne();
         assertFalse(actionResponseGetOne.isSuccessful());
         assertEquals(HttpStatus.NOT_FOUND, actionResponseGetOne.getHttpStatus());
@@ -71,6 +73,8 @@ class ClientCertificateCrudActionsTest {
         assertTrue(actionResponseCreate.isSuccessful());
         assertEquals(HttpStatus.OK, actionResponseCreate.getHttpStatus());
         assertTrue(actionResponseCreate.hasContent());
+
+        Mockito.verify(certificateManager).importCertificate(model);
     }
 
     @Test
@@ -82,7 +86,7 @@ class ClientCertificateCrudActionsTest {
     }
 
     @Test
-    void deleteExistingConfigSucceeds() {
+    void deleteExistingConfig() throws AlertException {
         ActionResponse<ClientCertificateModel> actionResponseCreate = crudActions.create(model);
         assertTrue(actionResponseCreate.isSuccessful());
         assertEquals(HttpStatus.OK, actionResponseCreate.getHttpStatus());
@@ -92,5 +96,7 @@ class ClientCertificateCrudActionsTest {
         assertTrue(actionResponseDelete.isSuccessful());
         assertEquals(HttpStatus.NO_CONTENT, actionResponseDelete.getHttpStatus());
         assertFalse(actionResponseDelete.hasContent());
+
+        Mockito.verify(certificateManager).removeCertificate();
     }
 }

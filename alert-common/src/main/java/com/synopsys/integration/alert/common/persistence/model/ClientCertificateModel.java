@@ -8,6 +8,10 @@ public class ClientCertificateModel extends AlertSerializableModel implements Ob
     private String keyContent;
     private String certificateContent;
 
+    public ClientCertificateModel() {
+        // For serialization
+    }
+
     public ClientCertificateModel(String keyPassword, String keyContent, String certificateContent) {
         this.keyPassword = keyPassword;
         this.keyContent = keyContent;
