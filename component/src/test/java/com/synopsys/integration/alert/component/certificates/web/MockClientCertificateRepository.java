@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.database.api.mock;
+package com.synopsys.integration.alert.component.certificates.web;
 
 import java.util.Optional;
 import java.util.UUID;

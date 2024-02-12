@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -12,6 +11,7 @@ import com.synopsys.integration.alert.common.persistence.model.ClientCertificate
 import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.certificates.AlertClientCertificateManager;
+import com.synopsys.integration.alert.component.certificates.CertificatesDescriptorKey;
 import com.synopsys.integration.alert.database.api.ClientCertificateAccessor;
 
 @Component
@@ -26,12 +26,12 @@ public class ClientCertificateCrudActions {
     public ClientCertificateCrudActions(
         AlertClientCertificateManager alertClientCertificateManager,
         AuthorizationManager authorizationManager,
-        AuthenticationDescriptorKey authenticationDescriptorKey,
+        CertificatesDescriptorKey certificatesDescriptorKey,
         ClientCertificateAccessor configurationAccessor
     ) {
         this.alertClientCertificateManager = alertClientCertificateManager;
         this.configurationAccessor = configurationAccessor;
-        this.configurationCrudHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, authenticationDescriptorKey);
+        this.configurationCrudHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, certificatesDescriptorKey);
         this.configurationValidator = new ClientCertificateConfigurationValidator();
     }
 
