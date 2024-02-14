@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
@@ -50,7 +49,7 @@ public class ClientCertificateCrudActions {
         if (response.isSuccessful()) {
             try {
                 alertClientCertificateManager.importCertificate(resource);
-            } catch (AlertException e) {
+            } catch (Exception e) {
                 return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error creating config: %s", e.getMessage()));
             }
         }
@@ -67,7 +66,7 @@ public class ClientCertificateCrudActions {
         if (response.isSuccessful()) {
             try {
                 alertClientCertificateManager.removeCertificate();
-            } catch (AlertException e) {
+            } catch (Exception e) {
                 return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error deleting config: %s", e.getMessage()));
             }
         }
