@@ -57,7 +57,8 @@ class ClientCertificateCrudActionsTest {
             certificateManager,
             authorizationManager,
             certificatesDescriptorKey,
-            new ClientCertificateAccessor(encryptionUtility, new MockClientCertificateKeyRepository(), new MockClientCertificateRepository())
+            new ClientCertificateAccessor(encryptionUtility, new MockClientCertificateKeyRepository(), new MockClientCertificateRepository()),
+            new ClientCertificateConfigurationValidator()
         );
         model = new ClientCertificateModel("key_password", "key_content", "certificate_content");
     }

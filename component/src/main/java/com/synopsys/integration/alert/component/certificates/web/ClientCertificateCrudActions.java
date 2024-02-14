@@ -27,12 +27,13 @@ public class ClientCertificateCrudActions {
         AlertClientCertificateManager alertClientCertificateManager,
         AuthorizationManager authorizationManager,
         CertificatesDescriptorKey certificatesDescriptorKey,
-        ClientCertificateAccessor configurationAccessor
+        ClientCertificateAccessor configurationAccessor,
+        ClientCertificateConfigurationValidator configurationValidator
     ) {
         this.alertClientCertificateManager = alertClientCertificateManager;
         this.configurationAccessor = configurationAccessor;
         this.configurationCrudHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, certificatesDescriptorKey);
-        this.configurationValidator = new ClientCertificateConfigurationValidator();
+        this.configurationValidator = configurationValidator;
     }
 
     public ActionResponse<ClientCertificateModel> getOne() {
