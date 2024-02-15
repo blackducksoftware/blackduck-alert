@@ -104,7 +104,16 @@ public class JiraServerSummaryFieldLengthTestIT {
         String password = testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_PASSWORD);
 
         JiraServerPropertiesFactory jiraServerPropertiesFactory = Mockito.mock(JiraServerPropertiesFactory.class);
-        JiraServerProperties jiraServerProperties = new JiraServerProperties(url, JiraServerAuthorizationMethod.BASIC, password, username, null, true, ProxyInfo.NO_PROXY_INFO);
+        JiraServerProperties jiraServerProperties = new JiraServerProperties(
+            url,
+            JiraServerAuthorizationMethod.BASIC,
+            password,
+            username,
+            null,
+            true,
+            ProxyInfo.NO_PROXY_INFO,
+            null
+        );
         Mockito.when(jiraServerPropertiesFactory.createJiraProperties(Mockito.any(UUID.class))).thenReturn(jiraServerProperties);
 
         return jiraServerPropertiesFactory;

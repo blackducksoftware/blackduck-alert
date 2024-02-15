@@ -60,6 +60,10 @@ public class ResponseFactory {
         return new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, customMessage);
     }
 
+    public static ResponseStatusException createMethodNotAllowedException(@Nullable String customMessage) {
+        return new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, customMessage);
+    }
+
     public static <T> ResponseStatusException createStatusException(ActionResponse<T> actionResponse) {
         String customMessage = actionResponse.getMessage().orElse(null);
         return new ResponseStatusException(actionResponse.getHttpStatus(), customMessage);

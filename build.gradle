@@ -130,6 +130,7 @@ dependencies {
     implementation project(':alert-database-job')
 
     implementation project(':api-authentication')
+    implementation project(':api-certificates')
     implementation project(':api-common-model')
     implementation project(':api-channel')
     implementation project(':api-descriptor')
