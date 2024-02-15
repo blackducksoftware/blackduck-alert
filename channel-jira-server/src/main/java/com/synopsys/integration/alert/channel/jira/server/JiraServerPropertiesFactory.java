@@ -12,6 +12,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.certificates.AlertSSLContextManager;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
@@ -25,12 +26,19 @@ public class JiraServerPropertiesFactory {
     private final ProxyManager proxyManager;
     private final JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor;
     private final JobAccessor jobAccessor;
+    private final AlertSSLContextManager alertSSLContextManager;
 
     @Autowired
-    public JiraServerPropertiesFactory(ProxyManager proxyManager, JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor, JobAccessor jobAccessor) {
+    public JiraServerPropertiesFactory(
+        ProxyManager proxyManager,
+        JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor,
+        JobAccessor jobAccessor,
+        AlertSSLContextManager alertSSLContextManager
+    ) {
         this.proxyManager = proxyManager;
         this.jiraServerGlobalConfigAccessor = jiraServerGlobalConfigAccessor;
         this.jobAccessor = jobAccessor;
+        this.alertSSLContextManager = alertSSLContextManager;
     }
 
     public JiraServerProperties createJiraProperties(UUID jiraServerConfigId) throws AlertConfigurationException {
@@ -65,6 +73,15 @@ public class JiraServerPropertiesFactory {
         String accessToken,
         boolean pluginCheckDisabled
     ) {
-        return new JiraServerProperties(url, authorizationMethod, password, username, accessToken, pluginCheckDisabled, proxyManager.createProxyInfoForHost(url));
+        return new JiraServerProperties(
+            url,
+            authorizationMethod,
+            password,
+            username,
+            accessToken,
+            pluginCheckDisabled,
+            proxyManager.createProxyInfoForHost(url),
+            alertSSLContextManager.buildWithClientCertificate().orElse(null)
+        );
     }
 }

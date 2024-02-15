@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.synopsys.integration.alert.api.certificates.AlertClientCertificateManager;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
@@ -24,7 +25,6 @@ import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixM
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.component.certificates.AlertClientCertificateManager;
 import com.synopsys.integration.alert.component.certificates.CertificatesDescriptorKey;
 import com.synopsys.integration.alert.database.api.ClientCertificateAccessor;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;

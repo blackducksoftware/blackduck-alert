@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.component.certificates;
+package com.synopsys.integration.alert.api.certificates;
 
 import java.io.File;
 import java.security.KeyStore;
@@ -63,6 +63,21 @@ public class AlertTrustStoreManager {
         } else {
             throw new AlertConfigurationException("No trust store file has been provided.");
         }
+    }
+
+    public synchronized Optional<KeyStore> getTrustStore() {
+        Optional<String> optionalTrustStoreFileName = alertProperties.getTrustStoreFile();
+        if (optionalTrustStoreFileName.isPresent()) {
+            try {
+                return Optional.of(keyStoreManager.getAsKeyStore(keyStoreManager.getAndValidateKeyStoreFile(optionalTrustStoreFileName.get()), getTrustStorePassword()));
+            } catch (AlertException ex) {
+                logger.error("Error getting trust store", ex);
+                return Optional.empty();
+            }
+        } else {
+            return Optional.empty();
+        }
+
     }
 
     public synchronized void validateCertificateContent(CustomCertificateModel customCertificateModel) throws AlertException {

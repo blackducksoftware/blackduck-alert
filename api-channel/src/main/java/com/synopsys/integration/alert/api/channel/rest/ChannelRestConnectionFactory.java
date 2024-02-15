@@ -9,12 +9,15 @@ package com.synopsys.integration.alert.api.channel.rest;
 
 import java.util.Optional;
 
+import javax.net.ssl.SSLContext;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.certificates.AlertSSLContextManager;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.log.IntLogger;
@@ -30,11 +33,14 @@ public class ChannelRestConnectionFactory {
     private final ProxyManager proxyManager;
     private final Gson gson;
 
+    private final AlertSSLContextManager alertSSLContextManager;
+
     @Autowired
-    public ChannelRestConnectionFactory(AlertProperties alertProperties, ProxyManager proxyManager, Gson gson) {
+    public ChannelRestConnectionFactory(AlertProperties alertProperties, ProxyManager proxyManager, Gson gson, AlertSSLContextManager alertSSLContextManager) {
         this.alertProperties = alertProperties;
         this.proxyManager = proxyManager;
         this.gson = gson;
+        this.alertSSLContextManager = alertSSLContextManager;
     }
 
     public IntHttpClient createIntHttpClient(String baseUrl) {
@@ -44,7 +50,10 @@ public class ChannelRestConnectionFactory {
     public IntHttpClient createIntHttpClient(String baseUrl, IntLogger intLogger, int timeout) {
         Optional<Boolean> alertTrustCertificate = alertProperties.getAlertTrustCertificate();
         ProxyInfo proxyInfo = proxyManager.createProxyInfoForHost(baseUrl);
-        return new IntHttpClient(intLogger, gson, timeout, alertTrustCertificate.orElse(Boolean.FALSE), proxyInfo);
+        Optional<SSLContext> sslContext = alertSSLContextManager.buildWithClientCertificate();
+        return sslContext
+            .map(context -> new IntHttpClient(intLogger, gson, timeout, proxyInfo, context))
+            .orElseGet(() -> new IntHttpClient(intLogger, gson, timeout, alertTrustCertificate.orElse(Boolean.FALSE), proxyInfo));
     }
 
 }

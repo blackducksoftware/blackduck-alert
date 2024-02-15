@@ -68,7 +68,7 @@ class JiraServerExternalConnectionTest {
         Mockito.when(proxyManager.createProxyInfoForHost(Mockito.anyString())).thenReturn(null);
         JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
         Mockito.when(jobAccessor.getJobById(Mockito.any())).thenReturn(Optional.of(createDistributionJobModel()));
-        JiraServerPropertiesFactory jiraServerPropertiesFactory = new JiraServerPropertiesFactory(proxyManager, jiraServerGlobalConfigAccessor, jobAccessor);
+        JiraServerPropertiesFactory jiraServerPropertiesFactory = new JiraServerPropertiesFactory(proxyManager, jiraServerGlobalConfigAccessor, jobAccessor, null);
 
         IssueTrackerCallbackInfoCreator issueTrackerCallbackInfoCreator = new IssueTrackerCallbackInfoCreator();
         IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();

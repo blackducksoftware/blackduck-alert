@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.component.certificates;
+package com.synopsys.integration.alert.api.certificates;
 
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -46,6 +46,10 @@ public class AlertClientCertificateManager {
         }
         // clean up the reference
         clientSslStoreBundle = null;
+    }
+
+    public boolean containsClientCertificate() {
+        return null != clientSslStoreBundle;
     }
 
     public Optional<KeyStore> getClientKeyStore() {
