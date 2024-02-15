@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.web.documentation;
 
+import org.springdoc.core.customizers.GlobalOperationCustomizer;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,6 +36,11 @@ public class SwaggerConfiguration {
                     + " Currently, these are all subject to change between versions."
                     + " A stable, versioned API is coming soon.")
                 .version("preview"));
+    }
+
+    @Bean
+    public GlobalOperationCustomizer operationCustomizer() {
+        return new CustomOperationNameGenerator();
     }
 
 }
