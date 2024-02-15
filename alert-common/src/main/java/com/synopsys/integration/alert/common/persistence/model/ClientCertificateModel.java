@@ -8,9 +8,9 @@ import com.synopsys.integration.alert.api.common.model.Obfuscated;
 public class ClientCertificateModel extends AlertSerializableModel implements Obfuscated<ClientCertificateModel> {
     @Serial
     private static final long serialVersionUID = -2254327445871324025L;
-    private final String keyPassword;
-    private final String keyContent;
-    private final String certificateContent;
+    private String keyPassword;
+    private String keyContent;
+    private String certificateContent;
 
     public ClientCertificateModel() {
         // For serialization
