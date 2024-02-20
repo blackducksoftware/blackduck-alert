@@ -41,11 +41,11 @@ const MTLSCertificateLayout = () => {
                 deleteLabel="Reset"
                 submitLabel="Submit"
             > 
-            
                 <PasswordInput
                     id="MTLSKeyPassword"
                     name="MTLSKeyPassword"
                     label="Key Password"
+                    description="Provide description for key content here."
                     onChange={() => { console.log('MTLSKeyPassword change')}}
                     // value={loginForm.password}
                 />
@@ -56,18 +56,20 @@ const MTLSCertificateLayout = () => {
                     description="Provide description for key content here."
                     readOnly={false}
                     onChange={() => { console.log('MTLSKeyContent Change')}}
+                    sizeClass="col-sm-8 flex-column p-2"
                     // value="MTLSKeyContent provide default value"
                 />
                 <TextArea
                     id="MTLSCertificateContent"
                     name="MTLSCertificateContent"
                     label="Certificate Content"
-                    customDescription="Enter a valid Mutual TLS certificate (MTLS) below to provide authentication between your client and Alert."
+                    description="Enter a valid Mutual TLS certificate (MTLS) below to provide authentication between your client and Alert."
                     onChange={() => { console.log('MTLSCertificateContent change')}}
+                    sizeClass="col-sm-8 flex-column p-2"
                     // value="MTLSCertificateContent provide default value"
                     // errorName="certificateContent"
                     // errorValue={error.fieldErrors.certificateContent}
-                />
+                />                
             </ConcreteConfigurationForm>
         </section>
     );
