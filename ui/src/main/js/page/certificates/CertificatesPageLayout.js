@@ -5,7 +5,7 @@ import MTLSCertificateLayout from 'page/certificates/MTLSCertificateLayout';
 import { CERTIFICATE_INFO } from 'page/certificates/CertificateModel';
 import { Tab, Tabs } from 'react-bootstrap';
 
-const CertificatesPageLayout = () => {
+const CertificatesPageLayout = ({ csrfToken, errorHandler }) => {
     return (
         <div>
             <PageHeader
@@ -18,11 +18,19 @@ const CertificatesPageLayout = () => {
                     <CertificatesTable />
                 </Tab>
                 <Tab eventKey={2} title="Client">
-                    <MTLSCertificateLayout />
+                    <MTLSCertificateLayout
+                        csrfToken={csrfToken}
+                        errorHandler={errorHandler}
+                    />
                 </Tab>
             </Tabs>
         </div>
     );
 };
+
+CertificatesPageLayout.propTypes = {
+    csrfToken: PropTypes.string.isRequired,
+    errorHandler: PropTypes.object.isRequired
+}
 
 export default CertificatesPageLayout;

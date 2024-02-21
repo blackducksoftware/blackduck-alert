@@ -4,7 +4,7 @@ import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input
 
 const TextArea = ({
     id, description, errorName, errorValue, inputClass, label, labelClass, name, onChange, readOnly, required, showDescriptionPlaceHolder, 
-    sizeClass, value, customDescription
+    sizeClass, value, customDescription, isDisabled
 }) => {
     const divClasses = `${sizeClass} d-inline-flex`;
     const onChangeHandler = readOnly ? null : onChange;
@@ -20,7 +20,7 @@ const TextArea = ({
             required={required}
         >
             <div className={divClasses}>
-                <textarea id={id} rows="8" cols="60" readOnly={readOnly} className={inputClass} name={name} value={value} onChange={onChangeHandler} />
+                <textarea id={id} rows="8" cols="60" readOnly={readOnly} className={inputClass} name={name} value={value} onChange={onChangeHandler} disabled={isDisabled} />
             </div>
         </LabeledField>
     );
@@ -41,7 +41,8 @@ TextArea.propTypes = {
     labelClass: PropTypes.string,
     required: PropTypes.bool,
     showDescriptionPlaceHolder: PropTypes.bool,
-    customDescription: PropTypes.string
+    customDescription: PropTypes.string,
+    isDisabled: PropTypes.bool
 };
 
 TextArea.defaultProps = {
@@ -57,7 +58,8 @@ TextArea.defaultProps = {
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    isDisabled: false
 };
 
 export default TextArea;

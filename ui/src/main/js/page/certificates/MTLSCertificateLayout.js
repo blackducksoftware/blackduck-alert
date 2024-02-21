@@ -1,11 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { createUseStyles } from 'react-jss';
+import { createEmptyErrorObject } from 'common/util/httpErrorUtilities';
+import { 
+    CLIENT_CERTIFICATE_URL,
+    createDeleteRequest,
+    createNewConfigurationRequest,
+    createReadRequest
+} from 'common/util/configurationRequestBuilder';
+
 import PasswordInput from 'common/component/input/PasswordInput';
 import TextArea from 'common/component/input/TextArea';
 import ConcreteConfigurationForm from 'common/configuration/global/concrete/ConcreteConfigurationForm';
-import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchClientCertificate, postClientCertificate, deleteClientCertificate } from 'store/actions/client-certificate';
 
 const useStyles = createUseStyles({
     layout: {
@@ -23,28 +28,12 @@ const useStyles = createUseStyles({
     }
 })
 
-const MTLSCertificateLayout = () => {
-    const dispatch = useDispatch();
+const MTLSCertificateLayout = ({ csrfToken , errorHandler }) => {
     const classes = useStyles();
-    const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
+    const [errors, setErrors] = useState(createEmptyErrorObject());
     const [formData, setFormData] = useState({});
-    const { data, error } = useSelector((state) => state.clientCertificate);
-
-    useEffect(() => {
-        setFormData(data);
-    }, [data]);
-
-    function fetchCertificateData() {
-        dispatch(fetchClientCertificate());
-    };
-
-    function postData() {
-        dispatch(postClientCertificate(formData));
-    }
-
-    function deleteData() {
-        dispatch(deleteClientCertificate());
-    }
+    const [isDeleteDisabled, setIsDeleteDisabled] = useState(true);
+    const [isSaveDisabled, setIsSaveDisabled] = useState(false);
 
     function getDisplayValue(field) {
         if (formData) {
@@ -55,9 +44,43 @@ const MTLSCertificateLayout = () => {
 
     const handleOnChange = (label) => (
         ({ target: { value } }) => {
-            setFormData((clientCertificateData) => ({ ...clientCertificateData, [label]: value }));
+            setFormData((clientCertificateData) => {
+                if (value.trim() === '') {
+                    const { [label]: removeKey, ...data } = clientCertificateData;
+                    return data;
+                }
+
+                return { ...clientCertificateData, [label]: value }
+            });
         }
     );
+
+    const fetchData = async () => {
+        const response = await createReadRequest(CLIENT_CERTIFICATE_URL, csrfToken);
+        if (response.ok) {
+            setFormData({
+                keyPassword: '***********',
+                keyContent: '***********',
+                certificateContent: '***********'
+            });
+            setIsDeleteDisabled(false);
+            setIsSaveDisabled(true);
+        }
+    };
+
+    const formHasData = (formData.hasOwnProperty('keyPassword') || formData.hasOwnProperty('keyContent') || formData.hasOwnProperty('certificateContent'));
+
+    function onSaveSuccess() {
+        setIsSaveDisabled(true);
+    }
+
+    function onDeleteSuccess() {
+        // We have to manually set form data back to an empty object since a GET request will return a 404.  If the GET request returned an empty object and not a 404
+        // this onDeleteSuccess could be reduced to `fetchData()`
+        setFormData({});
+        setIsDeleteDisabled(true);
+        setIsSaveDisabled(false);
+    }
 
     return (
         <section className={classes.layout}>
@@ -67,14 +90,18 @@ const MTLSCertificateLayout = () => {
             <ConcreteConfigurationForm
                 formDataId="MTLSFormID"
                 setErrors={(formErrors) => setErrors(formErrors)}
-                getRequest={fetchCertificateData}
-                updateRequest={postData}
-                deleteRequest={deleteData}
+                getRequest={fetchData}
+                updateRequest={() => createNewConfigurationRequest(CLIENT_CERTIFICATE_URL, csrfToken, formData)}
+                deleteRequest={() => createDeleteRequest(CLIENT_CERTIFICATE_URL, csrfToken)}
+                afterSuccessfulSave={onSaveSuccess}
+                postDeleteAction={onDeleteSuccess}
                 ignoreValidation={true}
                 displayTest={false}
-                errorHandler={() => console.log('errorHandler')}
-                deleteLabel="Reset"
-                submitLabel="Submit"
+                errorHandler={errorHandler}
+                deleteLabel="Delete"
+                submitLabel="Save"
+                isSaveDisabled={!formHasData || isSaveDisabled}
+                isDeleteDisabled={isDeleteDisabled}
             > 
                 <PasswordInput
                     id="keyPassword"
@@ -84,7 +111,8 @@ const MTLSCertificateLayout = () => {
                     onChange={handleOnChange('keyPassword')}
                     value={getDisplayValue('keyPassword')}
                     errorName="keyPassword"
-                    errorValue={error.fieldErrors.keyPassword}
+                    errorValue={errors.fieldErrors.keyPassword}
+                    isDisabled={!isDeleteDisabled}
                 />
                 <TextArea
                     id="keyContent"
@@ -95,23 +123,30 @@ const MTLSCertificateLayout = () => {
                     onChange={handleOnChange('keyContent')}
                     value={getDisplayValue('keyContent')}
                     errorName="keyContent"
-                    errorValue={error.fieldErrors.keyContent}
+                    errorValue={errors.fieldErrors.keyContent}
                     sizeClass="col-sm-8 flex-column p-2"
+                    isDisabled={!isDeleteDisabled}
                 />
                 <TextArea
-                    id="clientCertificateContent"
-                    name="clientCertificateContent"
+                    id="certificateContent"
+                    name="certificateContent"
                     label="Certificate Content"
                     description="Enter a valid Mutual TLS certificate (MTLS) below to provide authentication between your client and Alert."
-                    onChange={handleOnChange('clientCertificateContent')}
-                    value={getDisplayValue('clientCertificateContent')}
-                    errorName="clientCertificateContent"
-                    errorValue={error.fieldErrors.clientCertificateContent}
+                    onChange={handleOnChange('certificateContent')}
+                    value={getDisplayValue('certificateContent')}
+                    errorName="certificateContent"
+                    errorValue={errors.fieldErrors.certificateContent}
                     sizeClass="col-sm-8 flex-column p-2"
+                    isDisabled={!isDeleteDisabled}
                 />                
             </ConcreteConfigurationForm>
         </section>
     );
 };
+
+MTLSCertificateLayout.propTypes = {
+    csrfToken: PropTypes.string.isRequired,
+    errorHandler: PropTypes.object.isRequired
+}
 
 export default MTLSCertificateLayout;
