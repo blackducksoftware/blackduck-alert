@@ -5,6 +5,7 @@ export const AUDIT_API_URL = `${ALERT_API_URL}/audit/failed`;
 export const AUTHENTICATION_LDAP_API_URL = `${ALERT_API_URL}/authentication/ldap`;
 export const AUTHENTICATION_SAML_API_URL = `${ALERT_API_URL}/authentication/saml`;
 export const AZURE_BOARDS_API_URL = `${ALERT_API_URL}/configuration/azure-boards`;
+export const CLIENT_CERTIFICATE_URL = `${ALERT_API_URL}/certificates/mtls/client`;
 export const CONFIG_API_URL = `${ALERT_API_URL}/configuration`;
 export const JOB_API_URL = `${ALERT_API_URL}/configuration/job`;
 export const JOB_AUDIT_API_URL = `${ALERT_API_URL}/distribution/audit-statuses`;
