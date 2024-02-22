@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 import PageHeader from 'common/component/navigation/PageHeader';
 import CertificatesTable from 'page/certificates/CertificatesTable';
 import MTLSCertificateLayout from 'page/certificates/MTLSCertificateLayout';

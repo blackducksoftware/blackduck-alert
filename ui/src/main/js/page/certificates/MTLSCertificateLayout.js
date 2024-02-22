@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+
 import { createUseStyles } from 'react-jss';
 import { createEmptyErrorObject } from 'common/util/httpErrorUtilities';
 import { 
@@ -25,6 +27,16 @@ const useStyles = createUseStyles({
     },
     certificateDescription: {
         marginBottom: '20px'
+    },
+    connectionDialog: {
+        backgroundColor: '#ADE8F4',
+        color: '#271F30',
+        border: 'solid 1px #00B4D8',
+        borderRadius: '3px',
+        width: '82%',
+        margin: '0 auto 20px',
+        padding: '16px',
+        boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px'
     }
 })
 
@@ -69,6 +81,7 @@ const MTLSCertificateLayout = ({ csrfToken , errorHandler }) => {
     };
 
     const formHasData = (formData.hasOwnProperty('keyPassword') || formData.hasOwnProperty('keyContent') || formData.hasOwnProperty('certificateContent'));
+    const certificateEnabled = formHasData && isSaveDisabled;
 
     function onSaveSuccess() {
         setIsSaveDisabled(true);
@@ -85,8 +98,14 @@ const MTLSCertificateLayout = ({ csrfToken , errorHandler }) => {
     return (
         <section className={classes.layout}>
             <header className={classes.certificateHeader}>Client Certificate</header>
-            <div className={classes.certificateDescription}>Filling out the fields below will create a Mutual TLS certificate (MTLS). This certificate will be used to provide valid authentication between your client and Alert.</div>
-            
+            <div className={classes.certificateDescription}>Filling out the fields below will enable Mutual TLS (MTLS) communication, if required by any one of the Channels. This certificate will be used to provide valid authentication between a Channel and Alert.</div>
+        
+            { certificateEnabled && (
+                <div className={classes.connectionDialog}>
+                    Client Certificate currently enabled.  Delete the current configuration to connect a new one.
+                </div>
+            )}
+
             <ConcreteConfigurationForm
                 formDataId="MTLSFormID"
                 setErrors={(formErrors) => setErrors(formErrors)}
@@ -126,6 +145,7 @@ const MTLSCertificateLayout = ({ csrfToken , errorHandler }) => {
                     errorValue={errors.fieldErrors.keyContent}
                     sizeClass="col-sm-8 flex-column p-2"
                     isDisabled={!isDeleteDisabled}
+                    rows={certificateEnabled? 1 : 8}
                 />
                 <TextArea
                     id="certificateContent"
@@ -138,6 +158,7 @@ const MTLSCertificateLayout = ({ csrfToken , errorHandler }) => {
                     errorValue={errors.fieldErrors.certificateContent}
                     sizeClass="col-sm-8 flex-column p-2"
                     isDisabled={!isDeleteDisabled}
+                    rows={certificateEnabled? 1 : 8}
                 />                
             </ConcreteConfigurationForm>
         </section>
