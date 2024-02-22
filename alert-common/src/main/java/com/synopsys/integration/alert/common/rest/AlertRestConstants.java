@@ -33,6 +33,8 @@ public final class AlertRestConstants {
     public static final String DEFAULT_CONFIGURATION_NAME = "default-configuration";
     public static final String DEFAULT_CLIENT_CERTIFICATE_ALIAS = "default-alert-client-certificate";
 
+    public static final String SWAGGER_PATH = "/v3/api-docs/production";
+
     private AlertRestConstants() {
         // This class should not be instantiated
     }

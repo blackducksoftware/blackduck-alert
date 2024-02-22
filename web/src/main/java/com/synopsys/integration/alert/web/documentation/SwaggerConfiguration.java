@@ -18,6 +18,9 @@ import io.swagger.v3.oas.models.info.Info;
 @Configuration
 public class SwaggerConfiguration {
     public static final String SWAGGER_DEFAULT_PATH_SPEC = "swagger-ui";
+    public static final String SWAGGER_DESCRIPTION = "The production REST endpoints used by the Alert UI."
+        + " Currently, these are all subject to change between versions."
+        + " A stable, versioned API is coming soon.";
 
     @Bean
     public GroupedOpenApi api() {
@@ -32,9 +35,7 @@ public class SwaggerConfiguration {
     public OpenAPI springShopOpenAPI() {
         return new OpenAPI()
             .info(new Info().title("Synopsys Alert - REST API")
-                .description("The production REST endpoints used by the Alert UI."
-                    + " Currently, these are all subject to change between versions."
-                    + " A stable, versioned API is coming soon.")
+                .description(SWAGGER_DESCRIPTION)
                 .version("preview"));
     }
 

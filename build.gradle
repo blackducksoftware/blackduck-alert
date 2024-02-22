@@ -22,7 +22,7 @@ ext {
     commitHash = 'UNKNOWN'
 
     // Copied from src/test/java - com.synopsys.integration.alert.TestTags
-    junitPlatformCustomTestTags = 'BlackDuckConnection, DatabaseConnection, ExternalConnection'
+    junitPlatformCustomTestTags = 'BlackDuckConnection, DatabaseConnection, ExternalConnection, Swagger'
 
     javaSourceCompatibility = JavaVersion.VERSION_17
     javaTargetCompatibility = JavaVersion.VERSION_17
@@ -273,3 +273,10 @@ tasks.getByName(ext.dockerBuildAllImagesStageName).mustRunAfter(buildAll)
 tasks.getByName(ext.dockerBuildAllImagesStageName).mustRunAfter(tasks.getByName(ext.dockerSetupStagingAreaDirectoryStageName))
 tasks.getByName(ext.dockerSetupStagingAreaDirectoryStageName).mustRunAfter(buildAll)
 tasks.getByName(ext.dockerPublishAllImages_DHStageName).mustRunAfter(buildAll)
+
+task swaggerApiSpec(type: Test) {
+    useJUnitPlatform {
+        includeTags "Swagger"
+    }
+    testLogging.showStandardStreams = true
+}
