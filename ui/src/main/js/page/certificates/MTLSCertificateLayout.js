@@ -73,14 +73,14 @@ const MTLSCertificateLayout = ({ csrfToken , errorHandler }) => {
             setFormData({
                 keyPassword: '***********',
                 keyContent: '***********',
-                certificateContent: '***********'
+                clientCertificateContent: '***********'
             });
             setIsDeleteDisabled(false);
             setIsSaveDisabled(true);
         }
     };
 
-    const formHasData = (formData.hasOwnProperty('keyPassword') || formData.hasOwnProperty('keyContent') || formData.hasOwnProperty('certificateContent'));
+    const formHasData = (formData.hasOwnProperty('keyPassword') || formData.hasOwnProperty('keyContent') || formData.hasOwnProperty('clientCertificateContent'));
     const certificateEnabled = formHasData && isSaveDisabled;
 
     function onSaveSuccess() {
@@ -148,14 +148,14 @@ const MTLSCertificateLayout = ({ csrfToken , errorHandler }) => {
                     rows={certificateEnabled? 1 : 8}
                 />
                 <TextArea
-                    id="certificateContent"
-                    name="certificateContent"
+                    id="clientCertificateContent"
+                    name="clientCertificateContent"
                     label="Certificate Content"
                     description="Enter a valid Mutual TLS certificate (MTLS) below to provide authentication between your client and Alert."
-                    onChange={handleOnChange('certificateContent')}
-                    value={getDisplayValue('certificateContent')}
-                    errorName="certificateContent"
-                    errorValue={errors.fieldErrors.certificateContent}
+                    onChange={handleOnChange('clientCertificateContent')}
+                    value={getDisplayValue('clientCertificateContent')}
+                    errorName="clientCertificateContent"
+                    errorValue={errors.fieldErrors.clientCertificateContent}
                     sizeClass="col-sm-8 flex-column p-2"
                     isDisabled={!isDeleteDisabled}
                     rows={certificateEnabled? 1 : 8}
