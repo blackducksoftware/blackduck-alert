@@ -36,10 +36,10 @@ class ConfigButtons extends Component {
     }
 
     createSaveButton() {
-        const { includeSave, submitLabel, submitId } = this.props;
+        const { includeSave, submitLabel, submitId, isSaveDisabled } = this.props;
         if (includeSave) {
             return (
-                <Button id={submitId} text={submitLabel} type="submit" />
+                <Button id={submitId} text={submitLabel} type="submit" isDisabled={isSaveDisabled} />
             );
         }
         return null;
@@ -60,7 +60,7 @@ class ConfigButtons extends Component {
 
     createDeleteButton() {
         const {
-            includeDelete, includeSave, deleteLabel, deleteId
+            includeDelete, includeSave, deleteLabel, deleteId, isDeleteDisabled
         } = this.props;
         const borderLeft = includeSave ? '1px solid #aaa' : 'none';
         const style = {
@@ -71,7 +71,7 @@ class ConfigButtons extends Component {
         if (includeDelete) {
             return (
                 <div style={Object.assign(style, { borderLeft })}>
-                    <Button id={deleteId} onClick={this.handleDelete} text={deleteLabel} />
+                    <Button id={deleteId} onClick={this.handleDelete} text={deleteLabel} isDisabled={isDeleteDisabled} />
                 </div>
             );
         }
@@ -177,7 +177,9 @@ ConfigButtons.propTypes = {
     deleteLabel: PropTypes.string,
     isFixed: PropTypes.bool,
     confirmDeleteTitle: PropTypes.string,
-    confirmDeleteMessage: PropTypes.string
+    confirmDeleteMessage: PropTypes.string,
+    isSaveDisabled: PropTypes.bool,
+    isDeleteDisabled: PropTypes.bool
 };
 
 ConfigButtons.defaultProps = {

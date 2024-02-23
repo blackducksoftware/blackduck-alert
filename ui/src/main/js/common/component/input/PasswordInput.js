@@ -4,7 +4,7 @@ import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input
 
 const PasswordInput = ({
     id, description, errorName, errorValue, inputClass, isSet, label, labelClass, 
-    name, onChange, readOnly, required, showDescriptionPlaceHolder, value, placeholder, customDescription
+    name, onChange, readOnly, required, showDescriptionPlaceHolder, value, placeholder, customDescription, isDisabled
 }) => {
     const placeholderText = (isSet) ? '***********' : null;
     const onChangeHandler = readOnly ? null : onChange;
@@ -29,6 +29,7 @@ const PasswordInput = ({
                     value={value} 
                     onChange={onChangeHandler} 
                     placeholder={placeholderText || placeholder} 
+                    disabled={isDisabled}
                 />
             </div>
         </LabeledField>
@@ -50,7 +51,8 @@ PasswordInput.propTypes = {
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     required: PropTypes.bool,
-    customDescription: PropTypes.string
+    customDescription: PropTypes.string,
+    isDisabled: PropTypes.bool
 };
 
 PasswordInput.defaultProps = {
@@ -66,7 +68,8 @@ PasswordInput.defaultProps = {
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    isDisabled: false
 };
 
 export default PasswordInput;

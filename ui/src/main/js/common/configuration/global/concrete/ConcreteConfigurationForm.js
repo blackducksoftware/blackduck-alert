@@ -33,7 +33,10 @@ const ConcreteConfigurationForm = ({
     postDeleteAction,
     disableTestModalSubmit,
     modalSubmitText,
-    testModalButtonTitle
+    testModalButtonTitle,
+    ignoreValidation,
+    isSaveDisabled,
+    isDeleteDisabled
 }) => {
     const [showTest, setShowTest] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -98,31 +101,47 @@ const ConcreteConfigurationForm = ({
         setErrorMessage(null);
         setActionMessage(null);
         setErrors(HttpErrorUtilities.createEmptyErrorObject());
-        const validateResponse = await validateRequest();
-        const validateJson = await validateResponse.json();
-        if (validateResponse.ok) {
-            if (validateJson.hasErrors) {
-                setErrorMessage(validateJson.message);
-                setErrors(HttpErrorUtilities.createErrorObject(validateJson));
+        if (ignoreValidation) {
+            const request = (formDataId) ? () => updateRequest() : () => createRequest();
+            const saveResponse = await request();
+            if (saveResponse.ok) {
+                await getRequest();
+                setActionMessage('Save Successful');
+                afterSuccessfulSave();
             } else {
-                const request = (formDataId) ? () => updateRequest() : () => createRequest();
-                const saveResponse = await request();
-                if (saveResponse.ok) {
-                    await getRequest();
-                    setActionMessage('Save Successful');
-                    afterSuccessfulSave();
-                } else {
-                    setActionMessage('Save Failed');
-                    const errorObject = errorHandler.handle(saveResponse, await saveResponse.json(), false);
-                    if (errorObject && errorObject.message) {
-                        setErrorMessage(errorObject.message);
-                    }
+                setErrorMessage('Save Failed');
+                const errorObject = errorHandler.handle(saveResponse, await saveResponse.json(), false);
+                if (errorObject && errorObject.message) {
+                    setErrorMessage(errorObject.message);
                 }
             }
         } else {
-            const errorObject = errorHandler.handle(validateResponse, validateJson, false);
-            if (errorObject && errorObject.message) {
-                setErrorMessage(errorObject.message);
+            const validateResponse = await validateRequest();
+            const validateJson = await validateResponse.json();
+            if (validateResponse.ok) {
+                if (validateJson.hasErrors) {
+                    setErrorMessage(validateJson.message);
+                    setErrors(HttpErrorUtilities.createErrorObject(validateJson));
+                } else {
+                    const request = (formDataId) ? () => updateRequest() : () => createRequest();
+                    const saveResponse = await request();
+                    if (saveResponse.ok) {
+                        await getRequest();
+                        setActionMessage('Save Successful');
+                        afterSuccessfulSave();
+                    } else {
+                        setErrorMessage('Save Failed');
+                        const errorObject = errorHandler.handle(saveResponse, await saveResponse.json(), false);
+                        if (errorObject && errorObject.message) {
+                            setErrorMessage(errorObject.message);
+                        }
+                    }
+                }
+            } else {
+                const errorObject = errorHandler.handle(validateResponse, validateJson, false);
+                if (errorObject && errorObject.message) {
+                    setErrorMessage(errorObject.message);
+                }
             }
         }
         setInProgress(false);
@@ -142,7 +161,7 @@ const ConcreteConfigurationForm = ({
                 if (errorObject && errorObject.message) {
                     setErrorMessage(errorObject.message);
                 }
-                setActionMessage('Delete Failed');
+                setErrorMessage('Delete Failed');
             }
         } else {
             await getRequest();
@@ -181,6 +200,8 @@ const ConcreteConfigurationForm = ({
                     deleteLabel={deleteLabel}
                     submitLabel={submitLabel}
                     testLabel={testLabel}
+                    isSaveDisabled={isSaveDisabled}
+                    isDeleteDisabled={isDeleteDisabled}
                 />
             </form>
             <GlobalTestModal
@@ -229,7 +250,9 @@ ConcreteConfigurationForm.propTypes = {
     postDeleteAction: PropTypes.func,
     disableTestModalSubmit: PropTypes.func,
     modalSubmitText: PropTypes.string,
-    testModalButtonTitle: PropTypes.string
+    testModalButtonTitle: PropTypes.string,
+    isSaveDisabled: PropTypes.bool,
+    isDeleteDisabled: PropTypes.bool
 };
 
 ConcreteConfigurationForm.defaultProps = {
@@ -244,7 +267,8 @@ ConcreteConfigurationForm.defaultProps = {
     buttonIdPrefix: 'common-form',
     afterSuccessfulSave: () => null,
     readonly: false,
-    postDeleteAction: () => {}
+    postDeleteAction: () => {},
+    ignoreValidation: false
 };
 
 export default ConcreteConfigurationForm;
