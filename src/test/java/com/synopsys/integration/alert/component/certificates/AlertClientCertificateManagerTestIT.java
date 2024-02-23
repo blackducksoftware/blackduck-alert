@@ -124,7 +124,7 @@ class AlertClientCertificateManagerTestIT {
     void importCertificateTest() throws Exception {
         clientCertificateManager = new AlertClientCertificateManager();
         ClientCertificateModel model = certTestUtil.createClientModel();
-        Certificate validationCertificate = certTestUtil.loadCertificate(model.getCertificateContent());
+        Certificate validationCertificate = certTestUtil.loadCertificate(model.getClientCertificateContent());
         clientCertificateManager.importCertificate(model);
         KeyStore clientKeystore = clientCertificateManager.getClientKeyStore().orElseThrow(() -> new AssertionError("Keystore missing when it should exist"));
 

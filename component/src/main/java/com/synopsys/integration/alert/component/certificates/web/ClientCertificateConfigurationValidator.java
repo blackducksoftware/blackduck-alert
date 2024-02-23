@@ -22,7 +22,7 @@ public class ClientCertificateConfigurationValidator {
         if (StringUtils.isBlank(model.getKeyContent())) {
             statuses.add(AlertFieldStatus.error(CertificatesDescriptor.KEY_PRIVATE_KEY_CONTENT, "Private key content cannot be empty."));
         }
-        if (StringUtils.isBlank(model.getCertificateContent())) {
+        if (StringUtils.isBlank(model.getClientCertificateContent())) {
             statuses.add(AlertFieldStatus.error(CertificatesDescriptor.KEY_CLIENT_CERTIFICATE_CONTENT, "Certificate content cannot be empty."));
         }
 
