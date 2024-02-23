@@ -2,7 +2,6 @@ package com.synopsys.integration.alert.common.persistence.model;
 
 import java.io.Serial;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.api.common.model.Obfuscated;
 
@@ -11,17 +10,16 @@ public class ClientCertificateModel extends AlertSerializableModel implements Ob
     private static final long serialVersionUID = -2254327445871324025L;
     private String keyPassword;
     private String keyContent;
-    @JsonProperty("clientCertificateContent")
-    private String certificateContent;
+    private String clientCertificateContent;
 
     public ClientCertificateModel() {
         // For serialization
     }
 
-    public ClientCertificateModel(String keyPassword, String keyContent, String certificateContent) {
+    public ClientCertificateModel(String keyPassword, String keyContent, String clientCertificateContent) {
         this.keyPassword = keyPassword;
         this.keyContent = keyContent;
-        this.certificateContent = certificateContent;
+        this.clientCertificateContent = clientCertificateContent;
     }
 
     public String getKeyPassword() {
@@ -32,8 +30,8 @@ public class ClientCertificateModel extends AlertSerializableModel implements Ob
         return keyContent;
     }
 
-    public String getCertificateContent() {
-        return certificateContent;
+    public String getClientCertificateContent() {
+        return clientCertificateContent;
     }
 
     @Override

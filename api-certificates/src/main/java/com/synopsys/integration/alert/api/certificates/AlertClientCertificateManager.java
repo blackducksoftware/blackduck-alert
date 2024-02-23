@@ -25,7 +25,7 @@ public class AlertClientCertificateManager {
         throws AlertException {
         logger.debug("Importing certificate into key store.");
         validateClientCertificateHasValues(clientCertificateModel);
-        PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate(clientCertificateModel.getCertificateContent())
+        PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate(clientCertificateModel.getClientCertificateContent())
             .withPrivateKey(clientCertificateModel.getKeyContent())
             .withPrivateKeyPassword(clientCertificateModel.getKeyPassword());
         PemSslStoreDetails trustStoreDetails = PemSslStoreDetails.forCertificate(null);
@@ -62,7 +62,7 @@ public class AlertClientCertificateManager {
             throw new AlertException("The client certificate and key configuration cannot be null.");
         }
 
-        if (StringUtils.isBlank(clientCertificateModel.getCertificateContent())) {
+        if (StringUtils.isBlank(clientCertificateModel.getClientCertificateContent())) {
             throw new AlertException("The certificate content cannot be blank.");
         }
 

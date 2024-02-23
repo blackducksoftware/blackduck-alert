@@ -56,7 +56,7 @@ class AlertClientCertificateManagerStartupComponentTestIT {
         KeyStore clientKeystore = alertClientCertificateManager.getClientKeyStore().orElseThrow(() -> new AssertionError("Keystore missing when it should exist"));
         assertTrue(clientKeystore.containsAlias(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS));
         Certificate clientCertificate = clientKeystore.getCertificate(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS);
-        Certificate validationCertificate = certTestUtil.loadCertificate(clientCertificateModel.getCertificateContent());
+        Certificate validationCertificate = certTestUtil.loadCertificate(clientCertificateModel.getClientCertificateContent());
 
         assertEquals(validationCertificate.getType(), clientCertificate.getType());
         assertEquals(validationCertificate.getPublicKey().getAlgorithm(), clientCertificate.getPublicKey().getAlgorithm());
