@@ -38,7 +38,7 @@ class ClientCertificateAccessorTestIT {
 
         assertEquals(createdModel.getKeyPassword(), getModel.getKeyPassword());
         assertEquals(createdModel.getKeyContent(), getModel.getKeyContent());
-        assertEquals(createdModel.getCertificateContent(), getModel.getCertificateContent());
+        assertEquals(createdModel.getClientCertificateContent(), getModel.getClientCertificateContent());
     }
 
     @Test
@@ -63,7 +63,7 @@ class ClientCertificateAccessorTestIT {
 
         assertNotEquals(getModel.getKeyPassword(), duplicateCreateModel.getKeyPassword());
         assertNotEquals(getModel.getKeyContent(), duplicateCreateModel.getKeyContent());
-        assertNotEquals(getModel.getCertificateContent(), duplicateCreateModel.getCertificateContent());
+        assertNotEquals(getModel.getClientCertificateContent(), duplicateCreateModel.getClientCertificateContent());
     }
 
     @Test
@@ -81,7 +81,7 @@ class ClientCertificateAccessorTestIT {
         Assertions.assertNotEquals(createdModel.getKeyPassword(), updatedModel.getKeyPassword());
         Assertions.assertNotEquals(createdModel.getKeyContent(), updatedModel.getKeyContent());
 
-        Assertions.assertEquals(createdModel.getCertificateContent(), updatedModel.getCertificateContent());
+        Assertions.assertEquals(createdModel.getClientCertificateContent(), updatedModel.getClientCertificateContent());
     }
 
     @Test
