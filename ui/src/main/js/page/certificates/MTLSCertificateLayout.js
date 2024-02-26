@@ -3,12 +3,7 @@ import PropTypes from 'prop-types';
 
 import { createUseStyles } from 'react-jss';
 import { createEmptyErrorObject } from 'common/util/httpErrorUtilities';
-import { 
-    CLIENT_CERTIFICATE_URL,
-    createDeleteRequest,
-    createNewConfigurationRequest,
-    createReadRequest
-} from 'common/util/configurationRequestBuilder';
+import { CLIENT_CERTIFICATE_URL, createDeleteRequest, createNewConfigurationRequest, createReadRequest } from 'common/util/configurationRequestBuilder';
 
 import PasswordInput from 'common/component/input/PasswordInput';
 import TextArea from 'common/component/input/TextArea';
@@ -38,9 +33,9 @@ const useStyles = createUseStyles({
         padding: '16px',
         boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px'
     }
-})
+});
 
-const MTLSCertificateLayout = ({ csrfToken , errorHandler }) => {
+const MTLSCertificateLayout = ({ csrfToken, errorHandler }) => {
     const classes = useStyles();
     const [errors, setErrors] = useState(createEmptyErrorObject());
     const [formData, setFormData] = useState({});
@@ -62,7 +57,7 @@ const MTLSCertificateLayout = ({ csrfToken , errorHandler }) => {
                     return data;
                 }
 
-                return { ...clientCertificateData, [label]: value }
+                return { ...clientCertificateData, [label]: value };
             });
         }
     );
@@ -99,7 +94,7 @@ const MTLSCertificateLayout = ({ csrfToken , errorHandler }) => {
         <section className={classes.layout}>
             <header className={classes.certificateHeader}>Client Certificate</header>
             <div className={classes.certificateDescription}>Filling out the fields below will enable Mutual TLS (MTLS) communication, if required by any one of the Channels. This certificate will be used to provide valid authentication between a Channel and Alert.</div>
-        
+
             { certificateEnabled && (
                 <div className={classes.connectionDialog}>
                     Client Certificate currently enabled.  Delete the current configuration to connect a new one.
@@ -114,19 +109,19 @@ const MTLSCertificateLayout = ({ csrfToken , errorHandler }) => {
                 deleteRequest={() => createDeleteRequest(CLIENT_CERTIFICATE_URL, csrfToken)}
                 afterSuccessfulSave={onSaveSuccess}
                 postDeleteAction={onDeleteSuccess}
-                ignoreValidation={true}
+                ignoreValidation
                 displayTest={false}
                 errorHandler={errorHandler}
                 deleteLabel="Delete"
                 submitLabel="Save"
                 isSaveDisabled={!formHasData || isSaveDisabled}
                 isDeleteDisabled={isDeleteDisabled}
-            > 
+            >
                 <PasswordInput
                     id="keyPassword"
                     name="keyPassword"
                     label="Key Password"
-                    description="Provide description for key content here."
+                    description="The passphrase/password used for the encryption/decryption of the client certificate private key."
                     onChange={handleOnChange('keyPassword')}
                     value={getDisplayValue('keyPassword')}
                     errorName="keyPassword"
@@ -137,7 +132,7 @@ const MTLSCertificateLayout = ({ csrfToken , errorHandler }) => {
                     id="keyContent"
                     name="keyContent"
                     label="Key Content"
-                    description="Provide description for key content here."
+                    description="The full text content of the client certificate private key."
                     readOnly={false}
                     onChange={handleOnChange('keyContent')}
                     value={getDisplayValue('keyContent')}
@@ -145,21 +140,21 @@ const MTLSCertificateLayout = ({ csrfToken , errorHandler }) => {
                     errorValue={errors.fieldErrors.keyContent}
                     sizeClass="col-sm-8 flex-column p-2"
                     isDisabled={!isDeleteDisabled}
-                    rows={certificateEnabled? 1 : 8}
+                    rows={certificateEnabled ? 1 : 8}
                 />
                 <TextArea
                     id="clientCertificateContent"
                     name="clientCertificateContent"
                     label="Certificate Content"
-                    description="Enter a valid Mutual TLS certificate (MTLS) below to provide authentication between your client and Alert."
+                    description="The full text content of the client certificate."
                     onChange={handleOnChange('clientCertificateContent')}
                     value={getDisplayValue('clientCertificateContent')}
                     errorName="clientCertificateContent"
                     errorValue={errors.fieldErrors.clientCertificateContent}
                     sizeClass="col-sm-8 flex-column p-2"
                     isDisabled={!isDeleteDisabled}
-                    rows={certificateEnabled? 1 : 8}
-                />                
+                    rows={certificateEnabled ? 1 : 8}
+                />
             </ConcreteConfigurationForm>
         </section>
     );
@@ -168,6 +163,6 @@ const MTLSCertificateLayout = ({ csrfToken , errorHandler }) => {
 MTLSCertificateLayout.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     errorHandler: PropTypes.object.isRequired
-}
+};
 
 export default MTLSCertificateLayout;
