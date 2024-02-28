@@ -75,8 +75,8 @@ const MTLSCertificateLayout = ({ csrfToken, errorHandler }) => {
         }
     };
 
-    const formHasData = (formData.hasOwnProperty('keyPassword') || formData.hasOwnProperty('keyContent') || formData.hasOwnProperty('clientCertificateContent'));
-    const certificateEnabled = formHasData && isSaveDisabled;
+    const formHasAllData = (formData.hasOwnProperty('keyPassword') && formData.hasOwnProperty('keyContent') && formData.hasOwnProperty('clientCertificateContent'));
+    const certificateEnabled = formHasAllData && isSaveDisabled;
 
     function onSaveSuccess() {
         setIsSaveDisabled(true);
@@ -114,7 +114,7 @@ const MTLSCertificateLayout = ({ csrfToken, errorHandler }) => {
                 errorHandler={errorHandler}
                 deleteLabel="Delete"
                 submitLabel="Save"
-                isSaveDisabled={!formHasData || isSaveDisabled}
+                isSaveDisabled={!formHasAllData || isSaveDisabled}
                 isDeleteDisabled={isDeleteDisabled}
             >
                 <PasswordInput
@@ -127,12 +127,13 @@ const MTLSCertificateLayout = ({ csrfToken, errorHandler }) => {
                     errorName="keyPassword"
                     errorValue={errors.fieldErrors.keyPassword}
                     isDisabled={!isDeleteDisabled}
+                    required
                 />
                 <TextArea
                     id="keyContent"
                     name="keyContent"
                     label="Key Content"
-                    description="The full text content of the client certificate private key."
+                    description="The full text content of the client certificate PKCS#8 private key in PEM format."
                     readOnly={false}
                     onChange={handleOnChange('keyContent')}
                     value={getDisplayValue('keyContent')}
@@ -141,12 +142,13 @@ const MTLSCertificateLayout = ({ csrfToken, errorHandler }) => {
                     sizeClass="col-sm-8 flex-column p-2"
                     isDisabled={!isDeleteDisabled}
                     rows={certificateEnabled ? 1 : 8}
+                    required
                 />
                 <TextArea
                     id="clientCertificateContent"
                     name="clientCertificateContent"
                     label="Certificate Content"
-                    description="The full text content of the client certificate."
+                    description="The full text content of the client certificate in PEM format."
                     onChange={handleOnChange('clientCertificateContent')}
                     value={getDisplayValue('clientCertificateContent')}
                     errorName="clientCertificateContent"
@@ -154,6 +156,7 @@ const MTLSCertificateLayout = ({ csrfToken, errorHandler }) => {
                     sizeClass="col-sm-8 flex-column p-2"
                     isDisabled={!isDeleteDisabled}
                     rows={certificateEnabled ? 1 : 8}
+                    required
                 />
             </ConcreteConfigurationForm>
         </section>
