@@ -31,9 +31,10 @@ project.tasks.create(name: 'pullOpenApiGeneratorImage', type: Exec, dependsOn: '
 project.tasks.create(name: 'runOpenAPIGenerator', type: Exec, dependsOn: 'pullOpenApiGeneratorImage', group: 'Postman', description: 'Create the Postman collection. <sub-task>') {
     outputs.upToDateWhen { false }
 
-    def buildCommand = ['docker', 'run', '--rm', '-v', "${runDirectory}:${dockerRunDirectory}",
-                        openapiGeneratorImageName, 'generate', '-i', "${dockerRunDirectory}/swagger.api-spec",
-                        '-g', 'postman-collection', '-o', dockerRunDirectory, '--additional-properties=folderStrategy=Tags']
+    def buildCommand = ['docker', 'run', '--rm', '--user', rootProject.ext.userID + ':' + rootProject.ext.groupID,
+                        '-v', "${runDirectory}:${dockerRunDirectory}", openapiGeneratorImageName, 'generate', '-i',
+                        "${dockerRunDirectory}/swagger.api-spec", '-g', 'postman-collection', '-o', dockerRunDirectory,
+                        '--additional-properties=folderStrategy=Tags']
 
     doFirst {
         logger.lifecycle('Running command:: ' + buildCommand.join(" "))
