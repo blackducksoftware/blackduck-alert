@@ -81,6 +81,7 @@ apply from: 'buildSrc/buildTasks.gradle'
 apply from: 'buildSrc/runTasks.gradle'
 apply from: 'buildSrc/deploymentTasks.gradle'
 apply from: 'buildSrc/docker.gradle'
+apply from: 'buildSrc/postman.gradle'
 
 subprojects {
     if (project.name != 'alert-platform') {
@@ -273,10 +274,3 @@ tasks.getByName(ext.dockerBuildAllImagesStageName).mustRunAfter(buildAll)
 tasks.getByName(ext.dockerBuildAllImagesStageName).mustRunAfter(tasks.getByName(ext.dockerSetupStagingAreaDirectoryStageName))
 tasks.getByName(ext.dockerSetupStagingAreaDirectoryStageName).mustRunAfter(buildAll)
 tasks.getByName(ext.dockerPublishAllImages_DHStageName).mustRunAfter(buildAll)
-
-task swaggerApiSpec(type: Test) {
-    useJUnitPlatform {
-        includeTags "Swagger"
-    }
-    testLogging.showStandardStreams = true
-}
