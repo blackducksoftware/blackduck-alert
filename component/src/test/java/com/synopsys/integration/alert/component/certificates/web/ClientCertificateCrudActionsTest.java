@@ -48,7 +48,8 @@ class ClientCertificateCrudActionsTest {
         AuthorizationManager authorizationManager = authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet(
             "admin",
             "admin",
-            () -> new PermissionMatrixModel(permissions));
+            () -> new PermissionMatrixModel(permissions)
+        );
         AlertProperties alertProperties = new MockAlertProperties();
         FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, BlackDuckServicesFactory.createDefaultGson());
         EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
@@ -58,7 +59,7 @@ class ClientCertificateCrudActionsTest {
             authorizationManager,
             certificatesDescriptorKey,
             new ClientCertificateAccessor(encryptionUtility, new MockClientCertificateKeyRepository(), new MockClientCertificateRepository()),
-            new ClientCertificateConfigurationValidator()
+            new ClientCertificateConfigurationValidator(certificateManager)
         );
         model = new ClientCertificateModel("key_password", "key_content", "certificate_content");
     }
@@ -70,12 +71,27 @@ class ClientCertificateCrudActionsTest {
         assertEquals(HttpStatus.NOT_FOUND, actionResponseGetOne.getHttpStatus());
         assertFalse(actionResponseGetOne.hasContent());
 
+        Mockito.when(certificateManager.validateCertificate(model)).thenReturn(true);
         ActionResponse<ClientCertificateModel> actionResponseCreate = crudActions.create(model);
         assertTrue(actionResponseCreate.isSuccessful());
         assertEquals(HttpStatus.OK, actionResponseCreate.getHttpStatus());
         assertTrue(actionResponseCreate.hasContent());
 
         Mockito.verify(certificateManager).importCertificate(model);
+    }
+
+    @Test
+    void createConfigWithValidationFailures() {
+        ActionResponse<ClientCertificateModel> actionResponseGetOne = crudActions.getOne();
+        assertFalse(actionResponseGetOne.isSuccessful());
+        assertEquals(HttpStatus.NOT_FOUND, actionResponseGetOne.getHttpStatus());
+        assertFalse(actionResponseGetOne.hasContent());
+
+        Mockito.when(certificateManager.validateCertificate(model)).thenReturn(false);
+        ActionResponse<ClientCertificateModel> actionResponseCreate = crudActions.create(model);
+        assertFalse(actionResponseCreate.isSuccessful());
+        assertEquals(HttpStatus.BAD_REQUEST, actionResponseCreate.getHttpStatus());
+        assertFalse(actionResponseCreate.hasContent());
     }
 
     @Test
@@ -88,6 +104,7 @@ class ClientCertificateCrudActionsTest {
 
     @Test
     void deleteExistingConfig() throws AlertException {
+        Mockito.when(certificateManager.validateCertificate(model)).thenReturn(true);
         ActionResponse<ClientCertificateModel> actionResponseCreate = crudActions.create(model);
         assertTrue(actionResponseCreate.isSuccessful());
         assertEquals(HttpStatus.OK, actionResponseCreate.getHttpStatus());

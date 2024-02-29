@@ -4,8 +4,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.certificates.AlertClientCertificateManager;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
@@ -13,6 +15,14 @@ import com.synopsys.integration.alert.component.certificates.CertificatesDescrip
 
 @Component
 public class ClientCertificateConfigurationValidator {
+    public static final String CERTIFICATE_VALIDATE_ERROR_MESSAGE = "Error creating config: Error reading certificate or key.";
+    private final AlertClientCertificateManager alertClientCertificateManager;
+
+    @Autowired
+    ClientCertificateConfigurationValidator(AlertClientCertificateManager alertClientCertificateManager) {
+        this.alertClientCertificateManager = alertClientCertificateManager;
+    }
+
     public ValidationResponseModel validate(ClientCertificateModel model) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
 
@@ -28,6 +38,10 @@ public class ClientCertificateConfigurationValidator {
 
         if (!statuses.isEmpty()) {
             return ValidationResponseModel.fromStatusCollection(statuses);
+        }
+
+        if (!alertClientCertificateManager.validateCertificate(model)) {
+            return ValidationResponseModel.generalError(CERTIFICATE_VALIDATE_ERROR_MESSAGE);
         }
 
         return ValidationResponseModel.success();
