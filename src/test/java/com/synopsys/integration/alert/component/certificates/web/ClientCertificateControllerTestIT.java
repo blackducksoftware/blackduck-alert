@@ -177,7 +177,7 @@ class ClientCertificateControllerTestIT {
 
         request.content(gson.toJson(model));
         request.contentType(MEDIA_TYPE);
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isInternalServerError());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
