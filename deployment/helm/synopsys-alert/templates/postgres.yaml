@@ -35,7 +35,7 @@ spec:
   {{- else if .Values.storageClass }}
   storageClassName: {{ .Values.storageClass }}
   {{- end}}
-  {{ if .Values.alert.volumeName -}}
+  {{ if .Values.postgres.volumeName -}}
   volumeName: {{ .Values.postgres.volumeName }}
   {{ end -}}
   accessModes:
