@@ -139,6 +139,29 @@ class AlertClientCertificateManagerTestIT {
     }
 
     @Test
+    void validateCertificateNullContentTest() {
+        clientCertificateManager = new AlertClientCertificateManager();
+        ClientCertificateModel model = certTestUtil.createClientModel(
+            CertificateTestUtil.MTLS_CERTIFICATE_PASSWORD,
+            null,
+            CertificateTestUtil.EMPTY_STRING_CONTENT
+        );
+
+        assertFalse(clientCertificateManager.validateCertificate(model));
+        assertFalse(clientCertificateManager.containsClientCertificate());
+    }
+
+    @Test
+    void validateCertificateTest() throws Exception {
+        clientCertificateManager = new AlertClientCertificateManager();
+        ClientCertificateModel model = certTestUtil.createClientModel();
+
+        assertTrue(clientCertificateManager.validateCertificate(model));
+        assertFalse(clientCertificateManager.containsClientCertificate());
+        assertTrue(clientCertificateManager.getClientKeyStore().isEmpty());
+    }
+
+    @Test
     void removeCertificateTest() throws Exception {
         clientCertificateManager = new AlertClientCertificateManager();
         ClientCertificateModel model = certTestUtil.createClientModel();

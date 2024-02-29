@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.component.certificates.web;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.certificates.AlertClientCertificateManager;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
@@ -15,11 +17,11 @@ import com.synopsys.integration.alert.database.api.ClientCertificateAccessor;
 
 @Component
 public class ClientCertificateCrudActions {
+    private final Logger logger = AlertLoggerFactory.getLogger(getClass());
     private final AlertClientCertificateManager alertClientCertificateManager;
     private final ClientCertificateAccessor configurationAccessor;
     private final ConfigurationCrudHelper configurationCrudHelper;
     private final ClientCertificateConfigurationValidator configurationValidator;
-
 
     @Autowired
     public ClientCertificateCrudActions(
@@ -50,7 +52,10 @@ public class ClientCertificateCrudActions {
             try {
                 alertClientCertificateManager.importCertificate(resource);
             } catch (Exception e) {
-                return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error creating config: %s", e.getMessage()));
+                logger.error(e.getMessage());
+                // If an error occurs while importing the certificate then we should remove the persisted configuration as it is invalid.
+                configurationAccessor.deleteConfiguration();
+                return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ClientCertificateConfigurationValidator.CERTIFICATE_VALIDATE_ERROR_MESSAGE);
             }
         }
 
