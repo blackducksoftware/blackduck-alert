@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.component.certificates;
+package com.synopsys.integration.alert.api.certificates;
 
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -21,15 +21,31 @@ public class AlertClientCertificateManager {
 
     private PemSslStoreBundle clientSslStoreBundle;
 
-    public synchronized void importCertificate(ClientCertificateModel clientCertificateModel)
-        throws AlertException {
+    public synchronized void importCertificate(ClientCertificateModel clientCertificateModel) throws AlertException {
         logger.debug("Importing certificate into key store.");
+        clientSslStoreBundle = createPemSslStoreBundle(clientCertificateModel);
+    }
+
+    public synchronized boolean validateCertificate(ClientCertificateModel clientCertificateModel) {
+        try {
+            logger.debug("Validating client certificate.");
+            // Validate a PemSslStoreBundle can be created. If an exception is thrown, the certificate is invalid.
+            // The returned result is ignored and not saved to the clientSslStoreBundle.
+            createPemSslStoreBundle(clientCertificateModel);
+            return true;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return false;
+        }
+    }
+
+    private PemSslStoreBundle createPemSslStoreBundle(ClientCertificateModel clientCertificateModel) throws AlertException {
         validateClientCertificateHasValues(clientCertificateModel);
-        PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate(clientCertificateModel.getCertificateContent())
+        PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate(clientCertificateModel.getClientCertificateContent())
             .withPrivateKey(clientCertificateModel.getKeyContent())
             .withPrivateKeyPassword(clientCertificateModel.getKeyPassword());
         PemSslStoreDetails trustStoreDetails = PemSslStoreDetails.forCertificate(null);
-        clientSslStoreBundle = new PemSslStoreBundle(keyStoreDetails, trustStoreDetails, AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS);
+        return new PemSslStoreBundle(keyStoreDetails, trustStoreDetails, AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS);
     }
 
     public synchronized void removeCertificate() throws AlertException {
@@ -48,6 +64,10 @@ public class AlertClientCertificateManager {
         clientSslStoreBundle = null;
     }
 
+    public boolean containsClientCertificate() {
+        return null != clientSslStoreBundle;
+    }
+
     public Optional<KeyStore> getClientKeyStore() {
         return Optional.ofNullable(clientSslStoreBundle)
             .map(PemSslStoreBundle::getKeyStore);
@@ -58,7 +78,7 @@ public class AlertClientCertificateManager {
             throw new AlertException("The client certificate and key configuration cannot be null.");
         }
 
-        if (StringUtils.isBlank(clientCertificateModel.getCertificateContent())) {
+        if (StringUtils.isBlank(clientCertificateModel.getClientCertificateContent())) {
             throw new AlertException("The certificate content cannot be blank.");
         }
 

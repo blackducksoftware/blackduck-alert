@@ -1,0 +1,11 @@
+ext.moduleName = 'com.synopsys.integration.alert.api-certificates'
+
+dependencies {
+    implementation platform(project(':alert-platform'))
+
+    implementation project(':alert-common')
+    implementation project(':api-common-model')
+    implementation project(':alert-database')
+
+    implementation 'org.springframework.boot:spring-boot'
+}

@@ -93,7 +93,7 @@ public class ClientCertificateAccessor implements UniqueConfigurationAccessor<Cl
     private Pair<ClientCertificateKeyEntity, ClientCertificateEntity> toEntity(UUID keyId, UUID certificateId, ClientCertificateModel model, OffsetDateTime lastUpdated) {
         String password = encryptionUtility.encrypt(model.getKeyPassword());
         String keyContent = encryptionUtility.encrypt(model.getKeyContent());
-        String certificateContent = encryptionUtility.encrypt(model.getCertificateContent());
+        String certificateContent = encryptionUtility.encrypt(model.getClientCertificateContent());
         ClientCertificateKeyEntity keyEntity = new ClientCertificateKeyEntity(keyId, password, keyContent, lastUpdated);
         ClientCertificateEntity certificateEntity = new ClientCertificateEntity(certificateId, keyId, certificateContent, lastUpdated);
 

@@ -196,7 +196,10 @@ const MainPage = ({
                 urlName={CERTIFICATE_INFO.url}
                 descriptor={globalDescriptorMap[CERTIFICATE_INFO.key]}
                 render={() => (
-                    <CertificatesPageLayout />
+                    <CertificatesPageLayout
+                        csrfToken={csrfToken}
+                        errorHandler={errorHandler}
+                    />
                 )}
             />
             <DescriptorRoute

@@ -404,7 +404,7 @@ class JiraServerCustomFunctionActionTest {
         JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
         Mockito.when(jobAccessor.getJobById(Mockito.any())).thenReturn(Optional.empty());
 
-        JiraServerPropertiesFactory jiraServerPropertiesFactory = new JiraServerPropertiesFactory(proxyManager, globalConfigAccessor, jobAccessor);
+        JiraServerPropertiesFactory jiraServerPropertiesFactory = new JiraServerPropertiesFactory(proxyManager, globalConfigAccessor, jobAccessor, null);
         JiraServerCustomFunctionAction action = new JiraServerCustomFunctionAction(
             authorizationManager,
             jiraServerGlobalConfigurationFieldModelValidator,

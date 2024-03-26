@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.component.certificates;
+package com.synopsys.integration.alert.api.certificates;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;

@@ -17,6 +17,7 @@ import org.springframework.core.io.ClassPathResource;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 
 import io.micrometer.common.util.StringUtils;
@@ -28,11 +29,14 @@ public class CertificateTestUtil {
     // server.pem = "server-cert-test.xxx.blackduck.alert.example.com"
     // client.pem = "client-cert-test.xxx.blackduck.alert.example.com"
     public static final String CERTIFICATE_MTLS_CLIENT_FILE_PATH = "certificates/mtls/client.pem";
+    public static final String CERTIFICATE_MTLS_SERVER_FILE_PATH = "certificates/mtls/server.pem";
+    public static final String CERTIFICATE_MTLS_ROOT_CA_FILE_PATH = "certificates/mtls/rootCA.pem";
     public static final String KEY_MTLS_CLIENT_FILE_PATH = "certificates/mtls/client.key";
     public static final String TEST_ALIAS = "test-alias";
     public static final String TRUSTSTORE_FILE_PATH = "./build/certs/blackduck-alert-test.truststore";
     public static final String TRUSTSTORE_PASSWORD = "changeit";
     public static final String MTLS_CERTIFICATE_PASSWORD = "changeit";
+    public static final String EMPTY_STRING_CONTENT = " \n\t\r  \n\t\r  \n";
 
     protected File trustStoreFile;
 
@@ -87,4 +91,30 @@ public class CertificateTestUtil {
         }
     }
 
+    public ClientCertificateModel createClientModel() throws IOException {
+        String keyContent = readCertificateOrKeyContents(CertificateTestUtil.KEY_MTLS_CLIENT_FILE_PATH);
+        String certificateContent = readCertificateOrKeyContents(CertificateTestUtil.CERTIFICATE_MTLS_CLIENT_FILE_PATH);
+        return createClientModel(
+            CertificateTestUtil.MTLS_CERTIFICATE_PASSWORD,
+            keyContent,
+            certificateContent
+        );
+    }
+
+    public ClientCertificateModel createClientModel(String keyPassword, String keyContent) throws IOException {
+        String certificateContent = readCertificateOrKeyContents(CertificateTestUtil.CERTIFICATE_MTLS_CLIENT_FILE_PATH);
+        return createClientModel(
+            keyPassword,
+            keyContent,
+            certificateContent
+        );
+    }
+
+    public ClientCertificateModel createClientModel(String keyPassword, String keyContent, String certificateContent) {
+        return new ClientCertificateModel(
+            keyPassword,
+            keyContent,
+            certificateContent
+        );
+    }
 }
