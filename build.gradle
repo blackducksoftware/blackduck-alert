@@ -11,6 +11,15 @@ buildscript {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
         classpath "com.synopsys.integration:common-gradle-plugin:${managedCgpVersion}"
     }
+
+    // In Alert 7.2 we plan to upgrade spring-boot, which should make this exclude unnecessary
+    configurations {
+        classpath {
+            resolutionStrategy {
+                exclude group: 'org.yaml', module: 'snakeyaml'
+            }
+        }
+    }
 }
 
 plugins {
@@ -98,6 +107,15 @@ subprojects {
 }
 
 allprojects {
+    // In Alert 7.2 we plan to upgrade spring-boot, which should make this force unnecessary
+    configurations {
+        all {
+            resolutionStrategy {
+                force 'org.yaml:snakeyaml:2.1'
+            }
+        }
+    }
+
     configurations {
         all {
             exclude group: 'com.blackducksoftware.bdio', module: 'bdio2'
@@ -122,12 +140,6 @@ allprojects {
 // configure the version of the JaCoCo plugin to 0.8.2 which works for Java 11 until we switch to a gradle wrapper that includes 0.8.2+ by default.
 jacoco {
     toolVersion = "0.8.9"
-}
-
-configurations.all {
-  resolutionStrategy {
-    force 'org.yaml:snakeyaml:2.1'
-  }
 }
 
 dependencies {
