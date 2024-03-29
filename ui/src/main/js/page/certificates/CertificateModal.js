@@ -9,14 +9,10 @@ import TextInput from 'common/component/input/TextInput';
 
 const CertificateModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, successMessage }) => {
     const dispatch = useDispatch();
-    const [certificateData, setCertificateData] = useState();
+    const [certificateData, setCertificateData] = useState(data);
     const [showLoader, setShowLoader] = useState(false);
     const { submitText, title } = modalOptions;
     const { saveStatus, error } = useSelector((state) => state.certificates);
-
-    useEffect(() => {
-        setCertificateData(data);
-    }, [data]);
 
     function handleClose() {
         toggleModal(false);
@@ -78,7 +74,7 @@ const CertificateModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMe
             handleSubmit={handleSubmit}
             showLoader={showLoader}
         >
-            { certificateData?.lastUpdated ? (
+            {certificateData?.lastUpdated ? (
                 <ReadOnlyField
                     id="lastUpdated-readOnlyFieldId"
                     label="Last Updated"
