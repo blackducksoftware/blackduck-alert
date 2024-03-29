@@ -12,6 +12,7 @@ buildscript {
         classpath "com.synopsys.integration:common-gradle-plugin:${managedCgpVersion}"
     }
 
+    // In Alert 7.2 we plan to upgrade spring-boot, which should make this exclude unnecessary
     configurations {
         classpath {
             resolutionStrategy {
@@ -106,6 +107,7 @@ subprojects {
 }
 
 allprojects {
+    // In Alert 7.2 we plan to upgrade spring-boot, which should make this force unnecessary
     configurations {
         all {
             resolutionStrategy {
