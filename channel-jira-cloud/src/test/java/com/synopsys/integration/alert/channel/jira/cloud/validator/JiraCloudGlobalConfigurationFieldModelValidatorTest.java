@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
+import com.synopsys.integration.alert.api.descriptor.JiraCloudChannelKey;
 import com.synopsys.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
 
 public class JiraCloudGlobalConfigurationFieldModelValidatorTest {

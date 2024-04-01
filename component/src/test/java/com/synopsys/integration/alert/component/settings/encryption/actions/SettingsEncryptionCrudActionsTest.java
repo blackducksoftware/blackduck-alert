@@ -25,7 +25,7 @@ import com.synopsys.integration.alert.component.settings.descriptor.SettingsDesc
 import com.synopsys.integration.alert.component.settings.encryption.action.SettingsEncryptionCrudActions;
 import com.synopsys.integration.alert.component.settings.encryption.model.SettingsEncryptionModel;
 import com.synopsys.integration.alert.component.settings.encryption.validator.SettingsEncryptionValidator;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;

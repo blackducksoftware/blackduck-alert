@@ -35,9 +35,9 @@ dependencies {
         api 'org.javassist:javassist:3.29.2-GA'
         api 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4'
 
-        api "org.opensaml:opensaml-core:4.1.1"
-        api "org.opensaml:opensaml-saml-api:4.1.1"
-        api "org.opensaml:opensaml-saml-impl:4.1.1"
+        api "org.opensaml:opensaml-core:4.3.0"
+        api "org.opensaml:opensaml-saml-api:4.3.0"
+        api "org.opensaml:opensaml-saml-impl:4.3.0"
 
         runtime 'org.liquibase:liquibase-core:4.20.0'
     }

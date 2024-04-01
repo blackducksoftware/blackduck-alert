@@ -7,9 +7,17 @@
  */
 package com.synopsys.integration.alert.component.settings.environment;
 
-import java.util.Arrays;
-import java.util.Set;
-
+import com.synopsys.integration.alert.api.common.model.AlertConstants;
+import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.api.environment.EnvironmentProcessingResult;
+import com.synopsys.integration.alert.api.environment.EnvironmentVariableHandler;
+import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
+import com.synopsys.integration.alert.common.util.DateUtils;
+import com.synopsys.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;
+import com.synopsys.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
@@ -17,17 +25,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.common.model.AlertConstants;
-import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
-import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;
-import com.synopsys.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
-import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
-import com.synopsys.integration.alert.environment.EnvironmentVariableHandler;
-import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
+import java.util.Arrays;
+import java.util.Set;
 
 @Component
 public class ProxySettingsEnvironmentVariableHandler extends EnvironmentVariableHandler<SettingsProxyModel> {

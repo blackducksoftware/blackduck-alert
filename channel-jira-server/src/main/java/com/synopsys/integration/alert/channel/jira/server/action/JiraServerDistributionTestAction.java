@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.channel.issue.action.IssueTrackerTestAction;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
-import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
+import com.synopsys.integration.alert.api.descriptor.JiraServerChannelKey;
 
 @Component
 public class JiraServerDistributionTestAction extends IssueTrackerTestAction<JiraServerJobDetailsModel, String> {
