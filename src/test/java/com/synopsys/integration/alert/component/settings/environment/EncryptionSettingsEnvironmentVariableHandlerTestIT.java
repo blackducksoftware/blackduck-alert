@@ -1,20 +1,19 @@
 package com.synopsys.integration.alert.component.settings.environment;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Set;
-import java.util.function.Predicate;
-
+import com.synopsys.integration.alert.api.common.model.AlertConstants;
+import com.synopsys.integration.alert.api.environment.EnvironmentProcessingResult;
+import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
+import com.synopsys.integration.alert.test.common.EnvironmentVariableMockingUtil;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
-import com.synopsys.integration.alert.api.common.model.AlertConstants;
-import com.synopsys.integration.alert.environment.EnvironmentProcessingResult;
-import com.synopsys.integration.alert.environment.EnvironmentVariableUtility;
-import com.synopsys.integration.alert.test.common.EnvironmentVariableMockingUtil;
-import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import java.util.Set;
+import java.util.function.Predicate;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @AlertIntegrationTest
 class EncryptionSettingsEnvironmentVariableHandlerTestIT {

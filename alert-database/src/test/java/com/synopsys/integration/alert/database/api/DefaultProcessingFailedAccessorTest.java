@@ -38,7 +38,7 @@ import com.synopsys.integration.alert.database.audit.AuditFailedEntity;
 import com.synopsys.integration.alert.database.audit.AuditFailedEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditFailedNotificationEntity;
 import com.synopsys.integration.alert.database.audit.AuditFailedNotificationRepository;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 class DefaultProcessingFailedAccessorTest {

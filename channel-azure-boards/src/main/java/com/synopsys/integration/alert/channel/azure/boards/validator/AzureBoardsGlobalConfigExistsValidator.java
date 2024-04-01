@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.ConcreteGlobalConfigExistsValidator;
-import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.AzureBoardsChannelKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 
 @Component
 public class AzureBoardsGlobalConfigExistsValidator implements ConcreteGlobalConfigExistsValidator {
