@@ -21,9 +21,23 @@ import org.springframework.core.io.ClassPathResource;
 
 public final class TestResourceUtils {
     public static final String DEFAULT_PROPERTIES_FILE_NAME = "test.properties";
+    public static final String DEFAULT_SWAGGER_API_SPEC_FILE_NAME = "swagger.api-spec";
 
     private static final String SUB_PROJECT_NAME = "test-common";
-    private static final File EXPECTED_BASE_TEST_RESOURCE_DIR = new File(TestResourceUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "../../../../src/main/resources/");
+    private static final File EXPECTED_BASE_TEST_RESOURCE_DIR = new File(
+        TestResourceUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath(),
+        "../../../../"
+    );
+    private static final File EXPECTED_ROOT_DIR = new File(
+        TestResourceUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath(),
+        "../../../../../"
+    );
+
+    public static Path createSwaggerAPISpecCanonicalFilePath() throws IOException {
+        File buildOutputDir = new File(TestResourceUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getCanonicalFile();
+        File baseDirectory = findAncestorDirectory(buildOutputDir, SUB_PROJECT_NAME).orElse(EXPECTED_ROOT_DIR);
+        return Path.of(baseDirectory.getAbsolutePath(), "build", "swagger", TestResourceUtils.DEFAULT_SWAGGER_API_SPEC_FILE_NAME);
+    }
 
     public static Path createTestPropertiesCanonicalFilePath() throws IOException {
         File buildOutputDir = new File(TestResourceUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getCanonicalFile();

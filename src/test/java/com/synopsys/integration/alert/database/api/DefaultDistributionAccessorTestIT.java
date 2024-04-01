@@ -52,7 +52,6 @@ class DefaultDistributionAccessorTestIT {
     private final int TOTAL_NUMBER_OF_RECORDS = 6;
 
     public static final String SORT_LAST_SENT = "time_last_sent";
-    public static final String SORT_STATUS = "status";
     public static final String SORT_CHANNEL = "channel_descriptor_name";
     public static final String SORT_FREQUENCY = "distribution_frequency";
     public static final String SORT_NAME = "name";
@@ -119,58 +118,58 @@ class DefaultDistributionAccessorTestIT {
     }
 
     @Test
-    void verifyValidityOfQueryTest() throws ParseException {
+    void verifyValidityOfQueryTest() {
         assertValidQueryFunctionality(TOTAL_NUMBER_OF_RECORDS, () -> distributionAccessor.getDistributionWithAuditInfo(0, 100, "name", Direction.ASC, getAllDescriptorNames()));
     }
 
     @Test
-    void verifyValidityOfQueryWithNullsTest() throws ParseException {
+    void verifyValidityOfQueryWithNullsTest() {
         assertValidQueryFunctionality(TOTAL_NUMBER_OF_RECORDS, () -> distributionAccessor.getDistributionWithAuditInfo(0, 100, null, null, getAllDescriptorNames()));
     }
 
     @Test
-    void sortByNameDESCLowPageSizeTest() throws ParseException {
+    void sortByNameDESCLowPageSizeTest() {
         assertSorted(3, 3, SORT_NAME, Direction.DESC, DistributionWithAuditInfo::getJobName);
     }
 
     @Test
-    void sortByNameDESCTest() throws ParseException {
+    void sortByNameDESCTest() {
         assertSorted(TOTAL_NUMBER_OF_RECORDS, 100, SORT_NAME, Direction.DESC, DistributionWithAuditInfo::getJobName);
     }
 
     @Test
-    void sortByNameASCTest() throws ParseException {
+    void sortByNameASCTest() {
         assertSorted(TOTAL_NUMBER_OF_RECORDS, 100, SORT_NAME, Direction.ASC, DistributionWithAuditInfo::getJobName);
     }
 
     @Test
-    void sortByFrequencyASCTest() throws ParseException {
+    void sortByFrequencyASCTest() {
         assertSorted(TOTAL_NUMBER_OF_RECORDS, 100, SORT_FREQUENCY, Direction.ASC, DistributionWithAuditInfo::getFrequencyType);
     }
 
     @Test
-    void sortByFrequencyDESCTest() throws ParseException {
+    void sortByFrequencyDESCTest() {
         assertSorted(TOTAL_NUMBER_OF_RECORDS, 100, SORT_FREQUENCY, Direction.DESC, DistributionWithAuditInfo::getFrequencyType);
     }
 
     @Test
     @Disabled("This feature is not currently supported due to limitations in hibernate")
-    void sortByAuditLastTimeSentDESCTest() throws ParseException {
+    void sortByAuditLastTimeSentDESCTest() {
         assertAuditLastTimeSent(Direction.DESC);
     }
 
     @Test
     @Disabled("This feature is not currently supported due to limitations in hibernate")
-    void sortByAuditLastTimeSentASCTest() throws ParseException {
+    void sortByAuditLastTimeSentASCTest() {
         assertAuditLastTimeSent(Direction.ASC);
     }
 
     @Test
-    void sortByChannelNameDESCTest() throws ParseException {
+    void sortByChannelNameDESCTest() {
         assertSorted(TOTAL_NUMBER_OF_RECORDS, 100, SORT_CHANNEL, Direction.DESC, DistributionWithAuditInfo::getChannelName);
     }
 
-    private AlertPagedModel<DistributionWithAuditInfo> assertAuditLastTimeSent(Direction sortDirection) throws ParseException {
+    private AlertPagedModel<DistributionWithAuditInfo> assertAuditLastTimeSent(Direction sortDirection) {
         return assertSorted(TOTAL_NUMBER_OF_RECORDS, 100, SORT_LAST_SENT, sortDirection,
             info -> {
                 String auditTimeLastSent = info.getAuditTimeLastSent();
@@ -186,8 +185,7 @@ class DefaultDistributionAccessorTestIT {
         );
     }
 
-    private <T extends Comparable> AlertPagedModel<DistributionWithAuditInfo> assertSorted(int expectedTotal, int pageSize, String sortName, Direction sortDirection, Function<DistributionWithAuditInfo, T> getNullableValue)
-        throws ParseException {
+    private <T extends Comparable> AlertPagedModel<DistributionWithAuditInfo> assertSorted(int expectedTotal, int pageSize, String sortName, Direction sortDirection, Function<DistributionWithAuditInfo, T> getNullableValue) {
         AlertPagedModel<DistributionWithAuditInfo> distributionWithAuditInfoSorted = assertValidQueryFunctionality(
             expectedTotal,
             () -> distributionAccessor.getDistributionWithAuditInfo(0, pageSize, sortName, sortDirection, getAllDescriptorNames())
@@ -215,7 +213,7 @@ class DefaultDistributionAccessorTestIT {
         return descriptorMap.getDescriptorKeys().stream().map(DescriptorKey::getUniversalKey).collect(Collectors.toSet());
     }
 
-    private AlertPagedModel<DistributionWithAuditInfo> assertValidQueryFunctionality(int expectedNumberOfResults, Supplier<AlertPagedModel<DistributionWithAuditInfo>> dBQuery) throws ParseException {
+    private AlertPagedModel<DistributionWithAuditInfo> assertValidQueryFunctionality(int expectedNumberOfResults, Supplier<AlertPagedModel<DistributionWithAuditInfo>> dBQuery) {
         Map<UUID, DistributionJobModel> jobAndAuditData = createAndSave6JobAndAudit();
         assertEquals(TOTAL_NUMBER_OF_RECORDS, jobAndAuditData.keySet().size());
 

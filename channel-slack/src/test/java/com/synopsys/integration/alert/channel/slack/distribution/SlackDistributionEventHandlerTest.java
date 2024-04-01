@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.certificates.AlertSSLContextManager;
 import com.synopsys.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.api.distribution.audit.AuditFailedEvent;
 import com.synopsys.integration.alert.api.distribution.audit.AuditSuccessEvent;
@@ -108,8 +109,10 @@ class SlackDistributionEventHandlerTest {
     private ChannelRestConnectionFactory createConnectionFactory() {
         MockAlertProperties testAlertProperties = new MockAlertProperties();
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
+        AlertSSLContextManager alertSSLContextManager = Mockito.mock(AlertSSLContextManager.class);
         Mockito.when(proxyManager.createProxyInfoForHost(Mockito.anyString())).thenReturn(ProxyInfo.NO_PROXY_INFO);
-        return new ChannelRestConnectionFactory(testAlertProperties, proxyManager, gson);
+        Mockito.when(alertSSLContextManager.buildWithClientCertificate()).thenReturn(Optional.empty());
+        return new ChannelRestConnectionFactory(testAlertProperties, proxyManager, gson, alertSSLContextManager);
     }
 
     private ProviderMessageHolder createTwoMessages() {

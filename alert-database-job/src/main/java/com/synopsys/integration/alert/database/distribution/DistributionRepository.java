@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.database.distribution;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -60,7 +60,7 @@ public interface DistributionRepository extends JpaRepository<DistributionJobEnt
 
         String getDistribution_Frequency();
 
-        Timestamp getTime_Last_Sent();
+        Instant getTime_Last_Sent();
 
         String getStatus();
 

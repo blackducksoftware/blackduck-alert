@@ -9,6 +9,9 @@ package com.synopsys.integration.alert.channel.jira.server;
 
 import java.util.Optional;
 
+import javax.annotation.Nullable;
+import javax.net.ssl.SSLContext;
+
 import org.slf4j.Logger;
 
 import com.google.gson.Gson;
@@ -30,6 +33,7 @@ public class JiraServerProperties {
     private final String accessToken;
     private final boolean pluginCheckDisabled;
     private final ProxyInfo proxyInfo;
+    private final SSLContext sslContext;
 
     public JiraServerProperties(
         String url,
@@ -38,7 +42,8 @@ public class JiraServerProperties {
         String username,
         String accessToken,
         boolean pluginCheckDisabled,
-        ProxyInfo proxyInfo
+        ProxyInfo proxyInfo,
+        @Nullable SSLContext sslContext
     ) {
         this.url = url;
         this.authorizationMethod = authorizationMethod;
@@ -47,6 +52,7 @@ public class JiraServerProperties {
         this.accessToken = accessToken;
         this.pluginCheckDisabled = pluginCheckDisabled;
         this.proxyInfo = proxyInfo;
+        this.sslContext = sslContext;
     }
 
     public JiraServerRestConfig createJiraServerConfig() throws IssueTrackerException {
@@ -77,6 +83,9 @@ public class JiraServerProperties {
             .setAuthPassword(password)
             .setAuthUsername(username)
             .setProxyInfo(proxyInfo);
+        if (sslContext != null) {
+            builder.setSslContext(sslContext);
+        }
 
         return builder.build();
     }
@@ -86,6 +95,9 @@ public class JiraServerProperties {
         builder.setUrl(url)
             .setAccessToken(accessToken)
             .setProxyInfo(proxyInfo);
+        if (sslContext != null) {
+            builder.setSslContext(sslContext);
+        }
 
         return builder.build();
     }

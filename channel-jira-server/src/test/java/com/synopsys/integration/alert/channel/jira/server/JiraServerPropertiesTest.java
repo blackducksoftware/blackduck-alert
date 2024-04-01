@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import javax.net.ssl.SSLContext;
+
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +23,7 @@ class JiraServerPropertiesTest {
     @Test
     void testBuildConfigException() {
         try {
-            JiraServerProperties properties = new JiraServerProperties(null, null, null, null, null, false, ProxyInfo.NO_PROXY_INFO);
+            JiraServerProperties properties = new JiraServerProperties(null, null, null, null, null, false, ProxyInfo.NO_PROXY_INFO, null);
             properties.createJiraServerConfig();
             assertNull(properties.getUrl());
             assertNull(properties.getPassword());
@@ -47,7 +49,8 @@ class JiraServerPropertiesTest {
                 user,
                 null,
                 pluginCheckDisabled,
-                ProxyInfo.NO_PROXY_INFO
+                ProxyInfo.NO_PROXY_INFO,
+                null
             );
             assertEquals(url, properties.getUrl());
             assertEquals(password, properties.getPassword().orElse("Password missing."));
@@ -57,6 +60,37 @@ class JiraServerPropertiesTest {
             JiraServerRestConfig config = properties.createJiraServerConfig();
             assertNotNull(config);
         } catch (IssueTrackerException ex) {
+            ex.printStackTrace();
+            fail();
+        }
+    }
+
+    @Test
+    void testBasicAuthConfigWithSSLContext() {
+        try {
+            String url = "http://localhost:2990";
+            String password = "password";
+            String user = "user";
+            boolean pluginCheckDisabled = true;
+            JiraServerProperties properties = new JiraServerProperties(
+                url,
+                JiraServerAuthorizationMethod.BASIC,
+                password,
+                user,
+                null,
+                pluginCheckDisabled,
+                ProxyInfo.NO_PROXY_INFO,
+                SSLContext.getDefault()
+            );
+            assertEquals(url, properties.getUrl());
+            assertEquals(password, properties.getPassword().orElse("Password missing."));
+            assertEquals(user, properties.getUsername().orElse("Username missing."));
+            assertTrue(properties.getAccessToken().isEmpty());
+            assertEquals(pluginCheckDisabled, properties.isPluginCheckDisabled());
+            JiraServerRestConfig config = properties.createJiraServerConfig();
+            assertNotNull(config);
+            assertTrue(config.getSslContext().isPresent());
+        } catch (Exception ex) {
             ex.printStackTrace();
             fail();
         }
@@ -75,7 +109,8 @@ class JiraServerPropertiesTest {
                 null,
                 accessToken,
                 pluginCheckDisabled,
-                ProxyInfo.NO_PROXY_INFO
+                ProxyInfo.NO_PROXY_INFO,
+                null
             );
             assertEquals(url, properties.getUrl());
             assertEquals(accessToken, properties.getAccessToken().orElse("Missing access token"));
@@ -91,6 +126,36 @@ class JiraServerPropertiesTest {
     }
 
     @Test
+    void testBearerAuthConfigWithSSLContext() {
+        try {
+            String url = "http://localhost:2990";
+            String accessToken = "jiraServerAccessToken";
+            boolean pluginCheckDisabled = true;
+            JiraServerProperties properties = new JiraServerProperties(
+                url,
+                JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN,
+                null,
+                null,
+                accessToken,
+                pluginCheckDisabled,
+                ProxyInfo.NO_PROXY_INFO,
+                SSLContext.getDefault()
+            );
+            assertEquals(url, properties.getUrl());
+            assertEquals(accessToken, properties.getAccessToken().orElse("Missing access token"));
+            assertTrue(properties.getUsername().isEmpty());
+            assertTrue(properties.getPassword().isEmpty());
+            assertEquals(pluginCheckDisabled, properties.isPluginCheckDisabled());
+            JiraServerRestConfig config = properties.createJiraServerConfig();
+            assertNotNull(config);
+            assertTrue(config.getSslContext().isPresent());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            fail();
+        }
+    }
+
+    @Test
     void testServerServiceFactory() {
         try {
             JiraServerProperties properties = new JiraServerProperties(
@@ -100,7 +165,8 @@ class JiraServerPropertiesTest {
                 "user",
                 "accesToken",
                 false,
-                ProxyInfo.NO_PROXY_INFO
+                ProxyInfo.NO_PROXY_INFO,
+                null
             );
             JiraServerServiceFactory serviceFactory = properties.createJiraServicesServerFactory(LoggerFactory.getLogger(getClass()), BlackDuckServicesFactory.createDefaultGson());
             assertNotNull(serviceFactory);

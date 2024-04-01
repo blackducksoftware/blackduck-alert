@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.database.api;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -76,11 +76,11 @@ public class DefaultDistributionAccessor implements DistributionAccessor {
         );
     }
 
-    private String formatAuditDate(Timestamp dateTime) {
+    private String formatAuditDate(Instant dateTime) {
         if (dateTime == null) {
             return null;
         }
 
-        return DateUtils.formatDate(DateUtils.fromInstantUTC(dateTime.toInstant()), DateUtils.AUDIT_DATE_FORMAT);
+        return DateUtils.formatDate(DateUtils.fromInstantUTC(dateTime), DateUtils.AUDIT_DATE_FORMAT);
     }
 }

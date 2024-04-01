@@ -7,6 +7,9 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud;
 
+import javax.annotation.Nullable;
+import javax.net.ssl.SSLContext;
+
 import org.slf4j.Logger;
 
 import com.google.gson.Gson;
@@ -27,42 +30,47 @@ public class JiraCloudProperties {
     private final String username;
     private final boolean pluginCheckDisabled;
     private final ProxyInfo proxyInfo;
+    private final SSLContext sslContext;
 
-    public static JiraCloudProperties fromConfig(ConfigurationModel configurationModel, ProxyInfo proxyInfo) {
+    public static JiraCloudProperties fromConfig(ConfigurationModel configurationModel, ProxyInfo proxyInfo, @Nullable SSLContext sslContext) {
         FieldUtility fieldUtility = new FieldUtility(configurationModel.getCopyOfKeyToFieldMap());
         String url = fieldUtility.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_URL);
         String accessToken = fieldUtility.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
         String username = fieldUtility.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
         boolean pluginCheckDisabled = fieldUtility.getBooleanOrFalse(JiraCloudDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK);
-        return new JiraCloudProperties(url, accessToken, username, pluginCheckDisabled, proxyInfo);
+        return new JiraCloudProperties(url, accessToken, username, pluginCheckDisabled, proxyInfo, sslContext);
     }
 
-    public JiraCloudProperties(String url, String accessToken, String username, boolean pluginCheckDisabled, ProxyInfo proxyInfo) {
+    public JiraCloudProperties(String url, String accessToken, String username, boolean pluginCheckDisabled, ProxyInfo proxyInfo, @Nullable SSLContext sslContext) {
         this.url = url;
         this.accessToken = accessToken;
         this.username = username;
         this.pluginCheckDisabled = pluginCheckDisabled;
         this.proxyInfo = proxyInfo;
+        this.sslContext = sslContext;
     }
 
-    public JiraCloudRestConfig createJiraServerConfig() throws IssueTrackerException {
-        JiraCloudRestConfigBuilder jiraServerConfigBuilder = new JiraCloudRestConfigBuilder();
+    public JiraCloudRestConfig createJiraCloudConfig() throws IssueTrackerException {
+        JiraCloudRestConfigBuilder jiraCloudConfigBuilder = new JiraCloudRestConfigBuilder();
 
-        jiraServerConfigBuilder.setUrl(url);
-        jiraServerConfigBuilder.setApiToken(accessToken);
-        jiraServerConfigBuilder.setAuthUserEmail(username);
-        jiraServerConfigBuilder.setProxyInfo(proxyInfo);
+        jiraCloudConfigBuilder.setUrl(url);
+        jiraCloudConfigBuilder.setApiToken(accessToken);
+        jiraCloudConfigBuilder.setAuthUserEmail(username);
+        jiraCloudConfigBuilder.setProxyInfo(proxyInfo);
+        if (sslContext != null) {
+            jiraCloudConfigBuilder.setSslContext(sslContext);
+        }
         try {
-            return jiraServerConfigBuilder.build();
+            return jiraCloudConfigBuilder.build();
         } catch (IllegalArgumentException e) {
             throw new IssueTrackerException("There was an issue building the configuration: " + e.getMessage());
         }
     }
 
     public JiraCloudServiceFactory createJiraServicesCloudFactory(Logger logger, Gson gson) throws IssueTrackerException {
-        JiraCloudRestConfig jiraServerConfig = createJiraServerConfig();
+        JiraCloudRestConfig jiraCloudConfig = createJiraCloudConfig();
         Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
-        JiraHttpClient jiraHttpClient = jiraServerConfig.createJiraHttpClient(intLogger);
+        JiraHttpClient jiraHttpClient = jiraCloudConfig.createJiraHttpClient(intLogger);
         return new JiraCloudServiceFactory(intLogger, jiraHttpClient, gson);
     }
 

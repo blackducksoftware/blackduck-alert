@@ -11,12 +11,15 @@
  */
 package com.synopsys.integration.alert.channel.slack.distribution;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.certificates.AlertSSLContextManager;
 import com.synopsys.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
@@ -72,8 +75,10 @@ class SlackChannelTestIT {
     private ChannelRestConnectionFactory createConnectionFactory() {
         MockAlertProperties testAlertProperties = new MockAlertProperties();
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
+        AlertSSLContextManager alertSSLContextManager = Mockito.mock(AlertSSLContextManager.class);
         Mockito.when(proxyManager.createProxyInfoForHost(Mockito.anyString())).thenReturn(ProxyInfo.NO_PROXY_INFO);
-        return new ChannelRestConnectionFactory(testAlertProperties, proxyManager, gson);
+        Mockito.when(alertSSLContextManager.buildWithClientCertificate()).thenReturn(Optional.empty());
+        return new ChannelRestConnectionFactory(testAlertProperties, proxyManager, gson, alertSSLContextManager);
     }
 
 }

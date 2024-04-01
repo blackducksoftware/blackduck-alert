@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.api.certificates.AlertTrustStoreManager;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
@@ -24,7 +25,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.CustomCertific
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.component.certificates.AlertTrustStoreManager;
 import com.synopsys.integration.alert.component.certificates.CertificatesDescriptorKey;
 import com.synopsys.integration.alert.database.certificates.CustomCertificateRepository;
 import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
@@ -35,7 +35,7 @@ import junit.framework.AssertionFailedError;
 @Transactional
 @AlertIntegrationTest
 @TestPropertySource(locations = "classpath:certificates/spring-certificate-test.properties")
-public class CertificateActionsTestIT {
+class CertificateActionsTestIT {
 
     @Autowired
     private CustomCertificateRepository customCertificateRepository;
@@ -71,11 +71,12 @@ public class CertificateActionsTestIT {
 
     @AfterEach
     public void cleanup() {
-        certTestUtil.cleanup(customCertificateRepository);
+        customCertificateRepository.deleteAll();
+        certTestUtil.cleanup();
     }
 
     @Test
-    public void readAllEmptyListTest() {
+    void readAllEmptyListTest() {
         ActionResponse<MultiCertificateModel> response = certificateActions.getAll();
         assertTrue(response.hasContent());
         assertTrue(response.getContent().isPresent());
@@ -83,8 +84,8 @@ public class CertificateActionsTestIT {
     }
 
     @Test
-    public void createCertificateTest() throws Exception {
-        String certificateContent = certTestUtil.readCertificateContents();
+    void createCertificateTest() throws Exception {
+        String certificateContent = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.CERTIFICATE_FILE_PATH);
         Optional<CertificateModel> certificate = certTestUtil.createCertificate(certificateActions);
         assertTrue(certificate.isPresent());
         CertificateModel savedCertificate = certificate.get();
@@ -94,8 +95,8 @@ public class CertificateActionsTestIT {
     }
 
     @Test
-    public void createCertificateIdTest() throws Exception {
-        String certificateContent = certTestUtil.readCertificateContents();
+    void createCertificateIdTest() throws Exception {
+        String certificateContent = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.CERTIFICATE_FILE_PATH);
         CertificateModel certificate = new CertificateModel("alias", certificateContent, DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
         certificate.setId("badId");
         ActionResponse<CertificateModel> response = certificateActions.create(certificate);
@@ -103,7 +104,7 @@ public class CertificateActionsTestIT {
     }
 
     @Test
-    public void readAllTest() throws Exception {
+    void readAllTest() throws Exception {
         certTestUtil.createCertificate(certificateActions);
         List<CertificateModel> certificates = certificateActions.getAll().getContent()
                                                   .map(MultiCertificateModel::getCertificates)
@@ -112,7 +113,7 @@ public class CertificateActionsTestIT {
     }
 
     @Test
-    public void readSingleCertificateTest() throws Exception {
+    void readSingleCertificateTest() throws Exception {
         CertificateModel expectedCertificate = certTestUtil.createCertificate(certificateActions)
                                                    .orElseThrow(AssertionFailedError::new);
         ActionResponse<CertificateModel> response = certificateActions.getOne(Long.valueOf(expectedCertificate.getId()));
@@ -122,8 +123,8 @@ public class CertificateActionsTestIT {
     }
 
     @Test
-    public void updateCertificateTest() throws Exception {
-        String certificateContent = certTestUtil.readCertificateContents();
+    void updateCertificateTest() throws Exception {
+        String certificateContent = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.CERTIFICATE_FILE_PATH);
         CertificateModel savedCertificate = certTestUtil.createCertificate(certificateActions)
                                                 .orElseThrow(AssertionFailedError::new);
 
@@ -139,15 +140,15 @@ public class CertificateActionsTestIT {
     }
 
     @Test
-    public void updateCertificateMissingIdTest() throws Exception {
-        String certificateContent = certTestUtil.readCertificateContents();
+    void updateCertificateMissingIdTest() throws Exception {
+        String certificateContent = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.CERTIFICATE_FILE_PATH);
         CertificateModel certificate = new CertificateModel("-1", certificateContent, DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
         Optional<CertificateModel> result = certificateActions.update(-1L, certificate).getContent();
         assertTrue(result.isEmpty());
     }
 
     @Test
-    public void deleteCertificateTest() throws Exception {
+    void deleteCertificateTest() throws Exception {
         CertificateModel savedCertificate = certTestUtil.createCertificate(certificateActions)
                                                 .orElseThrow(AssertionFailedError::new);
         certificateActions.delete(Long.valueOf(savedCertificate.getId()));
@@ -155,8 +156,8 @@ public class CertificateActionsTestIT {
     }
 
     @Test
-    public void createExceptionTest() throws Exception {
-        String certificateContent = certTestUtil.readCertificateContents();
+    void createExceptionTest() throws Exception {
+        String certificateContent = certTestUtil.readCertificateOrKeyContents(CertificateTestUtil.CERTIFICATE_FILE_PATH);
         CertificateModel certificate = new CertificateModel(TEST_ALIAS, certificateContent, DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
         AlertTrustStoreManager trustStoreService = Mockito.mock(AlertTrustStoreManager.class);
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);

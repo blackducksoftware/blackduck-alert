@@ -15,6 +15,8 @@ public final class AlertRestConstants {
     public static final String BASE_PATH = "/" + API;
     public static final String CALLBACKS_PATH = BASE_PATH + "/" + CALLBACKS;
     public static final String OAUTH_CALLBACK_PATH = CALLBACKS_PATH + "/" + OAUTH;
+    public static final String CERTIFICATE_PATH = AlertRestConstants.BASE_PATH + "/certificates";
+    public static final String CLIENT_CERTIFICATE_PATH = AlertRestConstants.CERTIFICATE_PATH + "/mtls/client";
     public static final String CONFIGURATION_PATH = AlertRestConstants.BASE_PATH + "/configuration";
     public static final String AZURE_BOARDS_CONFIGURATION_PATH = AlertRestConstants.CONFIGURATION_PATH + "/azure-boards";
     public static final String AZURE_BOARDS_OAUTH_CALLBACK_PATH = AlertRestConstants.OAUTH_CALLBACK_PATH + "/azure";
@@ -29,6 +31,9 @@ public final class AlertRestConstants {
     public static final String LDAP_PATH = AlertRestConstants.AUTHENTICATION_PATH + "/ldap";
 
     public static final String DEFAULT_CONFIGURATION_NAME = "default-configuration";
+    public static final String DEFAULT_CLIENT_CERTIFICATE_ALIAS = "default-alert-client-certificate";
+
+    public static final String SWAGGER_PATH = "/v3/api-docs/production";
 
     private AlertRestConstants() {
         // This class should not be instantiated
