@@ -7,10 +7,11 @@
  */
 package com.synopsys.integration.alert.common.persistence.model.job.details;
 
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import java.util.UUID;
+
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.UUID;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 
 public class SlackJobDetailsModel extends DistributionJobDetailsModel {
     private final String webhook;

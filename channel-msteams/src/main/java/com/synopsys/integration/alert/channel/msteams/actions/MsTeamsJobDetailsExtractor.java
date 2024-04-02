@@ -19,7 +19,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Distr
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobDetailsExtractor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
-import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
+import com.synopsys.integration.alert.api.descriptor.MsTeamsKey;
 
 @Component
 public class MsTeamsJobDetailsExtractor extends DistributionJobDetailsExtractor {

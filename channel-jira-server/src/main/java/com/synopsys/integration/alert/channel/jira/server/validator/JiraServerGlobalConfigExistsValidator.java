@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.ConcreteGlobalConfigExistsValidator;
-import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.api.descriptor.JiraServerChannelKey;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 
 @Component
 public class JiraServerGlobalConfigExistsValidator implements ConcreteGlobalConfigExistsValidator {

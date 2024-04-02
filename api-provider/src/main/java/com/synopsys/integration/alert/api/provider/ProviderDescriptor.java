@@ -13,7 +13,7 @@ import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
+import com.synopsys.integration.alert.api.descriptor.model.ProviderKey;
 
 public abstract class ProviderDescriptor extends Descriptor {
     // Global
