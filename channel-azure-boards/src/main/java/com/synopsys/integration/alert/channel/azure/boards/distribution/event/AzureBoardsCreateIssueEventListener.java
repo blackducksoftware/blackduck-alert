@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCreateIssueEventListener;
+import com.synopsys.integration.alert.api.channel.issue.tracker.event.IssueTrackerCreateIssueEventListener;
 import com.synopsys.integration.alert.api.descriptor.AzureBoardsChannelKey;
 
 @Component
