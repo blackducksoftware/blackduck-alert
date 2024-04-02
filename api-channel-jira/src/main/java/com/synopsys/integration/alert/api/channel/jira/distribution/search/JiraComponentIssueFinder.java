@@ -10,11 +10,11 @@ package com.synopsys.integration.alert.api.channel.jira.distribution.search;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
-import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
-import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearchResult;
-import com.synopsys.integration.alert.api.channel.issue.search.ProjectIssueSearchResult;
-import com.synopsys.integration.alert.api.channel.issue.search.ProjectVersionComponentIssueFinder;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueBomComponentDetails;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueTrackerSearchResult;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectIssueSearchResult;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectVersionComponentIssueFinder;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;

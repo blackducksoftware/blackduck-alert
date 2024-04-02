@@ -10,8 +10,8 @@ package com.synopsys.integration.alert.channel.jira.server.distribution.event;
 import java.util.Set;
 import java.util.UUID;
 
-import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerTransitionIssueEvent;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueTransitionModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.event.IssueTrackerTransitionIssueEvent;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTransitionModel;
 
 public class JiraServerTransitionEvent extends IssueTrackerTransitionIssueEvent<String> {
     private static final long serialVersionUID = -4019105794105848692L;

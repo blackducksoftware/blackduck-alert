@@ -12,13 +12,13 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
-import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
-import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
-import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
-import com.synopsys.integration.alert.api.channel.issue.search.ProjectIssueSearchResult;
-import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
-import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueBomComponentDetails;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectIssueSearchResult;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.enumeration.IssueCategory;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.api.channel.jira.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.api.channel.jira.util.JiraCallbackUtils;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;

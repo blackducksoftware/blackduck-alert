@@ -10,9 +10,9 @@ package com.synopsys.integration.alert.channel.jira.server.distribution.delegate
 import java.util.Set;
 import java.util.UUID;
 
-import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerTransitionIssueEvent;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueTransitionModel;
-import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerTransitionEventGenerator;
+import com.synopsys.integration.alert.api.channel.issue.tracker.event.IssueTrackerTransitionIssueEvent;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTransitionModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerTransitionEventGenerator;
 import com.synopsys.integration.alert.channel.jira.server.distribution.event.JiraServerTransitionEvent;
 import com.synopsys.integration.alert.api.descriptor.JiraServerChannelKey;
 

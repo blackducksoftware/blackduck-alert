@@ -10,9 +10,9 @@ package com.synopsys.integration.alert.channel.azure.boards.distribution.search;
 import java.util.List;
 import java.util.Optional;
 
-import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
-import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
-import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueBomComponentDetails;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssuePolicyDetails;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;

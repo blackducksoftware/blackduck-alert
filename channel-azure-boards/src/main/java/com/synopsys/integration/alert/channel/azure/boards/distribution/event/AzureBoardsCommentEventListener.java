@@ -12,7 +12,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCommentEventListener;
+import com.synopsys.integration.alert.api.channel.issue.tracker.event.IssueTrackerCommentEventListener;
 import com.synopsys.integration.alert.api.descriptor.AzureBoardsChannelKey;
 
 @Component

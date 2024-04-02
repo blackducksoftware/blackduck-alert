@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.api.channel.jira.distribution.search;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.function.ThrowingFunction;

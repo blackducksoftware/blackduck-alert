@@ -17,12 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.channel.issue.IssueTrackerResponsePostProcessor;
-import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerCommentEventHandler;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueCommentModel;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueResponseModel;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
-import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
+import com.synopsys.integration.alert.api.channel.issue.tracker.IssueTrackerResponsePostProcessor;
+import com.synopsys.integration.alert.api.channel.issue.tracker.event.IssueTrackerCommentEventHandler;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrackerIssueResponseModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrackerResponse;
+import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;

@@ -13,9 +13,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
-import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
+import com.synopsys.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.MessageReplacementValues;

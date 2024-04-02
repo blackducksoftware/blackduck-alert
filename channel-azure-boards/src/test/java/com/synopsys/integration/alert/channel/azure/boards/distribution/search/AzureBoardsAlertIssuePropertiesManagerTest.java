@@ -8,11 +8,11 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
-import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueVulnerabilityDetails;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueVulnerabilityModel;
-import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueBomComponentDetails;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssuePolicyDetails;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueVulnerabilityDetails;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueVulnerabilityModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
