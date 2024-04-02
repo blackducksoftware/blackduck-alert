@@ -15,8 +15,8 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrack
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerAsyncMessageSender;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessageHolder;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
 
 public class IssueTrackerProcessor<T extends Serializable> {
     private final IssueTrackerModelExtractor<T> modelExtractor;

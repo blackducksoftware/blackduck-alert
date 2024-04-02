@@ -22,9 +22,9 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.api.descriptor.model.ChannelKey;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
-import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessageHolder;
+import com.synopsys.integration.alert.api.processor.extract.model.SimpleMessage;
 
 public abstract class DistributionChannelMessageTestAction<D extends DistributionJobDetailsModel> extends DistributionChannelTestAction {
     public static final String DEFAULT_TOPIC = "Alert Test Topic";

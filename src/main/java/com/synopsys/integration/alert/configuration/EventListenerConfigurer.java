@@ -35,7 +35,7 @@ import org.springframework.retry.support.RetryTemplate;
 import com.synopsys.integration.alert.api.channel.DistributionEventReceiver;
 import com.synopsys.integration.alert.api.event.AlertMessageListener;
 import com.synopsys.integration.alert.api.event.DeadLetterListener;
-import com.synopsys.integration.alert.processor.api.event.NotificationProcessingReceiver;
+import com.synopsys.integration.alert.api.processor.event.NotificationProcessingReceiver;
 
 @Configuration
 public class EventListenerConfigurer implements RabbitListenerConfigurer {

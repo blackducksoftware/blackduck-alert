@@ -13,14 +13,14 @@ import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
-import com.synopsys.integration.alert.processor.api.JobNotificationContentProcessor;
-import com.synopsys.integration.alert.processor.api.NotificationProcessingLifecycleCache;
-import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
-import com.synopsys.integration.alert.processor.api.digest.ProjectMessageDigester;
-import com.synopsys.integration.alert.processor.api.distribute.ProviderMessageDistributor;
-import com.synopsys.integration.alert.processor.api.event.JobProcessingEvent;
-import com.synopsys.integration.alert.processor.api.extract.ProviderMessageExtractionDelegator;
-import com.synopsys.integration.alert.processor.api.summarize.ProjectMessageSummarizer;
+import com.synopsys.integration.alert.api.processor.JobNotificationContentProcessor;
+import com.synopsys.integration.alert.api.processor.NotificationProcessingLifecycleCache;
+import com.synopsys.integration.alert.api.processor.detail.NotificationDetailExtractionDelegator;
+import com.synopsys.integration.alert.api.processor.digest.ProjectMessageDigester;
+import com.synopsys.integration.alert.api.processor.distribute.ProviderMessageDistributor;
+import com.synopsys.integration.alert.api.processor.event.JobProcessingEvent;
+import com.synopsys.integration.alert.api.processor.extract.ProviderMessageExtractionDelegator;
+import com.synopsys.integration.alert.api.processor.summarize.ProjectMessageSummarizer;
 
 class ProcessingJobEventHandlerTest {
     @Test

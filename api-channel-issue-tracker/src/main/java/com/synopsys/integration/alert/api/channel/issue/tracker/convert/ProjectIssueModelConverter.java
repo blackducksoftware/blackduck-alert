@@ -32,9 +32,9 @@ import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilde
 import com.synopsys.integration.alert.common.channel.message.RechunkedModel;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernType;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
 
 public class ProjectIssueModelConverter {
     public static final int COMPONENT_CONCERN_TITLE_SECTION_CHAR_COUNT = 20;

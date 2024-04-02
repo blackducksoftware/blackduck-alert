@@ -12,8 +12,8 @@ import java.util.function.Predicate;
 
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
-import com.synopsys.integration.alert.processor.api.filter.PageRetriever;
-import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
+import com.synopsys.integration.alert.api.processor.filter.PageRetriever;
+import com.synopsys.integration.alert.api.processor.filter.StatefulAlertPage;
 import com.synopsys.integration.blackduck.api.core.response.UrlMultipleResponses;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;

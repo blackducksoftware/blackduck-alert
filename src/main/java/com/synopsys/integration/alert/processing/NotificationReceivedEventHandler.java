@@ -23,8 +23,8 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.processor.api.NotificationMappingProcessor;
-import com.synopsys.integration.alert.processor.api.event.JobNotificationMappedEvent;
+import com.synopsys.integration.alert.api.processor.NotificationMappingProcessor;
+import com.synopsys.integration.alert.api.processor.event.JobNotificationMappedEvent;
 
 @Component
 public class NotificationReceivedEventHandler implements AlertEventHandler<NotificationReceivedEvent> {
