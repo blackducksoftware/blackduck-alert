@@ -17,10 +17,10 @@ public interface AzureBoardsConfigurationRepository extends JpaRepository<AzureB
     boolean existsByConfigurationId(UUID uuid);
 
     @Query("SELECT azureEntity FROM AzureBoardsConfigurationEntity azureEntity"
-        + " WHERE azureEntity.name LIKE %:searchTerm%"
-        + "   OR azureEntity.organizationName LIKE %:searchTerm%"
+        + " WHERE azureEntity.name ILIKE %:searchTerm%"
+        + "   OR azureEntity.organizationName ILIKE %:searchTerm%"
         + "   OR COALESCE(to_char(azureEntity.createdAt, 'MM/DD/YYYY, HH24:MI:SS'), '') LIKE %:searchTerm%"
-        + "   OR (azureEntity.lastUpdated != NULL AND COALESCE(to_char(azureEntity.lastUpdated, 'MM/DD/YYYY, HH24:MI:SS'), '') LIKE %:searchTerm%)"
+        + "   OR (azureEntity.lastUpdated IS NOT NULL AND COALESCE(to_char(azureEntity.lastUpdated, 'MM/DD/YYYY, HH24:MI:SS'), '') LIKE %:searchTerm%)"
     )
     Page<AzureBoardsConfigurationEntity> findBySearchTerm(@Param("searchTerm") String searchTerm, Pageable pageable);
 }

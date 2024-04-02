@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.database.distribution;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -36,7 +36,11 @@ public interface DistributionRepository extends JpaRepository<DistributionJobEnt
             "SELECT CAST(job.job_id as varchar) AS id, job.enabled, job.name, job.channel_descriptor_name, job.distribution_frequency, completionStatus.last_run AS time_last_sent, completionStatus.latest_status AS status"
                 + " FROM alert.distribution_jobs AS job"
                 + " LEFT JOIN alert.job_completion_status AS completionStatus ON completionStatus.job_config_id = job.job_id"
-                + " WHERE job.channel_descriptor_name IN (:channelDescriptorNames) AND job.name LIKE %:searchTerm%",
+                + " WHERE job.channel_descriptor_name IN (:channelDescriptorNames) AND (job.name ILIKE %:searchTerm%"
+                + " OR job.distribution_frequency ILIKE %:searchTerm%"
+                + " OR job.channel_descriptor_name ILIKE %:searchTerm%"
+                + " OR COALESCE(to_char(completionStatus.last_run, 'MM/DD/YYYY, HH24:MI:SS'), '') LIKE %:searchTerm%"
+                + " OR completionStatus.latest_status ILIKE %:searchTerm%)",
         nativeQuery = true
     )
     Page<DistributionDBResponse> getDistributionWithAuditInfoWithSearch(
@@ -56,7 +60,7 @@ public interface DistributionRepository extends JpaRepository<DistributionJobEnt
 
         String getDistribution_Frequency();
 
-        Timestamp getTime_Last_Sent();
+        Instant getTime_Last_Sent();
 
         String getStatus();
 

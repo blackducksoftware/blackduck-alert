@@ -1,0 +1,70 @@
+String openapiGeneratorImageName = 'openapitools/openapi-generator-cli'
+String runDirectory = project(':test-common').buildDir.toString() + '/swagger'
+String dockerRunDirectory = '/local'
+String baseFileName = 'postman.json'
+String openAPIGeneratorOutputFile = runDirectory + '/' + baseFileName
+String finalOutputFile = runDirectory + '/' + project.name + '-' + project.version + '-' + baseFileName
+
+project.tasks.create(name: 'createSwaggerAPISpec', type: Test, group: 'Postman', description: 'Runs the test which generates the input to create Postman collection. <sub-task>') {
+    useJUnitPlatform {
+        includeTags 'Swagger'
+    }
+    testLogging.showStandardStreams = true
+
+    doFirst {
+        logger.lifecycle('Running all tests tagged as --> Swagger')
+    }
+}
+
+project.tasks.create(name: 'pullOpenApiGeneratorImage', type: Exec, dependsOn: 'createSwaggerAPISpec', group: 'Postman', description: 'Pulls Docker image needed to create Postman collection. <sub-task>') {
+    outputs.upToDateWhen { false }
+
+    def buildCommand = ['docker', 'pull', openapiGeneratorImageName]
+
+    doFirst {
+        logger.lifecycle('Running command:: ' + buildCommand.join(" "))
+    }
+
+    commandLine buildCommand
+}
+
+project.tasks.create(name: 'runOpenAPIGenerator', type: Exec, dependsOn: 'pullOpenApiGeneratorImage', group: 'Postman', description: 'Create the Postman collection. <sub-task>') {
+    outputs.upToDateWhen { false }
+
+    def buildCommand = ['docker', 'run', '--rm', '--user', rootProject.ext.userID + ':' + rootProject.ext.groupID,
+                        '-v', "${runDirectory}:${dockerRunDirectory}", openapiGeneratorImageName, 'generate', '-i',
+                        "${dockerRunDirectory}/swagger.api-spec", '-g', 'postman-collection', '-o', dockerRunDirectory,
+                        '--additional-properties=folderStrategy=Tags']
+
+    doFirst {
+        logger.lifecycle('Running command:: ' + buildCommand.join(" "))
+    }
+
+    doLast {
+        if (!file(openAPIGeneratorOutputFile).exists()) {
+            throw new GradleException('Output file not found:: ' + openAPIGeneratorOutputFile)
+        } else {
+            logger.lifecycle('Expected output file found:: ' + openAPIGeneratorOutputFile)
+        }
+    }
+
+    workingDir runDirectory
+    commandLine buildCommand
+}
+
+project.tasks.create(name: 'renamePostmanCollection', dependsOn: 'runOpenAPIGenerator', group: 'Postman', description: 'Rename Postman collection. <sub-task>') {
+    outputs.upToDateWhen { false }
+
+    doLast {
+        logger.lifecycle('Renaming file to --> ' + finalOutputFile)
+
+        project.file(finalOutputFile).delete()
+        project.file(openAPIGeneratorOutputFile).renameTo(finalOutputFile)
+
+        if (!file(finalOutputFile).exists()) {
+            throw new GradleException('Final output file not found:: ' + finalOutputFile)
+        }
+    }
+}
+
+project.tasks.create(name: 'createPostmanCollection', dependsOn: 'renamePostmanCollection', group: 'Postman', description: 'All tasks to create Postman collection. <primary task>') {}

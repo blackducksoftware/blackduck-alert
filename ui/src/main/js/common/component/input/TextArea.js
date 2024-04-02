@@ -3,13 +3,15 @@ import PropTypes from 'prop-types';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input/field/LabeledField';
 
 const TextArea = ({
-    id, description, errorName, errorValue, inputClass, label, labelClass, name, onChange, readOnly, required, showDescriptionPlaceHolder, sizeClass, value
+    id, description, errorName, errorValue, inputClass, label, labelClass, name, onChange, readOnly, required, showDescriptionPlaceHolder, 
+    sizeClass, value, customDescription, isDisabled, rows
 }) => {
     const divClasses = `${sizeClass} d-inline-flex`;
     const onChangeHandler = readOnly ? null : onChange;
     return (
         <LabeledField
             labelClass={labelClass}
+            customDescription={customDescription}
             description={description}
             showDescriptionPlaceHolder={showDescriptionPlaceHolder}
             label={label}
@@ -18,7 +20,7 @@ const TextArea = ({
             required={required}
         >
             <div className={divClasses}>
-                <textarea id={id} rows="8" cols="60" readOnly={readOnly} className={inputClass} name={name} value={value} onChange={onChangeHandler} />
+                <textarea id={id} rows={rows} cols="60" readOnly={readOnly} className={inputClass} name={name} value={value} onChange={onChangeHandler} disabled={isDisabled} />
             </div>
         </LabeledField>
     );
@@ -38,7 +40,10 @@ TextArea.propTypes = {
     label: PropTypes.string.isRequired,
     labelClass: PropTypes.string,
     required: PropTypes.bool,
-    showDescriptionPlaceHolder: PropTypes.bool
+    showDescriptionPlaceHolder: PropTypes.bool,
+    customDescription: PropTypes.string,
+    isDisabled: PropTypes.bool,
+    rows: PropTypes.number
 };
 
 TextArea.defaultProps = {
@@ -54,7 +59,9 @@ TextArea.defaultProps = {
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    isDisabled: false,
+    rows: 8
 };
 
 export default TextArea;

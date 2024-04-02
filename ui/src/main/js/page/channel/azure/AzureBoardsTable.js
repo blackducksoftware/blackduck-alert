@@ -1,337 +1,226 @@
-import React, { useEffect, useRef, useState } from 'react';
-import * as PropTypes from 'prop-types';
-import CommonGlobalConfiguration from 'common/configuration/global/CommonGlobalConfiguration';
-import { BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn } from 'react-bootstrap-table';
-import AutoRefresh from 'common/component/table/AutoRefresh';
-import ConfirmModal from 'common/component/ConfirmModal';
-import { ProgressIcon } from 'common/component/table/ProgressIcon';
-import { useHistory } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import IconTableCellFormatter from 'common/component/table/IconTableCellFormatter';
-import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBuilder';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
+import Table from 'common/component/table/Table';
+import AzureBoardsTableActions from 'page/channel/azure/AzureBoardsTableActions';
+import AzureBoardsEditCell from 'page/channel/azure/AzureBoardsEditCell';
+import AzureBoardsCopyCell from 'page/channel/azure/AzureBoardsCopyCell';
+import AzureBoardsModal from 'page/channel/azure/AzureBoardsModal';
+import StatusMessage from 'common/component/StatusMessage';
+import { useLocation } from 'react-router-dom';
+import { fetchAzureBoards } from 'store/actions/azure-boards';
 
-const AzureBoardsTable = ({
-    csrfToken,
-    fieldKey,
-    label,
-    description,
-    children,
-    tableData,
-    apiUrl,
-    setTableData,
-    readonly,
-    displayDelete,
-    editPageUrl,
-    copyPageUrl,
-    showRefreshButton,
-    includeEnabled
-}) => {
-    const [showDelete, setShowDelete] = useState(false);
-    const [allSelectedRows, setAllSelectedRows] = useState([]);
-    const [progress, setProgress] = useState(false);
+const emptyTableConfig = {
+    message: 'There are no records to display for this table.  Please create an Azure Board connection to use this table.'
+};
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
-    const [totalPages, setTotalPages] = useState(1);
-    const [sortName, setSortName] = useState('name');
-    const [sortOrder, setSortOrder] = useState('asc');
-    const [searchTerm, setSearchTerm] = useState('');
-
-    const tableRef = useRef();
-    const history = useHistory();
-
-    const retrieveTableData = async () => {
-        setProgress(true);
-
-        const mutatorData = {
-            sortName,
-            sortOrder,
-            searchTerm
-        };
-
-        const pageNumber = currentPage ? currentPage - 1 : 0;
-
-        const response = await ConfigurationRequestBuilder.createReadPageRequest(apiUrl, csrfToken, pageNumber, pageSize, mutatorData);
-
-        const data = await response.json();
-
-        if (data) {
-            setTotalPages(data.totalPages);
-            setTableData(data.models);
+const AzureBoardsTable = ({ readonly, allowDelete }) => {
+    const location = useLocation();
+    const dispatch = useDispatch();
+    const { data } = useSelector((state) => state.azureBoards);
+    const refreshStatus = JSON.parse(window.localStorage.getItem('AZURE_BOARDS_REFRESH_STATUS'));
+    const [autoRefresh, setAutoRefresh] = useState(refreshStatus);
+    const [selected, setSelected] = useState([]);
+    const [sortConfig, setSortConfig] = useState();
+    const [paramsConfig, setParamsConfig] = useState({
+        pageNumber: data?.pageNumber || 0,
+        pageSize: data?.pageSize,
+        mutatorData: {
+            searchTerm: data?.mutatorData?.searchTerm,
+            sortName: data?.mutatorData?.name,
+            sortOrder: data?.mutatorData?.direction
         }
+    });
+    const [showModal, setShowModal] = useState(false);
+    const [statusMessage, setStatusMessage] = useState();
+    const [modalData, setModalData] = useState();
 
-        setProgress(false);
-    };
+    const COLUMNS = [{
+        key: 'name',
+        label: 'Name',
+        sortable: true
+    }, {
+        key: 'organizationName',
+        label: 'Organization Name',
+        sortable: true
+    }, {
+        key: 'createdAt',
+        label: 'Created At',
+        sortable: true
+    }, {
+        key: 'lastUpdated',
+        label: 'Last Updated',
+        sortable: true
+    }, {
+        key: 'editAzureBoard',
+        label: 'Edit',
+        sortable: false,
+        customCell: AzureBoardsEditCell,
+        settings: { alignment: 'center', paramsConfig }
+    }, {
+        key: 'copyAzureBoard',
+        label: 'Copy',
+        sortable: false,
+        customCell: AzureBoardsCopyCell,
+        settings: { alignment: 'center', paramsConfig }
+    }];
 
     useEffect(() => {
-        retrieveTableData();
-    }, [currentPage, pageSize, searchTerm, sortName, sortOrder]);
+        // If a user authenticates via OAuth, OAuth will redirect us back to Alert with a url path similar to the following:
+        // `alert/channels/azure_boards/edit/{id}`.  If an ID is present as well as the string 'edit', we can assert that
+        // the modal should reopen with the data relevant to that ID.
 
-    const deleteTableData = async () => {
-        setProgress(true);
-        if (allSelectedRows) {
-            await Promise.all(allSelectedRows.map(async (configId) => {
-                await ConfigurationRequestBuilder.createDeleteRequest(apiUrl, csrfToken, configId);
-            }));
+        // split the url to determine if edit is present
+        const parsedUrlArray = location.pathname.split('/');
+
+        if (parsedUrlArray.includes('edit')) {
+            // obtain the id of the azureBoards board that OAuth just authenticated
+            const modalDataID = parsedUrlArray.slice(-1)[0];
+            // filter the table data and set the data for the modal to the one that matches the id from the line above
+            data.models.forEach((model) => {
+                if (model.id === modalDataID) {
+                    setModalData(model);
+                    setShowModal(true);
+                }
+            });
         }
-        await retrieveTableData();
-        setShowDelete(false);
-        setProgress(false);
-    };
+    }, [location, data]);
 
-    const createTableCellFormatter = (iconName, buttonText, clickFunction) => {
-        const buttonId = buttonText.toLowerCase();
-        return (cell, row) => (
-            <IconTableCellFormatter
-                id={`${fieldKey}-${buttonId}-cell`}
-                handleButtonClicked={clickFunction}
-                currentRowSelected={row}
-                buttonIconName={iconName}
-                buttonText={buttonText}
-            />
-        );
-    };
+    useEffect(() => {
+        dispatch(fetchAzureBoards(paramsConfig));
+    }, [paramsConfig]);
 
-    const navigateToConfigPage = (id, copy) => {
-        const url = (copy) ? copyPageUrl : editPageUrl;
-        if (id) {
-            history.push(`${url}/${id}`);
-            return;
+    useEffect(() => {
+        localStorage.setItem('AZURE_BOARDS_REFRESH_STATUS', JSON.stringify(autoRefresh));
+
+        if (autoRefresh) {
+            const refreshIntervalId = setInterval(() => dispatch(fetchAzureBoards(paramsConfig)), 30000);
+            return function clearRefreshInterval() {
+                clearInterval(refreshIntervalId);
+            };
         }
-        history.push(url);
+
+        return undefined;
+    }, [autoRefresh, paramsConfig]);
+
+    const handleSearchChange = (searchValue) => {
+        setParamsConfig({
+            ...paramsConfig,
+            mutatorData: {
+                ...paramsConfig.mutatorData,
+                searchTerm: searchValue
+            }
+        });
     };
 
-    const editButtonClicked = ({ id }) => {
-        navigateToConfigPage(id);
-    };
+    function handleToggle() {
+        setAutoRefresh(!autoRefresh);
+    }
 
-    const copyButtonClicked = ({ id }) => {
-        navigateToConfigPage(id, true);
-    };
+    function handlePagination(page) {
+        setSelected([]);
+        setParamsConfig({ ...paramsConfig, pageNumber: page });
+    }
 
-    const editColumnFormatter = () => createTableCellFormatter('pencil-alt', 'Edit', editButtonClicked);
-    const copyColumnFormatter = () => createTableCellFormatter('copy', 'Copy', copyButtonClicked);
+    function handlePageSize(count) {
+        setParamsConfig({ ...paramsConfig, pageSize: count, pageNumber: 0 });
+    }
 
-    const enabledFormat = (cell) => {
-        const icon = (cell) ? 'check' : 'times';
-        const color = (cell) ? 'synopsysGreen' : 'synopsysRed';
-        const className = `alert-icon ${color}`;
-
-        return (
-            <div className="btn btn-link jobIconButton">
-                <FontAwesomeIcon icon={icon} className={className} size="lg" />
-            </div>
-        );
-    };
-
-    const createEnabledColumnHeader = () => includeEnabled && (
-        <TableHeaderColumn
-            dataField="enabled"
-            width="70"
-            columnClassName="tableCell"
-            dataFormat={enabledFormat}
-            thStyle={{ textAlign: 'center' }}
-            tdStyle={{ textAlign: 'center' }}
-        >
-            Enabled
-        </TableHeaderColumn>
-    );
-
-    const createIconTableHeader = (dataFormat, text) => (
-        <TableHeaderColumn
-            key={`${fieldKey}-${text}Key`}
-            dataField=""
-            width="48"
-            columnClassName="tableCell"
-            dataFormat={dataFormat}
-            thStyle={{ textAlign: 'center' }}
-            tdStyle={{ textAlign: 'center' }}
-        >
-            {text}
-        </TableHeaderColumn>
-    );
-
-    const insertAndDeleteButton = (buttons) => {
-        const insertClick = () => {
-            buttons.insertBtn.props.onClick();
-            navigateToConfigPage();
-        };
-        const deleteClick = () => {
-            buttons.deleteBtn.props.onClick();
-            setShowDelete(true);
-        };
-        return (
-            <div>
-                { !readonly
-                    && (
-                        <InsertButton
-                            id={`${fieldKey}-insert-button`}
-                            className="addJobButton btn-md"
-                            onClick={insertClick}
-                        >
-                            <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
-                            New
-                        </InsertButton>
-
-                    )}
-                { !readonly && displayDelete
-                    && (
-                        <DeleteButton
-                            id={`${fieldKey}-delete-button`}
-                            className="deleteJobButton btn-md"
-                            onClick={deleteClick}
-                        >
-                            <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
-                            Delete
-                        </DeleteButton>
-                    )}
-                { showRefreshButton
-                    && (
-                        <button
-                            id={`${fieldKey}-refresh-button`}
-                            type="button"
-                            className="btn btn-md btn-info react-bs-table-add-btn tableButton"
-                            onClick={retrieveTableData}
-                        >
-                            <FontAwesomeIcon icon="sync" className="alert-icon" size="lg" />
-                            Refresh
-                        </button>
-                    )}
-            </div>
-        );
-    };
-
-    const onSortChange = (newSortName, newSortOrder) => {
-        setSortName(newSortName);
-        setSortOrder(newSortOrder);
-    };
-
-    const onPageChange = (page, sizePerPage) => {
-        setCurrentPage(page);
-        setPageSize(sizePerPage);
-    };
-
-    const onSizePerPageList = (sizePerPage) => {
-        setPageSize(sizePerPage);
-    };
-
-    const onSearchChange = (inputSearchTerm) => {
-        setSearchTerm(inputSearchTerm);
-        setCurrentPage(1);
-    };
-
-    const tableFetchInfo = {
-        dataTotalSize: totalPages * pageSize
-    };
-
-    const tableOptions = {
-        btnGroup: insertAndDeleteButton,
-        noDataText: 'No Data',
-        clearSearch: true,
-        handleConfirmDeleteRow: (next, rows) => setAllSelectedRows(rows),
-        onRowDoubleClick: (id) => {
-            editButtonClicked(id);
-        },
-        defaultSortName: 'name',
-        defaultSortOrder: 'asc',
-        onSortChange,
-        onPageChange,
-        onSizePerPageList,
-        onSearchChange,
-        sizePerPage: pageSize,
-        page: currentPage
-    };
-
-    const selectRow = {
-        mode: 'checkbox',
-        clickToSelect: true,
-        bgColor(row, isSelect) {
-            return isSelect && '#e8e8e8';
+    const onSort = (name) => {
+        const { sortName, sortOrder } = paramsConfig.mutatorData;
+        if (name !== sortName) {
+            setSortConfig({ name, direction: 'ASC' });
+            return setParamsConfig({ ...paramsConfig,
+                mutatorData: {
+                    ...paramsConfig.mutatorData,
+                    sortName: name,
+                    sortOrder: 'asc'
+                } });
         }
+
+        if (name === sortName && sortOrder !== 'desc') {
+            setSortConfig({ name, direction: 'DESC' });
+            return setParamsConfig({ ...paramsConfig,
+                mutatorData: {
+                    ...paramsConfig.mutatorData,
+                    sortName: name,
+                    sortOrder: 'desc'
+                } });
+        }
+
+        setSortConfig();
+        return setParamsConfig({ ...paramsConfig,
+            mutatorData: {
+                ...paramsConfig.mutatorData,
+                sortName: '',
+                sortOrder: ''
+            } });
     };
 
-    const createColumns = () => {
-        const columns = [];
-        columns.push(<TableHeaderColumn dataField="id" hidden isKey>Id</TableHeaderColumn>);
-        columns.push(...children);
-        columns.push(createEnabledColumnHeader());
-        columns.push(editPageUrl && createIconTableHeader(editColumnFormatter(), 'Edit'));
-        columns.push(copyPageUrl && createIconTableHeader(copyColumnFormatter(), 'Copy'));
-
-        return columns;
+    const onSelected = (selectedRow) => {
+        setSelected(selectedRow);
     };
 
     return (
-        <CommonGlobalConfiguration
-            label={label}
-            description={description}
-        >
-            <div className="pull-right">
-                <AutoRefresh startAutoReload={retrieveTableData} />
-            </div>
-            <ConfirmModal
-                id="delete-confirm-modal"
-                title="Delete"
-                affirmativeAction={deleteTableData}
-                affirmativeButtonText="Confirm"
-                negativeAction={() => setShowDelete(false)}
-                negativeButtonText="Cancel"
-                showModal={showDelete}
-            >
-                Are you sure you want to delete these items?
-            </ConfirmModal>
-            <BootstrapTable
-                version="4"
-                hover
-                condensed
-                containerClass="table"
-                trClassName="tableRow"
-                headerContainerClass="scrollable"
-                bodyContainerClass="tableScrollableBody"
-                data={tableData}
-                insertRow
-                deleteRow
-                selectRow={selectRow}
-                ref={tableRef}
-                options={tableOptions}
-                search
-                pagination
-                remote
-                fetchInfo={tableFetchInfo}
-            >
-                {createColumns()}
-            </BootstrapTable>
-            <ProgressIcon inProgress={progress} />
-        </CommonGlobalConfiguration>
+        <>
+            <Table
+                tableData={data?.models}
+                columns={COLUMNS}
+                multiSelect
+                searchBarPlaceholder="Search Azure Boards..."
+                handleSearchChange={handleSearchChange}
+                active={autoRefresh}
+                onToggle={handleToggle}
+                onSort={onSort}
+                sortConfig={sortConfig}
+                selected={selected}
+                onSelected={onSelected}
+                onPage={handlePagination}
+                onPageSize={handlePageSize}
+                pageSize={data?.pageSize}
+                showPageSize
+                data={data}
+                emptyTableConfig={emptyTableConfig}
+                tableActions={() => (
+                    <AzureBoardsTableActions
+                        data={data}
+                        readonly={readonly}
+                        allowDelete={allowDelete}
+                        selected={selected}
+                        setSelected={setSelected}
+                        paramsConfig={paramsConfig}
+                        setParamsConfig={setParamsConfig}
+                    />
+                )}
+            />
+            {statusMessage && (
+                <StatusMessage
+                    actionMessage={statusMessage.type === 'success' ? statusMessage.message : null}
+                    errorMessage={statusMessage.type === 'error' ? statusMessage.message : null}
+                />
+            )}
+
+            {showModal && (
+                <AzureBoardsModal
+                    data={modalData}
+                    isOpen={showModal}
+                    toggleModal={setShowModal}
+                    modalOptions={{
+                        type: 'EDIT',
+                        title: 'Edit Azure Board',
+                        submitText: 'Save',
+                        openedAfterOAuthHandshake: true
+                    }}
+                    setStatusMessage={setStatusMessage}
+                    statusMessage="Successfully edited 1 Azure Board."
+                />
+            )}
+        </>
     );
 };
 
 AzureBoardsTable.propTypes = {
-    csrfToken: PropTypes.string.isRequired,
-    label: PropTypes.string.isRequired,
-    children: PropTypes.node.isRequired,
-    tableData: PropTypes.array.isRequired,
-    setTableData: PropTypes.func.isRequired,
-    apiUrl: PropTypes.string.isRequired,
-    editPageUrl: PropTypes.string,
-    copyPageUrl: PropTypes.string,
-    fieldKey: PropTypes.string,
-    description: PropTypes.string,
     readonly: PropTypes.bool,
-    displayDelete: PropTypes.bool,
-    showRefreshButton: PropTypes.bool,
-    includeEnabled: PropTypes.bool
+    allowDelete: PropTypes.bool
 };
-
-AzureBoardsTable.defaultProps = {
-    fieldKey: '',
-    description: '',
-    editPageUrl: null,
-    copyPageUrl: null,
-    showRefreshButton: false,
-    readonly: false,
-    displayDelete: true,
-    includeEnabled: true
-};
-
 export default AzureBoardsTable;

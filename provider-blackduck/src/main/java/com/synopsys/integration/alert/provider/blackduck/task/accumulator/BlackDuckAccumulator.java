@@ -104,22 +104,25 @@ public class BlackDuckAccumulator extends ProviderTask {
         if (accumulatorRunning.get()) {
             logger.info("Accumulator already running skipping run.");
         } else {
-            accumulatingLock.lock();
-            logger.info("Accumulating lock acquired. Preventing other accumulation cycles.");
-            accumulatorRunning.set(true);
-            Optional<BlackDuckNotificationRetriever> optionalNotificationRetriever = notificationRetrieverFactory.createBlackDuckNotificationRetriever(getProviderProperties());
-            if (optionalNotificationRetriever.isPresent()) {
-                DateRange dateRange = searchDateManager.retrieveNextSearchDateRange();
-                logger.info(
-                    "Accumulating notifications between {} and {} ",
-                    DateUtils.formatDateAsJsonString(dateRange.getStart()),
-                    DateUtils.formatDateAsJsonString(dateRange.getEnd())
-                );
-                retrieveAndStoreNotificationsSafely(optionalNotificationRetriever.get(), dateRange);
+            try {
+                accumulatingLock.lock();
+                logger.info("Accumulating lock acquired. Preventing other accumulation cycles.");
+                accumulatorRunning.set(true);
+                Optional<BlackDuckNotificationRetriever> optionalNotificationRetriever = notificationRetrieverFactory.createBlackDuckNotificationRetriever(getProviderProperties());
+                if (optionalNotificationRetriever.isPresent()) {
+                    DateRange dateRange = searchDateManager.retrieveNextSearchDateRange();
+                    logger.info(
+                        "Accumulating notifications between {} and {} ",
+                        DateUtils.formatDateAsJsonString(dateRange.getStart()),
+                        DateUtils.formatDateAsJsonString(dateRange.getEnd())
+                    );
+                    retrieveAndStoreNotificationsSafely(optionalNotificationRetriever.get(), dateRange);
+                }
+            } finally {
+                accumulatorRunning.set(false);
+                accumulatingLock.unlock();
+                logger.info("Accumulating lock released. Allowing other accumulation cycles.");
             }
-            accumulatorRunning.set(false);
-            accumulatingLock.unlock();
-            logger.info("Accumulating lock released. Allowing other accumulation cycles.");
         }
     }
 

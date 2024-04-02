@@ -11,7 +11,15 @@
  */
 package com.synopsys.integration.alert.channel.slack.distribution;
 
+import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.certificates.AlertSSLContextManager;
 import com.synopsys.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
@@ -24,11 +32,8 @@ import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 class SlackChannelTestIT {
     private Gson gson;
@@ -38,7 +43,7 @@ class SlackChannelTestIT {
 
     @BeforeEach
     public void init() {
-        gson = new Gson();
+        gson = BlackDuckServicesFactory.createDefaultGson();
         properties = new TestProperties();
         eventManager = Mockito.mock(EventManager.class);
         executingJobManager = Mockito.mock(ExecutingJobManager.class);
@@ -69,8 +74,10 @@ class SlackChannelTestIT {
     private ChannelRestConnectionFactory createConnectionFactory() {
         MockAlertProperties testAlertProperties = new MockAlertProperties();
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
+        AlertSSLContextManager alertSSLContextManager = Mockito.mock(AlertSSLContextManager.class);
         Mockito.when(proxyManager.createProxyInfoForHost(Mockito.anyString())).thenReturn(ProxyInfo.NO_PROXY_INFO);
-        return new ChannelRestConnectionFactory(testAlertProperties, proxyManager, gson);
+        Mockito.when(alertSSLContextManager.buildWithClientCertificate()).thenReturn(Optional.empty());
+        return new ChannelRestConnectionFactory(testAlertProperties, proxyManager, gson, alertSSLContextManager);
     }
 
 }

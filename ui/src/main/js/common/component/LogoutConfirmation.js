@@ -1,22 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Modal } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { cancelLogout, logout } from 'store/actions/session';
+import Modal from 'common/component/modal/Modal';
 
 const LogoutConfirmation = ({ cancelLogout, logout, showLogoutConfirm }) => {
     return (
-        <Modal show={showLogoutConfirm} onHide={cancelLogout}>
-            <Modal.Header closeButton>
-                <Modal.Title>Confirm Logout</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
+        <Modal
+            isOpen={showLogoutConfirm}
+            size="sm"
+            title="Confirm Logout"
+            closeModal={cancelLogout}
+            handleCancel={cancelLogout}
+            handleSubmit={logout}
+            submitText="Logout"
+            style="delete"
+        >
+            <div className="modal-description">
                 Are you sure you would like to logout?
-            </Modal.Body>
-            <Modal.Footer>
-                <button id="logoutCancel" type="button" className="btn btn-link" onClick={cancelLogout}>Cancel</button>
-                <button id="logoutLogout" type="button" className="btn btn-danger" onClick={logout}>Logout</button>
-            </Modal.Footer>
+            </div>
         </Modal>
     );
 }

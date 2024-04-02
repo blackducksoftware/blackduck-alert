@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // TODO: Rework additional info, should accept more than lastUpdated
 // TODO: Last updated has perfect ability to become LabelValuePair reusable component
 
-const useStyles = createUseStyles({
+const useStyles = createUseStyles((theme) => ({
     pageHeader: {
         width: '100%',
         alignItems: 'center',
@@ -23,7 +23,7 @@ const useStyles = createUseStyles({
         gridArea: 'logo',
         height: '50px',
         width: '50px',
-        backgroundColor: 'white',
+        backgroundColor: theme.colors.white.default,
         border: 'solid 1px #ddd',
         color: '#24256',
         borderRadius: '50%',
@@ -63,11 +63,11 @@ const useStyles = createUseStyles({
     },
     headerSeperator: {
         gridArea: 'separator',
-        borderBottom: 'solid 1px grey',
+        borderBottom: `solid 1px ${theme.colors.grey.default}`,
         margin: '10px 0',
         width: '100%'
     }
-});
+}));
 
 const PageHeader = ({ title, description, icon, lastUpdated }) => {
     const classes = useStyles();
@@ -106,7 +106,7 @@ const PageHeader = ({ title, description, icon, lastUpdated }) => {
 PageHeader.propTypes = {
     title: PropTypes.string.isRequired,
     description: PropTypes.string,
-    icon: PropTypes.string,
+    icon: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
     lastUpdated: PropTypes.string
 };
 

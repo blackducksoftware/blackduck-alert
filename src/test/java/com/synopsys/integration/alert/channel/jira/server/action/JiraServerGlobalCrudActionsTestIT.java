@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -188,9 +189,19 @@ class JiraServerGlobalCrudActionsTestIT {
     }
 
     @Test
-    void createTest() {
+    void createBasicAuthTest() {
         JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator);
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.create(createBasicJiraModel());
+
+        assertTrue(actionResponse.isSuccessful());
+        assertTrue(actionResponse.hasContent());
+        assertEquals(HttpStatus.OK, actionResponse.getHttpStatus());
+    }
+
+    @Test
+    void createPersonalAccessTokenAuthTest() {
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator);
+        ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.create(createPersonalAccessTokenJiraModel());
 
         assertTrue(actionResponse.isSuccessful());
         assertTrue(actionResponse.hasContent());
@@ -226,7 +237,7 @@ class JiraServerGlobalCrudActionsTestIT {
     }
 
     @Test
-    void updateTest() {
+    void updateBasicAuthTest() {
         JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator);
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createBasicJiraModel();
         ActionResponse<JiraServerGlobalConfigModel> createActionResponse = crudActions.create(jiraServerGlobalConfigModel);
@@ -238,9 +249,35 @@ class JiraServerGlobalCrudActionsTestIT {
             uuid.toString(),
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             "https://aNewURL",
-            "a-different-username",
-            "newPassword"
+            JiraServerAuthorizationMethod.BASIC
         );
+        updatedJiraServerGlobalConfigModel.setUserName("a-different-username");
+        updatedJiraServerGlobalConfigModel.setPassword("newPassword");
+        ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.update(uuid, updatedJiraServerGlobalConfigModel);
+
+        assertTrue(createActionResponse.isSuccessful());
+        assertTrue(actionResponse.hasContent());
+        assertEquals(HttpStatus.OK, actionResponse.getHttpStatus());
+        assertTrue(actionResponse.getContent().isPresent());
+        assertEquals("https://aNewURL", actionResponse.getContent().get().getUrl(), "The updated model does not have the correct updated value.");
+    }
+
+    @Test
+    void updatePersonalAccessTokenAuthTest() {
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator);
+        JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createPersonalAccessTokenJiraModel();
+        ActionResponse<JiraServerGlobalConfigModel> createActionResponse = crudActions.create(jiraServerGlobalConfigModel);
+        assertTrue(createActionResponse.isSuccessful());
+        assertTrue(createActionResponse.getContent().isPresent());
+
+        UUID uuid = UUID.fromString(createActionResponse.getContent().get().getId());
+        JiraServerGlobalConfigModel updatedJiraServerGlobalConfigModel = new JiraServerGlobalConfigModel(
+            uuid.toString(),
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            "https://aNewURL",
+            JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN
+        );
+        updatedJiraServerGlobalConfigModel.setAccessToken("a-different-personal-access-token");
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.update(uuid, updatedJiraServerGlobalConfigModel);
 
         assertTrue(createActionResponse.isSuccessful());
@@ -275,14 +312,41 @@ class JiraServerGlobalCrudActionsTestIT {
             null,
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             "https://aNewURL",
-            "a-different-username",
-            null
+            JiraServerAuthorizationMethod.BASIC
         );
+        updatedJiraServerGlobalConfigModel.setUserName("a-different-username");
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.update(uuid, updatedJiraServerGlobalConfigModel);
 
         assertTrue(actionResponse.isError());
         assertFalse(actionResponse.hasContent());
         assertEquals(HttpStatus.BAD_REQUEST, actionResponse.getHttpStatus());
+    }
+
+    @Test
+    void updateSwitchBetweenAuthorizationTypesTest() {
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator);
+        JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createBasicJiraModel();
+        ActionResponse<JiraServerGlobalConfigModel> createActionResponse = crudActions.create(jiraServerGlobalConfigModel);
+        assertTrue(createActionResponse.isSuccessful());
+        assertTrue(createActionResponse.getContent().isPresent());
+
+        UUID uuid = UUID.fromString(createActionResponse.getContent().get().getId());
+        JiraServerGlobalConfigModel updatedJiraServerGlobalConfigModel = new JiraServerGlobalConfigModel(
+            uuid.toString(),
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            "https://aNewURL",
+            JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN
+        );
+        updatedJiraServerGlobalConfigModel.setAccessToken("a-different-personal-access-token");
+        ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.update(uuid, updatedJiraServerGlobalConfigModel);
+
+        assertTrue(createActionResponse.isSuccessful());
+        assertTrue(actionResponse.hasContent());
+        assertEquals(HttpStatus.OK, actionResponse.getHttpStatus());
+        assertTrue(actionResponse.getContent().isPresent());
+        assertEquals("https://aNewURL", actionResponse.getContent().get().getUrl(), "The updated model does not have the correct updated value.");
+        assertTrue(actionResponse.getContent().get().getIsAccessTokenSet().orElse(Boolean.FALSE), "Access token was not set");
+        assertTrue(actionResponse.getContent().get().getPassword().isEmpty(), "The password field was not removed after updating to use a personal access token");
     }
 
     @Test
@@ -322,15 +386,33 @@ class JiraServerGlobalCrudActionsTestIT {
             null,
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             "https://url",
-            "name",
-            "password"
+            JiraServerAuthorizationMethod.BASIC
         );
+        jiraServerGlobalConfigModel.setUserName("name");
+        jiraServerGlobalConfigModel.setPassword("password");
         return jiraServerGlobalConfigModel;
     }
 
     private JiraServerGlobalConfigModel createJiraModelWithName(String name) {
-        JiraServerGlobalConfigModel jiraServerGlobalConfigModel = new JiraServerGlobalConfigModel(null, name, "https://url", "name", "password");
+        JiraServerGlobalConfigModel jiraServerGlobalConfigModel = new JiraServerGlobalConfigModel(
+            null,
+            name,
+            "https://url",
+            JiraServerAuthorizationMethod.BASIC
+        );
+        jiraServerGlobalConfigModel.setUserName("name");
+        jiraServerGlobalConfigModel.setPassword("password");
         return jiraServerGlobalConfigModel;
     }
 
+    private JiraServerGlobalConfigModel createPersonalAccessTokenJiraModel() {
+        JiraServerGlobalConfigModel jiraServerGlobalConfigModel = new JiraServerGlobalConfigModel(
+            null,
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            "https://url",
+            JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN
+        );
+        jiraServerGlobalConfigModel.setAccessToken("accessToken");
+        return jiraServerGlobalConfigModel;
+    }
 }

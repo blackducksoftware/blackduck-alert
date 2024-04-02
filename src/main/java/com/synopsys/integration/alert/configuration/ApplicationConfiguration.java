@@ -7,11 +7,6 @@
  */
 package com.synopsys.integration.alert.configuration;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.batch.core.launch.support.SimpleJobLauncher;
-import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean;
 import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -23,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.web.filter.ForwardedHeaderFilter;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
@@ -34,8 +30,6 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 @Configuration
 @AutoConfigureOrder(1)
 public class ApplicationConfiguration {
-    private final Logger logger = LoggerFactory.getLogger(ApplicationConfiguration.class);
-
     private final Gson gson;
 
     @Autowired
@@ -64,30 +58,6 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    public MapJobRepositoryFactoryBean mapJobRepositoryFactory() throws Exception {
-        MapJobRepositoryFactoryBean factory = new MapJobRepositoryFactoryBean(transactionManager());
-        factory.afterPropertiesSet();
-
-        return factory;
-    }
-
-    @Bean
-    public JobRepository jobRepository() throws Exception {
-        return mapJobRepositoryFactory().getObject();
-    }
-
-    @Bean
-    public SimpleJobLauncher jobLauncher() {
-        SimpleJobLauncher launcher = new SimpleJobLauncher();
-        try {
-            launcher.setJobRepository(jobRepository());
-        } catch (Exception ex) {
-            logger.error("Creating job launcher bean", ex);
-        }
-        return launcher;
-    }
-
-    @Bean
     public TaskScheduler taskScheduler() {
         ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
         threadPoolTaskScheduler.setPoolSize(Runtime.getRuntime().availableProcessors());
@@ -107,5 +77,10 @@ public class ApplicationConfiguration {
     @Bean
     public AuthorizationManager authorizationManager(RoleAccessor roleAccessor) {
         return new AuthorizationManager(roleAccessor);
+    }
+
+    @Bean
+    ForwardedHeaderFilter forwardedHeaderFilter() {
+        return new ForwardedHeaderFilter();
     }
 }

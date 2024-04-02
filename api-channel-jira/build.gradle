@@ -1,6 +1,7 @@
 ext.moduleName = 'com.synopsys.integration.alert.api-channel-jira'
 
 dependencies {
+    api project(':api-certificates')
     api 'com.synopsys.integration:int-jira-common'
 
     implementation platform(project(':alert-platform'))
@@ -12,4 +13,5 @@ dependencies {
     implementation project(':api-descriptor')
 
     testImplementation project(':test-common')
+    testImplementation 'com.synopsys.integration:blackduck-common'
 }

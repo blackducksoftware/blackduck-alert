@@ -23,13 +23,17 @@ const DynamicSelectInput = ({
     clearable,
     onFocus,
     labelClass,
+    customDescription,
     description,
     showDescriptionPlaceHolder,
     label,
     errorName,
     errorValue,
     required,
-    creatable
+    creatable,
+    maxMenuHeight,
+    customVal,
+    customSelect
 }) => {
     const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
     const selectedOptions = options.filter((option) => value.includes(option.value));
@@ -60,18 +64,21 @@ const DynamicSelectInput = ({
     };
 
     const typeOptionLabel = ({ data, ...rest }) => (
+        // eslint-disable-next-line react/jsx-props-no-spreading
         <Option {...rest}>
             <DescriptorOption label={data.label} value={data.value} />
         </Option>
     );
 
     const typeLabel = ({ data, ...rest }) => (
+        // eslint-disable-next-line react/jsx-props-no-spreading
         <SingleValue {...rest}>
             <DescriptorOption label={data.label} value={data.value} />
         </SingleValue>
     );
 
     const multiTypeLabel = ({ data, ...rest }) => (
+        // eslint-disable-next-line react/jsx-props-no-spreading
         <MultiValue {...rest}>
             <DescriptorOption label={data.label} value={data.value} />
         </MultiValue>
@@ -101,7 +108,7 @@ const DynamicSelectInput = ({
             removeSelected={removeSelected}
             options={options}
             placeholder={placeholder}
-            value={selectedOptions}
+            value={customVal || selectedOptions}
             isMulti={multiSelect}
             closeMenuOnSelect={!multiSelect}
             components={selectInputComponents}
@@ -109,7 +116,7 @@ const DynamicSelectInput = ({
             noOptionsMessage={() => 'No options available'}
             onFocus={onFocus}
             menuPlacement="auto"
-            maxMenuHeight={250}
+            maxMenuHeight={maxMenuHeight || 250}
             styles={selectStyles}
         />
     );
@@ -142,6 +149,7 @@ const DynamicSelectInput = ({
     return (
         <LabeledField
             id={id}
+            customDescription={customDescription}
             description={description}
             errorName={errorName}
             errorValue={errorValue}
@@ -151,7 +159,7 @@ const DynamicSelectInput = ({
             showDescriptionPlaceHolder={showDescriptionPlaceHolder}
         >
             <div className={selectClasses}>
-                {selectComponent}
+                {customSelect || selectComponent}
             </div>
         </LabeledField>
     );
@@ -163,7 +171,7 @@ DynamicSelectInput.propTypes = {
     inputClass: PropTypes.string,
     selectSpacingClass: PropTypes.string,
     options: PropTypes.array,
-    value: PropTypes.oneOf(PropTypes.string, PropTypes.array),
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
     placeholder: PropTypes.string,
     searchable: PropTypes.bool,
     removeSelected: PropTypes.bool,
@@ -179,7 +187,11 @@ DynamicSelectInput.propTypes = {
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     required: PropTypes.bool,
-    creatable: PropTypes.bool
+    creatable: PropTypes.bool,
+    maxMenuHeight: PropTypes.number,
+    customDescription: PropTypes.string,
+    customVal: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
+    customSelect: PropTypes.element
 };
 
 DynamicSelectInput.defaultProps = {
@@ -202,7 +214,8 @@ DynamicSelectInput.defaultProps = {
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
     showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT,
-    creatable: false
+    creatable: false,
+    customSelect: null
 };
 
 export default DynamicSelectInput;

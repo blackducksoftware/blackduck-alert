@@ -20,9 +20,10 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class DistributionJobDetailsModelJsonAdapterTest {
-    private final Gson gson = new Gson();
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
     private final JsonDeserializationContext jsonDeserializationContext = gson::fromJson;
     private final JsonSerializationContext jsonSerializationContext = new JsonSerializationContext() {
         @Override

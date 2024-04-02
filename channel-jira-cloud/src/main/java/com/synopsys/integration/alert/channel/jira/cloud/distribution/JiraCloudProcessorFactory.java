@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.certificates.AlertSSLContextManager;
 import com.synopsys.integration.alert.api.channel.issue.IssueTrackerModelExtractor;
 import com.synopsys.integration.alert.api.channel.issue.IssueTrackerProcessor;
 import com.synopsys.integration.alert.api.channel.issue.IssueTrackerProcessorFactory;
@@ -59,6 +60,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
     private final JiraCloudMessageSenderFactory messageSenderFactory;
     private final ProjectMessageToIssueModelTransformer modelTransformer;
     private final IssueCategoryRetriever issueCategoryRetriever;
+    private final AlertSSLContextManager alertSSLContextManager;
 
     @Autowired
     public JiraCloudProcessorFactory(
@@ -69,7 +71,8 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
         ProxyManager proxyManager,
         JiraCloudMessageSenderFactory messageSenderFactory,
         ProjectMessageToIssueModelTransformer modelTransformer,
-        IssueCategoryRetriever issueCategoryRetriever
+        IssueCategoryRetriever issueCategoryRetriever,
+        AlertSSLContextManager alertSSLContextManager
     ) {
         this.gson = gson;
         this.jiraMessageFormatter = jiraMessageFormatter;
@@ -79,6 +82,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
         this.messageSenderFactory = messageSenderFactory;
         this.modelTransformer = modelTransformer;
         this.issueCategoryRetriever = issueCategoryRetriever;
+        this.alertSSLContextManager = alertSSLContextManager;
     }
 
     @Override
@@ -112,7 +116,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
         IssueTrackerSearcher<String> jiraSearcher = jiraSearcherFactory.createJiraSearcher(distributionDetails.getProjectNameOrKey(), jiraCloudQueryExecutor);
 
         IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(jiraMessageFormatter, jiraSearcher);
-        
+
         IssueTrackerAsyncMessageSender<String> messageSender = messageSenderFactory.createAsyncMessageSender(
             distributionDetails,
             jobExecutionId,
@@ -124,11 +128,16 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
 
     private JiraCloudProperties createJiraCloudProperties() throws AlertConfigurationException {
         ConfigurationModel jiraCloudGlobalConfig = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(jiraCloudChannelKey, ConfigContextEnum.GLOBAL)
-                                                       .stream()
-                                                       .findAny()
-                                                       .orElseThrow(() -> new AlertConfigurationException("Missing Jira Cloud global configuration"));
+            .stream()
+            .findAny()
+            .orElseThrow(() -> new AlertConfigurationException("Missing Jira Cloud global configuration"));
         String jiraUrl = jiraCloudGlobalConfig.getField(JiraCloudDescriptor.KEY_JIRA_URL).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
-        return JiraCloudProperties.fromConfig(jiraCloudGlobalConfig, proxyManager.createProxyInfoForHost(jiraUrl));
+
+        return JiraCloudProperties.fromConfig(
+            jiraCloudGlobalConfig,
+            proxyManager.createProxyInfoForHost(jiraUrl),
+            alertSSLContextManager.buildWithClientCertificate().orElse(null)
+        );
     }
 
     private void checkIfAlertPluginIsInstalled(PluginManagerService jiraAppService) throws IssueTrackerException {

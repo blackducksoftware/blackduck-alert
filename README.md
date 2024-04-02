@@ -11,7 +11,7 @@ This application provides the ability to send notifications from a provider to v
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=com.synopsys.integration%3Ablackduck-alert&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.synopsys.integration%3Ablackduck-alert)
 ### Build Steps ###
 #### Requirements ####
- - JDK 11
+ - JDK 17
  - Node 16.15.1 (Recommended)
  - NPM 8.11.0 (Recommended)
 
@@ -67,9 +67,4 @@ All releases are on the GitHub release page. https://github.com/blackducksoftwar
 <!-- project-url-text-end -->
 
 ## Documentation ##
-Our public documentation is located here: https://community.synopsys.com/s/document-item?bundleId=synopsys-alert&topicId=topics%2Fgeneral%2Fsynopsys-alert-overview.html&_LANG=enus
-
-Installation Documentation available for the following:
- - [Docker Compose](https://github.com/blackducksoftware/blackduck-alert/blob/master/deployment/docker-compose/README.md) 
- - [Docker Swarm](https://github.com/blackducksoftware/blackduck-alert/blob/master/deployment/docker-swarm/README.md)
- - [Kubernetes](https://synopsys.atlassian.net/wiki/spaces/BDLM/pages/153583626/Synopsys+Alert+Installation+Guide+for+Synopsys+Operator)
+Our public documentation, including installation instructions, is located here: https://sig-product-docs.synopsys.com/bundle/synopsys-alert/page/topics/general/synopsys-alert-overview.html

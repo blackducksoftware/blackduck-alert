@@ -4,7 +4,6 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.UUID;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
 import com.synopsys.integration.alert.authentication.saml.database.mock.MockSAMLConfigurationRepository;
@@ -19,6 +18,7 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class SAMLTestHelper {
     public static final String TEST_PRIVATE_KEY = "-----BEGIN PRIVATE KEY-----\n" +
@@ -80,20 +80,19 @@ public class SAMLTestHelper {
         return authenticationTestUtils.createAuthorizationManagerWithCurrentUserSet(
             "admin",
             "admin",
-            () -> new PermissionMatrixModel(permissions)
-        );
+            () -> new PermissionMatrixModel(permissions));
     }
 
     public static FilePersistenceUtil createFilePersistenceUtil() {
         AlertProperties alertProperties = new MockAlertProperties();
-        return new FilePersistenceUtil(alertProperties, new Gson());
+        return new FilePersistenceUtil(alertProperties, BlackDuckServicesFactory.createDefaultGson());
     }
 
     public static FilePersistenceUtil createTempDirFilePersistenceUtil(Path tempDir) {
         // Create a temp directory for mockAlertProperties for filePersistenceUtils to use
         MockAlertProperties alertProperties = new MockAlertProperties();
         alertProperties.setAlertConfigHome(tempDir.toAbsolutePath().toString());
-        return new FilePersistenceUtil(alertProperties, new Gson());
+        return new FilePersistenceUtil(alertProperties, BlackDuckServicesFactory.createDefaultGson());
     }
 
     public static SAMLConfigAccessor createTestSAMLConfigAccessor() {
@@ -110,7 +109,6 @@ public class SAMLTestHelper {
         private String metadataUrl = "";
         private String metadataFileName = "";
         private SAMLMetadataMode metadataMode = SAMLMetadataMode.URL;
-        private Boolean wantAssertionsSigned = false;
         private String encryptionCertFileName = "";
         private String encryptionPrivateKeyFileName = "";
         private String signingCertFileName = "";
@@ -157,11 +155,6 @@ public class SAMLTestHelper {
             return this;
         }
 
-        public SAMLConfigModelBuilder setWantAssertionsSigned(Boolean wantAssertionsSigned) {
-            this.wantAssertionsSigned = wantAssertionsSigned;
-            return this;
-        }
-
         public SAMLConfigModelBuilder setEncryptionCertFileName(String encryptionCertFileName) {
             this.encryptionCertFileName = encryptionCertFileName;
             return this;
@@ -189,20 +182,19 @@ public class SAMLTestHelper {
 
         public SAMLConfigModel build() {
             return new SAMLConfigModel(
-                id,
-                this.createdAt,
-                this.lastUpdated,
-                this.enabled,
-                this.forceAuth,
-                this.metadataUrl,
-                this.metadataFileName,
-                this.metadataMode,
-                this.encryptionCertFileName,
-                this.encryptionPrivateKeyFileName,
-                this.signingCertFileName,
-                this.signingPrivateKeyFileName,
-                this.verificationCertFileName
-            );
+                    id,
+                    this.createdAt,
+                    this.lastUpdated,
+                    this.enabled,
+                    this.forceAuth,
+                    this.metadataUrl,
+                    this.metadataFileName,
+                    this.metadataMode,
+                    this.encryptionCertFileName,
+                    this.encryptionPrivateKeyFileName,
+                    this.signingCertFileName,
+                    this.signingPrivateKeyFileName,
+                    this.verificationCertFileName);
         }
     }
 }

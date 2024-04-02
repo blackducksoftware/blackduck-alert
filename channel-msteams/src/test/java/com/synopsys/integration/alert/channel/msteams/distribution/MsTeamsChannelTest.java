@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.channel.msteams.distribution;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.certificates.AlertSSLContextManager;
 import com.synopsys.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
@@ -28,6 +30,7 @@ import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 class MsTeamsChannelTest {
@@ -51,7 +54,7 @@ class MsTeamsChannelTest {
 
     @BeforeEach
     public void init() {
-        gson = new Gson();
+        gson = BlackDuckServicesFactory.createDefaultGson();
         properties = new TestProperties();
         eventManager = Mockito.mock(EventManager.class);
         executingJobManager = Mockito.mock(ExecutingJobManager.class);
@@ -91,8 +94,10 @@ class MsTeamsChannelTest {
     private ChannelRestConnectionFactory createConnectionFactory() {
         MockAlertProperties testAlertProperties = new MockAlertProperties();
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
+        AlertSSLContextManager alertSSLContextManager = Mockito.mock(AlertSSLContextManager.class);
         Mockito.when(proxyManager.createProxyInfoForHost(Mockito.anyString())).thenReturn(ProxyInfo.NO_PROXY_INFO);
-        return new ChannelRestConnectionFactory(testAlertProperties, proxyManager, gson);
+        Mockito.when(alertSSLContextManager.buildWithClientCertificate()).thenReturn(Optional.empty());
+        return new ChannelRestConnectionFactory(testAlertProperties, proxyManager, gson, alertSSLContextManager);
     }
 
 }

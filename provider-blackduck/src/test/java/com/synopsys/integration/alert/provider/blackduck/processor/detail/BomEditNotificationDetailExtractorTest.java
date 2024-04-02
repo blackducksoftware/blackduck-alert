@@ -28,7 +28,7 @@ import com.synopsys.integration.rest.HttpUrl;
 class BomEditNotificationDetailExtractorTest {
     static final String BOM_EDIT_JSON_PATH = "json/bomEditNotification.json";
 
-    private final Gson gson = new Gson();
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
 
     @Test
     void extractDetailedContentTest() throws IOException, IntegrationException {

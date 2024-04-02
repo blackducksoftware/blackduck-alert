@@ -69,13 +69,13 @@ class LDAPConfigControllerTest {
     @Test
     void testGetOneNotExist() {
         ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () -> ldapConfigController.getOne());
-        assertEquals(HttpStatus.NOT_FOUND, responseStatusException.getStatus());
+        assertEquals(HttpStatus.NOT_FOUND, HttpStatus.resolve(responseStatusException.getStatusCode().value()));
     }
 
     @Test
     void testDeleteNotExist() {
         ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () -> ldapConfigController.delete());
-        assertEquals(HttpStatus.NOT_FOUND, responseStatusException.getStatus());
+        assertEquals(HttpStatus.NOT_FOUND, HttpStatus.resolve(responseStatusException.getStatusCode().value()));
     }
 
     @Test
@@ -95,14 +95,14 @@ class LDAPConfigControllerTest {
         assertDoesNotThrow(() -> ldapConfigController.delete());
 
         ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () -> ldapConfigController.getOne());
-        assertEquals(HttpStatus.NOT_FOUND, responseStatusException.getStatus());
+        assertEquals(HttpStatus.NOT_FOUND, HttpStatus.resolve(responseStatusException.getStatusCode().value()));
     }
 
     @Test
     void testCreateInvalidModel() {
         ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () -> ldapConfigController.create(invalidLDAPConfigModel));
         assertEquals("There were problems with the configuration", responseStatusException.getReason());
-        assertEquals(HttpStatus.BAD_REQUEST, responseStatusException.getStatus());
+        assertEquals(HttpStatus.BAD_REQUEST, HttpStatus.resolve(responseStatusException.getStatusCode().value()));
     }
 
     @Test
@@ -110,13 +110,13 @@ class LDAPConfigControllerTest {
         assertDoesNotThrow(() -> ldapConfigController.create(validLDAPConfigModel));
         ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () -> ldapConfigController.create(validLDAPConfigModel));
         assertEquals("A configuration with this name already exists.", responseStatusException.getReason());
-        assertEquals(HttpStatus.BAD_REQUEST, responseStatusException.getStatus());
+        assertEquals(HttpStatus.BAD_REQUEST, HttpStatus.resolve(responseStatusException.getStatusCode().value()));
     }
 
     @Test
     void testUpdateNotExist() {
         ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () -> ldapConfigController.update(validLDAPConfigModel));
-        assertEquals(HttpStatus.NOT_FOUND, responseStatusException.getStatus());
+        assertEquals(HttpStatus.NOT_FOUND, HttpStatus.resolve(responseStatusException.getStatusCode().value()));
     }
 
     @Test
@@ -125,7 +125,7 @@ class LDAPConfigControllerTest {
 
         ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () -> ldapConfigController.update(invalidLDAPConfigModel));
         assertEquals("There were problems with the configuration", responseStatusException.getReason());
-        assertEquals(HttpStatus.BAD_REQUEST, responseStatusException.getStatus());
+        assertEquals(HttpStatus.BAD_REQUEST, HttpStatus.resolve(responseStatusException.getStatusCode().value()));
     }
 
     @Test

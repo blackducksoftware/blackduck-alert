@@ -14,6 +14,7 @@ import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.rest.model.JobAuditModel;
 import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
 import com.synopsys.integration.alert.mock.model.MockRestModelUtil;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class MockAuditEntryRestModel extends MockRestModelUtil<AuditEntryModel> {
     private final String timeLastSent = new Date(500).toString();
@@ -55,7 +56,7 @@ public class MockAuditEntryRestModel extends MockRestModelUtil<AuditEntryModel> 
         json.addProperty("overallStatus", overallStatus);
         json.addProperty("lastSent", timeLastSent);
 
-        final Gson gson = new Gson();
+        Gson gson = BlackDuckServicesFactory.createDefaultGson();
         final JsonObject notificationJson = gson.toJsonTree(notification).getAsJsonObject();
         json.add("notification", notificationJson);
 

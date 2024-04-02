@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import * as PropTypes from 'prop-types';
-import CommonGlobalConfiguration from 'common/configuration/global/CommonGlobalConfiguration';
 import CheckboxInput from 'common/component/input/CheckboxInput';
 import SelectInput from 'common/component/input/DynamicSelectInput';
 import {
     DISTRIBUTION_CHANNEL_OPTIONS,
     DISTRIBUTION_COMMON_FIELD_KEYS,
+    DISTRIBUTION_CONFIGURATION_INFO,
     DISTRIBUTION_FREQUENCY_OPTIONS,
     DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS,
-    DISTRIBUTION_POLICY_SELECT_COLUMNS,
     DISTRIBUTION_PROCESSING_DESCRIPTIONS,
     DISTRIBUTION_PROCESSING_TYPES,
-    DISTRIBUTION_PROJECT_SELECT_COLUMNS,
     DISTRIBUTION_TEST_FIELD_KEYS,
     DISTRIBUTION_URLS,
     DISTRIBUTION_VULNERABILITY_SEVERITY_OPTIONS
@@ -19,7 +17,6 @@ import {
 import EndpointSelectField from 'common/component/input/EndpointSelectField';
 import TextInput from 'common/component/input/TextInput';
 import CollapsiblePane from 'common/component/CollapsiblePane';
-import TableSelectInput from 'common/component/input/TableSelectInput';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import { CONTEXT_TYPE, isOneOperationAssigned, isOperationAssigned, OPERATIONS } from 'common/util/descriptorUtilities';
@@ -33,15 +30,17 @@ import { JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';
 import { JIRA_SERVER_INFO } from 'page/channel/jira/server/JiraServerModel';
 import { MSTEAMS_INFO } from 'page/channel/msteams/MSTeamsModel';
 import { SLACK_INFO } from 'page/channel/slack/SlackModels';
-import AzureDistributionConfiguration from 'page/channel/azure/AzureDistributionConfiguration';
+import AzureBoardsDistributionConfiguration from 'page/channel/azure/AzureBoardsDistributionConfiguration';
 import EmailDistributionConfiguration from 'page/channel/email/EmailDistributionConfiguration';
 import JiraCloudDistributionConfiguration from 'page/channel/jira/cloud/JiraCloudDistributionConfiguration';
 import JiraServerDistributionConfiguration from 'page/channel/jira/server/JiraServerDistributionConfiguration';
 import MsTeamsDistributionConfiguration from 'page/channel/msteams/MsTeamsDistributionConfiguration';
 import SlackDistributionConfiguration from 'page/channel/slack/SlackDistributionConfiguration';
+import PageHeader from 'common/component/navigation/PageHeader';
+import { createNewConfigurationRequest } from 'common/util/configurationRequestBuilder';
 
 const DistributionConfigurationForm = ({
-    csrfToken, errorHandler, descriptors, lastUpdated
+    csrfToken, errorHandler, descriptors
 }) => {
     const { id } = useParams();
     const history = useHistory();
@@ -183,7 +182,7 @@ const DistributionConfigurationForm = ({
             case AZURE_BOARDS_INFO.key: {
                 globalConfigSetSpecificChannelModel();
                 return (
-                    <AzureDistributionConfiguration
+                    <AzureBoardsDistributionConfiguration
                         csrfToken={csrfToken}
                         data={specificChannelModel}
                         setData={setSpecificChannelModel}
@@ -294,13 +293,60 @@ const DistributionConfigurationForm = ({
 
     const processingFieldDescription = `Select the way messages will be processed: ${getProcessingDescription(FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.processingType))}`;
 
+    const getProjectsRequest = () => {
+        const apiUrl = '/alert/api/function/channel.common.configured.project?pageNumber=0&pageSize=1000&searchTerm=';
+        return createNewConfigurationRequest(apiUrl, csrfToken, createAdditionalEmailRequestBody());
+    };
+
+    const getPolicyFiltersRequest = () => {
+        const apiUrl = '/alert/api/function/blackduck.policy.notification.filter?pageNumber=0&pageSize=1000&searchTerm=';
+        return createNewConfigurationRequest(apiUrl, csrfToken, createProviderRequestBody());
+    };
+
+    const convertPolicyDataToOptions = (responseData) => {
+        const { models } = responseData;
+        return models.map((model) => {
+            const { name } = model;
+            return {
+                label: name,
+                value: name
+            };
+        });
+    };
+
+    const convertDataToOptions = (responseData) => {
+        const { models } = responseData;
+        return models.map((model) => {
+            const { name, href } = model;
+            return {
+                key: name,
+                label: name,
+                value: {
+                    href,
+                    name
+                }
+            };
+        });
+    };
+
+    function getSelectedProjects() {
+        const values = FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects);
+        const selectedProjects = values.map((model) => ({
+            label: model.name,
+            value: model,
+            missing: model.missing
+        }));
+        return selectedProjects;
+    }
+
     // TODO need to provide finer grain control with permissions.
     return (
-        <CommonGlobalConfiguration
-            label="Distribution Configuration"
-            description="Configure the Distribution Job for Alert to send updates."
-            lastUpdated={lastUpdated}
-        >
+        <>
+            <PageHeader
+                title={DISTRIBUTION_CONFIGURATION_INFO.label}
+                description={DISTRIBUTION_CONFIGURATION_INFO.description}
+                icon={['fas', 'tasks']}
+            />
             <CommonDistributionConfigurationForm
                 setErrors={setErrors}
                 formData={formData}
@@ -328,20 +374,6 @@ const DistributionConfigurationForm = ({
                     isChecked={FieldModelUtilities.getFieldModelBooleanValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.enabled)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.enabled)}
                     errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.enabled]}
-                />
-                <SelectInput
-                    id={DISTRIBUTION_COMMON_FIELD_KEYS.channelName}
-                    name={DISTRIBUTION_COMMON_FIELD_KEYS.channelName}
-                    label="Channel"
-                    description="Select the channel. Notifications generated through Alert will be sent through this channel."
-                    options={DISTRIBUTION_CHANNEL_OPTIONS}
-                    clearable={false}
-                    readOnly={readonly}
-                    required
-                    onChange={onChannelSelectChange}
-                    value={FieldModelUtilities.getFieldModelValues(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
-                    errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.channelName]}
                 />
                 <TextInput
                     id={DISTRIBUTION_COMMON_FIELD_KEYS.name}
@@ -398,7 +430,7 @@ const DistributionConfigurationForm = ({
                     errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)}
                     errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId]}
                 />
-                {renderChannelFields()}
+
                 {FieldModelUtilities.hasValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName)
                     && FieldModelUtilities.hasValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)
                     && (
@@ -470,23 +502,22 @@ const DistributionConfigurationForm = ({
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.projectVersionNamePattern)}
                             errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.projectVersionNamePattern]}
                         />
-                        <TableSelectInput
+                        <EndpointSelectField
+                            searchable
                             id={DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects}
                             csrfToken={csrfToken}
                             endpoint={DISTRIBUTION_URLS.endpointSelectPath}
                             fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects}
-                            columns={DISTRIBUTION_PROJECT_SELECT_COLUMNS}
                             label="Projects"
                             description="Select a project or projects that will be used to retrieve notifications from your provider."
+                            multiSelect
                             readOnly={readonly}
-                            paged
-                            searchable
-                            useRowAsValue
-                            createRequestBody={createProviderRequestBody}
+                            readOptionsRequest={getProjectsRequest}
+                            convertDataToOptions={convertDataToOptions}
                             onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
-                            value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects)}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects)}
                             errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects]}
+                            customVal={getSelectedProjects()}
                         />
                     </div>
                 )}
@@ -497,18 +528,18 @@ const DistributionConfigurationForm = ({
                             title="Black Duck Notification Filtering"
                             expanded={false}
                         >
-                            <TableSelectInput
+                            <EndpointSelectField
                                 id={DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter}
                                 csrfToken={csrfToken}
                                 endpoint={DISTRIBUTION_URLS.endpointSelectPath}
                                 fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter}
-                                columns={DISTRIBUTION_POLICY_SELECT_COLUMNS}
                                 label="Policy Notification Type Filter"
                                 description="Filter which notifications you want sent via this job (You must have the policy notification type selected for this filter to apply)."
-                                readOnly={readonly}
-                                paged
                                 searchable
-                                createRequestBody={createProviderRequestBody}
+                                multiSelect
+                                readOnly={readonly}
+                                readOptionsRequest={getPolicyFiltersRequest}
+                                convertDataToOptions={convertPolicyDataToOptions}
                                 onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
                                 value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter)}
                                 errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter)}
@@ -529,20 +560,30 @@ const DistributionConfigurationForm = ({
                             />
                         </CollapsiblePane>
                     )}
+                <SelectInput
+                    id={DISTRIBUTION_COMMON_FIELD_KEYS.channelName}
+                    name={DISTRIBUTION_COMMON_FIELD_KEYS.channelName}
+                    label="Channel"
+                    description="Select the channel. Notifications generated through Alert will be sent through this channel."
+                    options={DISTRIBUTION_CHANNEL_OPTIONS}
+                    clearable={false}
+                    readOnly={readonly}
+                    required
+                    onChange={onChannelSelectChange}
+                    value={FieldModelUtilities.getFieldModelValues(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
+                    errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.channelName]}
+                />
+                {renderChannelFields()}
             </CommonDistributionConfigurationForm>
-        </CommonGlobalConfiguration>
+        </>
     );
 };
 
 DistributionConfigurationForm.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     errorHandler: PropTypes.object.isRequired,
-    descriptors: PropTypes.object.isRequired,
-    lastUpdated: PropTypes.string
-};
-
-DistributionConfigurationForm.defaultProps = {
-    lastUpdated: null
+    descriptors: PropTypes.object.isRequired
 };
 
 export default DistributionConfigurationForm;

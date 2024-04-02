@@ -9,8 +9,6 @@ package com.synopsys.integration.alert.startup;
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusAccessor;
 import com.synopsys.integration.alert.startup.component.StartupComponent;
+
+import jakarta.annotation.PostConstruct;
 
 @Configuration
 public class StartupManager {

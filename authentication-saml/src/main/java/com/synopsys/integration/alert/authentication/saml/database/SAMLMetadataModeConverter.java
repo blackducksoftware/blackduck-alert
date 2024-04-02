@@ -2,10 +2,10 @@ package com.synopsys.integration.alert.authentication.saml.database;
 
 import java.util.stream.Stream;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
-
 import com.synopsys.integration.alert.authentication.saml.model.SAMLMetadataMode;
+
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 @Converter(autoApply = true)
 public class SAMLMetadataModeConverter implements AttributeConverter<SAMLMetadataMode, Integer> {

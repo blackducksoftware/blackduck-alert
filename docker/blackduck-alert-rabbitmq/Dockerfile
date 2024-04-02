@@ -1,10 +1,12 @@
-FROM blackducksoftware/hub-docker-common:1.0.6 as docker-common
-FROM rabbitmq:3.10-alpine
+FROM blackducksoftware/hub-docker-common:1.0.7 as docker-common
+FROM rabbitmq:3.12-alpine
 
 ARG VERSION
+ARG COMMITHASH
 
 LABEL com.blackducksoftware.integration.alert.vendor="Black Duck Software, Inc." \
-      com.blackducksoftware.integration.alert.version="$VERSION"
+      com.blackducksoftware.integration.alert.version="$VERSION" \
+      com.blackducksoftware.integration.alert.commitHash="$COMMITHASH"
 
 ENV BLACKDUCK_HOME="/opt/blackduck"
 ENV APPLICATION_NAME="rabbitmq"
@@ -15,6 +17,7 @@ ENV CERTIFICATE_MANAGER_DIR $APPLICATION_HOME/bin
 
 RUN set -ex \
     && mkdir -p -m 775 "$APPLICATION_HOME/bin" "$APPLICATION_HOME/security" "$APPLICATION_HOME/logs" \
+    && apk update \
     && apk add --no-cache --virtual .run-deps \
            curl \
            jq \

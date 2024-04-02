@@ -13,6 +13,7 @@ import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.util.DateUtils;
@@ -25,13 +26,27 @@ class JiraServerGlobalConfigurationValidatorTest {
     private final String URL = "https://someUrl";
     private final String USER_NAME = "username";
     private final String PASSWORD = "password";
+    private final String PERSONAL_ACCESS_TOKEN = "personalAccessToken";
 
     @Test
-    void verifyValidConfig() {
+    void verifyValidBasicConfig() {
         JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.empty());
         JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
-        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(ID, NAME, CREATED_AT, LAST_UPDATED, URL, USER_NAME, PASSWORD, Boolean.FALSE, Boolean.FALSE);
+        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(
+            ID,
+            NAME,
+            CREATED_AT,
+            LAST_UPDATED,
+            URL,
+            JiraServerAuthorizationMethod.BASIC,
+            USER_NAME,
+            PASSWORD,
+            Boolean.FALSE,
+            null,
+            Boolean.FALSE,
+            Boolean.FALSE
+        );
 
         ValidationResponseModel validationResponseModel = validator.validate(model, null);
         Collection<AlertFieldStatus> alertFieldStatuses = validationResponseModel.getErrors().values();
@@ -47,7 +62,7 @@ class JiraServerGlobalConfigurationValidatorTest {
 
         ValidationResponseModel validationResponseModel = validator.validate(model, null);
         Collection<AlertFieldStatus> alertFieldStatuses = validationResponseModel.getErrors().values();
-        assertEquals(4, alertFieldStatuses.size(), "There were errors in the configuration when none were expected.");
+        assertEquals(3, alertFieldStatuses.size(), "There were errors in the configuration when none were expected.");
         for (AlertFieldStatus status : alertFieldStatuses) {
             assertEquals(ConfigurationFieldValidator.REQUIRED_FIELD_MISSING_MESSAGE, status.getFieldMessage(), "Validation had unexpected field message.");
         }
@@ -59,7 +74,20 @@ class JiraServerGlobalConfigurationValidatorTest {
         Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.empty());
         String badUrl = "notAValidUrl";
         JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
-        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(ID, NAME, CREATED_AT, LAST_UPDATED, badUrl, USER_NAME, PASSWORD, Boolean.FALSE, Boolean.FALSE);
+        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(
+            ID,
+            NAME,
+            CREATED_AT,
+            LAST_UPDATED,
+            badUrl,
+            JiraServerAuthorizationMethod.BASIC,
+            USER_NAME,
+            PASSWORD,
+            Boolean.FALSE,
+            null,
+            Boolean.FALSE,
+            Boolean.FALSE
+        );
 
         ValidationResponseModel validationResponseModel = validator.validate(model, null);
         Collection<AlertFieldStatus> alertFieldStatuses = validationResponseModel.getErrors().values();
@@ -74,7 +102,20 @@ class JiraServerGlobalConfigurationValidatorTest {
         JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.empty());
         JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
-        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(ID, NAME, CREATED_AT, LAST_UPDATED, URL, USER_NAME, null, Boolean.TRUE, Boolean.FALSE);
+        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(
+            ID,
+            NAME,
+            CREATED_AT,
+            LAST_UPDATED,
+            URL,
+            JiraServerAuthorizationMethod.BASIC,
+            USER_NAME,
+            null,
+            Boolean.TRUE,
+            null,
+            Boolean.FALSE,
+            Boolean.FALSE
+        );
 
         ValidationResponseModel validationResponseModel = validator.validate(model, null);
         Collection<AlertFieldStatus> alertFieldStatuses = validationResponseModel.getErrors().values();
@@ -86,7 +127,8 @@ class JiraServerGlobalConfigurationValidatorTest {
         JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.empty());
         JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
-        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(ID, NAME, URL, USER_NAME, null);
+        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(ID, NAME, URL, JiraServerAuthorizationMethod.BASIC);
+        model.setUserName(USER_NAME);
 
         ValidationResponseModel validationResponseModel = validator.validate(model, null);
         Collection<AlertFieldStatus> alertFieldStatuses = validationResponseModel.getErrors().values();
@@ -105,14 +147,30 @@ class JiraServerGlobalConfigurationValidatorTest {
             CREATED_AT,
             LAST_UPDATED,
             URL,
+            JiraServerAuthorizationMethod.BASIC,
             USER_NAME,
             PASSWORD,
+            Boolean.FALSE,
+            null,
             Boolean.FALSE,
             Boolean.FALSE
         );
         Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(NAME)).thenReturn(Optional.of(existingModel));
         JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
-        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(null, NAME, CREATED_AT, LAST_UPDATED, URL, USER_NAME, PASSWORD, Boolean.FALSE, Boolean.FALSE);
+        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(
+            null,
+            NAME,
+            CREATED_AT,
+            LAST_UPDATED,
+            URL,
+            JiraServerAuthorizationMethod.BASIC,
+            USER_NAME,
+            PASSWORD,
+            Boolean.FALSE,
+            null,
+            Boolean.FALSE,
+            Boolean.FALSE
+        );
 
         ValidationResponseModel validationResponseModel = validator.validate(model, null);
         Collection<AlertFieldStatus> alertFieldStatuses = validationResponseModel.getErrors().values();
@@ -131,14 +189,30 @@ class JiraServerGlobalConfigurationValidatorTest {
             CREATED_AT,
             LAST_UPDATED,
             URL,
+            JiraServerAuthorizationMethod.BASIC,
             USER_NAME,
             PASSWORD,
+            Boolean.FALSE,
+            null,
             Boolean.FALSE,
             Boolean.FALSE
         );
         Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(NAME)).thenReturn(Optional.of(existingModel));
         JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
-        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(ID, NAME, CREATED_AT, LAST_UPDATED, URL, "new" + USER_NAME, PASSWORD, Boolean.FALSE, Boolean.FALSE);
+        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(
+            ID,
+            NAME,
+            CREATED_AT,
+            LAST_UPDATED,
+            URL,
+            JiraServerAuthorizationMethod.BASIC,
+            "new" + USER_NAME,
+            PASSWORD,
+            Boolean.FALSE,
+            null,
+            Boolean.FALSE,
+            Boolean.FALSE
+        );
 
         ValidationResponseModel validationResponseModel = validator.validate(model, ID);
         Collection<AlertFieldStatus> alertFieldStatuses = validationResponseModel.getErrors().values();
@@ -148,7 +222,20 @@ class JiraServerGlobalConfigurationValidatorTest {
     @Test
     void nameIsUniqueValidTest() {
         JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
-        JiraServerGlobalConfigModel existingModel = new JiraServerGlobalConfigModel(ID, NAME, CREATED_AT, LAST_UPDATED, URL, USER_NAME, PASSWORD, Boolean.FALSE, Boolean.FALSE);
+        JiraServerGlobalConfigModel existingModel = new JiraServerGlobalConfigModel(
+            ID,
+            NAME,
+            CREATED_AT,
+            LAST_UPDATED,
+            URL,
+            JiraServerAuthorizationMethod.BASIC,
+            USER_NAME,
+            PASSWORD,
+            Boolean.FALSE,
+            null,
+            Boolean.FALSE,
+            Boolean.FALSE
+        );
         Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(NAME)).thenReturn(Optional.of(existingModel));
         JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
         JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(
@@ -157,8 +244,11 @@ class JiraServerGlobalConfigurationValidatorTest {
             CREATED_AT,
             LAST_UPDATED,
             URL,
+            JiraServerAuthorizationMethod.BASIC,
             USER_NAME,
             PASSWORD,
+            Boolean.FALSE,
+            null,
             Boolean.FALSE,
             Boolean.FALSE
         );
@@ -168,4 +258,93 @@ class JiraServerGlobalConfigurationValidatorTest {
         assertEquals(0, alertFieldStatuses.size(), "Did not expect to find any errors.");
     }
 
+    @Test
+    void checkEmptyFieldsReturnError() {
+        JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
+        Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.empty());
+        JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
+        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(
+            ID,
+            "",
+            CREATED_AT,
+            LAST_UPDATED,
+            "",
+            JiraServerAuthorizationMethod.BASIC,
+            "",
+            "",
+            Boolean.FALSE,
+            null,
+            Boolean.FALSE,
+            Boolean.FALSE
+        );
+
+        ValidationResponseModel validationResponseModel = validator.validate(model, null);
+        Collection<AlertFieldStatus> alertFieldStatuses = validationResponseModel.getErrors().values();
+        assertEquals(3, alertFieldStatuses.size(), "There was an unexpected number of errors.");
+    }
+
+    @Test
+    void verifyValidPersonalAccessTokenConfig() {
+        JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
+        Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.empty());
+        JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
+        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(
+            ID,
+            NAME,
+            CREATED_AT,
+            LAST_UPDATED,
+            URL,
+            JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN,
+            null,
+            null,
+            Boolean.FALSE,
+            PERSONAL_ACCESS_TOKEN,
+            Boolean.FALSE,
+            Boolean.FALSE
+        );
+
+        ValidationResponseModel validationResponseModel = validator.validate(model, null);
+        Collection<AlertFieldStatus> alertFieldStatuses = validationResponseModel.getErrors().values();
+        assertEquals(0, alertFieldStatuses.size(), "There were errors in the configuration when none were expected.");
+    }
+
+    @Test
+    void verifyAccessTokenIsSavedAndMissingFromModel() {
+        JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
+        Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.empty());
+        JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
+        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(
+            ID,
+            NAME,
+            CREATED_AT,
+            LAST_UPDATED,
+            URL,
+            JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN,
+            null,
+            null,
+            null,
+            null,
+            Boolean.TRUE,
+            Boolean.FALSE
+        );
+
+        ValidationResponseModel validationResponseModel = validator.validate(model, null);
+        Collection<AlertFieldStatus> alertFieldStatuses = validationResponseModel.getErrors().values();
+        assertEquals(0, alertFieldStatuses.size(), "There were errors in the configuration when none were expected.");
+    }
+
+    @Test
+    void verifyAccessTokenIsMissingAndNotSaved() {
+        JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
+        Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.empty());
+        JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
+        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(ID, NAME, URL, JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN);
+
+        ValidationResponseModel validationResponseModel = validator.validate(model, null);
+        Collection<AlertFieldStatus> alertFieldStatuses = validationResponseModel.getErrors().values();
+        assertEquals(1, alertFieldStatuses.size(), "There were errors in the configuration when none were expected.");
+        for (AlertFieldStatus status : alertFieldStatuses) {
+            assertEquals("accessToken", status.getFieldName(), "Validation reported an error for an unexpected field.");
+        }
+    }
 }

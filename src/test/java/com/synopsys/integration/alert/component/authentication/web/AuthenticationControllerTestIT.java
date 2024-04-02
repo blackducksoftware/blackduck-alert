@@ -5,10 +5,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.nio.charset.Charset;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -40,6 +36,10 @@ import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @Transactional
 @AlertIntegrationTest
@@ -120,7 +120,7 @@ public class AuthenticationControllerTestIT {
         try {
             loginController.login(servletRequest, servletResponse, null);
         } catch (ResponseStatusException ex) {
-            assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatus());
+            assertEquals(HttpStatus.UNAUTHORIZED, HttpStatus.resolve(ex.getStatusCode().value()));
         }
     }
 

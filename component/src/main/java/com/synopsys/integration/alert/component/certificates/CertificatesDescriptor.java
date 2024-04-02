@@ -26,6 +26,11 @@ public class CertificatesDescriptor extends ComponentDescriptor {
     public static final String KEY_ALIAS = "alias";
     public static final String KEY_CERTIFICATE_CONTENT = "certificateContent";
 
+    // following fields are for client certificates
+    public static final String KEY_CLIENT_CERTIFICATE_CONTENT = "clientCertificateContent";
+    public static final String KEY_PRIVATE_KEY_PASSWORD = "keyPassword";
+    public static final String KEY_PRIVATE_KEY_CONTENT = "keyContent";
+
     @Autowired
     public CertificatesDescriptor(CertificatesDescriptorKey descriptorKey) {
         super(descriptorKey);

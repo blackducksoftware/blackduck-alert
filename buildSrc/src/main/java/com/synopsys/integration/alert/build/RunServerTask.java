@@ -154,12 +154,14 @@ public class RunServerTask extends Exec {
     }
 
     public List<String> getJMXVariables(String buildDirectory) {
-        return List.of("-Dcom.sun.management.jmxremote",
+        return List.of(
+            "-Dcom.sun.management.jmxremote",
             "-Dcom.sun.management.jmxremote.port=9045",
             "-Dcom.sun.management.jmxremote.local.only=false",
             "-Dcom.sun.management.jmxremote.authenticate=false",
             "-Dcom.sun.management.jmxremote.ssl=false",
-            String.format("-Djavax.net.ssl.trustStore=%s/certs/blackduck-alert.truststore", buildDirectory));
+            String.format("-Djavax.net.ssl.trustStore=%s/certs/blackduck-alert.truststore", buildDirectory)
+        );
     }
 
     public List<String> getApplicationVariables(String buildDirectory) {
@@ -174,7 +176,8 @@ public class RunServerTask extends Exec {
             "--spring.test.database.replace=none",
 
             String.format("--alert.images.dir=%s/resources/main/images", buildDirectory),
-            String.format("--alert.email.attachments.dir=%s/email/attachments", buildDirectory));
+            String.format("--alert.email.attachments.dir=%s/email/attachments", buildDirectory)
+        );
         List<String> databaseVariables = getDatabaseVariables();
         List<String> messageQueueVariables = getMessageQueueVariables();
         variables.addAll(commonVariables);

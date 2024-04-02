@@ -2,11 +2,14 @@ import {
     SERIALIZE,
     USER_MANAGEMENT_ROLE_CLEAR_FIELD_ERRORS,
     USER_MANAGEMENT_ROLE_DELETE_ERROR,
+    USER_MANAGEMENT_ROLE_DELETE_LIST_ERROR,
     USER_MANAGEMENT_ROLE_DELETED,
+    USER_MANAGEMENT_ROLE_DELETED_LIST,
     USER_MANAGEMENT_ROLE_DELETING,
-    USER_MANAGEMENT_ROLE_FETCH_ERROR_ALL,
-    USER_MANAGEMENT_ROLE_FETCHED_ALL,
-    USER_MANAGEMENT_ROLE_FETCHING_ALL,
+    USER_MANAGEMENT_ROLE_DELETING_LIST,
+    USER_MANAGEMENT_ROLE_GET_FAIL,
+    USER_MANAGEMENT_ROLE_GET_REQUEST,
+    USER_MANAGEMENT_ROLE_GET_SUCCESS,
     USER_MANAGEMENT_ROLE_SAVE_ERROR,
     USER_MANAGEMENT_ROLE_SAVED,
     USER_MANAGEMENT_ROLE_SAVING,
@@ -17,13 +20,12 @@ import {
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 
 const initialState = {
-    inProgress: false,
     fetching: false,
-    deleteSuccess: false,
     data: [],
     roleError: null,
     error: HTTPErrorUtils.createEmptyErrorObject(),
-    saveStatus: ''
+    saveStatus: '',
+    deleteStatus: ''
 };
 
 const roles = (state = initialState, action) => {
@@ -35,7 +37,8 @@ const roles = (state = initialState, action) => {
                 deleteSuccess: false,
                 roleError: action.roleError,
                 error: HTTPErrorUtils.createErrorObject(action),
-                saveStatus: ''
+                saveStatus: '',
+                deleteStatus: 'FAIL'
             };
         case USER_MANAGEMENT_ROLE_DELETED:
             return {
@@ -43,41 +46,63 @@ const roles = (state = initialState, action) => {
                 inProgress: false,
                 deleteSuccess: true,
                 error: HTTPErrorUtils.createEmptyErrorObject(),
-                saveStatus: ''
+                saveStatus: '',
+                deleteStatus: 'SUCCESS'
             };
         case USER_MANAGEMENT_ROLE_DELETING:
             return {
                 ...state,
                 inProgress: true,
                 deleteSuccess: false,
-                saveStatus: ''
+                saveStatus: '',
+                deleteStatus: 'PROCESSING'
             };
-        case USER_MANAGEMENT_ROLE_FETCH_ERROR_ALL:
+        case USER_MANAGEMENT_ROLE_DELETE_LIST_ERROR:
             return {
                 ...state,
                 inProgress: false,
                 deleteSuccess: false,
+                roleError: action.roleError,
+                error: HTTPErrorUtils.createErrorObject(action),
+                saveStatus: '',
+                deleteStatus: 'FAIL'
+            };
+        case USER_MANAGEMENT_ROLE_DELETED_LIST:
+            return {
+                ...state,
+                inProgress: false,
+                deleteSuccess: true,
+                error: HTTPErrorUtils.createEmptyErrorObject(),
+                saveStatus: '',
+                deleteStatus: 'SUCCESS'
+            };
+        case USER_MANAGEMENT_ROLE_DELETING_LIST:
+            return {
+                ...state,
+                inProgress: true,
+                deleteSuccess: false,
+                saveStatus: '',
+                deleteStatus: 'PROCESSING'
+            };
+        case USER_MANAGEMENT_ROLE_GET_FAIL:
+            return {
+                ...state,
                 error: HTTPErrorUtils.createErrorObject(action),
                 fetching: false,
-                saveStatus: ''
+                deleteStatus: ''
             };
-        case USER_MANAGEMENT_ROLE_FETCHED_ALL:
+        case USER_MANAGEMENT_ROLE_GET_SUCCESS:
             return {
                 ...state,
-                inProgress: false,
-                deleteSuccess: false,
                 data: action.data,
                 fetching: false,
-                saveStatus: ''
+                deleteStatus: ''
             };
-        case USER_MANAGEMENT_ROLE_FETCHING_ALL:
+        case USER_MANAGEMENT_ROLE_GET_REQUEST:
             return {
                 ...state,
-                inProgress: false,
-                deleteSuccess: false,
-                data: [],
                 fetching: true,
-                saveStatus: ''
+                deleteStatus: ''
             };
         case USER_MANAGEMENT_ROLE_SAVE_ERROR:
             return {

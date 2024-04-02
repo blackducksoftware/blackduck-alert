@@ -85,22 +85,45 @@ export function clearLoginError() {
 export function verifyLogin() {
     return (dispatch) => {
         dispatch(initializing());
-        fetch('/alert/api/verify', {
+        const verifyFunction = (csrfData) => {
+            const headersUtil = new HeaderUtilities();
+            headersUtil.addAccept();
+            headersUtil.addXCsrfToken(csrfData.token);
+            return fetch('/alert/api/verify', {
+                credentials: 'same-origin',
+                method: 'GET',
+                headers: headersUtil.getHeaders()
+            }).then((verifyResponse) => {
+                if (!verifyResponse.ok) {
+                    dispatch(loggedOut());
+                } else {
+                    verifyResponse.json().then((verifyData) => {
+                        if (verifyData.authenticated) {
+                            dispatch(loggedIn({ csrfToken: csrfData.token }));
+                        } else {
+                            dispatch(loggedOut());
+                        }
+                    });
+                }
+            });
+        };
+
+        fetch('/alert/api/csrf', {
             credentials: 'same-origin'
-        }).then((response) => {
-            if (!response.ok) {
-                dispatch(loggedOut());
-            } else {
-                const token = response.headers.get('X-CSRF-TOKEN');
-                dispatch(loggedIn({ csrfToken: token }));
-            }
-        }).catch((error) => console.log(error));
+        })
+            .then((csrfResponse) => {
+                if (!csrfResponse.ok) {
+                    return dispatch(loggedOut());
+                }
+                return csrfResponse.json();
+            })
+            .then((csrfData) => verifyFunction(csrfData))
+            .catch((error) => console.log(error));
     };
 }
 
 export function verifySaml() {
     return (dispatch) => {
-
         const ignoreSAML = extractIgnoreSAMLParam();
 
         dispatch(initializing());
@@ -138,7 +161,7 @@ export function login(username, password) {
             headers: headersUtil.getHeaders(),
             body: JSON.stringify(body)
         }).then((response) => {
-            if (response.ok) {
+            if (response.ok && response.headers.get('X-CSRF-TOKEN')) {
                 const token = response.headers.get('X-CSRF-TOKEN');
                 dispatch(loggedIn({ csrfToken: token }));
             } else {
@@ -152,7 +175,6 @@ export function login(username, password) {
 }
 
 export function confirmLogout() {
-    console.log('confirming logout');
     return {
         type: SESSION_CONFIRM_LOGOUT
     };
