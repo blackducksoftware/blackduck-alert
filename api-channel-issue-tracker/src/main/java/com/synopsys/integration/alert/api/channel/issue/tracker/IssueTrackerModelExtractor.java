@@ -25,8 +25,8 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.search.ExistingI
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueTrackerSearcher;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
+import com.synopsys.integration.alert.api.processor.extract.model.SimpleMessage;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
 
 public class IssueTrackerModelExtractor<T extends Serializable> {
     private final IssueTrackerSimpleMessageConverter issueTrackerSimpleMessageConverter;

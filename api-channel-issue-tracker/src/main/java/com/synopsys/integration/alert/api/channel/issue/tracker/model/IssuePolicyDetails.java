@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.api.channel.issue.tracker.model;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
 
 public class IssuePolicyDetails extends AlertSerializableModel {
     private final String name;

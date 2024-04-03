@@ -15,7 +15,7 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectIs
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectVersionIssueFinder;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
 
 public class JiraProjectAndVersionIssueFinder implements ProjectIssueFinder<String>, ProjectVersionIssueFinder<String> {
     private final String jiraProjectKey;

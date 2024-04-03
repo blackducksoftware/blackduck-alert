@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernType;
 
 public final class JqlStringCreator {
     private static final String SEARCH_CONJUNCTION = "AND";

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.api.channel.issue.tracker.convert.mock.MockIssueTrackerMessageFormatter;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
 
 public class ComponentVulnerabilitiesConverterTest {
     private static final ComponentVulnerabilities NO_VULNERABILITIES = new ComponentVulnerabilities(List.of(), List.of(), List.of(), List.of());

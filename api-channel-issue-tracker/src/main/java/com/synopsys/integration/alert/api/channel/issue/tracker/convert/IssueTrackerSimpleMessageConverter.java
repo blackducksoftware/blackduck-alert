@@ -16,7 +16,7 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCreat
 import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilderRechunker;
 import com.synopsys.integration.alert.common.channel.message.RechunkedModel;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
+import com.synopsys.integration.alert.api.processor.extract.model.SimpleMessage;
 
 public class IssueTrackerSimpleMessageConverter {
     private final IssueTrackerMessageFormatter formatter;
