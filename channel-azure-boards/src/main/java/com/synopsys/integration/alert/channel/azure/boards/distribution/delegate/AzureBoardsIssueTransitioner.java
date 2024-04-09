@@ -27,15 +27,15 @@ import com.synopsys.integration.alert.channel.azure.boards.distribution.AzureBoa
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
-import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
-import com.synopsys.integration.azure.boards.common.service.state.WorkItemTypeStateResponseModel;
-import com.synopsys.integration.azure.boards.common.service.workitem.AzureWorkItemService;
-import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperation;
-import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
-import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemRequest;
-import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemFieldsWrapper;
-import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseFields;
-import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseModel;
+import com.synopsys.integration.alert.azure.boards.common.http.HttpServiceException;
+import com.synopsys.integration.alert.azure.boards.common.service.state.WorkItemTypeStateResponseModel;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.AzureWorkItemService;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.request.WorkItemElementOperation;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.request.WorkItemRequest;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemFieldsWrapper;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseFields;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
 
 public class AzureBoardsIssueTransitioner extends IssueTrackerIssueTransitioner<Integer> {
     public static final String WORK_ITEM_STATE_CATEGORY_PROPOSED = "Proposed";

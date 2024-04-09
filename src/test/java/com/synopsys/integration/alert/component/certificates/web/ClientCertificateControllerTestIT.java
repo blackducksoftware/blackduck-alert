@@ -22,7 +22,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.database.api.ClientCertificateAccessor;
+import com.synopsys.integration.alert.database.job.api.ClientCertificateAccessor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 

@@ -50,8 +50,8 @@ import com.synopsys.integration.alert.component.diagnostic.model.ProviderNotific
 import com.synopsys.integration.alert.component.diagnostic.model.RabbitMQDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.SystemDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.utility.RabbitMQDiagnosticUtility;
-import com.synopsys.integration.alert.database.api.StaticJobAccessor;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
+import com.synopsys.integration.alert.database.job.api.StaticJobAccessor;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 

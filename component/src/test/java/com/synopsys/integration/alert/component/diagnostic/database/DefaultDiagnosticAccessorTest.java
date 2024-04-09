@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJob;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.distribution.execution.JobStage;
@@ -38,10 +39,9 @@ import com.synopsys.integration.alert.component.diagnostic.model.NotificationDia
 import com.synopsys.integration.alert.component.diagnostic.model.RabbitMQDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.SystemDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.utility.RabbitMQDiagnosticUtility;
-import com.synopsys.integration.alert.database.api.StaticJobAccessor;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
+import com.synopsys.integration.alert.database.job.api.StaticJobAccessor;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 
 class DefaultDiagnosticAccessorTest {
     public static final String TEST_JOB_NAME = "Job Name";

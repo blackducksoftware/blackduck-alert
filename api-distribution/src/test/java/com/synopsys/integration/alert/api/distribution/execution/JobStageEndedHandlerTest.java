@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import com.synopsys.integration.alert.api.distribution.mock.MockJobCompletionStatusDurationsRepository;
 import com.synopsys.integration.alert.api.distribution.mock.MockJobCompletionStatusRepository;
 import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
-import com.synopsys.integration.alert.database.api.DefaultJobCompletionStatusModelAccessor;
+import com.synopsys.integration.alert.database.job.api.DefaultJobCompletionStatusModelAccessor;
 import com.synopsys.integration.alert.database.job.execution.JobCompletionRepository;
 
 class JobStageEndedHandlerTest {

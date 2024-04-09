@@ -47,7 +47,7 @@ import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationEx
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.component.authentication.security.AlertAuthenticationProvider;
 import com.synopsys.integration.alert.component.authentication.security.database.AlertDatabaseAuthenticationPerformer;
-import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
+import com.synopsys.integration.alert.database.job.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;

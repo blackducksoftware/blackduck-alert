@@ -22,6 +22,9 @@ import org.mockito.stubbing.Answer;
 import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.api.event.EventManager;
+import com.synopsys.integration.alert.api.processor.NotificationMappingProcessor;
+import com.synopsys.integration.alert.api.processor.detail.NotificationDetailExtractionDelegator;
+import com.synopsys.integration.alert.api.processor.filter.JobNotificationMapper;
 import com.synopsys.integration.alert.api.task.TaskManager;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.message.model.DateRange;
@@ -30,11 +33,8 @@ import com.synopsys.integration.alert.common.persistence.accessor.NotificationAc
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
-import com.synopsys.integration.alert.database.api.StaticJobAccessor;
-import com.synopsys.integration.alert.api.processor.NotificationMappingProcessor;
-import com.synopsys.integration.alert.api.processor.detail.NotificationDetailExtractionDelegator;
-import com.synopsys.integration.alert.api.processor.filter.JobNotificationMapper;
+import com.synopsys.integration.alert.database.job.api.DefaultNotificationAccessor;
+import com.synopsys.integration.alert.database.job.api.StaticJobAccessor;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
 import com.synopsys.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;

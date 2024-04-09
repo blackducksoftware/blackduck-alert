@@ -15,7 +15,7 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssuePolic
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
 
 public class AzureBoardsAlertIssuePropertiesManager {
     public static final String POLICY_ADDITIONAL_KEY_COMPATIBILITY_LABEL = "Policy Violated";

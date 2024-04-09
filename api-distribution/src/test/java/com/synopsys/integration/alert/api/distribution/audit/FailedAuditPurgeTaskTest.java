@@ -21,9 +21,9 @@ import com.synopsys.integration.alert.common.persistence.accessor.NotificationAc
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.api.DefaultProcessingFailedAccessor;
 import com.synopsys.integration.alert.database.audit.AuditFailedEntity;
 import com.synopsys.integration.alert.database.audit.AuditFailedNotificationEntity;
+import com.synopsys.integration.alert.database.job.api.DefaultProcessingFailedAccessor;
 
 class FailedAuditPurgeTaskTest {
 
