@@ -20,7 +20,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMeta
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.common.rest.AlertWebServerUrlManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.api.DefaultSystemStatusAccessor;
+import com.synopsys.integration.alert.database.job.api.DefaultSystemStatusAccessor;
 import com.synopsys.integration.alert.database.system.DefaultSystemMessageAccessor;
 import com.synopsys.integration.alert.web.api.about.AboutModel;
 import com.synopsys.integration.alert.web.api.about.AboutReader;

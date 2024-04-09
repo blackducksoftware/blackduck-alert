@@ -18,7 +18,7 @@ import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
-import com.synopsys.integration.alert.database.api.DefaultSystemStatusAccessor;
+import com.synopsys.integration.alert.database.job.api.DefaultSystemStatusAccessor;
 import com.synopsys.integration.alert.database.system.DefaultSystemMessageAccessor;
 import com.synopsys.integration.rest.RestConstants;
 

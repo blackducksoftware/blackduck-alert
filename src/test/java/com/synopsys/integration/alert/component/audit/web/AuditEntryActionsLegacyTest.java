@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -37,13 +38,12 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.component.audit.AuditDescriptorKey;
 import com.synopsys.integration.alert.component.audit.mock.MockAuditEntryEntity;
-import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
-import com.synopsys.integration.alert.database.api.DefaultRestApiAuditAccessor;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
+import com.synopsys.integration.alert.database.job.api.DefaultNotificationAccessor;
+import com.synopsys.integration.alert.database.job.api.DefaultRestApiAuditAccessor;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
-import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.test.common.OutputLogger;
 

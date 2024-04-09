@@ -32,17 +32,17 @@ import com.synopsys.integration.alert.channel.azure.boards.distribution.search.A
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsUILinkUtils;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.api.descriptor.AzureBoardsChannelKey;
-import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
-import com.synopsys.integration.azure.boards.common.service.query.AzureWorkItemQueryService;
-import com.synopsys.integration.azure.boards.common.service.workitem.AzureWorkItemService;
-import com.synopsys.integration.azure.boards.common.service.workitem.WorkItemReferenceModel;
-import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperation;
-import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
-import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemRequest;
-import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemFieldsWrapper;
-import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseFields;
-import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseModel;
-import com.synopsys.integration.azure.boards.common.util.AzureFieldDefinition;
+import com.synopsys.integration.alert.azure.boards.common.http.HttpServiceException;
+import com.synopsys.integration.alert.azure.boards.common.service.query.AzureWorkItemQueryService;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.AzureWorkItemService;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.WorkItemReferenceModel;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.request.WorkItemElementOperation;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.request.WorkItemRequest;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemFieldsWrapper;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseFields;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
+import com.synopsys.integration.alert.azure.boards.common.util.AzureFieldDefinition;
 
 public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
     private final Logger logger = LoggerFactory.getLogger(getClass());

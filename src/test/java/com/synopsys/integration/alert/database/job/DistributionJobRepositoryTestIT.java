@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
@@ -23,9 +24,8 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Email
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
-import com.synopsys.integration.alert.database.api.StaticJobAccessor;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.synopsys.integration.alert.database.job.api.DefaultNotificationAccessor;
+import com.synopsys.integration.alert.database.job.api.StaticJobAccessor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.blackduck.api.generated.enumeration.VulnerabilitySeverityType;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;

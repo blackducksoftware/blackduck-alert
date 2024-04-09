@@ -39,14 +39,14 @@ import com.synopsys.integration.alert.channel.azure.boards.distribution.search.A
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.api.descriptor.AzureBoardsChannelKey;
-import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
-import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreator;
-import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreatorFactory;
-import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
-import com.synopsys.integration.azure.boards.common.service.comment.AzureWorkItemCommentService;
-import com.synopsys.integration.azure.boards.common.service.query.AzureWorkItemQueryService;
-import com.synopsys.integration.azure.boards.common.service.state.AzureWorkItemTypeStateService;
-import com.synopsys.integration.azure.boards.common.service.workitem.AzureWorkItemService;
+import com.synopsys.integration.alert.azure.boards.common.http.AzureApiVersionAppender;
+import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestCreator;
+import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;
+import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpService;
+import com.synopsys.integration.alert.azure.boards.common.service.comment.AzureWorkItemCommentService;
+import com.synopsys.integration.alert.azure.boards.common.service.query.AzureWorkItemQueryService;
+import com.synopsys.integration.alert.azure.boards.common.service.state.AzureWorkItemTypeStateService;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.AzureWorkItemService;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component

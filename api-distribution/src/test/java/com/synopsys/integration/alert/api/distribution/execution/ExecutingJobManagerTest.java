@@ -15,7 +15,7 @@ import com.synopsys.integration.alert.api.distribution.mock.MockJobCompletionSta
 import com.synopsys.integration.alert.api.distribution.mock.MockJobCompletionStatusRepository;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
-import com.synopsys.integration.alert.database.api.DefaultJobCompletionStatusModelAccessor;
+import com.synopsys.integration.alert.database.job.api.DefaultJobCompletionStatusModelAccessor;
 import com.synopsys.integration.alert.database.job.execution.JobCompletionRepository;
 
 class ExecutingJobManagerTest {
