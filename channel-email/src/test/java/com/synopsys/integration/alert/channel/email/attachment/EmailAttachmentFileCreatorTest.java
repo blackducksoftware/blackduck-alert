@@ -13,9 +13,9 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectOperation;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectOperation;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 

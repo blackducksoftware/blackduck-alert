@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.certificates.AlertClientCertificateManager;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
-import com.synopsys.integration.alert.database.api.ClientCertificateAccessor;
+import com.synopsys.integration.alert.database.job.api.ClientCertificateAccessor;
 
 @Component
 @Order(42)

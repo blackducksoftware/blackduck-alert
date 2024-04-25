@@ -17,12 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.channel.issue.IssueTrackerResponsePostProcessor;
-import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerTransitionEventHandler;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueResponseModel;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueTransitionModel;
-import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
+import com.synopsys.integration.alert.api.channel.issue.tracker.IssueTrackerResponsePostProcessor;
+import com.synopsys.integration.alert.api.channel.issue.tracker.event.IssueTrackerTransitionEventHandler;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrackerIssueResponseModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrackerResponse;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTransitionModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
@@ -32,14 +32,14 @@ import com.synopsys.integration.alert.channel.azure.boards.distribution.AzureBoa
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
-import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
-import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreator;
-import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreatorFactory;
-import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
-import com.synopsys.integration.azure.boards.common.service.comment.AzureWorkItemCommentService;
-import com.synopsys.integration.azure.boards.common.service.query.AzureWorkItemQueryService;
-import com.synopsys.integration.azure.boards.common.service.state.AzureWorkItemTypeStateService;
-import com.synopsys.integration.azure.boards.common.service.workitem.AzureWorkItemService;
+import com.synopsys.integration.alert.azure.boards.common.http.AzureApiVersionAppender;
+import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestCreator;
+import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;
+import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpService;
+import com.synopsys.integration.alert.azure.boards.common.service.comment.AzureWorkItemCommentService;
+import com.synopsys.integration.alert.azure.boards.common.service.query.AzureWorkItemQueryService;
+import com.synopsys.integration.alert.azure.boards.common.service.state.AzureWorkItemTypeStateService;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.AzureWorkItemService;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component

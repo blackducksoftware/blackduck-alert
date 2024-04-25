@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.api.channel.convert;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessage;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessage;
 
 public interface ProviderMessageConverter<T extends ProviderMessage<T>> {
     List<String> convertToFormattedMessageChunks(T message, String jobName);

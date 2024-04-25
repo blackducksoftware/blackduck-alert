@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.util.AuditStackTraceUtil;
-import com.synopsys.integration.alert.processor.api.distribute.DistributionEvent;
+import com.synopsys.integration.alert.api.processor.distribute.DistributionEvent;
 
 public class DistributionEventHandler<D extends DistributionJobDetailsModel> implements AlertEventHandler<DistributionEvent> {
     private final Logger notificationLogger = AlertLoggerFactory.getNotificationLogger(getClass());

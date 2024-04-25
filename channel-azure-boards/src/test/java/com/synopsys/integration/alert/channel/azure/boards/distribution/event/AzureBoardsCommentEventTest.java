@@ -9,7 +9,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.api.channel.issue.model.IssueCommentModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
 
 class AzureBoardsCommentEventTest {
     @Test

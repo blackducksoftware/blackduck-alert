@@ -22,6 +22,7 @@ import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJob;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.distribution.mock.MockAuditEntryRepository;
@@ -44,10 +45,6 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModelBuilder;
 import com.synopsys.integration.alert.common.persistence.model.job.executions.JobCompletionStatusModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.api.DefaultJobCompletionStatusModelAccessor;
-import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
-import com.synopsys.integration.alert.database.api.DefaultProcessingAuditAccessor;
-import com.synopsys.integration.alert.database.api.DefaultProcessingFailedAccessor;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditFailedEntity;
@@ -57,11 +54,14 @@ import com.synopsys.integration.alert.database.audit.AuditFailedNotificationRepo
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelationPK;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
+import com.synopsys.integration.alert.database.job.api.DefaultJobCompletionStatusModelAccessor;
+import com.synopsys.integration.alert.database.job.api.DefaultNotificationAccessor;
+import com.synopsys.integration.alert.database.job.api.DefaultProcessingAuditAccessor;
+import com.synopsys.integration.alert.database.job.api.DefaultProcessingFailedAccessor;
 import com.synopsys.integration.alert.database.job.execution.JobCompletionDurationsRepository;
 import com.synopsys.integration.alert.database.job.execution.JobCompletionRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 class AuditFailedEventListenerTest {

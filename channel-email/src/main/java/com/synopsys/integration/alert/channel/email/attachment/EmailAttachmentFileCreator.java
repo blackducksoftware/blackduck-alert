@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.channel.email.attachment.compatibility.Mes
 import com.synopsys.integration.alert.channel.email.distribution.ProjectMessageToMessageContentGroupConversionUtils;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
 
 @Component
 public class EmailAttachmentFileCreator {

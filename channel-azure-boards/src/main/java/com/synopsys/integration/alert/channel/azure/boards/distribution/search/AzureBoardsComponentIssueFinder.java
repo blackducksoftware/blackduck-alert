@@ -13,22 +13,22 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
-import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
-import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
-import com.synopsys.integration.alert.api.channel.issue.search.ExactIssueFinder;
-import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
-import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearchResult;
-import com.synopsys.integration.alert.api.channel.issue.search.ProjectIssueSearchResult;
-import com.synopsys.integration.alert.api.channel.issue.search.ProjectVersionComponentIssueFinder;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueBomComponentDetails;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssuePolicyDetails;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.ExactIssueFinder;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueTrackerSearchResult;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectIssueSearchResult;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectVersionComponentIssueFinder;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.project.AbstractBomComponentDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
-import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseModel;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.project.AbstractBomComponentDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.project.BomComponentDetails;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
 
 public class AzureBoardsComponentIssueFinder implements ProjectVersionComponentIssueFinder<Integer>, ExactIssueFinder<Integer> {
     private final Gson gson;

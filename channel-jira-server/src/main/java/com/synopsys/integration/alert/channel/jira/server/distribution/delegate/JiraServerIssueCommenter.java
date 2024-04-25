@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.jira.server.distribution.delegate;
 
-import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueResponseCreator;
+import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.api.channel.jira.distribution.delegate.JiraIssueCommenter;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.exception.IntegrationException;

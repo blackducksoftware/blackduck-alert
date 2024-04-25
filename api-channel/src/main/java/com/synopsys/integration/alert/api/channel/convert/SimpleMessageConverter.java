@@ -11,7 +11,7 @@ import java.util.List;
 
 import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilder;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
+import com.synopsys.integration.alert.api.processor.extract.model.SimpleMessage;
 
 public class SimpleMessageConverter implements ProviderMessageConverter<SimpleMessage> {
     private final ChannelMessageFormatter messageFormatter;

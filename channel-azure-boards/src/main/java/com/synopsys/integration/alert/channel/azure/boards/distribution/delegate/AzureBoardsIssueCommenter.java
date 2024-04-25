@@ -9,14 +9,14 @@ package com.synopsys.integration.alert.channel.azure.boards.distribution.delegat
 
 import org.jetbrains.annotations.Nullable;
 
-import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
-import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
-import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCommenter;
-import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueResponseCreator;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueCommenter;
+import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
-import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
-import com.synopsys.integration.azure.boards.common.service.comment.AzureWorkItemCommentService;
+import com.synopsys.integration.alert.azure.boards.common.http.HttpServiceException;
+import com.synopsys.integration.alert.azure.boards.common.service.comment.AzureWorkItemCommentService;
 
 public class AzureBoardsIssueCommenter extends IssueTrackerIssueCommenter<Integer> {
     private final String organizationName;

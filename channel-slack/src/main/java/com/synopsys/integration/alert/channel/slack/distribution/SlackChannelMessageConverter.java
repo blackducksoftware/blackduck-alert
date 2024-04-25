@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.channel.convert.AbstractChannelMessageConverter;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
-import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
+import com.synopsys.integration.alert.api.processor.extract.model.SimpleMessage;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
 
 @Component
 public class SlackChannelMessageConverter extends AbstractChannelMessageConverter<SlackJobDetailsModel, SlackChannelMessageModel> {

@@ -22,12 +22,12 @@ import com.synopsys.integration.alert.api.event.AlertEventHandler;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
-import com.synopsys.integration.alert.processor.api.JobNotificationContentProcessor;
-import com.synopsys.integration.alert.processor.api.NotificationProcessingLifecycleCache;
-import com.synopsys.integration.alert.processor.api.distribute.ProcessedNotificationDetails;
-import com.synopsys.integration.alert.processor.api.distribute.ProviderMessageDistributor;
-import com.synopsys.integration.alert.processor.api.event.JobProcessingEvent;
-import com.synopsys.integration.alert.processor.api.extract.model.ProcessedProviderMessageHolder;
+import com.synopsys.integration.alert.api.processor.JobNotificationContentProcessor;
+import com.synopsys.integration.alert.api.processor.NotificationProcessingLifecycleCache;
+import com.synopsys.integration.alert.api.processor.distribute.ProcessedNotificationDetails;
+import com.synopsys.integration.alert.api.processor.distribute.ProviderMessageDistributor;
+import com.synopsys.integration.alert.api.processor.event.JobProcessingEvent;
+import com.synopsys.integration.alert.api.processor.extract.model.ProcessedProviderMessageHolder;
 
 @Component
 public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessingEvent> {

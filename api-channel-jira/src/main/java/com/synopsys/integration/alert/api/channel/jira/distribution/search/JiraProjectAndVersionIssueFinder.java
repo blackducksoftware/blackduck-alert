@@ -9,13 +9,13 @@ package com.synopsys.integration.alert.api.channel.jira.distribution.search;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearchResult;
-import com.synopsys.integration.alert.api.channel.issue.search.ProjectIssueFinder;
-import com.synopsys.integration.alert.api.channel.issue.search.ProjectIssueSearchResult;
-import com.synopsys.integration.alert.api.channel.issue.search.ProjectVersionIssueFinder;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueTrackerSearchResult;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectIssueFinder;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectIssueSearchResult;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectVersionIssueFinder;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
 
 public class JiraProjectAndVersionIssueFinder implements ProjectIssueFinder<String>, ProjectVersionIssueFinder<String> {
     private final String jiraProjectKey;

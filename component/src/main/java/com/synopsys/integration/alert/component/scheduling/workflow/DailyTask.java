@@ -25,7 +25,7 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 import com.synopsys.integration.alert.component.tasks.ProcessingTask;
-import com.synopsys.integration.alert.processor.api.NotificationMappingProcessor;
+import com.synopsys.integration.alert.api.processor.NotificationMappingProcessor;
 
 @Component
 public class DailyTask extends ProcessingTask {

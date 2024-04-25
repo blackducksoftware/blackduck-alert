@@ -20,7 +20,7 @@ import com.synopsys.integration.alert.api.distribution.mock.MockJobCompletionSta
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.event.distribution.JobSubTaskEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
-import com.synopsys.integration.alert.database.api.DefaultJobCompletionStatusModelAccessor;
+import com.synopsys.integration.alert.database.job.api.DefaultJobCompletionStatusModelAccessor;
 import com.synopsys.integration.alert.database.job.execution.JobCompletionDurationsRepository;
 import com.synopsys.integration.alert.database.job.execution.JobCompletionRepository;
 

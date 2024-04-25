@@ -10,8 +10,8 @@ package com.synopsys.integration.alert.channel.azure.boards.distribution.event;
 import java.util.Set;
 import java.util.UUID;
 
-import com.synopsys.integration.alert.api.channel.issue.event.IssueTrackerTransitionIssueEvent;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueTransitionModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.event.IssueTrackerTransitionIssueEvent;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTransitionModel;
 
 public class AzureBoardsTransitionEvent extends IssueTrackerTransitionIssueEvent<Integer> {
     public AzureBoardsTransitionEvent(

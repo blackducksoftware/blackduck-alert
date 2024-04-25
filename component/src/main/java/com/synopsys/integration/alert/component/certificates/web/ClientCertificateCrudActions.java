@@ -13,7 +13,7 @@ import com.synopsys.integration.alert.common.persistence.model.ClientCertificate
 import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.certificates.CertificatesDescriptorKey;
-import com.synopsys.integration.alert.database.api.ClientCertificateAccessor;
+import com.synopsys.integration.alert.database.job.api.ClientCertificateAccessor;
 
 @Component
 public class ClientCertificateCrudActions {

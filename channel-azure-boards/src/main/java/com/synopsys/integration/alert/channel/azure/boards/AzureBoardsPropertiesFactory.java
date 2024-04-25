@@ -14,7 +14,7 @@ import com.synopsys.integration.alert.channel.azure.boards.model.AzureBoardsGlob
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.azure.boards.common.oauth.AzureOAuthScopes;
+import com.synopsys.integration.alert.azure.boards.common.oauth.AzureOAuthScopes;
 
 @Component
 public class AzureBoardsPropertiesFactory {

@@ -11,11 +11,11 @@ import com.synopsys.integration.alert.api.channel.convert.mock.MockChannelMessag
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.api.descriptor.model.ChannelKey;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
-import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectOperation;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessageHolder;
+import com.synopsys.integration.alert.api.processor.extract.model.SimpleMessage;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectOperation;
 
 public class AbstractChannelMessageConverterTest {
     private static final String CLASS_NAME = AbstractChannelMessageConverterTest.class.getSimpleName();

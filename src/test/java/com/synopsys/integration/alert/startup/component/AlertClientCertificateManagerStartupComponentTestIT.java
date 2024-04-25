@@ -19,7 +19,7 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.component.certificates.web.CertificateTestUtil;
-import com.synopsys.integration.alert.database.api.ClientCertificateAccessor;
+import com.synopsys.integration.alert.database.job.api.ClientCertificateAccessor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @AlertIntegrationTest

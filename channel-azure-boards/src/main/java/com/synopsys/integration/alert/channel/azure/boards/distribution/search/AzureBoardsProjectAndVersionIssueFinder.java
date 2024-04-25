@@ -14,21 +14,21 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
-import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
-import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
-import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearchResult;
-import com.synopsys.integration.alert.api.channel.issue.search.ProjectIssueFinder;
-import com.synopsys.integration.alert.api.channel.issue.search.ProjectIssueSearchResult;
-import com.synopsys.integration.alert.api.channel.issue.search.ProjectVersionIssueFinder;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueBomComponentDetails;
+import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueTrackerSearchResult;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectIssueFinder;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectIssueSearchResult;
+import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectVersionIssueFinder;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsWorkItemExtractionUtils;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
-import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemFieldsWrapper;
-import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseModel;
-import com.synopsys.integration.azure.boards.common.util.AzureFieldDefinition;
+import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemFieldsWrapper;
+import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
+import com.synopsys.integration.alert.azure.boards.common.util.AzureFieldDefinition;
 
 public class AzureBoardsProjectAndVersionIssueFinder implements ProjectIssueFinder<Integer>, ProjectVersionIssueFinder<Integer> {
     private final Gson gson;

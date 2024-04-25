@@ -19,7 +19,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
-import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
+import com.synopsys.integration.alert.azure.boards.common.http.HttpServiceException;
 
 @Component
 public class AzureBoardsHttpExceptionMessageImprover {

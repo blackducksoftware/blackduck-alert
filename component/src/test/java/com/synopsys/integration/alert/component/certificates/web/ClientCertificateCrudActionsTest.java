@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUti
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.certificates.CertificatesDescriptorKey;
-import com.synopsys.integration.alert.database.api.ClientCertificateAccessor;
+import com.synopsys.integration.alert.database.job.api.ClientCertificateAccessor;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
