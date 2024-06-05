@@ -48,7 +48,7 @@ const useStyles = createUseStyles({
     }
 });
 
-const SearchFilter = ({ searchBarPlaceholder, handleSearchChange, defaultSearchValue }) => {
+const SearchFilter = ({ searchBarPlaceholder, handleSearchChange, defaultSearchValue, isDisabled }) => {
     const classes = useStyles();
     const [searchValue, setSearchValue] = useState(null);
 
@@ -81,9 +81,10 @@ const SearchFilter = ({ searchBarPlaceholder, handleSearchChange, defaultSearchV
                     value={searchValue === null ? '' : searchValue}
                     onChange={handleChange}
                     onKeyDown={handleKeyDown}
+                    disabled={isDisabled}
                 />
                 { searchValue && (
-                    <button className={classes.clearInputIcon} onClick={handleClearSearchField} role="button" >
+                    <button className={classes.clearInputIcon} onClick={handleClearSearchField} role="button" disabled={isDisabled} >
                         <FontAwesomeIcon icon="times" size='sm' />
                     </button>
                 ) }

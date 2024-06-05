@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import Select, { components } from 'react-select';
 import * as PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CheckboxInput from 'common/component/input/CheckboxInput';
 import SelectInput from 'common/component/input/DynamicSelectInput';
 import {
@@ -38,6 +40,8 @@ import MsTeamsDistributionConfiguration from 'page/channel/msteams/MsTeamsDistri
 import SlackDistributionConfiguration from 'page/channel/slack/SlackDistributionConfiguration';
 import PageHeader from 'common/component/navigation/PageHeader';
 import { createNewConfigurationRequest } from 'common/util/configurationRequestBuilder';
+import DynamicSelectInput from 'common/component/input/DynamicSelectInput';
+import ProjectSelectModal from 'page/distribution/ProjectSelectModal';
 
 const DistributionConfigurationForm = ({
     csrfToken, errorHandler, descriptors
@@ -54,6 +58,7 @@ const DistributionConfigurationForm = ({
     const [testFieldModel, setTestFieldModel] = useState({});
     const [readonly, setReadonly] = useState(false);
     const [processingTypes, setProcessingTypes] = useState(DISTRIBUTION_PROCESSING_TYPES);
+    const [showProjectSelectModal, setShowProjectSelectModal] = useState(false);
 
     const retrieveData = async () => DistributionRequestUtility.getDataById(id, csrfToken, errorHandler, setErrors);
 
@@ -64,8 +69,8 @@ const DistributionConfigurationForm = ({
         const fieldConfiguredProjects = FieldModelUtilities.getFieldModelValues(providerConfig, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects);
         if (fieldConfiguredProjects && fieldConfiguredProjects.length > 0) {
             configuredProviderProjects = fieldConfiguredProjects.map((selectedValue) => ({
-                name: selectedValue.name,
-                href: selectedValue.href,
+                name: selectedValue.label,
+                href: selectedValue.value,
                 missing: false
             }));
         }
@@ -89,7 +94,7 @@ const DistributionConfigurationForm = ({
         return createDistributionData(channelFieldModel, providerModel);
     };
 
-    const createAdditionalEmailRequestBody = () => {
+    const createCommonRequestBody = () => {
         const providerConfigId = FieldModelUtilities.getFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId);
         return FieldModelUtilities.updateFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId, providerConfigId);
     };
@@ -195,7 +200,7 @@ const DistributionConfigurationForm = ({
                 return (
                     <EmailDistributionConfiguration
                         csrfToken={csrfToken}
-                        createAdditionalEmailRequestBody={createAdditionalEmailRequestBody}
+                        createAdditionalEmailRequestBody={createCommonRequestBody}
                         data={specificChannelModel}
                         setData={setSpecificChannelModel}
                         errors={errors}
@@ -293,11 +298,6 @@ const DistributionConfigurationForm = ({
 
     const processingFieldDescription = `Select the way messages will be processed: ${getProcessingDescription(FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.processingType))}`;
 
-    const getProjectsRequest = () => {
-        const apiUrl = '/alert/api/function/channel.common.configured.project?pageNumber=0&pageSize=1000&searchTerm=';
-        return createNewConfigurationRequest(apiUrl, csrfToken, createAdditionalEmailRequestBody());
-    };
-
     const getPolicyFiltersRequest = () => {
         const apiUrl = '/alert/api/function/blackduck.policy.notification.filter?pageNumber=0&pageSize=1000&searchTerm=';
         return createNewConfigurationRequest(apiUrl, csrfToken, createProviderRequestBody());
@@ -314,30 +314,18 @@ const DistributionConfigurationForm = ({
         });
     };
 
-    const convertDataToOptions = (responseData) => {
-        const { models } = responseData;
-        return models.map((model) => {
-            const { name, href } = model;
-            return {
-                key: name,
-                label: name,
-                value: {
-                    href,
-                    name
+    const removeSelectedProject = (option) => {
+        const options = FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects);
+        const parsedArray = options.filter((project) => project.value !== option.value);
+        return FieldModelUtilities.handleChange(providerModel, setProviderModel)(
+            {
+                target: {
+                    name: DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects,
+                    value: parsedArray
                 }
-            };
-        });
+            }
+        );
     };
-
-    function getSelectedProjects() {
-        const values = FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects);
-        const selectedProjects = values.map((model) => ({
-            label: model.name,
-            value: model,
-            missing: model.missing
-        }));
-        return selectedProjects;
-    }
 
     // TODO need to provide finer grain control with permissions.
     return (
@@ -502,23 +490,72 @@ const DistributionConfigurationForm = ({
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.projectVersionNamePattern)}
                             errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.projectVersionNamePattern]}
                         />
-                        <EndpointSelectField
-                            searchable
+                        <DynamicSelectInput
                             id={DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects}
-                            csrfToken={csrfToken}
-                            endpoint={DISTRIBUTION_URLS.endpointSelectPath}
-                            fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects}
                             label="Projects"
                             description="Select a project or projects that will be used to retrieve notifications from your provider."
-                            multiSelect
+                            csrfToken={csrfToken}
                             readOnly={readonly}
-                            readOptionsRequest={getProjectsRequest}
-                            convertDataToOptions={convertDataToOptions}
                             onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects)}
                             errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects]}
-                            customVal={getSelectedProjects()}
+                            customSelect={(
+                                <>
+                                    <div className="typeAheadField">
+                                        <Select
+                                            noOptionsMessage={() => null}
+                                            openMenuOnClick={false}
+                                            isSearchable={false}
+                                            placeholder="Select Projects..."
+                                            value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects)}
+                                            isMulti
+                                            isClearable
+                                            styles={{
+                                                dropdownIndicator: (base) => ({
+                                                    ...base,
+                                                    padding: '12px'
+                                                }),
+                                                multiValueRemove: (base) => ({
+                                                    ...base,
+                                                    padding: '7px'
+                                                }),
+                                            }}
+                                            components={{
+                                                DropdownIndicator: ({ ...props }) => (
+                                                    <components.DropdownIndicator
+                                                        {...props}
+                                                        onClick={() => setShowProjectSelectModal(true)}
+                                                    >
+                                                        <FontAwesomeIcon icon="plus" onClick={() => setShowProjectSelectModal(true)}/>
+                                                    </components.DropdownIndicator>
+                                                ),
+                                                MultiValueRemove: ({ ...props }) => (
+                                                    <components.MultiValueRemove
+                                                        {...props}
+                                                    >
+                                                        <FontAwesomeIcon
+                                                            icon="times"
+                                                            onClick={() => removeSelectedProject(props.data)}
+                                                            size="xs"
+                                                        />
+                                                    </components.MultiValueRemove>
+                                                )
+                                            }}
+                                        />
+                                    </div>
+                                </>
+                            )}
                         />
+                        {showProjectSelectModal && (
+                            <ProjectSelectModal
+                                isOpen={showProjectSelectModal}
+                                handleClose={() => setShowProjectSelectModal(false)}
+                                csrfToken={csrfToken}
+                                projectRequestBody={createCommonRequestBody}
+                                handleSubmit={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                                formData={providerModel}
+                            />
+                        )}
                     </div>
                 )}
                 {FieldModelUtilities.hasValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes)
