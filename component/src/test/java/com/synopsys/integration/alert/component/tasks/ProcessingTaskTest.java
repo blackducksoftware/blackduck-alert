@@ -21,7 +21,6 @@ import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import org.springframework.scheduling.TaskScheduler;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.task.TaskManager;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -38,9 +37,10 @@ import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExt
 import com.synopsys.integration.alert.processor.api.filter.JobNotificationMapper;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
 import com.synopsys.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 class ProcessingTaskTest {
-    private final BlackDuckResponseResolver blackDuckResponseResolver = new BlackDuckResponseResolver(new Gson());
+    private final BlackDuckResponseResolver blackDuckResponseResolver = new BlackDuckResponseResolver(BlackDuckServicesFactory.createDefaultGson());
 
     private List<AlertNotificationModel> modelList;
 

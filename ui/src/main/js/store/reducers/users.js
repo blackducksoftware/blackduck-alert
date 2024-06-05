@@ -1,12 +1,15 @@
 import {
     SERIALIZE,
+    USER_MANAGEMENT_GET_FAIL,
+    USER_MANAGEMENT_GET_REQUEST,
+    USER_MANAGEMENT_GET_SUCCESS,
+    USER_MANAGEMENT_USER_BULK_DELETE_FAIL,
+    USER_MANAGEMENT_USER_BULK_DELETE_FETCH,
+    USER_MANAGEMENT_USER_BULK_DELETE_SUCCESS,
     USER_MANAGEMENT_USER_CLEAR_FIELD_ERRORS,
     USER_MANAGEMENT_USER_DELETE_ERROR,
     USER_MANAGEMENT_USER_DELETED,
     USER_MANAGEMENT_USER_DELETING,
-    USER_MANAGEMENT_USER_FETCH_ERROR_ALL,
-    USER_MANAGEMENT_USER_FETCHED_ALL,
-    USER_MANAGEMENT_USER_FETCHING_ALL,
     USER_MANAGEMENT_USER_SAVE_ERROR,
     USER_MANAGEMENT_USER_SAVED,
     USER_MANAGEMENT_USER_SAVING,
@@ -17,11 +20,8 @@ import {
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 
 const initialState = {
-    inProgress: false,
     fetching: false,
-    deleteSuccess: false,
     data: [],
-    userFetchError: '',
     error: HTTPErrorUtils.createEmptyErrorObject(),
     fieldErrors: {},
     saveStatus: '',
@@ -30,6 +30,33 @@ const initialState = {
 
 const users = (state = initialState, action) => {
     switch (action.type) {
+        case USER_MANAGEMENT_USER_BULK_DELETE_FETCH:
+            return {
+                ...state,
+                fetching: true,
+                deleteSuccess: false,
+                error: HTTPErrorUtils.createErrorObject(action),
+                fieldErrors: action.errors || {},
+                deleteStatus: 'DELETING'
+            };
+        case USER_MANAGEMENT_USER_BULK_DELETE_SUCCESS:
+            return {
+                ...state,
+                fetching: false,
+                deleteSuccess: true,
+                error: HTTPErrorUtils.createErrorObject(action),
+                fieldErrors: action.errors || {},
+                deleteStatus: 'SUCCESS'
+            };
+        case USER_MANAGEMENT_USER_BULK_DELETE_FAIL:
+            return {
+                ...state,
+                fetching: false,
+                deleteSuccess: false,
+                error: HTTPErrorUtils.createErrorObject(action),
+                fieldErrors: action.errors || {},
+                deleteStatus: 'ERROR'
+            };
         case USER_MANAGEMENT_USER_DELETE_ERROR:
             return {
                 ...state,
@@ -58,33 +85,25 @@ const users = (state = initialState, action) => {
                 saveStatus: '',
                 deleteStatus: 'DELETING'
             };
-        case USER_MANAGEMENT_USER_FETCH_ERROR_ALL:
+        case USER_MANAGEMENT_GET_REQUEST:
             return {
                 ...state,
-                inProgress: false,
-                deleteSuccess: false,
-                userFetchError: action.userFetchError,
-                error: HTTPErrorUtils.createErrorObject(action),
-                fetching: false,
-                saveStatus: ''
+                fetching: true,
+                deleteStatus: ''
             };
-        case USER_MANAGEMENT_USER_FETCHED_ALL:
+        case USER_MANAGEMENT_GET_SUCCESS:
             return {
                 ...state,
-                inProgress: false,
-                deleteSuccess: false,
                 data: action.data,
                 fetching: false,
-                saveStatus: ''
+                deleteStatus: ''
             };
-        case USER_MANAGEMENT_USER_FETCHING_ALL:
+        case USER_MANAGEMENT_GET_FAIL:
             return {
                 ...state,
-                inProgress: true,
-                deleteSuccess: false,
-                data: [],
-                fetching: true,
-                saveStatus: ''
+                error: HTTPErrorUtils.createErrorObject(action),
+                fetching: false,
+                deleteStatus: ''
             };
         case USER_MANAGEMENT_USER_SAVE_ERROR:
             return {
@@ -93,7 +112,8 @@ const users = (state = initialState, action) => {
                 deleteSuccess: false,
                 error: HTTPErrorUtils.createErrorObject(action),
                 fieldErrors: action.errors || {},
-                saveStatus: 'ERROR'
+                saveStatus: 'ERROR',
+                deleteStatus: ''
             };
         case USER_MANAGEMENT_USER_SAVED:
             return {
@@ -102,21 +122,24 @@ const users = (state = initialState, action) => {
                 deleteSuccess: false,
                 error: HTTPErrorUtils.createEmptyErrorObject(),
                 fieldErrors: {},
-                saveStatus: 'SAVED'
+                saveStatus: 'SAVED',
+                deleteStatus: ''
             };
         case USER_MANAGEMENT_USER_SAVING:
             return {
                 ...state,
                 inProgress: true,
                 deleteSuccess: false,
-                saveStatus: 'SAVING'
+                saveStatus: 'SAVING',
+                deleteStatus: ''
             };
         case USER_MANAGEMENT_USER_CLEAR_FIELD_ERRORS: {
             return {
                 ...state,
                 error: HTTPErrorUtils.createEmptyErrorObject(),
                 fieldErrors: {},
-                saveStatus: ''
+                saveStatus: '',
+                deleteStatus: ''
             };
         }
         case USER_MANAGEMENT_USER_VALIDATING:
@@ -124,7 +147,8 @@ const users = (state = initialState, action) => {
                 ...state,
                 inProgress: true,
                 deleteSuccess: false,
-                saveStatus: 'VALIDATING'
+                saveStatus: 'VALIDATING',
+                deleteStatus: ''
             };
         case USER_MANAGEMENT_USER_VALIDATED:
             return {
@@ -132,7 +156,8 @@ const users = (state = initialState, action) => {
                 inProgress: false,
                 deleteSuccess: false,
                 error: HTTPErrorUtils.createEmptyErrorObject(),
-                saveStatus: 'VALIDATED'
+                saveStatus: 'VALIDATED',
+                deleteStatus: ''
             };
         case USER_MANAGEMENT_USER_VALIDATE_ERROR:
             return {
@@ -140,7 +165,8 @@ const users = (state = initialState, action) => {
                 inProgress: false,
                 deleteSuccess: false,
                 error: HTTPErrorUtils.createErrorObject(action),
-                saveStatus: 'ERROR'
+                saveStatus: 'ERROR',
+                deleteStatus: ''
             };
         case SERIALIZE:
             return initialState;

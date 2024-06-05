@@ -19,9 +19,8 @@ import com.synopsys.integration.alert.common.rest.api.ReadAllController;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;
 
 @RestController
-@RequestMapping(CertificatesController.API_BASE_URL)
+@RequestMapping(AlertRestConstants.CERTIFICATE_PATH)
 public class CertificatesController implements ReadAllController<MultiCertificateModel>, BaseResourceController<CertificateModel>, ValidateController<CertificateModel> {
-    public static final String API_BASE_URL = AlertRestConstants.BASE_PATH + "/certificates";
     private final CertificateActions actions;
 
     @Autowired

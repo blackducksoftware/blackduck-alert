@@ -6,9 +6,9 @@ import {
     CERTIFICATES_DELETE_ERROR,
     CERTIFICATES_DELETED,
     CERTIFICATES_DELETING,
-    CERTIFICATES_FETCH_ERROR_ALL,
-    CERTIFICATES_FETCHED_ALL,
-    CERTIFICATES_FETCHING_ALL,
+    CERTIFICATES_GET_FAIL,
+    CERTIFICATES_GET_REQUEST,
+    CERTIFICATES_GET_SUCCESS,
     CERTIFICATES_SAVE_ERROR,
     CERTIFICATES_SAVED,
     CERTIFICATES_SAVING,
@@ -17,9 +17,7 @@ import {
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 
 const initialState = {
-    inProgress: false,
     fetching: false,
-    deleteSuccess: false,
     data: [],
     error: HTTPErrorUtils.createEmptyErrorObject(),
     saveStatus: ''
@@ -50,30 +48,23 @@ const certificates = (state = initialState, action) => {
                 deleteSuccess: false,
                 saveStatus: ''
             };
-        case CERTIFICATES_FETCH_ERROR_ALL:
+        case CERTIFICATES_GET_FAIL:
             return {
                 ...state,
-                inProgress: false,
-                deleteSuccess: false,
                 error: HTTPErrorUtils.createErrorObject(action),
                 fetching: false,
                 saveStatus: ''
             };
-        case CERTIFICATES_FETCHED_ALL:
+        case CERTIFICATES_GET_SUCCESS:
             return {
                 ...state,
-                inProgress: false,
-                deleteSuccess: false,
                 data: action.certificates,
                 fetching: false,
                 saveStatus: ''
             };
-        case CERTIFICATES_FETCHING_ALL:
+        case CERTIFICATES_GET_REQUEST:
             return {
                 ...state,
-                inProgress: false,
-                deleteSuccess: false,
-                data: [],
                 fetching: true,
                 saveStatus: ''
             };

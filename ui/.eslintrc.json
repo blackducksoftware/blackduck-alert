@@ -72,10 +72,16 @@
     "react/no-string-refs": [
       "warn"
     ],
+    "react/no-array-index-key": [
+      "warn"
+    ],
     "react/jsx-closing-tag-location": [
       "warn"
     ],
     "react/jsx-first-prop-new-line": [
+      "warn"
+    ],
+    "react/jsx-no-bind": [ 
       "warn"
     ],
     "react/require-default-props": [
@@ -90,6 +96,9 @@
       {
         "allowParens": true
       }
+    ],
+    "no-else-return": [
+      "warn"
     ],
     "no-underscore-dangle": [
       "warn"
@@ -108,7 +117,7 @@
       "warn"
     ],
     "import/no-unresolved": [
-      "warn"
+      "off"
     ],
     "jsx-a11y/anchor-is-valid": [
       "error",

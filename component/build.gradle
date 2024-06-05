@@ -7,6 +7,7 @@ dependencies {
     implementation project(':alert-database')
     implementation project(':alert-database-job')
     implementation project(':api-authentication')
+    implementation project(':api-certificates')
     implementation project(':api-common-model')
     implementation project(':api-descriptor')
     implementation project(':api-distribution')
@@ -20,6 +21,7 @@ dependencies {
 
     implementation 'org.apache.tomcat.embed:tomcat-embed-core'
     implementation 'org.springframework.amqp:spring-amqp'
+    implementation 'org.springframework.boot:spring-boot'
 
     // SAML
     implementation "org.opensaml:opensaml-core"

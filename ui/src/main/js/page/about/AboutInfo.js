@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { createUseStyles } from 'react-jss';
 import ReadOnlyField from 'common/component/input/field/ReadOnlyField';
 import { getAboutInfo } from 'store/actions/about';
 import ConfigurationLabel from 'common/component/ConfigurationLabel';
@@ -9,52 +9,34 @@ import { NavLink } from 'react-router-dom';
 import LabeledField from 'common/component/input/field/LabeledField';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { EXISTING_CHANNELS, EXISTING_PROVIDERS } from 'common/DescriptorInfo';
+import AboutProviderTable from './AboutProviderTable';
+import AboutChannelsTable from './AboutChannelsTable';
+
+const useStyles = createUseStyles({
+    aboutInfoContainer: {
+        display: 'flex',
+        padding: ['10px', 0]
+    },
+    aboutInfoDescriptor: {
+        minWidth: '25%',
+        padding: ['6px', '15px'],
+        fontWeight: 'bold',
+        lineHeight: '1.5',
+        textAlign: 'right'
+    },
+    aboutInfoTable: {
+        padding: [0, '16px'],
+        width: '100%'
+    }
+});
 
 const AboutInfo = ({
     getAbout, version, projectUrl, commitHash, documentationUrl, globalDescriptorMap, distributionDescriptorMap
 }) => {
+    const classes = useStyles();
     useEffect(() => {
         getAbout();
     }, []);
-
-    const createDescriptorTable = (id, tableData, uriPrefix, tableName) => {
-        const nameRenderer = (cell, row) => {
-            const nameId = `aboutNameKey-${cell}`;
-            const url = `${uriPrefix}${row.urlName}`;
-            const renderedItem = row.urlName ? <NavLink to={url} id={nameId}>{cell}</NavLink> : <div id={nameId}>{cell}</div>;
-            return renderedItem;
-        };
-        const tableOptions = {
-            defaultSortName: 'name',
-            defaultSortOrder: 'asc',
-            noDataText: 'No data found'
-        };
-
-        return (
-            <div className="form-group">
-                <div className="form-group">
-                    <label className="col-sm-3 col-form-label text-right">{tableName}</label>
-                    <div className="d-inline-flex p-2 col-sm-8">
-                        <div className="form-control-static">
-                            <div id={id} className="form-group">
-                                <BootstrapTable
-                                    version="4"
-                                    data={tableData}
-                                    options={tableOptions}
-                                    headerContainerClass="scrollable"
-                                    bodyContainerClass="scrollable"
-                                >
-                                    <TableHeaderColumn dataField="name" isKey dataFormat={nameRenderer}>
-                                        Name
-                                    </TableHeaderColumn>
-                                </BootstrapTable>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    };
 
     const createTableData = (descriptorMapping, existingData) => Object.values(descriptorMapping)
         .filter((descriptor) => existingData[descriptor.name])
@@ -81,11 +63,9 @@ const AboutInfo = ({
     const channelDescriptorData = addGlobalConfigurationCheck(globalDescriptorMap, distributionDescriptorMap);
     const providerData = createTableData(providerDescriptorData, EXISTING_PROVIDERS);
     const channelData = createTableData(channelDescriptorData, EXISTING_CHANNELS);
-    const providerTable = createDescriptorTable('about-providers', providerData, '/alert/providers/', 'Providers');
-    const channelTable = createDescriptorTable('about-channels', channelData, '/alert/channels/', 'Distribution Channels');
     const providersMissing = !providerData || providerData.length <= 0;
     const channelsMissing = !channelData || channelData.length <= 0;
-    const commitHashUrl = projectUrl + "/commit/" + commitHash
+    const commitHashUrl = `${projectUrl}/commit/${commitHash}`;
 
     return (
         <div>
@@ -140,8 +120,28 @@ const AboutInfo = ({
                         </div>
                     </div>
                 )}
-                {!providersMissing && providerTable}
-                {!channelsMissing && channelTable}
+
+                {!providersMissing && (
+                    <div className={classes.aboutInfoContainer}>
+                        <div className={classes.aboutInfoDescriptor}>
+                            Providers
+                        </div>
+                        <div className={classes.aboutInfoTable}>
+                            <AboutProviderTable tableData={providerData} />
+                        </div>
+                    </div>
+                )}
+
+                {!channelsMissing && (
+                    <div className={classes.aboutInfoContainer}>
+                        <div className={classes.aboutInfoDescriptor}>
+                            Distribution Channels
+                        </div>
+                        <div className={classes.aboutInfoTable}>
+                            <AboutChannelsTable tableData={channelData} />
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

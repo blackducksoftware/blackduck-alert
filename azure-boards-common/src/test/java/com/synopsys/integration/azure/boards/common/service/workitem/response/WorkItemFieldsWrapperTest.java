@@ -7,13 +7,13 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.synopsys.integration.azure.boards.common.util.AzureFieldsExtractor;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class WorkItemFieldsWrapperTest {
-    private final AzureFieldsExtractor azureFieldsExtractor = new AzureFieldsExtractor(new Gson());
+    private final AzureFieldsExtractor azureFieldsExtractor = new AzureFieldsExtractor(BlackDuckServicesFactory.createDefaultGson());
     private final JsonObject jsonObject = new JsonObject();
 
     @Test

@@ -27,7 +27,7 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 class NotificationExtractorBlackDuckServicesFactoryCacheTest {
     private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
-    private final Gson gson = new Gson();
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
     private final AlertProperties properties = new AlertProperties();
     private final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
     private final BlackDuckPropertiesFactory blackDuckPropertiesFactory = new BlackDuckPropertiesFactory(configurationModelConfigurationAccessor, gson, properties, proxyManager);

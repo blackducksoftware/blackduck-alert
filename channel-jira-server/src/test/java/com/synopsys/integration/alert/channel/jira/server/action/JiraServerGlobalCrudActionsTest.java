@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -35,6 +36,7 @@ class JiraServerGlobalCrudActionsTest {
     private final String URL = "https://someUrl";
     private final String USER_NAME = "username";
     private final String PASSWORD = "password";
+    private final String ACCESS_TOKEN = "accessToken";
 
     private final UUID id = UUID.randomUUID();
 
@@ -137,9 +139,12 @@ class JiraServerGlobalCrudActionsTest {
             CREATED_AT,
             UPDATED_AT,
             URL,
+            JiraServerAuthorizationMethod.BASIC,
             USER_NAME,
             PASSWORD,
             Boolean.TRUE,
+            null,
+            Boolean.FALSE,
             Boolean.TRUE
         );
         AlertPagedModel<JiraServerGlobalConfigModel> alertPagedModel = new AlertPagedModel<>(
@@ -182,9 +187,12 @@ class JiraServerGlobalCrudActionsTest {
             CREATED_AT,
             UPDATED_AT,
             URL,
+            JiraServerAuthorizationMethod.BASIC,
             USER_NAME,
             PASSWORD,
             Boolean.TRUE,
+            null,
+            Boolean.FALSE,
             Boolean.TRUE
         );
         AlertPagedModel<JiraServerGlobalConfigModel> alertPagedModel = new AlertPagedModel<>(
@@ -220,6 +228,21 @@ class JiraServerGlobalCrudActionsTest {
     @Test
     void createTest() throws AlertConfigurationException {
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createJiraServerGlobalConfigModel(id);
+        JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
+        Mockito.when(configAccessor.createConfiguration(Mockito.any())).thenReturn(jiraServerGlobalConfigModel);
+
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator());
+        ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.create(jiraServerGlobalConfigModel);
+
+        assertTrue(actionResponse.isSuccessful());
+        assertTrue(actionResponse.hasContent());
+        assertEquals(HttpStatus.OK, actionResponse.getHttpStatus());
+        assertModelObfuscated(actionResponse);
+    }
+
+    @Test
+    void createWithPersonalAccessTokenTesT() throws AlertConfigurationException {
+        JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createJiraServerGlobalConfigModelWithAccessToken(id);
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(configAccessor.createConfiguration(Mockito.any())).thenReturn(jiraServerGlobalConfigModel);
 
@@ -291,8 +314,28 @@ class JiraServerGlobalCrudActionsTest {
             CREATED_AT,
             UPDATED_AT,
             URL,
+            JiraServerAuthorizationMethod.BASIC,
             USER_NAME,
             PASSWORD,
+            Boolean.TRUE,
+            null,
+            Boolean.FALSE,
+            Boolean.TRUE
+        );
+    }
+
+    private JiraServerGlobalConfigModel createJiraServerGlobalConfigModelWithAccessToken(UUID id) {
+        return new JiraServerGlobalConfigModel(
+            String.valueOf(id),
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            CREATED_AT,
+            UPDATED_AT,
+            URL,
+            JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN,
+            null,
+            null,
+            Boolean.FALSE,
+            ACCESS_TOKEN,
             Boolean.TRUE,
             Boolean.TRUE
         );
@@ -309,12 +352,20 @@ class JiraServerGlobalCrudActionsTest {
         assertEquals(CREATED_AT, jiraServerGlobalConfigModel.getCreatedAt());
         assertEquals(UPDATED_AT, jiraServerGlobalConfigModel.getLastUpdated());
         assertEquals(URL, jiraServerGlobalConfigModel.getUrl());
-        assertEquals(USER_NAME, jiraServerGlobalConfigModel.getUserName());
 
-        assertTrue(jiraServerGlobalConfigModel.getPassword().isEmpty());
-        assertTrue(jiraServerGlobalConfigModel.getIsPasswordSet().isPresent());
-        assertEquals(Boolean.TRUE, jiraServerGlobalConfigModel.getIsPasswordSet().get());
-        assertTrue(jiraServerGlobalConfigModel.getDisablePluginCheck().isPresent());
-        assertEquals(Boolean.TRUE, jiraServerGlobalConfigModel.getDisablePluginCheck().get());
+        if (jiraServerGlobalConfigModel.getAuthorizationMethod() == JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN) {
+            assertTrue(jiraServerGlobalConfigModel.getUserName().isEmpty());
+            assertTrue(jiraServerGlobalConfigModel.getPassword().isEmpty());
+            assertFalse(jiraServerGlobalConfigModel.getIsPasswordSet().orElse(Boolean.TRUE));
+            assertTrue(jiraServerGlobalConfigModel.getAccessToken().isEmpty());
+            assertTrue(jiraServerGlobalConfigModel.getIsAccessTokenSet().orElse(Boolean.FALSE));
+        } else {
+            assertEquals(USER_NAME, jiraServerGlobalConfigModel.getUserName().orElse("Username missing"));
+            assertTrue(jiraServerGlobalConfigModel.getPassword().isEmpty());
+            assertTrue(jiraServerGlobalConfigModel.getIsPasswordSet().orElse(Boolean.FALSE));
+            assertTrue(jiraServerGlobalConfigModel.getAccessToken().isEmpty());
+            assertFalse(jiraServerGlobalConfigModel.getIsAccessTokenSet().orElse(Boolean.TRUE));
+        }
+        assertTrue(jiraServerGlobalConfigModel.getDisablePluginCheck().orElse(Boolean.FALSE));
     }
 }

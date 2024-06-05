@@ -3,12 +3,16 @@ package com.synopsys.integration.alert.api.channel.rest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.certificates.AlertSSLContextManager;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.credentials.Credentials;
 import com.synopsys.integration.rest.credentials.CredentialsBuilder;
@@ -16,7 +20,7 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;
 
 class ChannelRestConnectionFactoryTest {
-    private final Gson gson = new Gson();
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
 
     @Test
     void testConnectionFields() {
@@ -39,8 +43,10 @@ class ChannelRestConnectionFactoryTest {
         MockAlertProperties testAlertProperties = new MockAlertProperties();
         testAlertProperties.setAlertTrustCertificate(true);
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        Mockito.when(proxyManager.createProxyInfoForHost(baseUrl)).thenReturn(expectedProxyInfo);
-        ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager, gson);
+        AlertSSLContextManager alertSSLContextManager = Mockito.mock(AlertSSLContextManager.class);
+        Mockito.when(proxyManager.createProxyInfoForHost(Mockito.anyString())).thenReturn(expectedProxyInfo);
+        Mockito.when(alertSSLContextManager.buildWithClientCertificate()).thenReturn(Optional.empty());
+        ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager, gson, alertSSLContextManager);
 
         IntHttpClient intHttpClient = channelRestConnectionFactory.createIntHttpClient(baseUrl);
 

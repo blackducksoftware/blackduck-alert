@@ -22,3 +22,7 @@ export const JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS = {
     reopenWorkflow: 'channel.jira.cloud.reopen.workflow',
     issueSummary: 'channel.jira.cloud.issue.summary'
 };
+
+export const JIRA_CLOUD_URLS = {
+    mainUrl: '/alert/channels/jira'
+};

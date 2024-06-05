@@ -27,13 +27,14 @@ import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.database.MockRepositorySorter;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 class AzureBoardsGlobalConfigAccessorTest {
     private static final String TEST_ORG_NAME = "organizationName";
     private static final String TEST_APP_ID = "appId-test-value";
     private static final String TEST_CLIENT_SECRET = "clientSecret-test-value";
 
-    private final Gson gson = new Gson();
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
     private final AlertProperties alertProperties = new MockAlertProperties();
     private final FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
     private final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);

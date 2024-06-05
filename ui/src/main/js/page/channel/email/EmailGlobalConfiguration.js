@@ -27,7 +27,7 @@ const EmailGlobalConfiguration = ({
             id={EMAIL_TEST_FIELD.key}
             name={EMAIL_TEST_FIELD.key}
             label={EMAIL_TEST_FIELD.label}
-            description={EMAIL_TEST_FIELD.description}
+            customDescription={EMAIL_TEST_FIELD.description}
             onChange={({ target }) => setTestEmailAddress(target.value)}
             value={testEmailAddress}
         />
@@ -146,6 +146,7 @@ const EmailGlobalConfiguration = ({
                     id="additional.email.properties"
                     name={additionalPropertiesName}
                     label="Additional Email Properties"
+                    buttonLabel="Add Property"
                     description="Mapping of additional properties that can be used to appropriately configure your email connection."
                     readonly={readonly}
                     value={emailConfig[additionalPropertiesName] || {}}

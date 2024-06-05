@@ -68,6 +68,11 @@ public class JiraServerGlobalTestAction {
                     .flatMap(JiraServerGlobalConfigModel::getPassword)
                     .ifPresent(jiraServerGlobalConfigModel::setPassword);
             }
+            if (BooleanUtils.toBoolean(jiraServerGlobalConfigModel.getIsAccessTokenSet().orElse(Boolean.FALSE)) && jiraServerGlobalConfigModel.getAccessToken().isEmpty()) {
+                configurationAccessor.getConfiguration(UUID.fromString(jiraServerGlobalConfigModel.getId()))
+                    .flatMap(JiraServerGlobalConfigModel::getAccessToken)
+                    .ifPresent(jiraServerGlobalConfigModel::setAccessToken);
+            }
 
             JiraServerGlobalTestActionWrapper testActionWrapper = jiraServerTestActionFactory.createTestActionWrapper(jiraServerGlobalConfigModel);
             if (!testActionWrapper.canUserGetIssues()) {

@@ -25,7 +25,7 @@ const AuthenticationPageLayout = ({
     };
 
     useEffect(() => {
-        retrieveData()
+        retrieveData();
     }, []);
 
     return (

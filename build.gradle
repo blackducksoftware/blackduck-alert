@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.7.4'
+        springBootVersion = '3.1.8'
     }
 
     apply from: 'https://raw.githubusercontent.com/blackducksoftware/integration-resources/master/gradle_common/buildscript-repositories.gradle', to: buildscript
@@ -11,6 +11,15 @@ buildscript {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
         classpath "com.synopsys.integration:common-gradle-plugin:${managedCgpVersion}"
     }
+
+    // In Alert 7.2 we plan to upgrade spring-boot, which should make this exclude unnecessary
+    configurations {
+        classpath {
+            resolutionStrategy {
+                exclude group: 'org.yaml', module: 'snakeyaml'
+            }
+        }
+    }
 }
 
 plugins {
@@ -19,19 +28,22 @@ plugins {
 }
 
 ext {
+    userID = 'id -u'.execute().text.trim()
+    groupID = 'id -g'.execute().text.trim()
+
     commitHash = 'UNKNOWN'
 
     // Copied from src/test/java - com.synopsys.integration.alert.TestTags
-    junitPlatformCustomTestTags = 'BlackDuckConnection, DatabaseConnection, ExternalConnection'
+    junitPlatformCustomTestTags = 'BlackDuckConnection, DatabaseConnection, ExternalConnection, Swagger'
 
-    javaSourceCompatibility = JavaVersion.VERSION_11
-    javaTargetCompatibility = JavaVersion.VERSION_11
+    javaSourceCompatibility = JavaVersion.VERSION_17
+    javaTargetCompatibility = JavaVersion.VERSION_17
 
     moduleName = 'com.synopsys.integration.alert.main'
 
     // This version is also in src/test/resources/spring-test.properties for the test jdbc connection
-    postgresContainerVersionMigration = '12.11'
-    postgresContainerVersionCurrent = '14.5'
+    postgresContainerVersionMigration = '14.8'
+    postgresContainerVersionCurrent = '14.10'
 
     // Docker Variables
     dockerBuildParam_POSTGRESIMAGEVERSION_MIGRATION = 'postgres:' + postgresContainerVersionMigration + '-alpine'
@@ -53,7 +65,7 @@ ext {
 }
 
 mainClassName = 'com.synopsys.integration.alert.Application'
-version = '7.0.0-SNAPSHOT'
+version = '7.1.2-SNAPSHOT'
 
 ext.isSnapshot = project.version.endsWith('-SNAPSHOT')
 ext.isSIGQA = project.version.contains('-SIGQA')
@@ -81,6 +93,7 @@ apply from: 'buildSrc/buildTasks.gradle'
 apply from: 'buildSrc/runTasks.gradle'
 apply from: 'buildSrc/deploymentTasks.gradle'
 apply from: 'buildSrc/docker.gradle'
+apply from: 'buildSrc/postman.gradle'
 
 subprojects {
     if (project.name != 'alert-platform') {
@@ -94,6 +107,15 @@ subprojects {
 }
 
 allprojects {
+    // In Alert 7.2 we plan to upgrade spring-boot, which should make this force unnecessary
+    configurations {
+        all {
+            resolutionStrategy {
+                force 'org.yaml:snakeyaml:2.1'
+            }
+        }
+    }
+
     configurations {
         all {
             exclude group: 'com.blackducksoftware.bdio', module: 'bdio2'
@@ -117,7 +139,7 @@ allprojects {
 
 // configure the version of the JaCoCo plugin to 0.8.2 which works for Java 11 until we switch to a gradle wrapper that includes 0.8.2+ by default.
 jacoco {
-    toolVersion = "0.8.5"
+    toolVersion = "0.8.9"
 }
 
 dependencies {
@@ -130,6 +152,7 @@ dependencies {
     implementation project(':alert-database-job')
 
     implementation project(':api-authentication')
+    implementation project(':api-certificates')
     implementation project(':api-common-model')
     implementation project(':api-channel')
     implementation project(':api-descriptor')
@@ -184,6 +207,7 @@ dependencies {
     // =============
     testImplementation 'org.testcontainers:postgresql'
     testImplementation 'org.testcontainers:rabbitmq'
+    testRuntimeOnly 'org.dbunit:dbunit'
     testRuntimeOnly 'com.playtika.testcontainers:embedded-postgresql'
     testRuntimeOnly 'com.playtika.testcontainers:embedded-rabbitmq'
     testRuntimeOnly 'org.springframework.cloud:spring-cloud-starter-bootstrap'
@@ -210,7 +234,7 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-ldap'
     testImplementation 'jakarta.persistence:jakarta.persistence-api'
     testImplementation 'org.javassist:javassist'
-    testImplementation 'javax.mail:javax.mail-api'
+    testImplementation 'jakarta.mail:jakarta.mail-api'
 }
 
 bootJar {

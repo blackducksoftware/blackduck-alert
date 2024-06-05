@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Button from 'common/component/button/Button';
 
 const FieldMappingRow = ({
     index,
@@ -48,14 +48,7 @@ const FieldMappingRow = ({
                     onChange={({ target }) => setCurrentRightSide(target.value)}
                 />
             </div>
-            <button
-                id="delete-mapping"
-                className="btn btn-sm btn-primary p-2"
-                type="button"
-                onClick={() => deleteRow(index)}
-            >
-                <FontAwesomeIcon icon="minus" className="alert-icon" size="lg" />
-            </button>
+            <Button id="delete-mapping" onClick={() => deleteRow(index)} text="Remove Property" icon="minus" />
         </div>
     );
 };

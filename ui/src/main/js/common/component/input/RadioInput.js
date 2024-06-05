@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import { createUseStyles } from 'react-jss';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input/field/LabeledField';
 
@@ -9,6 +10,9 @@ const useStyles = createUseStyles({
         padding: '0.5rem',
         columnGap: '10px'
     },
+    modalOption: {
+        padding: ['0.5rem', '0.5rem', '0.5rem', '0.7rem']
+    },
     optionContainer: {
         display: 'flex',
         alignItems: 'baseline',
@@ -17,9 +21,15 @@ const useStyles = createUseStyles({
 });
 
 const RadioInput = ({
-    id, description, errorName, errorValue, label, labelClass, name, onChange, readOnly, required, showDescriptionPlaceHolder, radioOptions, checked
+    id, description, errorName, errorValue, label, labelClass, name, onChange, readOnly, 
+    required, showDescriptionPlaceHolder, radioOptions, checked, isInModal, customDescription
 }) => {
     const classes = useStyles();
+
+    // Modal styling throws the padding off, correct it here
+    const containerClass = classNames(classes.radioContainer, {
+        [classes.modalOption]: isInModal
+    });
 
     return (
         <LabeledField
@@ -31,8 +41,9 @@ const RadioInput = ({
             errorName={errorName}
             errorValue={errorValue}
             required={required}
+            customDescription={customDescription}
         >
-            <div className={classes.radioContainer}>
+            <div className={containerClass}>
                 {radioOptions.map((option) => (
                     <div className={classes.optionContainer} key={option.name}>
                         <input
@@ -57,10 +68,12 @@ const RadioInput = ({
 
 RadioInput.propTypes = {
     checked: PropTypes.string,
+    customDescription: PropTypes.string,
     description: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     id: PropTypes.string,
+    isInModal: PropTypes.bool,
     label: PropTypes.string.isRequired,
     labelClass: PropTypes.string,
     name: PropTypes.string,
@@ -76,6 +89,7 @@ RadioInput.defaultProps = {
     name: 'name',
     onChange: () => true,
     readOnly: false,
+    isInModal: false,
     description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,

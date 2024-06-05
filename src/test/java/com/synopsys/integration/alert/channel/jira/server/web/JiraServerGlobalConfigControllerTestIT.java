@@ -23,6 +23,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
@@ -124,12 +125,26 @@ class JiraServerGlobalConfigControllerTestIT {
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     void verifyCreateEndpointTest() throws Exception {
-        String urlPath = REQUEST_URL;
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(REQUEST_URL)
             .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
             .with(SecurityMockMvcRequestPostProcessors.csrf());
 
         JiraServerGlobalConfigModel configModel = createConfigModel(null);
+        request.content(gson.toJson(configModel));
+        request.contentType(MEDIA_TYPE);
+
+        ResultActions resultActions = mockMvc.perform(request);
+        resultActions.andExpect(MockMvcResultMatchers.status().isCreated());
+    }
+
+    @Test
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
+    void verifyCreateEndpointWithPersonalAccessTokenTest() throws Exception {
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(REQUEST_URL)
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
+
+        JiraServerGlobalConfigModel configModel = createPersonalAccessTokenConfigModel(null, "https://synopsys.com");
         request.content(gson.toJson(configModel));
         request.contentType(MEDIA_TYPE);
 
@@ -225,9 +240,21 @@ class JiraServerGlobalConfigControllerTestIT {
             (null != uuid) ? uuid.toString() : null,
             "Configuration name",
             url,
-            "username",
-            "password"
+            JiraServerAuthorizationMethod.BASIC
         );
+        jiraServerGlobalConfigModel.setUserName("username");
+        jiraServerGlobalConfigModel.setPassword("password");
+        return jiraServerGlobalConfigModel;
+    }
+
+    private JiraServerGlobalConfigModel createPersonalAccessTokenConfigModel(UUID uuid, String url) {
+        JiraServerGlobalConfigModel jiraServerGlobalConfigModel = new JiraServerGlobalConfigModel(
+            (null != uuid) ? uuid.toString() : null,
+            "Configuration name",
+            url,
+            JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN
+        );
+        jiraServerGlobalConfigModel.setAccessToken("accessToken");
         return jiraServerGlobalConfigModel;
     }
 

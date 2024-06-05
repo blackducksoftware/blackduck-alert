@@ -15,6 +15,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -46,7 +47,7 @@ class JiraServerGlobalConfigurationModelConverterTest {
 
         assertNull(jiraModel.getId());
         assertEquals(TEST_URL, jiraModel.getUrl());
-        assertEquals(TEST_USERNAME, jiraModel.getUserName());
+        assertEquals(TEST_USERNAME, jiraModel.getUserName().orElse("Username missing"));
         assertEquals(TEST_PASSWORD, jiraModel.getPassword().orElse("Password value is missing"));
         assertTrue(jiraModel.getDisablePluginCheck().orElse(Boolean.FALSE));
 
@@ -61,9 +62,10 @@ class JiraServerGlobalConfigurationModelConverterTest {
             uuid,
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             TEST_URL,
-            TEST_USERNAME,
-            TEST_PASSWORD
+            JiraServerAuthorizationMethod.BASIC
         );
+        jiraServerGlobalConfigModelSaved.setUserName(TEST_USERNAME);
+        jiraServerGlobalConfigModelSaved.setPassword(TEST_PASSWORD);
         JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.of(jiraServerGlobalConfigModelSaved));
         validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
@@ -75,7 +77,7 @@ class JiraServerGlobalConfigurationModelConverterTest {
         JiraServerGlobalConfigModel jiraModel = model.get();
 
         assertEquals(TEST_URL, jiraModel.getUrl());
-        assertEquals(TEST_USERNAME, jiraModel.getUserName());
+        assertEquals(TEST_USERNAME, jiraModel.getUserName().orElse("Username missing"));
         assertEquals(TEST_PASSWORD, jiraModel.getPassword().orElse("Password value is missing"));
         assertTrue(jiraModel.getDisablePluginCheck().orElse(Boolean.FALSE));
     }
@@ -93,7 +95,7 @@ class JiraServerGlobalConfigurationModelConverterTest {
 
         assertNull(jiraModel.getId());
         assertEquals(TEST_URL, jiraModel.getUrl());
-        assertEquals(TEST_USERNAME, jiraModel.getUserName());
+        assertEquals(TEST_USERNAME, jiraModel.getUserName().orElse("Username missing"));
         assertEquals(TEST_PASSWORD, jiraModel.getPassword().orElse("Password value is missing"));
         assertTrue(jiraModel.getDisablePluginCheck().isEmpty());
 

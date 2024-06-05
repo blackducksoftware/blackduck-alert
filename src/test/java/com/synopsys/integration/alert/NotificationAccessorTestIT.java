@@ -31,6 +31,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
@@ -73,6 +74,8 @@ class NotificationAccessorTestIT {
     private ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     @Autowired
     private DefaultNotificationAccessor notificationManager;
+    @Autowired
+    private EncryptionUtility encryptionUtility;
 
     private ConfigurationModel providerConfigModel = null;
 
@@ -95,7 +98,7 @@ class NotificationAccessorTestIT {
         ConfigurationFieldModel blackduckUrl = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_URL);
         blackduckUrl.setFieldValue("https://a-blackduck-server");
         ConfigurationFieldModel blackduckApiKey = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
-        blackduckApiKey.setFieldValue("123456789012345678901234567890123456789012345678901234567890");
+        blackduckApiKey.setFieldValue(encryptionUtility.encrypt("123456789012345678901234567890123456789012345678901234567890"));
         ConfigurationFieldModel blackduckTimeout = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT);
         blackduckTimeout.setFieldValue("300");
 

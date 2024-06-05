@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { NavLink, withRouter } from 'react-router-dom';
 import Logo from 'common/component/Logo';
-import { confirmLogout } from 'store/actions/session';
+import { cancelLogout, confirmLogout } from 'store/actions/session';
 import { SLACK_INFO } from 'page/channel/slack/SlackModels';
 import { EMAIL_INFO } from 'page/channel/email/EmailModels';
 import { JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';
@@ -17,13 +17,13 @@ import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
 import { AUDIT_INFO } from 'page/audit/AuditModel';
 import { CERTIFICATE_INFO } from 'page/certificates/CertificateModel';
 import { TASK_MANAGEMENT_INFO } from 'page/task/TaskManagementModel';
-import { USER_MANAGEMENT_INFO } from 'page/user/UserModel';
+import { USER_MANAGEMENT_INFO } from 'page/usermgmt/UserModel';
 import { DESCRIPTOR_TYPE, doesDescriptorExist } from 'common/util/descriptorUtilities';
 import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
 
-const Navigation = ({ confirmLogoutPressed, globalDescriptorMap }) => {
+const Navigation = ({ confirmLogoutPressed, cancelLogout, globalDescriptorMap }) => {
     const createStaticNavItem = (uriPrefix, itemObject) => (
-        <li key={itemObject.key}>
+        <li key={itemObject.key} onClick={() => cancelLogout()}>
             <NavLink to={`${uriPrefix}${itemObject.url}`} activeClassName="activeNav">
                 {itemObject.label}
             </NavLink>
@@ -105,7 +105,8 @@ Navigation.propTypes = {
 };
 
 const mapDispatchToProps = (dispatch) => ({
-    confirmLogoutPressed: () => dispatch(confirmLogout())
+    confirmLogoutPressed: () => dispatch(confirmLogout()),
+    cancelLogout: () => dispatch(cancelLogout())
 });
 
 export default withRouter(connect(null, mapDispatchToProps)(Navigation));

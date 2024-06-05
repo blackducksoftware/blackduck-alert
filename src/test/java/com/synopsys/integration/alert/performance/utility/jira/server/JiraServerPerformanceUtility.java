@@ -18,6 +18,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
@@ -63,8 +64,11 @@ public class JiraServerPerformanceUtility {
             createdAt,
             createdAt,
             url,
+            JiraServerAuthorizationMethod.BASIC,
             userName,
             password,
+            Boolean.FALSE,
+            null,
             Boolean.FALSE,
             disablePluginCheck
         );
@@ -137,8 +141,11 @@ public class JiraServerPerformanceUtility {
             createdAt,
             createdAt,
             url,
+            JiraServerAuthorizationMethod.BASIC,
             userName,
             password,
+            Boolean.FALSE,
+            null,
             Boolean.FALSE,
             disablePluginCheck
         );

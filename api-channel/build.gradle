@@ -1,6 +1,7 @@
 ext.moduleName = 'com.synopsys.integration.alert.api-channel'
 
 dependencies {
+    api project(':api-certificates')
     api project(':api-distribution')
     api project(':api-environment')
     api project(':api-event')
@@ -16,4 +17,5 @@ dependencies {
     implementation 'com.synopsys.integration:integration-rest'
 
     testImplementation project(':test-common')
+    testImplementation 'com.synopsys.integration:blackduck-common'
 }

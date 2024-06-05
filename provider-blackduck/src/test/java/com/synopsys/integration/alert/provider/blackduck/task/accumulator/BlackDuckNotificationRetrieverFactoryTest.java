@@ -8,7 +8,6 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -50,7 +49,7 @@ class BlackDuckNotificationRetrieverFactoryTest {
         ProxyManager proxyManager = new ProxyManager(new MockSettingsUtility());
         return new BlackDuckProperties(
             1L,
-            new Gson(),
+            BlackDuckServicesFactory.createDefaultGson(),
             BlackDuckServicesFactory.createDefaultObjectMapper(),
             new MockAlertProperties(),
             proxyManager,

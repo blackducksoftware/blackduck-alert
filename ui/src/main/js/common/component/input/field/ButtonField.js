@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import GeneralButton from 'common/component/button/GeneralButton';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input/field/LabeledField';
 import StatusMessage from 'common/component/StatusMessage';
+import Button from 'common/component/button/Button';
 
 const ButtonField = ({
     id,
     buttonLabel,
+    customDescription,
     description,
     fieldError,
     fieldKey,
@@ -32,6 +33,7 @@ const ButtonField = ({
             <LabeledField
                 id={id}
                 labelClass={labelClass}
+                customDescription={customDescription}
                 description={description}
                 showDescriptionPlaceHolder={showDescriptionPlaceHolder}
                 label={label}
@@ -40,14 +42,7 @@ const ButtonField = ({
                 errorValue={fieldError}
             >
                 <div className="d-inline-flex p-2 col-sm-8">
-                    <GeneralButton
-                        id={fieldKey}
-                        onClick={callOnSendClick}
-                        disabled={readOnly}
-                        performingAction={progress}
-                    >
-                        {buttonLabel}
-                    </GeneralButton>
+                    <Button id={fieldKey} onClick={callOnSendClick} text={buttonLabel} disabled={readOnly} />
                 </div>
                 {success && <StatusMessage id={`${fieldKey}-status-message`} actionMessage={statusMessage} />}
             </LabeledField>
@@ -69,7 +64,8 @@ ButtonField.propTypes = {
     required: PropTypes.bool,
     showDescriptionPlaceHolder: PropTypes.bool,
     success: PropTypes.bool.isRequired,
-    statusMessage: PropTypes.string
+    statusMessage: PropTypes.string,
+    customDescription: PropTypes.string
 };
 
 ButtonField.defaultProps = {

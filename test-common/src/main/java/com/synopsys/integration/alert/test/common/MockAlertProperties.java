@@ -36,6 +36,8 @@ public class MockAlertProperties extends AlertProperties {
     private String encryptionSalt;
     private String alertEmailAttachmentsDir;
 
+    private String alertTrustStoreFile;
+
     public MockAlertProperties() {
         alertImagesDir = computeImagesDirPath().toString();
 
@@ -123,6 +125,18 @@ public class MockAlertProperties extends AlertProperties {
 
     public void setAlertEmailAttachmentsDir(String alertEmailAttachmentsDir) {
         this.alertEmailAttachmentsDir = alertEmailAttachmentsDir;
+    }
+
+    @Override
+    public Optional<String> getTrustStoreFile() {
+        if (alertTrustStoreFile == null) {
+            return super.getTrustStoreFile();
+        }
+        return Optional.ofNullable(alertTrustStoreFile);
+    }
+
+    public void setTrustStoreFile(String trustStoreFile) {
+        this.alertTrustStoreFile = trustStoreFile;
     }
 
     private Path computeImagesDirPath() {

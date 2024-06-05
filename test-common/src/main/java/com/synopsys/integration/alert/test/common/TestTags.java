@@ -15,5 +15,5 @@ public class TestTags {
     public static final String CUSTOM_BLACKDUCK_CONNECTION = "BlackDuckConnection";
     public static final String CUSTOM_DATABASE_CONNECTION = "DatabaseConnection";
     public static final String CUSTOM_EXTERNAL_CONNECTION = "ExternalConnection";
-
+    public static final String CUSTOM_SWAGGER = "Swagger";
 }

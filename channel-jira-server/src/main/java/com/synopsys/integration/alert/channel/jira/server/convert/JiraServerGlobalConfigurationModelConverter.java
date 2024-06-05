@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.action.api.GlobalConfigurationModelToConcreteConverter;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -59,7 +60,14 @@ public class JiraServerGlobalConfigurationModelConverter extends GlobalConfigura
             .flatMap(ConfigurationFieldModel::getFieldValue)
             .orElse(null);
 
-        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, url, username, password);
+        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(
+            null,
+            AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
+            url,
+            JiraServerAuthorizationMethod.BASIC
+        );
+        model.setUserName(username);
+        model.setPassword(password);
 
         globalConfigurationModel.getField(DISABLE_PLUGIN_CHECK_KEY)
             .flatMap(ConfigurationFieldModel::getFieldValue)

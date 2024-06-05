@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
@@ -32,6 +32,7 @@ import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
@@ -48,7 +49,6 @@ import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 import com.synopsys.integration.alert.util.DatabaseConfiguredFieldTest;
 
-@Transactional
 public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     private static final String DEFAULT_BLACK_DUCK_CONFIG = "Default Black Duck Config";
     private static final MediaType MEDIA_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), StandardCharsets.UTF_8);
@@ -60,6 +60,8 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     private BlackDuckProviderKey blackDuckProviderKey;
     @Autowired
     private Gson gson;
+    @Autowired
+    private JobAccessor jobAccessor;
 
     private final TestProperties testProperties = new TestProperties();
     private MockMvc mockMvc;
@@ -67,6 +69,15 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @BeforeEach
     public void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).apply(SecurityMockMvcConfigurers.springSecurity()).build();
+    }
+
+    @AfterEach
+    public void cleanUp() {
+        jobAccessor.getPageOfJobs(0, 100)
+            .getModels()
+            .stream()
+            .map(DistributionJobModel::getJobId)
+            .forEach(jobAccessor::deleteJob);
     }
 
     @Test

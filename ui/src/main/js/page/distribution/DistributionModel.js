@@ -1,4 +1,3 @@
-import { createTableSelectColumn } from 'common/component/input/TableSelectInput';
 import { AZURE_BOARDS_INFO } from 'page/channel/azure/AzureBoardsModel';
 import { EMAIL_INFO } from 'page/channel/email/EmailModels';
 import { JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';
@@ -10,6 +9,11 @@ export const DISTRIBUTION_INFO = {
     url: 'distribution',
     label: 'Distribution',
     description: 'Create jobs from the channels Alert provides. Double click the row to edit that job.'
+};
+
+export const DISTRIBUTION_CONFIGURATION_INFO = {
+    label: 'Distribution Configuration',
+    description: 'Configure the Distribution Job for Alert to send updates.'
 };
 
 export const DISTRIBUTION_COMMON_FIELD_KEYS = {
@@ -37,7 +41,8 @@ export const DISTRIBUTION_URLS = {
     distributionTableUrl: '/alert/jobs/distribution',
     distributionConfigUrl: '/alert/jobs/distribution/edit',
     distributionConfigCopyUrl: '/alert/jobs/distribution/copy',
-    endpointSelectPath: '/api/function'
+    endpointSelectPath: '/api/function',
+    distributionSelectTableUrl: '/alert/api/function/channel.common.configured.project'
 };
 
 export const DISTRIBUTION_TEST_FIELD_KEYS = {
@@ -96,12 +101,15 @@ export const DISTRIBUTION_VULNERABILITY_SEVERITY_OPTIONS = [
     { label: 'Medium', value: 'MEDIUM' }
 ];
 
-export const DISTRIBUTION_PROJECT_SELECT_COLUMNS = [
-    createTableSelectColumn('name', 'Project Name', true, true, true),
-    createTableSelectColumn('href', 'Project URL', false, false, false),
-    createTableSelectColumn('description', 'Project Description', false, false, true)
+export const CHANNEL_OPTIONS = [
+    { label: 'Azure Boards', value: 'channel_azure_boards' },
+    { label: 'Email', value: 'channel_email' },
+    { label: 'Jira Cloud', value: 'channel_jira_cloud' },
+    { label: 'Jira Server', value: 'channel_jira_server' },
+    { label: 'Slack', value: 'channel_slack' },
+    { label: 'MS Teams', value: 'msteamskey' }
 ];
 
-export const DISTRIBUTION_POLICY_SELECT_COLUMNS = [
-    createTableSelectColumn('name', 'Name', true, true, true)
-];
+export const channelTranslation = {
+    label: (value) => CHANNEL_OPTIONS.find((obj) => obj.value === value)?.label
+};

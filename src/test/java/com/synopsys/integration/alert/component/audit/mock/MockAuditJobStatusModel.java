@@ -11,9 +11,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class MockAuditJobStatusModel {
-    private final Gson gson = new Gson();
+    private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
     private final UUID jobId = UUID.randomUUID();
     private final String timeAuditCreated = new Date(400).toString();
     private final String timeLastSent = new Date(500).toString();

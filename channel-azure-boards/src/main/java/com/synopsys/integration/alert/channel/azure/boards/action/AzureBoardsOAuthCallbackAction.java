@@ -3,8 +3,6 @@ package com.synopsys.integration.alert.channel.azure.boards.action;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +32,8 @@ import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseMode
 import com.synopsys.integration.azure.boards.common.service.project.AzureProjectService;
 import com.synopsys.integration.azure.boards.common.service.project.TeamProjectReferenceResponseModel;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Component
 public class AzureBoardsOAuthCallbackAction {

@@ -10,14 +10,14 @@ package com.synopsys.integration.alert.channel.jira.server.database.job;
 import java.util.List;
 import java.util.UUID;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
 import com.synopsys.integration.alert.channel.jira.server.database.job.custom_field.JiraServerJobCustomFieldEntity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(schema = "alert", name = "jira_server_job_details")
