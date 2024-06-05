@@ -100,7 +100,8 @@ const SearchFilter = ({ searchBarPlaceholder, handleSearchChange, defaultSearchV
 SearchFilter.propTypes = {
     searchBarPlaceholder: PropTypes.string,
     handleSearchChange: PropTypes.func,
-    defaultSearchValue: PropTypes.string
+    defaultSearchValue: PropTypes.string,
+    isDisabled: PropTypes.bool
 };
 
 export default SearchFilter;
