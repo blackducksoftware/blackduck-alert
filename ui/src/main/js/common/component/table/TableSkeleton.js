@@ -30,10 +30,6 @@ const useStyles = createUseStyles(theme => ({
         `,
         gridTemplateRows: '45px 35px 35px 35px'
     },
-    headerContainer: {
-        width: '100%',
-        height: '45px'
-    },
     headerItem: {
         height: '25px',
         width: '75px',
@@ -67,28 +63,9 @@ const useStyles = createUseStyles(theme => ({
         )`
     },
     col1: {
-        gridArea: 'col1',
         marginLeft: '10px'
     },
-    row1col1: {
-        gridArea: 'row1col1',
-        marginLeft: '10px'
-    },
-    row2col1: {
-        gridArea: 'row2col1',
-        marginLeft: '10px'
-    },
-    row3col1: {
-        gridArea: 'row3col1',
-        marginLeft: '10px'
-    },
-    row1col2: {
-        width: '200px'
-    }, 
-    row2col2: {
-        width: '200px'
-    }, 
-    row3col2: {
+    col2: {
         width: '200px'
     }
 }));
@@ -99,20 +76,20 @@ export default function TableSkeleton() {
     return (
         <div className={classes.skeletonTableContainer}>
             <div className={classNames(classes.headerItem, classes.col1)} />
-            <div className={classNames(classes.headerItem, classes.col2)} />
-            <div className={classNames(classes.headerItem, classes.col3)} />
+            <div className={classes.headerItem} />
+            <div className={classes.headerItem} />
 
-            <div className={classNames(classes.rowItem, classes.row1col1)} />
-            <div className={classNames(classes.rowItem, classes.row1col2)} />
-            <div className={classNames(classes.rowItem, classes.row1col3)} />
+            <div className={classNames(classes.rowItem, classes.col1)} />
+            <div className={classNames(classes.rowItem, classes.col2)} />
+            <div className={classes.rowItem} />
 
-            <div className={classNames(classes.rowItem, classes.row2col1)} />
-            <div className={classNames(classes.rowItem, classes.row2col2)} />
-            <div className={classNames(classes.rowItem, classes.row2col3)} />
+            <div className={classNames(classes.rowItem, classes.col1)} />
+            <div className={classNames(classes.rowItem, classes.col2)} />
+            <div className={classes.rowItem} />
 
-            <div className={classNames(classes.rowItem, classes.row3col1)} />
-            <div className={classNames(classes.rowItem, classes.row3col2)} />
-            <div className={classNames(classes.rowItem, classes.row3col3)} />
+            <div className={classNames(classes.rowItem, classes.col1)} />
+            <div className={classNames(classes.rowItem, classes.col2)} />
+            <div className={classes.rowItem} />
         </div>
     );
 };
