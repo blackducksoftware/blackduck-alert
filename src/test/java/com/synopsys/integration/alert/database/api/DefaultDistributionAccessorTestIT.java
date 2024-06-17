@@ -250,7 +250,6 @@ class DefaultDistributionAccessorTestIT {
         SlackJobDetailsModel slackJobDetailsModel = new SlackJobDetailsModel(
             null,
             "webhook",
-            "channel",
             "username"
         );
         return createJobEntity(new SlackChannelKey().getUniversalKey(), realTime, slackJobDetailsModel);

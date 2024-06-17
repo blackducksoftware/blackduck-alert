@@ -7,18 +7,17 @@
  */
 package com.synopsys.integration.alert.channel.slack.validator;
 
-import java.util.List;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.synopsys.integration.alert.api.channel.CommonChannelDistributionValidator;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Set;
 
 @Component
 public class SlackDistributionConfigurationValidator implements DistributionConfigurationValidator {
@@ -34,7 +33,7 @@ public class SlackDistributionConfigurationValidator implements DistributionConf
         ConfigurationFieldValidator configurationFieldValidator = ConfigurationFieldValidator.fromJobFieldModel(jobFieldModel);
 
         commonChannelDistributionValidator.validate(configurationFieldValidator);
-        configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(SlackDescriptor.KEY_WEBHOOK, SlackDescriptor.KEY_CHANNEL_NAME));
+        configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(SlackDescriptor.KEY_WEBHOOK));
         configurationFieldValidator.validateIsAURL(SlackDescriptor.KEY_WEBHOOK);
 
         return configurationFieldValidator.getValidationResults();

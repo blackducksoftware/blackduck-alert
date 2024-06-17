@@ -253,7 +253,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     }
 
     private DistributionJobRequestModel createDistributionJobRequestModel(Long blackDuckGlobalConfigId) {
-        SlackJobDetailsModel slackJobDetails = new SlackJobDetailsModel(null, "http://slack_webhook_url", "channelName", null);
+        SlackJobDetailsModel slackJobDetails = new SlackJobDetailsModel(null, "http://slack_webhook_url", null);
         return new DistributionJobRequestModel(
             true,
             "name",
@@ -286,7 +286,6 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         FieldValueModel webhook = new FieldValueModel(List.of("http://slack_webhook_url"), true);
 
         Map<String, FieldValueModel> fields = Map.of(
-            SlackDescriptor.KEY_CHANNEL_NAME, slackChannelName,
             SlackDescriptor.KEY_WEBHOOK, webhook,
             ChannelDescriptor.KEY_NAME, name,
             ChannelDescriptor.KEY_PROVIDER_TYPE, provider,

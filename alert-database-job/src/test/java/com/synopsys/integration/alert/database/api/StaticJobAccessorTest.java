@@ -134,7 +134,7 @@ class StaticJobAccessorTest {
     @Test
     void createJobTest() {
         UUID jobId = UUID.randomUUID();
-        SlackJobDetailsModel slackJobDetailsModel = new SlackJobDetailsModel(jobId, null, null, null);
+        SlackJobDetailsModel slackJobDetailsModel = new SlackJobDetailsModel(jobId, null, null);
         DistributionJobRequestModel distributionJobRequestModel = createDistributionJobEntity(ChannelKeys.SLACK.getUniversalKey(), slackJobDetailsModel);
 
         SlackJobDetailsEntity slackJobDetailsEntity = new SlackJobDetailsEntity();
@@ -162,7 +162,7 @@ class StaticJobAccessorTest {
     @Test
     void updateJobTest() throws Exception {
         UUID jobId = UUID.randomUUID();
-        SlackJobDetailsModel slackJobDetailsModel = new SlackJobDetailsModel(jobId, null, null, null);
+        SlackJobDetailsModel slackJobDetailsModel = new SlackJobDetailsModel(jobId, null, null);
         DistributionJobRequestModel distributionJobRequestModel = new DistributionJobRequestModel(
             true,
             jobName,

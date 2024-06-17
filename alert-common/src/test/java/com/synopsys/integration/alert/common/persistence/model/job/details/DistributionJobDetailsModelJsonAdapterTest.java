@@ -82,7 +82,7 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     @Test
     public void serializeSlackJobDetailsModelTest() {
         UUID jobId = UUID.randomUUID();
-        SlackJobDetailsModel baseModel = new SlackJobDetailsModel(jobId, "slack_webhook_url", "a-cool-channel", "Channel Tester");
+        SlackJobDetailsModel baseModel = new SlackJobDetailsModel(jobId, "slack_webhook_url", "Channel Tester");
         JsonElement baseJson = gson.toJsonTree(baseModel);
         serializeAndAssert(baseModel, baseJson);
     }
@@ -183,14 +183,13 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     @Test
     public void deserializeSlackJobDetailsModelTest() {
         UUID jobId = UUID.randomUUID();
-        SlackJobDetailsModel baseModel = new SlackJobDetailsModel(jobId, "slack_webhook_url", "a-cool-channel", "Channel Tester");
+        SlackJobDetailsModel baseModel = new SlackJobDetailsModel(jobId, "slack_webhook_url", "Channel Tester");
 
         DistributionJobDetailsModel deserializedModel = runDeserializerAndAssert(baseModel, (distributionJobDetailsModel -> distributionJobDetailsModel.isA(ChannelKeys.SLACK)));
 
         SlackJobDetailsModel jobDetails = deserializedModel.getAs(DistributionJobDetailsModel.SLACK);
         assertEquals(baseModel.getJobId(), jobDetails.getJobId());
         assertEquals(baseModel.getWebhook(), jobDetails.getWebhook());
-        assertEquals(baseModel.getChannelName(), jobDetails.getChannelName());
         assertEquals(baseModel.getChannelUsername(), jobDetails.getChannelUsername());
     }
 
