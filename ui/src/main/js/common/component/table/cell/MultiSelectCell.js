@@ -26,9 +26,9 @@ const MultiSelectCell = ({ selected, onSelected, data, disableSelectOptions, cel
 
     const toggleSelect = useCallback((evt) => {
         if (evt.target.checked) {
-            onSelected(selected.concat(identifier));
+            onSelected(selected.concat(identifier), data);
         } else {
-            onSelected(selected.filter((item) => item !== identifier));
+            onSelected(selected.filter((item) => item !== identifier), data);
         }
     }, [onSelected, selected]);
 
