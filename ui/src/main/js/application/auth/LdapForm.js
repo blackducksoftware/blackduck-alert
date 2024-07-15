@@ -88,7 +88,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
 
     function testButtonClicked() {
         processFormData();
-        setTestFormData({ ...testFormData, ldapConfigModel: formData });
+        setTestFormData({ ldapConfigModel: formData });
     }
 
     function handleValidation() {
