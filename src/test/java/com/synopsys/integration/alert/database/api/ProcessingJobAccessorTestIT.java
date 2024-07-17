@@ -213,7 +213,7 @@ public class ProcessingJobAccessorTestIT {
             blackDuckProjectDetailsModels,
             policies,
             vulns,
-            new SlackJobDetailsModel(null, "webhook", "channelName", "username")
+            new SlackJobDetailsModel(null, "webhook", "username")
         );
     }
 }

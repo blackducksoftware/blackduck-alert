@@ -118,7 +118,6 @@ class StaticJobAccessorTestIT {
         SlackJobDetailsModel slackJobDetailsModel = new SlackJobDetailsModel(
             UUID.randomUUID(),
             "webhook",
-            "channelName",
             "channelUsername"
         );
 
@@ -189,7 +188,6 @@ class StaticJobAccessorTestIT {
         SlackJobDetailsModel slackJobDetailsModel = new SlackJobDetailsModel(
             UUID.randomUUID(),
             "webhook",
-            "channelName",
             "channelUsername"
         );
 

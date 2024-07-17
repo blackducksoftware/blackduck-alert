@@ -25,12 +25,10 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 public class MockConfigurationModelFactory {
     public static List<ConfigurationFieldModel> createSlackDistributionFields() {
         List<ConfigurationFieldModel> fields = new ArrayList<>();
-
-        ConfigurationFieldModel channel = createFieldModel(SlackDescriptor.KEY_CHANNEL_NAME, "Alert channel");
+        
         ConfigurationFieldModel username = createFieldModel(SlackDescriptor.KEY_CHANNEL_USERNAME, "Alert unit test");
         ConfigurationFieldModel webhook = createFieldModel(SlackDescriptor.KEY_WEBHOOK, "Webhook");
 
-        fields.add(channel);
         fields.add(username);
         fields.add(webhook);
 
