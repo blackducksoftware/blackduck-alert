@@ -88,7 +88,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
 
     function testButtonClicked() {
         processFormData();
-        setTestFormData({ ...testFormData, ldapConfigModel: formData });
+        setTestFormData({ ldapConfigModel: formData });
     }
 
     function handleValidation() {
@@ -110,7 +110,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                 id={AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPUsername}
                 name={AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPUsername}
                 label="User Name"
-                description="The user name to test LDAP authentication; if LDAP authentication is enabled."
+                customDescription="The user name to test LDAP authentication; if LDAP authentication is enabled."
                 readOnly={false}
                 onChange={FieldModelUtilities.handleConcreteModelChange(testFormData, setTestFormData)}
                 value={testFormData[AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPUsername]}
@@ -119,7 +119,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                 id={AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPPassword}
                 name={AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPPassword}
                 label="Password"
-                description="The password to test LDAP authentication; if LDAP authentication is enabled."
+                customDescription="The password to test LDAP authentication; if LDAP authentication is enabled."
                 readOnly={false}
                 onChange={FieldModelUtilities.handleConcreteModelChange(testFormData, setTestFormData)}
                 value={testFormData[AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPPassword]}

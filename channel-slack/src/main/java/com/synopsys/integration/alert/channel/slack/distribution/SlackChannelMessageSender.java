@@ -7,15 +7,6 @@
  */
 package com.synopsys.integration.alert.channel.slack.distribution;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.api.channel.ChannelMessageSender;
 import com.synopsys.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
@@ -26,6 +17,14 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Slack
 import com.synopsys.integration.alert.api.descriptor.SlackChannelKey;
 import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.request.Request;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class SlackChannelMessageSender implements ChannelMessageSender<SlackJobDetailsModel, SlackChannelMessageModel, MessageResult> {
@@ -43,7 +42,6 @@ public class SlackChannelMessageSender implements ChannelMessageSender<SlackJobD
     @Override
     public MessageResult sendMessages(SlackJobDetailsModel slackJobDetails, List<SlackChannelMessageModel> channelMessages) throws AlertException {
         String webhook = slackJobDetails.getWebhook();
-        String channelName = slackJobDetails.getChannelName();
         String channelUsername = Optional.ofNullable(slackJobDetails.getChannelUsername())
                                      .orElse(SLACK_DEFAULT_USERNAME);
         Map<String, String> requestHeaders = new HashMap<>();
@@ -53,7 +51,7 @@ public class SlackChannelMessageSender implements ChannelMessageSender<SlackJobD
         RestChannelUtility restChannelUtility = new RestChannelUtility(intHttpClient);
 
         List<Request> requests = channelMessages.stream()
-                                     .map(channelMessage -> createJsonString(channelMessage.getMarkdownContent(), channelName, channelUsername))
+            .map(channelMessage -> createJsonString(channelMessage.getMarkdownContent(), channelUsername))
                                      .map(jsonString -> restChannelUtility.createPostMessageRequest(webhook, requestHeaders, jsonString))
                                      .collect(Collectors.toList());
 
@@ -62,10 +60,9 @@ public class SlackChannelMessageSender implements ChannelMessageSender<SlackJobD
         return new MessageResult(String.format("Successfully sent %d Slack message(s)", requests.size()));
     }
 
-    private String createJsonString(String markdownMessage, String channel, String username) {
+    private String createJsonString(String markdownMessage, String username) {
         JsonObject json = new JsonObject();
         json.addProperty("text", markdownMessage);
-        json.addProperty("channel", channel);
         json.addProperty("username", username);
         json.addProperty("mrkdwn", true);
 

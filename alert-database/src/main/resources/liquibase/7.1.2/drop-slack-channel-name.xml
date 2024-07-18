@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="mau" id="drop-slack-channel-name-defined-fields">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM ALERT.DEFINED_FIELDS WHERE SOURCE_KEY='channel.slack.channel.name'
+            </sqlCheck>
+        </preConditions>
+        <delete tableName="DEFINED_FIELDS" schemaName="ALERT">
+            <where>SOURCE_KEY='channel.slack.channel.name'</where>
+        </delete>
+    </changeSet>
+    <changeSet author="mau" id="drop-slack-channel-name-job-details">
+        <preConditions onFail="MARK_RAN">
+            <columnExists schemaName="alert" tableName="slack_job_details" columnName="channel_name"/>
+        </preConditions>
+        <dropColumn schemaName="alert" tableName="slack_job_details" columnName="channel_name"/>
+    </changeSet>
+</databaseChangeLog>

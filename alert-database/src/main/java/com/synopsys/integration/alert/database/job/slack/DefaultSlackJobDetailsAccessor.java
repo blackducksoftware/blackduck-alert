@@ -7,16 +7,15 @@
  */
 package com.synopsys.integration.alert.database.job.slack;
 
-import java.util.Optional;
-import java.util.UUID;
-
+import com.synopsys.integration.alert.common.persistence.accessor.SlackJobDetailsAccessor;
+import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.persistence.accessor.SlackJobDetailsAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
+import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class DefaultSlackJobDetailsAccessor implements SlackJobDetailsAccessor {
@@ -29,7 +28,7 @@ public class DefaultSlackJobDetailsAccessor implements SlackJobDetailsAccessor {
 
     @Transactional(propagation = Propagation.REQUIRED)
     public SlackJobDetailsEntity saveSlackJobDetails(UUID jobId, SlackJobDetailsModel slackJobDetails) {
-        SlackJobDetailsEntity jobDetailsToSave = new SlackJobDetailsEntity(jobId, slackJobDetails.getWebhook(), slackJobDetails.getChannelName(), slackJobDetails.getChannelUsername());
+        SlackJobDetailsEntity jobDetailsToSave = new SlackJobDetailsEntity(jobId, slackJobDetails.getWebhook(), slackJobDetails.getChannelUsername());
         return slackJobDetailsRepository.save(jobDetailsToSave);
     }
 
@@ -39,7 +38,6 @@ public class DefaultSlackJobDetailsAccessor implements SlackJobDetailsAccessor {
                    .map(slackEntity -> new SlackJobDetailsModel(
                        slackEntity.getJobId(),
                        slackEntity.getWebhook(),
-                       slackEntity.getChannelName(),
                        slackEntity.getChannelUsername()
                    ));
     }
