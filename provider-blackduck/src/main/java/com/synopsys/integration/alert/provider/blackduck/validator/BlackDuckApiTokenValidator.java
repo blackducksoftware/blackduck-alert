@@ -7,13 +7,18 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.validator;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.blackduck.api.core.BlackDuckResponse;
+import com.synopsys.integration.blackduck.api.core.ResourceLink;
+import com.synopsys.integration.blackduck.api.core.response.UrlMultipleResponses;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.RoleAssignmentView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
@@ -62,22 +67,33 @@ public class BlackDuckApiTokenValidator {
         Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
         return blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger)
             .map(httpClient -> blackDuckProperties.createBlackDuckServicesFactory(httpClient, intLogger))
-            .map(this::hasPermittedRole)
+            .map(this::validateToken)
             .orElse(false);
     }
 
-    private boolean hasPermittedRole(BlackDuckServicesFactory blackDuckServicesFactory) {
+    private boolean validateToken(BlackDuckServicesFactory blackDuckServicesFactory) {
+        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
+        Optional<UserView> currentUser = getCurrentUser(blackDuckServicesFactory);
+        return currentUser
+            .map(user -> hasPermittedRole(blackDuckApiClient, user) || hasWatchedProjects(blackDuckApiClient, user))
+            .orElse(false);
+
+    }
+
+    private Optional<UserView> getCurrentUser(BlackDuckServicesFactory blackDuckServicesFactory) {
         BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
         ApiDiscovery apiDiscovery = blackDuckServicesFactory.getApiDiscovery();
 
-        UserView currentUser;
+        UserView currentUser = null;
         try {
             currentUser = blackDuckApiClient.getResponse(apiDiscovery.metaCurrentUserLink());
         } catch (IntegrationException integrationException) {
             logger.error("Failed to GET the currently authenticated Black Duck user", integrationException);
-            return false;
         }
+        return Optional.ofNullable(currentUser);
+    }
 
+    private boolean hasPermittedRole(BlackDuckApiClient blackDuckApiClient, UserView currentUser) {
         try {
             Predicate<RoleAssignmentView> predicate = role -> PERMITTED_ROLE_NAMES.contains(role.getName());
             return !blackDuckApiClient.getSomeMatchingResponses(currentUser.metaInheritedRolesLink(), predicate, 1).isEmpty();
@@ -87,4 +103,74 @@ public class BlackDuckApiTokenValidator {
         return false;
     }
 
+    private boolean hasWatchedProjects(BlackDuckApiClient blackDuckApiClient, UserView currentUser) {
+        try {
+            Optional<UrlMultipleResponses<AlertNotificationSubscriptionsSubscriptionView>> notificationResponses = currentUser.getMeta().getLinks()
+                .stream()
+                .filter(resourceLink -> resourceLink.getRel().equals("notification-subscriptions"))
+                .map(ResourceLink::getHref)
+                .map(url -> new UrlMultipleResponses<>(url, AlertNotificationSubscriptionsSubscriptionView.class))
+                .findFirst();
+            Predicate<AlertNotificationSubscriptionsSubscriptionView> predicate = AlertNotificationSubscriptionsSubscriptionView::getNotifyUser;
+            if (notificationResponses.isPresent()) {
+                return !blackDuckApiClient.getSomeMatchingResponses(notificationResponses.get(), predicate, 1).isEmpty();
+            }
+        } catch (IntegrationException integrationException) {
+            logger.error("Failed to GET the currently authenticated Black Duck user's roles", integrationException);
+        }
+        return false;
+    }
+
+    // The API generator create NotificationSubscriptionsSubscriptionView but it is a BlackDuckComponent not a response.
+    // The API generator would need to be run against the latest
+    public static class AlertNotificationSubscriptionsSubscriptionView extends BlackDuckResponse {
+        private Date createdAt;
+        private Boolean notifyUser;
+        private String subscriptionTarget;
+        private String subscriptionTargetProjectName;
+        private String subscriptionTargetReleaseName;
+
+        public AlertNotificationSubscriptionsSubscriptionView() {
+        }
+
+        public Date getCreatedAt() {
+            return this.createdAt;
+        }
+
+        public void setCreatedAt(Date createdAt) {
+            this.createdAt = createdAt;
+        }
+
+        public Boolean getNotifyUser() {
+            return this.notifyUser;
+        }
+
+        public void setNotifyUser(Boolean notifyUser) {
+            this.notifyUser = notifyUser;
+        }
+
+        public String getSubscriptionTarget() {
+            return this.subscriptionTarget;
+        }
+
+        public void setSubscriptionTarget(String subscriptionTarget) {
+            this.subscriptionTarget = subscriptionTarget;
+        }
+
+        public String getSubscriptionTargetProjectName() {
+            return this.subscriptionTargetProjectName;
+        }
+
+        public void setSubscriptionTargetProjectName(String subscriptionTargetProjectName) {
+            this.subscriptionTargetProjectName = subscriptionTargetProjectName;
+        }
+
+        public String getSubscriptionTargetReleaseName() {
+            return this.subscriptionTargetReleaseName;
+        }
+
+        public void setSubscriptionTargetReleaseName(String subscriptionTargetReleaseName) {
+            this.subscriptionTargetReleaseName = subscriptionTargetReleaseName;
+        }
+    }
 }
