@@ -76,6 +76,7 @@ export default function ProjectSelectModal({ isOpen, handleClose, csrfToken, pro
                         multiSelect
                         searchBarPlaceholder="Filter Projects..."
                         handleSearchChange={(newSearchTerm) => {
+                            setPageNumber(0);
                             setSearchTerm(newSearchTerm);
                         }}
                         selected={selectedProjectNames}
