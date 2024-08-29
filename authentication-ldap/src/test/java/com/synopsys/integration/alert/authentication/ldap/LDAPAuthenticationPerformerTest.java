@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.authentication.ldap;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -63,6 +64,7 @@ class LDAPAuthenticationPerformerTest {
 
         Authentication returnAuthentication = ldapAuthenticationPerformer.authenticateWithProvider(inputAuthentication);
         assertEquals(inputAuthentication.getPrincipal(), returnAuthentication.getPrincipal());
+        assertFalse(returnAuthentication.isAuthenticated());
     }
 
     @Test
@@ -72,6 +74,7 @@ class LDAPAuthenticationPerformerTest {
 
         Authentication returnAuthentication = ldapAuthenticationPerformer.authenticateWithProvider(inputAuthentication);
         assertEquals(inputAuthentication.getPrincipal(), returnAuthentication.getPrincipal());
+        assertFalse(returnAuthentication.isAuthenticated());
     }
 
     @Test
@@ -80,6 +83,7 @@ class LDAPAuthenticationPerformerTest {
 
         Authentication returnAuthentication = ldapAuthenticationPerformer.authenticateWithProvider(inputAuthentication);
         assertEquals(inputAuthentication.getPrincipal(), returnAuthentication.getPrincipal());
+        assertFalse(returnAuthentication.isAuthenticated());
     }
 
     @Test
@@ -94,6 +98,7 @@ class LDAPAuthenticationPerformerTest {
 
         Authentication returnAuthentication = ldapAuthenticationPerformer.authenticateWithProvider(inputAuthentication);
         assertEquals(inputAuthentication.getPrincipal(), returnAuthentication.getPrincipal());
+        assertFalse(returnAuthentication.isAuthenticated());
     }
 
     @Test
@@ -102,16 +107,15 @@ class LDAPAuthenticationPerformerTest {
 
         LDAPManager spiedLDAPManager = Mockito.spy(ldapManager);
         LdapAuthenticationProvider ldapAuthenticationProvider = Mockito.mock(LdapAuthenticationProvider.class);
-        LdapAuthenticationProvider spiedLdapAuthenticationProvider = Mockito.spy(ldapAuthenticationProvider);
-        assertDoesNotThrow(() -> Mockito.doReturn(Optional.of(spiedLdapAuthenticationProvider)).when(spiedLDAPManager).createAuthProvider(Mockito.any(LDAPConfigModel.class)));
+        assertDoesNotThrow(() -> Mockito.doReturn(Optional.of(ldapAuthenticationProvider)).when(spiedLDAPManager).createAuthProvider(Mockito.any(LDAPConfigModel.class)));
 
         // Return an authenticated token when authenticate() is called
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority("ROLE_AUTH");
         TestingAuthenticationToken authenticatedToken = new TestingAuthenticationToken("foo", "bar", List.of(simpleGrantedAuthority));
-        Mockito.doReturn(authenticatedToken).when(spiedLdapAuthenticationProvider).authenticate(inputAuthentication);
+        Mockito.doReturn(authenticatedToken).when(ldapAuthenticationProvider).authenticate(inputAuthentication);
 
-        LDAPAuthenticationPerformer ldapAuthenticationPerformer = new LDAPAuthenticationPerformer(mockAuthenticationEventManager, mockRoleAccessor, spiedLDAPManager);
-        Authentication returnAuthentication = ldapAuthenticationPerformer.authenticateWithProvider(inputAuthentication);
+        LDAPAuthenticationPerformer testLdapAuthenticationPerformer = new LDAPAuthenticationPerformer(mockAuthenticationEventManager, mockRoleAccessor, spiedLDAPManager);
+        Authentication returnAuthentication = testLdapAuthenticationPerformer.authenticateWithProvider(inputAuthentication);
         assertTrue(returnAuthentication.isAuthenticated());
         assertEquals("foo", returnAuthentication.getPrincipal());
     }
