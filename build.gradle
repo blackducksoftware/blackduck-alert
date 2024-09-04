@@ -111,6 +111,10 @@ allprojects {
         }
     }
 
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << '-parameters'
+    }
+
     repositories {
         // Need this repository to resolve the opensaml dependencies
         maven {
