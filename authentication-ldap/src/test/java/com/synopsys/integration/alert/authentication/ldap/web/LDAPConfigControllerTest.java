@@ -166,19 +166,18 @@ class LDAPConfigControllerTest {
     void testTestValidModel() {
         LDAPManager spiedLDAPManager = Mockito.spy(ldapManager);
         LdapAuthenticationProvider mockLdapAuthenticationProvider = Mockito.mock(LdapAuthenticationProvider.class);
-        LdapAuthenticationProvider spiedLdapAuthenticationProvider = Mockito.spy(mockLdapAuthenticationProvider);
-        assertDoesNotThrow(() -> Mockito.doReturn(Optional.of(spiedLdapAuthenticationProvider)).when(spiedLDAPManager).createAuthProvider(validLDAPConfigModel));
+        assertDoesNotThrow(() -> Mockito.doReturn(Optional.of(mockLdapAuthenticationProvider)).when(spiedLDAPManager).createAuthProvider(validLDAPConfigModel));
 
         // Create an instance of an implementation of Authentication that will return true for isAuthenticated()
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority("ROLE_AUTH");
         TestingAuthenticationToken authenticatedToken = new TestingAuthenticationToken("foo", "bar", List.of(simpleGrantedAuthority));
-        Mockito.doReturn(authenticatedToken).when(spiedLdapAuthenticationProvider).authenticate(Mockito.any(Authentication.class));
+        Mockito.doReturn(authenticatedToken).when(mockLdapAuthenticationProvider).authenticate(Mockito.any(Authentication.class));
 
         LDAPTestAction ldapTestAction = new LDAPTestAction(authorizationManager, authenticationDescriptorKey, ldapConfigurationValidator, spiedLDAPManager, ldapConfigAccessor);
-        LDAPConfigController ldapConfigController = new LDAPConfigController(ldapCrudActions, ldapValidationAction, ldapTestAction);
+        LDAPConfigController testLdapConfigController = new LDAPConfigController(ldapCrudActions, ldapValidationAction, ldapTestAction);
 
         LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(validLDAPConfigModel, "User", "Pass");
-        ValidationResponseModel validationResponseModel = assertDoesNotThrow(() -> ldapConfigController.test(ldapConfigTestModel));
+        ValidationResponseModel validationResponseModel = assertDoesNotThrow(() -> testLdapConfigController.test(ldapConfigTestModel));
         assertEquals("LDAP Test Configuration successful.", validationResponseModel.getMessage());
         assertFalse(validationResponseModel.hasErrors());
     }

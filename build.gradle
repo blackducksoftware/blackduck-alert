@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '3.1.8'
+        springBootVersion = '3.2.9'
     }
 
     apply from: 'https://raw.githubusercontent.com/blackducksoftware/integration-resources/master/gradle_common/buildscript-repositories.gradle', to: buildscript
@@ -10,15 +10,6 @@ buildscript {
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
         classpath "com.synopsys.integration:common-gradle-plugin:${managedCgpVersion}"
-    }
-
-    // In Alert 7.2 we plan to upgrade spring-boot, which should make this exclude unnecessary
-    configurations {
-        classpath {
-            resolutionStrategy {
-                exclude group: 'org.yaml', module: 'snakeyaml'
-            }
-        }
     }
 }
 
@@ -107,15 +98,6 @@ subprojects {
 }
 
 allprojects {
-    // In Alert 7.2 we plan to upgrade spring-boot, which should make this force unnecessary
-    configurations {
-        all {
-            resolutionStrategy {
-                force 'org.yaml:snakeyaml:2.1'
-            }
-        }
-    }
-
     configurations {
         all {
             exclude group: 'com.blackducksoftware.bdio', module: 'bdio2'
@@ -127,6 +109,10 @@ allprojects {
             compileTestJava.enabled = false
             test.enabled = false
         }
+    }
+
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << '-parameters'
     }
 
     repositories {

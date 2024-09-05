@@ -2,7 +2,6 @@ package com.synopsys.integration.alert.provider.blackduck.task.accumulator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.mockito.Mockito.spy;
 
 import java.util.Date;
 import java.util.List;
@@ -58,6 +57,7 @@ class BlackDuckAccumulatorTest {
         accumulator.run();
 
         Mockito.verify(notificationAccessor, Mockito.times(1)).saveAllNotifications(Mockito.anyList());
+        Mockito.verify(eventManager, Mockito.times(1)).sendEvent(Mockito.any(NotificationReceivedEvent.class));
     }
 
     @Test
@@ -165,9 +165,8 @@ class BlackDuckAccumulatorTest {
     private BlackDuckSystemValidator createBlackDuckValidator(BlackDuckProperties blackDuckProperties, boolean validationResult) {
         BlackDuckSystemValidator blackDuckSystemValidator = Mockito.mock(BlackDuckSystemValidator.class);
         Mockito.when(blackDuckSystemValidator.validate(blackDuckProperties)).thenReturn(validationResult);
-        BlackDuckSystemValidator spiedBlackDuckSystemValidator = spy(blackDuckSystemValidator);
-        Mockito.doReturn(validationResult).when(spiedBlackDuckSystemValidator).canConnect(Mockito.eq(blackDuckProperties), Mockito.any(BlackDuckApiTokenValidator.class));
-        return spiedBlackDuckSystemValidator;
+        Mockito.doReturn(validationResult).when(blackDuckSystemValidator).canConnect(Mockito.eq(blackDuckProperties), Mockito.any(BlackDuckApiTokenValidator.class));
+        return blackDuckSystemValidator;
     }
 
     private BlackDuckNotificationRetrieverFactory createBlackDuckNotificationRetrieverFactory(BlackDuckProperties blackDuckProperties, @Nullable BlackDuckNotificationRetriever notificationRetriever) {

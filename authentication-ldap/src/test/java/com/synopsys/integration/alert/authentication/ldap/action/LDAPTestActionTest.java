@@ -140,11 +140,10 @@ class LDAPTestActionTest {
         LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(validLDAPConfigModel, testUser, testPass);
         LDAPManager spiedLDAPManager = Mockito.spy(ldapManager);
         LdapAuthenticationProvider mockLdapAuthenticationProvider = Mockito.mock(LdapAuthenticationProvider.class);
-        LdapAuthenticationProvider spiedLdapAuthenticationProvider = Mockito.spy(mockLdapAuthenticationProvider);
-        assertDoesNotThrow(() -> Mockito.doReturn(Optional.of(spiedLdapAuthenticationProvider)).when(spiedLDAPManager).createAuthProvider(validLDAPConfigModel));
+        assertDoesNotThrow(() -> Mockito.doReturn(Optional.of(mockLdapAuthenticationProvider)).when(spiedLDAPManager).createAuthProvider(validLDAPConfigModel));
 
         Authentication authentication = new UsernamePasswordAuthenticationToken("testLDAPUsername", "testLDAPPassword");
-        Mockito.doReturn(authentication).when(spiedLdapAuthenticationProvider).authenticate(Mockito.any(Authentication.class));
+        Mockito.doReturn(authentication).when(mockLdapAuthenticationProvider).authenticate(Mockito.any(Authentication.class));
 
         ldapTestAction = new LDAPTestAction(authorizationManager, authenticationDescriptorKey, ldapConfigurationValidator, spiedLDAPManager, ldapConfigAccessor);
         ActionResponse<ValidationResponseModel> validationResponseModelActionResponse = ldapTestAction.testAuthentication(ldapConfigTestModel);
@@ -160,13 +159,12 @@ class LDAPTestActionTest {
         LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(validLDAPConfigModel, testUser, testPass);
         LDAPManager spiedLDAPManager = Mockito.spy(ldapManager);
         LdapAuthenticationProvider mockLdapAuthenticationProvider = Mockito.mock(LdapAuthenticationProvider.class);
-        LdapAuthenticationProvider spiedLdapAuthenticationProvider = Mockito.spy(mockLdapAuthenticationProvider);
-        assertDoesNotThrow(() -> Mockito.doReturn(Optional.of(spiedLdapAuthenticationProvider)).when(spiedLDAPManager).createAuthProvider(validLDAPConfigModel));
+        assertDoesNotThrow(() -> Mockito.doReturn(Optional.of(mockLdapAuthenticationProvider)).when(spiedLDAPManager).createAuthProvider(validLDAPConfigModel));
 
         // Create an instance of an implementation of Authentication that will return true for isAuthenticated()
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority("ROLE_AUTH");
         TestingAuthenticationToken authenticatedToken = new TestingAuthenticationToken("foo", "bar", List.of(simpleGrantedAuthority));
-        Mockito.doReturn(authenticatedToken).when(spiedLdapAuthenticationProvider).authenticate(Mockito.any(Authentication.class));
+        Mockito.doReturn(authenticatedToken).when(mockLdapAuthenticationProvider).authenticate(Mockito.any(Authentication.class));
 
         ldapTestAction = new LDAPTestAction(authorizationManager, authenticationDescriptorKey, ldapConfigurationValidator, spiedLDAPManager, ldapConfigAccessor);
         ActionResponse<ValidationResponseModel> validationResponseModelActionResponse = ldapTestAction.testAuthentication(ldapConfigTestModel);

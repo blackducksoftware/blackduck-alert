@@ -10,4 +10,4 @@ $$
         PERFORM dblink('user=sa dbname=postgres', 'CREATE DATABASE alertdb WITH OWNER sa', FALSE);
         ALTER DATABASE alertdb SET timezone TO 'Etc/UTC';
     END
-$$
+$$;
