@@ -39,6 +39,6 @@ dependencies {
         api "org.opensaml:opensaml-saml-api:4.3.0"
         api "org.opensaml:opensaml-saml-impl:4.3.0"
 
-        runtime 'org.liquibase:liquibase-core:4.20.0'
+        runtime 'org.liquibase:liquibase-core:4.25.1'
     }
 }
