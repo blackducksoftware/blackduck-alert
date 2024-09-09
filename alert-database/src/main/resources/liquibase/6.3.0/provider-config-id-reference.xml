@@ -29,10 +29,7 @@
         </insert>
     </changeSet>
     <changeSet author="gavink" id="migrate-provider-config-name-to-id">
-        <sql
-                dbms="postgres"
-                stripComments="true"
-        >
+        <sql dbms="postgres" stripComments="true">
         INSERT INTO alert.field_values (config_id, field_id, field_value) (
             SELECT fv.config_id, GET_FIELD_ID('provider.common.config.id') AS field_id, (
                 SELECT dc1.id FROM alert.descriptor_configs dc1
