@@ -74,12 +74,22 @@ spec:
               name: {{ .Release.Name }}-db-creds
         {{- end }}
         {{- if (eq .Values.postgres.sslUseFiles true) }}
+        {{- if (eq .Values.postgres.isAzure false)}}
         - name: ALERT_DB_SSL_KEY_PATH
           value: {{ .Values.secretsDirectory }}/{{ .Values.postgres.sslSecrets.sslKeyKey }}
         - name: ALERT_DB_SSL_CERT_PATH
           value: {{ .Values.secretsDirectory }}/{{ .Values.postgres.sslSecrets.sslCertKey }}
         - name: ALERT_DB_SSL_ROOT_CERT_PATH
           value: {{ .Values.secretsDirectory }}/{{ .Values.postgres.sslSecrets.sslRootCertKey }}
+        {{- else }}
+        # if we only have a CA cert, ignore the client cert and key
+        - name: ALERT_DB_SSL_KEY_PATH
+          value: ""
+        - name: ALERT_DB_SSL_CERT_PATH
+          value: ""
+        - name: ALERT_DB_SSL_ROOT_CERT_PATH
+          value: {{ .Values.secretsDirectory }}/{{ .Values.postgres.sslSecrets.sslRootCertKey }}
+        {{- end }}
         {{- end }}
         {{- if .Values.rabbitmq.credential.secretName }}
         - name: ALERT_RABBITMQ_USER
@@ -131,6 +141,11 @@ spec:
         - mountPath: /opt/blackduck/alert/alert-config
           name: dir-alert
         {{- if .Values.postgres.sslUseFiles }}
+        {{- if (eq .Values.postgres.isAzure true) }}
+        - mountPath: {{ .Values.secretsDirectory }}/{{ .Values.postgres.sslSecrets.sslRootCertKey }}
+          name: dbcert
+          subPath: {{ .Values.postgres.sslSecrets.sslRootCertKey }}
+        {{- else }}
         - mountPath: {{ .Values.secretsDirectory }}/{{ .Values.postgres.sslSecrets.sslKeyKey }}
           name: dbcert
           subPath: {{ .Values.postgres.sslSecrets.sslKeyKey }}
@@ -140,6 +155,7 @@ spec:
         - mountPath: {{ .Values.secretsDirectory }}/{{ .Values.postgres.sslSecrets.sslRootCertKey }}
           name: dbcert
           subPath: {{ .Values.postgres.sslSecrets.sslRootCertKey }}
+        {{- end }}
         {{- end }}
         {{- if .Values.webserverCustomCertificatesSecretName }}
         - mountPath: {{ .Values.secretsDirectory }}/WEBSERVER_CUSTOM_CERT_FILE
