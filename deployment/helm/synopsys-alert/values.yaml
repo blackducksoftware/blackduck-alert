@@ -49,12 +49,13 @@ postgres:
   imageTag: ALERT_VERSION_TOKEN
   registry: "" # override the docker registry at container level
   isExternal: false # false for running Postgres as a container and true for using External Postgres database
+  isAzure: false # should only be true if your external database is running on azure
   ssl: false # If true, Alert uses SSL for external Postgres connection
   sslUseFiles: false # If true, Alert will expect to find ssl certs for communicating with the External Postgres database
   sslSecrets: # Secret that contains all the ssl file paths
     secretName: ""
-    sslKeyKey: "ALERT_DB_SSL_KEY_PATH"
-    sslCertKey: "ALERT_DB_SSL_CERT_PATH"
+    sslKeyKey: "ALERT_DB_SSL_KEY_PATH" # not required for azure
+    sslCertKey: "ALERT_DB_SSL_CERT_PATH" # not required for azure
     sslRootCertKey: "ALERT_DB_SSL_ROOT_CERT_PATH"
   host: "" # required only for external postgres, for postgres as a container, it will point to <name>-postgres
   port: 5432
