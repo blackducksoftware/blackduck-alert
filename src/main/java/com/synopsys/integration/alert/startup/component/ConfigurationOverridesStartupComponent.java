@@ -7,6 +7,17 @@
  */
 package com.synopsys.integration.alert.startup.component;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
@@ -20,16 +31,6 @@ import com.synopsys.integration.alert.common.persistence.util.ConfigurationField
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.component.authentication.actions.AuthenticationApiAction;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
 
 @Component
 @Order(11)
@@ -99,7 +100,18 @@ public class ConfigurationOverridesStartupComponent extends StartupComponent {
             UserModel userModel = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID)
                                       .orElseThrow(() -> new AlertException("The default admin user was not found."));
             logger.info("Resetting the password for the user '{}'.", userModel.getName());
-            UserModel newModel = UserModel.existingUser(userModel.getId(), userModel.getName(), DEFAULT_ADMIN_PASSWORD, userModel.getEmailAddress(), userModel.getAuthenticationType(), userModel.getRoles(), userModel.isEnabled());
+            UserModel newModel = UserModel.existingUser(
+                userModel.getId(),
+                userModel.getName(),
+                DEFAULT_ADMIN_PASSWORD,
+                userModel.getEmailAddress(),
+                userModel.getAuthenticationType(),
+                userModel.getRoles(),
+                userModel.isEnabled(),
+                userModel.getLastLogin(),
+                userModel.getLastFailedLogin(),
+                userModel.getFailedLoginCount()
+            );
             userAccessor.updateUser(newModel, true);
         }
     }

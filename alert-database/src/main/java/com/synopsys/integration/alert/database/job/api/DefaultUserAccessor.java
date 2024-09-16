@@ -240,7 +240,18 @@ public class DefaultUserAccessor implements UserAccessor {
         List<Long> roleIdsForUser = roleRelations.stream().map(UserRoleRelation::getRoleId).collect(Collectors.toList());
         Set<UserRoleModel> roles = roleAccessor.getRoles(roleIdsForUser);
         AuthenticationType authenticationType = authenticationTypeAccessor.getAuthenticationType(user.getAuthenticationType()).orElse(null);
-        return UserModel.existingUser(user.getId(), user.getUserName(), user.getPassword(), user.getEmailAddress(), authenticationType, roles, user.isEnabled());
+        return UserModel.existingUser(
+            user.getId(),
+            user.getUserName(),
+            user.getPassword(),
+            user.getEmailAddress(),
+            authenticationType,
+            roles,
+            user.isEnabled(),
+            user.getLastLogin(),
+            user.getLastFailedLogin(),
+            user.getFailedLoginCount()
+        );
     }
 
 }

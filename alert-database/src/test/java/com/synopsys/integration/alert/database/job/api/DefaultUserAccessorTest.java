@@ -171,7 +171,7 @@ class DefaultUserAccessorTest {
         UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L, lastLogin, null, failedLoginCount);
         userEntity.setId(1L);
         UserRoleModel roles = createUserRoleModel(roleName);
-        UserModel userModel = UserModel.existingUser(1L, username, password, emailAddress, authenticationType, Set.of(roles), true);
+        UserModel userModel = UserModel.existingUser(1L, username, password, emailAddress, authenticationType, Set.of(roles), true, lastLogin, null, failedLoginCount);
         UserRoleRelation userRoleRelation = new UserRoleRelation(1L, 2L);
         UserRoleModel userRoleModel = createUserRoleModel(roleName);
 
@@ -197,7 +197,7 @@ class DefaultUserAccessorTest {
         UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L, lastLogin, null, failedLoginCount);
         userEntity.setId(1L);
         UserRoleModel roles = createUserRoleModel(roleName);
-        UserModel userModel = UserModel.existingUser(1L, username, "", emailAddress, authenticationType, Set.of(roles), true);
+        UserModel userModel = UserModel.existingUser(1L, username, "", emailAddress, authenticationType, Set.of(roles), true, lastLogin, null, failedLoginCount);
         UserRoleRelation userRoleRelation = new UserRoleRelation(1L, 2L);
         UserRoleModel userRoleModel = createUserRoleModel(roleName);
 
@@ -224,7 +224,7 @@ class DefaultUserAccessorTest {
         UserEntity existingUserEntity = new UserEntity("usernam-teste", "existing-password", "old-email.noreply@blackducksoftware.com", 2L, lastLogin, null, failedLoginCount);
         existingUserEntity.setId(1L);
         UserRoleModel roles = createUserRoleModel(roleName);
-        UserModel userModel = UserModel.existingUser(1L, username, password, emailAddress, authenticationType, Set.of(roles), true);
+        UserModel userModel = UserModel.existingUser(1L, username, password, emailAddress, authenticationType, Set.of(roles), true, lastLogin, null, failedLoginCount);
         UserRoleRelation userRoleRelation = new UserRoleRelation(1L, 2L);
         UserRoleModel userRoleModel = createUserRoleModel(roleName);
 
@@ -371,6 +371,9 @@ class DefaultUserAccessorTest {
         Assertions.assertEquals(username, userModel.getName());
         Assertions.assertEquals(emailAddress, userModel.getEmailAddress());
         Assertions.assertTrue(userModel.getRoleNames().contains(expectedRoleName));
+        Assertions.assertEquals(lastLogin, userModel.getLastLogin());
+        Assertions.assertNull(userModel.getLastFailedLogin());
+        Assertions.assertEquals(failedLoginCount, userModel.getFailedLoginCount());
     }
 
 }

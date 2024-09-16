@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -115,7 +116,18 @@ public class UserAccessorTestIT {
         String admin_role = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN;
         Set<String> roleNames = new LinkedHashSet<>(Arrays.asList(admin_role, another_role));
         Set<UserRoleModel> roles = roleNames.stream().map(UserRoleModel::of).collect(Collectors.toSet());
-        UserModel updatedModel = userAccessor.updateUser(UserModel.existingUser(userModel.getId(), userModel.getName(), userModel.getPassword(), userModel.getEmailAddress(), AuthenticationType.DATABASE, roles, true), true);
+        UserModel updatedModel = userAccessor.updateUser(UserModel.existingUser(
+            userModel.getId(),
+            userModel.getName(),
+            userModel.getPassword(),
+            userModel.getEmailAddress(),
+            AuthenticationType.DATABASE,
+            roles,
+            true,
+            OffsetDateTime.now(),
+            null,
+            0L
+        ), true);
         assertEquals(userModel.getName(), updatedModel.getName());
         assertEquals(userModel.getEmailAddress(), updatedModel.getEmailAddress());
         assertEquals(userModel.getPassword(), updatedModel.getPassword());
@@ -189,7 +201,7 @@ public class UserAccessorTestIT {
         userModel = userAccessor.addUser(userModel, false);
         UserRoleModel userRole = UserRoleModel.of(DefaultUserRole.ALERT_ADMIN.name());
         Set<UserRoleModel> roles = Set.of(userRole);
-        UserModel existingUser = UserModel.existingUser(userModel.getId(), userName, null, email, AuthenticationType.LDAP, roles, true);
+        UserModel existingUser = UserModel.existingUser(userModel.getId(), userName, null, email, AuthenticationType.LDAP, roles, true, OffsetDateTime.now(), null, 0L);
         UserModel updatedUser = userAccessor.updateUser(existingUser, true);
 
         assertEquals(roles.stream().map(UserRoleModel::getName).collect(Collectors.toSet()), updatedUser.getRoles().stream().map(UserRoleModel::getName).collect(Collectors.toSet()));
@@ -204,7 +216,18 @@ public class UserAccessorTestIT {
 
         UserModel userModel = UserModel.newUser(userName, password, email, AuthenticationType.LDAP, Collections.emptySet(), true);
         userModel = userAccessor.addUser(userModel, false);
-        UserModel updatedUser = UserModel.existingUser(userModel.getId(), userName + "_updated", null, email, AuthenticationType.LDAP, Collections.emptySet(), true);
+        UserModel updatedUser = UserModel.existingUser(
+            userModel.getId(),
+            userName + "_updated",
+            null,
+            email,
+            AuthenticationType.LDAP,
+            Collections.emptySet(),
+            true,
+            OffsetDateTime.now(),
+            null,
+            0L
+        );
         testUserUpdateException(updatedUser);
         userAccessor.deleteUser(userName);
     }
@@ -216,7 +239,18 @@ public class UserAccessorTestIT {
         String email = "testEmail";
         UserModel userModel = UserModel.newUser(userName, password, email, AuthenticationType.LDAP, Collections.emptySet(), true);
         userModel = userAccessor.addUser(userModel, false);
-        UserModel updatedUser = UserModel.existingUser(userModel.getId(), userName, null, email + "_updated", AuthenticationType.LDAP, Collections.emptySet(), true);
+        UserModel updatedUser = UserModel.existingUser(
+            userModel.getId(),
+            userName,
+            null,
+            email + "_updated",
+            AuthenticationType.LDAP,
+            Collections.emptySet(),
+            true,
+            OffsetDateTime.now(),
+            null,
+            0L
+        );
         testUserUpdateException(updatedUser);
         userAccessor.deleteUser(userName);
     }
@@ -228,7 +262,18 @@ public class UserAccessorTestIT {
         String email = "testEmail";
         UserModel userModel = UserModel.newUser(userName, password, email, AuthenticationType.LDAP, Collections.emptySet(), true);
         userModel = userAccessor.addUser(userModel, false);
-        UserModel updatedUser = UserModel.existingUser(userModel.getId(), userName, password, email, AuthenticationType.LDAP, Collections.emptySet(), true);
+        UserModel updatedUser = UserModel.existingUser(
+            userModel.getId(),
+            userName,
+            password,
+            email,
+            AuthenticationType.LDAP,
+            Collections.emptySet(),
+            true,
+            OffsetDateTime.now(),
+            null,
+            0L
+        );
         testUserUpdateException(updatedUser);
         userAccessor.deleteUser(userName);
     }

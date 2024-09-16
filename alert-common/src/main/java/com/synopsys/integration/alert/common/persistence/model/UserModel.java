@@ -7,6 +7,8 @@
  */
 package com.synopsys.integration.alert.common.persistence.model;
 
+import java.io.Serial;
+import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,6 +20,8 @@ import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 
 public class UserModel extends AlertSerializableModel {
+    @Serial
+    private static final long serialVersionUID = -5338515566822639046L;
     public static final String ROLE_PREFIX = "ROLE_";
     private final Long id;
     private final String name;
@@ -30,8 +34,25 @@ public class UserModel extends AlertSerializableModel {
     private final boolean passwordExpired;
     private final boolean enabled;
     private final AuthenticationType authenticationType;
+    private final OffsetDateTime lastLogin;
+    private final OffsetDateTime lastFailedLogin;
+    private final Long failedLoginCount;
 
-    private UserModel(Long id, String name, String password, String emailAddress, Set<UserRoleModel> roles, boolean expired, boolean locked, boolean passwordExpired, boolean enabled, AuthenticationType authenticationType) {
+    private UserModel(
+        Long id,
+        String name,
+        String password,
+        String emailAddress,
+        Set<UserRoleModel> roles,
+        boolean expired,
+        boolean locked,
+        boolean passwordExpired,
+        boolean enabled,
+        AuthenticationType authenticationType,
+        OffsetDateTime lastLogin,
+        OffsetDateTime lastFailedLogin,
+        Long failedLoginCount
+    ) {
         this.id = id;
         this.name = name;
         this.password = password;
@@ -42,6 +63,9 @@ public class UserModel extends AlertSerializableModel {
         this.passwordExpired = passwordExpired;
         this.enabled = enabled;
         this.authenticationType = authenticationType;
+        this.lastLogin = lastLogin;
+        this.lastFailedLogin = lastFailedLogin;
+        this.failedLoginCount = failedLoginCount;
         if (null == roles || roles.isEmpty()) {
             this.roleNames = Set.of();
         } else {
@@ -50,11 +74,22 @@ public class UserModel extends AlertSerializableModel {
     }
 
     public static UserModel newUser(String userName, String password, String emailAddress, AuthenticationType authenticationType, Set<UserRoleModel> roles, boolean enabled) {
-        return existingUser(null, userName, password, emailAddress, authenticationType, roles, enabled);
+        return existingUser(null, userName, password, emailAddress, authenticationType, roles, enabled, OffsetDateTime.now(), null, 0L);
     }
 
-    public static UserModel existingUser(Long id, String userName, String password, String emailAddress, AuthenticationType authenticationType, Set<UserRoleModel> roles, boolean enabled) {
-        return new UserModel(id, userName, password, emailAddress, roles, false, false, false, enabled, authenticationType);
+    public static UserModel existingUser(
+        Long id,
+        String userName,
+        String password,
+        String emailAddress,
+        AuthenticationType authenticationType,
+        Set<UserRoleModel> roles,
+        boolean enabled,
+        OffsetDateTime lastLogin,
+        OffsetDateTime lastFailedLogin,
+        Long failedLoginCount
+    ) {
+        return new UserModel(id, userName, password, emailAddress, roles, false, false, false, enabled, authenticationType, lastLogin, lastFailedLogin, failedLoginCount);
     }
 
     public Long getId() {
@@ -118,4 +153,15 @@ public class UserModel extends AlertSerializableModel {
         return AuthenticationType.DATABASE != authenticationType;
     }
 
+    public OffsetDateTime getLastLogin() {
+        return lastLogin;
+    }
+
+    public OffsetDateTime getLastFailedLogin() {
+        return lastFailedLogin;
+    }
+
+    public Long getFailedLoginCount() {
+        return failedLoginCount;
+    }
 }
