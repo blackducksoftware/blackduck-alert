@@ -7,6 +7,8 @@
  */
 package com.synopsys.integration.alert.database.user;
 
+import java.time.OffsetDateTime;
+
 import com.synopsys.integration.alert.database.BaseEntity;
 import com.synopsys.integration.alert.database.DatabaseEntity;
 
@@ -40,12 +42,26 @@ public class UserEntity extends BaseEntity implements DatabaseEntity {
     private boolean enabled;
     @Column(name = "auth_type")
     private Long authenticationType;
+    @Column(name = "last_login")
+    private OffsetDateTime lastLogin;
+    @Column(name = "last_failed_login")
+    private OffsetDateTime lastFailedLogin;
+    @Column(name = "failed_login_count")
+    private Long failedLoginCount;
 
     public UserEntity() {
         // JPA requires default constructor definitions
     }
 
-    public UserEntity(String userName, String password, String emailAddress, Long authenticationType) {
+    public UserEntity(
+        String userName,
+        String password,
+        String emailAddress,
+        Long authenticationType,
+        OffsetDateTime lastLogin,
+        OffsetDateTime lastFailedLogin,
+        Long failedLoginCount
+    ) {
         this.userName = userName;
         this.password = password;
         this.emailAddress = emailAddress;
@@ -54,9 +70,24 @@ public class UserEntity extends BaseEntity implements DatabaseEntity {
         this.passwordExpired = false;
         this.enabled = true;
         this.authenticationType = authenticationType;
+        this.lastLogin = lastLogin;
+        this.lastFailedLogin = lastFailedLogin;
+        this.failedLoginCount = failedLoginCount;
     }
 
-    public UserEntity(String userName, String password, String emailAddress, boolean expired, boolean locked, boolean passwordExpired, boolean enabled, Long authenticationType) {
+    public UserEntity(
+        String userName,
+        String password,
+        String emailAddress,
+        boolean expired,
+        boolean locked,
+        boolean passwordExpired,
+        boolean enabled,
+        Long authenticationType,
+        OffsetDateTime lastLogin,
+        OffsetDateTime lastFailedLogin,
+        Long failedLoginCount
+    ) {
         this.userName = userName;
         this.password = password;
         this.emailAddress = emailAddress;
@@ -65,6 +96,9 @@ public class UserEntity extends BaseEntity implements DatabaseEntity {
         this.passwordExpired = passwordExpired;
         this.enabled = enabled;
         this.authenticationType = authenticationType;
+        this.lastLogin = lastLogin;
+        this.lastFailedLogin = lastFailedLogin;
+        this.failedLoginCount = failedLoginCount;
     }
 
     @Override
@@ -107,5 +141,17 @@ public class UserEntity extends BaseEntity implements DatabaseEntity {
 
     public Long getAuthenticationType() {
         return authenticationType;
+    }
+
+    public OffsetDateTime getLastLogin() {
+        return lastLogin;
+    }
+
+    public OffsetDateTime getLastFailedLogin() {
+        return lastFailedLogin;
+    }
+
+    public Long getFailedLoginCount() {
+        return failedLoginCount;
     }
 }

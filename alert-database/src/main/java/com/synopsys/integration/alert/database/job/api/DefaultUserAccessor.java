@@ -91,7 +91,7 @@ public class DefaultUserAccessor implements UserAccessor {
         String password = passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword());
         AuthenticationTypeDetails authenticationType = authenticationTypeAccessor.getAuthenticationTypeDetails(user.getAuthenticationType())
                                                            .orElseThrow(() -> new AlertRuntimeException("Cannot find Authentication Type."));
-        UserEntity newEntity = new UserEntity(username, password, user.getEmailAddress(), authenticationType.getId());
+        UserEntity newEntity = new UserEntity(username, password, user.getEmailAddress(), authenticationType.getId(), null, null, 0L);
         UserEntity savedEntity = userRepository.save(newEntity);
         UserModel model = createModel(savedEntity);
 
@@ -121,7 +121,19 @@ public class DefaultUserAccessor implements UserAccessor {
             }
         } else {
             String password = passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword());
-            UserEntity newEntity = new UserEntity(user.getName(), password, user.getEmailAddress(), user.isExpired(), user.isLocked(), user.isPasswordExpired(), user.isEnabled(), existingUser.getAuthenticationType());
+            UserEntity newEntity = new UserEntity(
+                user.getName(),
+                password,
+                user.getEmailAddress(),
+                user.isExpired(),
+                user.isLocked(),
+                user.isPasswordExpired(),
+                user.isEnabled(),
+                existingUser.getAuthenticationType(),
+                existingUser.getLastLogin(),
+                existingUser.getLastFailedLogin(),
+                existingUser.getFailedLoginCount()
+            );
             newEntity.setId(existingUserId);
             savedEntity = userRepository.save(newEntity);
         }
@@ -185,13 +197,29 @@ public class DefaultUserAccessor implements UserAccessor {
     }
 
     private void changeUserPassword(UserEntity oldEntity, String newPassword) {
-        UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), defaultPasswordEncoder.encode(newPassword), oldEntity.getEmailAddress(), oldEntity.getAuthenticationType());
+        UserEntity updatedEntity = new UserEntity(
+            oldEntity.getUserName(),
+            defaultPasswordEncoder.encode(newPassword),
+            oldEntity.getEmailAddress(),
+            oldEntity.getAuthenticationType(),
+            oldEntity.getLastLogin(),
+            oldEntity.getLastFailedLogin(),
+            oldEntity.getFailedLoginCount()
+        );
         updatedEntity.setId(oldEntity.getId());
         userRepository.save(updatedEntity);
     }
 
     private void changeUserEmailAddress(UserEntity oldEntity, String emailAddress) {
-        UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), oldEntity.getPassword(), emailAddress, oldEntity.getAuthenticationType());
+        UserEntity updatedEntity = new UserEntity(
+            oldEntity.getUserName(),
+            oldEntity.getPassword(),
+            emailAddress,
+            oldEntity.getAuthenticationType(),
+            oldEntity.getLastLogin(),
+            oldEntity.getLastFailedLogin(),
+            oldEntity.getFailedLoginCount()
+        );
         updatedEntity.setId(oldEntity.getId());
         userRepository.save(updatedEntity);
     }

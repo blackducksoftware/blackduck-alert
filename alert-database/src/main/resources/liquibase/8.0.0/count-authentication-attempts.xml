@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="psantos" id="add-failed-column">
+         <preConditions onFail="MARK_RAN">
+             <not>
+                 <columnExists schemaName="alert" tableName="users" columnName="last_failed_login"/>
+             </not>
+         </preConditions>
+        <addColumn schemaName="alert" tableName="users">
+            <column name="last_failed_login" type="timestamp with timezone" defaultValue="NULL"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="psantos" id="add-last-login-column">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists schemaName="alert" tableName="users" columnName="last_login"/>
+            </not>
+        </preConditions>
+       <addColumn schemaName="alert" tableName="users">
+           <column name="last_login" type="timestamp with timezone" defaultValue="NULL"/>
+       </addColumn>
+   </changeSet>
+    <changeSet author="psantos" id="add-failed-login-count-column">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists schemaName="alert" tableName="users" columnName="failed_login_count"/>
+            </not>
+        </preConditions>
+       <addColumn schemaName="alert" tableName="users">
+           <column name="failed_login_count" type="BIGINT" defaultValue="0"/>
+       </addColumn>
+   </changeSet>
+</databaseChangeLog>
