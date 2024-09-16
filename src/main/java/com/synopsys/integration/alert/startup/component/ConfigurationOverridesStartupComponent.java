@@ -107,6 +107,7 @@ public class ConfigurationOverridesStartupComponent extends StartupComponent {
                 userModel.getEmailAddress(),
                 userModel.getAuthenticationType(),
                 userModel.getRoles(),
+                userModel.isLocked(),
                 userModel.isEnabled(),
                 userModel.getLastLogin(),
                 userModel.getLastFailedLogin(),

@@ -113,7 +113,7 @@ public class AuthenticationTestUtils {
     }
 
     public Authentication createAuthentication(Long id, String username, Set<UserRoleModel> roles) {
-        UserModel userModel = UserModel.existingUser(id, username, "", "", AuthenticationType.DATABASE, roles, true, OffsetDateTime.now(), null, 0L);
+        UserModel userModel = UserModel.existingUser(id, username, "", "", AuthenticationType.DATABASE, roles, false, true, OffsetDateTime.now(), null, 0L);
         UserPrincipal userPrincipal = new UserPrincipal(userModel);
         return new UsernamePasswordAuthenticationToken(userPrincipal, null, userPrincipal.getAuthorities());
     }

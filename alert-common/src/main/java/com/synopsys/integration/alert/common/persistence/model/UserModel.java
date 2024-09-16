@@ -74,7 +74,7 @@ public class UserModel extends AlertSerializableModel {
     }
 
     public static UserModel newUser(String userName, String password, String emailAddress, AuthenticationType authenticationType, Set<UserRoleModel> roles, boolean enabled) {
-        return existingUser(null, userName, password, emailAddress, authenticationType, roles, enabled, OffsetDateTime.now(), null, 0L);
+        return existingUser(null, userName, password, emailAddress, authenticationType, roles, false, enabled, OffsetDateTime.now(), null, 0L);
     }
 
     public static UserModel existingUser(
@@ -84,12 +84,13 @@ public class UserModel extends AlertSerializableModel {
         String emailAddress,
         AuthenticationType authenticationType,
         Set<UserRoleModel> roles,
+        boolean locked,
         boolean enabled,
         OffsetDateTime lastLogin,
         OffsetDateTime lastFailedLogin,
         Long failedLoginCount
     ) {
-        return new UserModel(id, userName, password, emailAddress, roles, false, false, false, enabled, authenticationType, lastLogin, lastFailedLogin, failedLoginCount);
+        return new UserModel(id, userName, password, emailAddress, roles, false, locked, false, enabled, authenticationType, lastLogin, lastFailedLogin, failedLoginCount);
     }
 
     public Long getId() {

@@ -166,12 +166,13 @@ class AuthenticationActionsTestIT {
         AlertDatabaseAuthenticationPerformer alertDatabaseAuthenticationPerformer = new AlertDatabaseAuthenticationPerformer(
             authenticationEventManager,
             roleAccessor,
-            databaseProvider
+            databaseProvider,
+            userAccessor
         );
         LDAPAuthenticationPerformer ldapAuthenticationPerformer = new LDAPAuthenticationPerformer(authenticationEventManager, roleAccessor, mockLDAPManager);
-        AlertAuthenticationProvider authenticationProvider = new AlertAuthenticationProvider(List.of(ldapAuthenticationPerformer, alertDatabaseAuthenticationPerformer));
+        AlertAuthenticationProvider testAuthenticationProvider = new AlertAuthenticationProvider(List.of(ldapAuthenticationPerformer, alertDatabaseAuthenticationPerformer));
 
-        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository, securityContextRepository);
+        AuthenticationActions authenticationActions = new AuthenticationActions(testAuthenticationProvider, csrfTokenRepository, securityContextRepository);
         ActionResponse<Void> response = authenticationActions.authenticateUser(servletRequest, servletResponse, mockLoginRestModel.createRestModel());
         assertTrue(response.isError());
         Mockito.verify(databaseProvider).authenticate(Mockito.any(Authentication.class));
@@ -201,18 +202,18 @@ class AuthenticationActionsTestIT {
 
     @Test
     void userLoginWithBadCredentialsTest() {
-        AlertAuthenticationProvider authenticationProvider = Mockito.mock(AlertAuthenticationProvider.class);
-        Mockito.when(authenticationProvider.authenticate(Mockito.any())).thenThrow(new BadCredentialsException("Bad credentials test"));
-        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository, securityContextRepository);
+        AlertAuthenticationProvider badCredentialsAuthenticationProvider = Mockito.mock(AlertAuthenticationProvider.class);
+        Mockito.when(badCredentialsAuthenticationProvider.authenticate(Mockito.any())).thenThrow(new BadCredentialsException("Bad credentials test"));
+        AuthenticationActions authenticationActions = new AuthenticationActions(badCredentialsAuthenticationProvider, csrfTokenRepository, securityContextRepository);
 
         HttpServletRequest servletRequest = new MockHttpServletRequest();
         HttpServletResponse servletResponse = new MockHttpServletResponse();
         TestProperties testProperties = new TestProperties();
-        MockLoginRestModel mockLoginRestModel = new MockLoginRestModel();
-        mockLoginRestModel.setAlertUsername(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_USERNAME));
-        mockLoginRestModel.setAlertPassword(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD));
+        MockLoginRestModel credentialsLoginRestModel = new MockLoginRestModel();
+        credentialsLoginRestModel.setAlertUsername(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_USERNAME));
+        credentialsLoginRestModel.setAlertPassword(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD));
 
-        ActionResponse<Void> response = authenticationActions.authenticateUser(servletRequest, servletResponse, mockLoginRestModel.createRestModel());
+        ActionResponse<Void> response = authenticationActions.authenticateUser(servletRequest, servletResponse, credentialsLoginRestModel.createRestModel());
         assertTrue(response.isError());
         assertEquals(HttpStatus.UNAUTHORIZED, response.getHttpStatus());
     }

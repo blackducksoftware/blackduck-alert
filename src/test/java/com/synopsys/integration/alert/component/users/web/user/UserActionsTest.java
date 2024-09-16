@@ -64,7 +64,7 @@ class UserActionsTest {
 
     @Test
     void testFindExisting() {
-        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true, lastLogin, null, failedLoginCount);
+        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, false, true, lastLogin, null, failedLoginCount);
 
         Mockito.when(userAccessor.getUser(Mockito.anyLong())).thenReturn(Optional.of(userModel));
 
@@ -88,7 +88,7 @@ class UserActionsTest {
 
     @Test
     void testReadAllWithoutChecks() {
-        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true, lastLogin, null, failedLoginCount);
+        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, false, true, lastLogin, null, failedLoginCount);
         AuthenticationTypeDetails authenticationTypeDetails = new AuthenticationTypeDetails(1L, authenticationType.name());
 
         Mockito.when(authorizationManager.hasReadPermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
@@ -111,7 +111,7 @@ class UserActionsTest {
 
     @Test
     void testReadWithoutChecks() {
-        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true, lastLogin, null, failedLoginCount);
+        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, false, true, lastLogin, null, failedLoginCount);
 
         Mockito.when(authorizationManager.hasReadPermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
@@ -150,7 +150,7 @@ class UserActionsTest {
 
     @Test
     void testCreateWithoutChecks() throws Exception {
-        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true, lastLogin, null, failedLoginCount);
+        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, false, true, lastLogin, null, failedLoginCount);
 
         Mockito.when(userAccessor.addUser(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(userModel);
         Mockito.when(userAccessor.getUser(Mockito.anyLong())).thenReturn(Optional.of(userModel));
@@ -190,7 +190,7 @@ class UserActionsTest {
 
     @Test
     void testUpdateWithoutChecks() {
-        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true, lastLogin, null, failedLoginCount);
+        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, false, true, lastLogin, null, failedLoginCount);
 
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
 
@@ -209,7 +209,7 @@ class UserActionsTest {
 
     @Test
     void testUpdateWithoutChecksDatabaseError() throws Exception {
-        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true, lastLogin, null, failedLoginCount);
+        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, false, true, lastLogin, null, failedLoginCount);
 
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
         Mockito.when(userAccessor.updateUser(Mockito.any(), Mockito.anyBoolean())).thenThrow(new AlertConfigurationException("Exception for test"));
@@ -244,7 +244,7 @@ class UserActionsTest {
 
     @Test
     void testDeleteWithoutChecks() throws Exception {
-        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true, lastLogin, null, failedLoginCount);
+        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, false, true, lastLogin, null, failedLoginCount);
 
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
 
@@ -258,7 +258,7 @@ class UserActionsTest {
 
     @Test
     void testDeleteWithoutChecksException() throws AlertForbiddenOperationException {
-        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true, lastLogin, null, failedLoginCount);
+        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, false, true, lastLogin, null, failedLoginCount);
 
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
         Mockito.doThrow(new AlertForbiddenOperationException("Exception for test")).when(userAccessor).deleteUser(id);
@@ -282,8 +282,8 @@ class UserActionsTest {
     }
 
     @Test
-    void testInternalUserNoEmailValidation() throws Exception {
-        UserModel userModel = UserModel.existingUser(id, name, password, null, authenticationType, roles, true, lastLogin, null, failedLoginCount);
+    void testInternalUserNoEmailValidation() {
+        UserModel userModel = UserModel.existingUser(id, name, password, null, authenticationType, roles, false, true, lastLogin, null, failedLoginCount);
 
         Mockito.when(authorizationManager.hasExecutePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
         Mockito.when(userAccessor.getUser(Mockito.anyLong())).thenReturn(Optional.of(userModel));
@@ -309,7 +309,7 @@ class UserActionsTest {
     void testExternalUserNoEmailValidation() {
         AuthenticationType authenticationTypeLDAP = AuthenticationType.LDAP;
 
-        UserModel userModel = UserModel.existingUser(id, name, password, null, authenticationTypeLDAP, roles, true, lastLogin, null, failedLoginCount);
+        UserModel userModel = UserModel.existingUser(id, name, password, null, authenticationTypeLDAP, roles, false, true, lastLogin, null, failedLoginCount);
 
         Mockito.when(authorizationManager.hasExecutePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
         Mockito.when(userAccessor.getUser(Mockito.anyLong())).thenReturn(Optional.of(userModel));

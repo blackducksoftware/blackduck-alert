@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +57,7 @@ public class DefaultUserAccessor implements UserAccessor {
     @Transactional(readOnly = true)
     public List<UserModel> getUsers() {
         List<UserEntity> userList = userRepository.findAll();
-        return userList.stream().map(this::createModel).collect(Collectors.toList());
+        return userList.stream().map(this::createModel).toList();
     }
 
     @Override
@@ -237,7 +236,7 @@ public class DefaultUserAccessor implements UserAccessor {
 
     private UserModel createModel(UserEntity user) {
         List<UserRoleRelation> roleRelations = userRoleRepository.findAllByUserId(user.getId());
-        List<Long> roleIdsForUser = roleRelations.stream().map(UserRoleRelation::getRoleId).collect(Collectors.toList());
+        List<Long> roleIdsForUser = roleRelations.stream().map(UserRoleRelation::getRoleId).toList();
         Set<UserRoleModel> roles = roleAccessor.getRoles(roleIdsForUser);
         AuthenticationType authenticationType = authenticationTypeAccessor.getAuthenticationType(user.getAuthenticationType()).orElse(null);
         return UserModel.existingUser(
@@ -247,6 +246,7 @@ public class DefaultUserAccessor implements UserAccessor {
             user.getEmailAddress(),
             authenticationType,
             roles,
+            user.isLocked(),
             user.isEnabled(),
             user.getLastLogin(),
             user.getLastFailedLogin(),
