@@ -7,12 +7,14 @@
  */
 package com.synopsys.integration.alert.component.authentication.security.database;
 
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -27,10 +29,16 @@ import com.synopsys.integration.alert.common.persistence.model.UserModel;
 
 @Component
 public class AlertDatabaseAuthenticationPerformer extends AuthenticationPerformer {
+    public static final long DEFAULT_FAILED_ATTEMPTS = 10;
+    // 15 minute lockout duration 15 * 60 = 900
+    public static final long DEFAULT_LOCKOUT_DURATION_IN_SECONDS = 900;
     private final Logger logger = LoggerFactory.getLogger(AlertDatabaseAuthenticationPerformer.class);
 
     private final DaoAuthenticationProvider alertDatabaseAuthProvider;
     private final UserAccessor userAccessor;
+
+    private final long maximumFailedAttempts;
+    private final long lockoutDurationInSeconds;
 
     @Autowired
     public AlertDatabaseAuthenticationPerformer(
@@ -39,9 +47,24 @@ public class AlertDatabaseAuthenticationPerformer extends AuthenticationPerforme
         DaoAuthenticationProvider alertDatabaseAuthProvider,
         UserAccessor userAccessor
     ) {
+        this(authenticationEventManager, roleAccessor, alertDatabaseAuthProvider, userAccessor, DEFAULT_FAILED_ATTEMPTS,
+            DEFAULT_LOCKOUT_DURATION_IN_SECONDS
+        );
+    }
+
+    protected AlertDatabaseAuthenticationPerformer(
+        AuthenticationEventManager authenticationEventManager,
+        RoleAccessor roleAccessor,
+        DaoAuthenticationProvider alertDatabaseAuthProvider,
+        UserAccessor userAccessor,
+        long maximumFailedAttempts,
+        long lockoutDurationInSeconds
+    ) {
         super(authenticationEventManager, roleAccessor);
         this.alertDatabaseAuthProvider = alertDatabaseAuthProvider;
         this.userAccessor = userAccessor;
+        this.maximumFailedAttempts = maximumFailedAttempts;
+        this.lockoutDurationInSeconds = lockoutDurationInSeconds;
     }
 
     @Override
@@ -52,41 +75,82 @@ public class AlertDatabaseAuthenticationPerformer extends AuthenticationPerforme
     @Override
     public Authentication authenticateWithProvider(Authentication pendingAuthentication) {
         logger.info("Attempting database authentication...");
-        Authentication userAuthentication = alertDatabaseAuthProvider.authenticate(pendingAuthentication);
+        String userName = pendingAuthentication.getName();
+        Optional<UserModel> userModel = userAccessor.getUser(userName);
+        boolean locked = userModel.map(this::checkAndUnlockAccount).orElse(true);
 
-        if (!userAuthentication.isAuthenticated()) {
-            String userName = userAuthentication.getName();
-            lockUserAccount(userName);
+        if (locked) {
+            pendingAuthentication.setAuthenticated(false);
+            return pendingAuthentication;
+        }
+        Authentication userAuthentication = pendingAuthentication;
+        try {
+            userAuthentication = alertDatabaseAuthProvider.authenticate(pendingAuthentication);
+        } catch (BadCredentialsException ex) {
+            logger.error(ex.getMessage(), ex);
+            userAuthentication.setAuthenticated(false);
+        }
+        if (userModel.isPresent()) {
+            updateLoginStats(userModel.get(), userAuthentication);
         }
 
         return userAuthentication;
     }
 
-    private void lockUserAccount(String userName) {
-        try {
-            Optional<UserModel> userModel = userAccessor.getUser(userName);
-            if (userModel.isPresent()) {
-                UserModel existingUser = userModel.get();
-                long failedLoginAttempts = existingUser.getFailedLoginCount() + 1;
-                UserModel updatedUser = UserModel.existingUser(
-                    existingUser.getId(),
-                    existingUser.getName(),
-                    existingUser.getPassword(),
-                    existingUser.getEmailAddress(),
-                    existingUser.getAuthenticationType(),
-                    existingUser.getRoles(),
-                    failedLoginAttempts > 10,
-                    existingUser.isEnabled(),
-                    existingUser.getLastLogin(),
-                    OffsetDateTime.now(),
-                    failedLoginAttempts
-                );
+    private boolean checkAndUnlockAccount(UserModel existingUser) {
+        if (!existingUser.isLocked()) {
+            return false;
+        }
+        Duration durationFromLastFailedLogin = Duration.between(existingUser.getLastFailedLogin(), OffsetDateTime.now());
+        UserModel updatedUser = UserModel.existingUser(
+            existingUser.getId(),
+            existingUser.getName(),
+            existingUser.getPassword(),
+            existingUser.getEmailAddress(),
+            existingUser.getAuthenticationType(),
+            existingUser.getRoles(),
+            Math.abs(durationFromLastFailedLogin.toSeconds()) < lockoutDurationInSeconds,
+            existingUser.isEnabled(),
+            existingUser.getLastLogin(),
+            existingUser.getLastFailedLogin(),
+            existingUser.getFailedLoginCount()
+        );
+        updateUserModel(updatedUser);
+        return Math.abs(durationFromLastFailedLogin.toSeconds()) < lockoutDurationInSeconds;
+    }
 
-                userAccessor.updateUser(updatedUser, true);
-            }
+    private void updateLoginStats(UserModel userModel, Authentication authentication) {
+        long failedLoginAttempts = userModel.getFailedLoginCount();
+        OffsetDateTime lastLogin = userModel.getLastLogin();
+        OffsetDateTime lastFailedLogin = userModel.getLastFailedLogin();
+        if (!authentication.isAuthenticated()) {
+            failedLoginAttempts++;
+            lastFailedLogin = OffsetDateTime.now();
+        } else {
+            failedLoginAttempts = 0;
+            lastLogin = OffsetDateTime.now();
+        }
+        UserModel updatedUser = UserModel.existingUser(
+            userModel.getId(),
+            userModel.getName(),
+            userModel.getPassword(),
+            userModel.getEmailAddress(),
+            userModel.getAuthenticationType(),
+            userModel.getRoles(),
+            failedLoginAttempts >= maximumFailedAttempts,
+            userModel.isEnabled(),
+            lastLogin,
+            lastFailedLogin,
+            failedLoginAttempts
+        );
+        updateUserModel(updatedUser);
+    }
+
+    private void updateUserModel(UserModel updatedUser) {
+        try {
+            userAccessor.updateUser(updatedUser, true);
         } catch (AlertException ex) {
             logger.error("Error authenticating user", ex);
         }
     }
-
 }
