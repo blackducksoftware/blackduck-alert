@@ -83,16 +83,16 @@ public class AlertDatabaseAuthenticationPerformer extends AuthenticationPerforme
             pendingAuthentication.setAuthenticated(false);
             return pendingAuthentication;
         }
-        Authentication userAuthentication = pendingAuthentication;
+        Authentication userAuthentication;
         try {
             userAuthentication = alertDatabaseAuthProvider.authenticate(pendingAuthentication);
         } catch (BadCredentialsException ex) {
             logger.error(ex.getMessage(), ex);
+            userAuthentication = pendingAuthentication;
             userAuthentication.setAuthenticated(false);
         }
-        if (userModel.isPresent()) {
-            updateLoginStats(userModel.get(), userAuthentication);
-        }
+        boolean authenticated = userAuthentication.isAuthenticated();
+        userModel.ifPresent(model -> updateLoginStats(model, authenticated));
 
         return userAuthentication;
     }
@@ -119,11 +119,11 @@ public class AlertDatabaseAuthenticationPerformer extends AuthenticationPerforme
         return Math.abs(durationFromLastFailedLogin.toSeconds()) < lockoutDurationInSeconds;
     }
 
-    private void updateLoginStats(UserModel userModel, Authentication authentication) {
+    private void updateLoginStats(UserModel userModel, boolean authenticated) {
         long failedLoginAttempts = userModel.getFailedLoginCount();
         OffsetDateTime lastLogin = userModel.getLastLogin();
         OffsetDateTime lastFailedLogin = userModel.getLastFailedLogin();
-        if (!authentication.isAuthenticated()) {
+        if (!authenticated) {
             failedLoginAttempts++;
             lastFailedLogin = OffsetDateTime.now();
         } else {
