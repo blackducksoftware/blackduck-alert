@@ -36,7 +36,7 @@ public class UserModel extends AlertSerializableModel {
     private final AuthenticationType authenticationType;
     private final OffsetDateTime lastLogin;
     private final OffsetDateTime lastFailedLogin;
-    private final Long failedLoginCount;
+    private final Long failedLoginAttempts;
 
     private UserModel(
         Long id,
@@ -51,7 +51,7 @@ public class UserModel extends AlertSerializableModel {
         AuthenticationType authenticationType,
         OffsetDateTime lastLogin,
         OffsetDateTime lastFailedLogin,
-        Long failedLoginCount
+        Long failedLoginAttempts
     ) {
         this.id = id;
         this.name = name;
@@ -65,7 +65,7 @@ public class UserModel extends AlertSerializableModel {
         this.authenticationType = authenticationType;
         this.lastLogin = lastLogin;
         this.lastFailedLogin = lastFailedLogin;
-        this.failedLoginCount = failedLoginCount;
+        this.failedLoginAttempts = failedLoginAttempts;
         if (null == roles || roles.isEmpty()) {
             this.roleNames = Set.of();
         } else {
@@ -162,7 +162,7 @@ public class UserModel extends AlertSerializableModel {
         return lastFailedLogin;
     }
 
-    public Long getFailedLoginCount() {
-        return failedLoginCount;
+    public Long getFailedLoginAttempts() {
+        return failedLoginAttempts;
     }
 }

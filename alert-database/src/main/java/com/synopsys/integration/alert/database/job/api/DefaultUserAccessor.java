@@ -131,7 +131,7 @@ public class DefaultUserAccessor implements UserAccessor {
                 existingUser.getAuthenticationType(),
                 user.getLastLogin(),
                 user.getLastFailedLogin(),
-                user.getFailedLoginCount()
+                user.getFailedLoginAttempts()
             );
             newEntity.setId(existingUserId);
             savedEntity = userRepository.save(newEntity);
@@ -203,7 +203,7 @@ public class DefaultUserAccessor implements UserAccessor {
             oldEntity.getAuthenticationType(),
             oldEntity.getLastLogin(),
             oldEntity.getLastFailedLogin(),
-            oldEntity.getFailedLoginCount()
+            oldEntity.getFailedLoginAttempts()
         );
         updatedEntity.setId(oldEntity.getId());
         userRepository.save(updatedEntity);
@@ -217,7 +217,7 @@ public class DefaultUserAccessor implements UserAccessor {
             oldEntity.getAuthenticationType(),
             oldEntity.getLastLogin(),
             oldEntity.getLastFailedLogin(),
-            oldEntity.getFailedLoginCount()
+            oldEntity.getFailedLoginAttempts()
         );
         updatedEntity.setId(oldEntity.getId());
         userRepository.save(updatedEntity);
@@ -250,7 +250,7 @@ public class DefaultUserAccessor implements UserAccessor {
             user.isEnabled(),
             user.getLastLogin(),
             user.getLastFailedLogin(),
-            user.getFailedLoginCount()
+            user.getFailedLoginAttempts()
         );
     }
 

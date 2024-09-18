@@ -129,7 +129,7 @@ class AlertDatabaseAuthenticationPerformerTest {
         }
 
         Assertions.assertTrue(expectedUserAccessorResponse.isLocked());
-        Assertions.assertEquals(numberOfAttempts, expectedUserAccessorResponse.getFailedLoginCount());
+        Assertions.assertEquals(numberOfAttempts, expectedUserAccessorResponse.getFailedLoginAttempts());
     }
 
     @Test
@@ -158,7 +158,7 @@ class AlertDatabaseAuthenticationPerformerTest {
         Optional<Authentication> authenticationAttempt = authenticationPerformer.performAuthentication(validAuthenticationToken);
         Assertions.assertTrue(authenticationAttempt.isEmpty());
         Assertions.assertTrue(expectedUserAccessorResponse.isLocked());
-        Assertions.assertEquals(numberOfAttempts, expectedUserAccessorResponse.getFailedLoginCount());
+        Assertions.assertEquals(numberOfAttempts, expectedUserAccessorResponse.getFailedLoginAttempts());
     }
 
     @Test

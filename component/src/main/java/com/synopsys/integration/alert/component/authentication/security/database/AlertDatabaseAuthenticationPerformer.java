@@ -113,14 +113,14 @@ public class AlertDatabaseAuthenticationPerformer extends AuthenticationPerforme
             existingUser.isEnabled(),
             existingUser.getLastLogin(),
             existingUser.getLastFailedLogin(),
-            existingUser.getFailedLoginCount()
+            existingUser.getFailedLoginAttempts()
         );
         updateUserModel(updatedUser);
         return Math.abs(durationFromLastFailedLogin.toSeconds()) < lockoutDurationInSeconds;
     }
 
     private void updateLoginStats(UserModel userModel, boolean authenticated) {
-        long failedLoginAttempts = userModel.getFailedLoginCount();
+        long failedLoginAttempts = userModel.getFailedLoginAttempts();
         OffsetDateTime lastLogin = userModel.getLastLogin();
         OffsetDateTime lastFailedLogin = userModel.getLastFailedLogin();
         if (!authenticated) {

@@ -196,7 +196,7 @@ public class ConfigurationOverridesStartupComponentTest {
             oldUserModel.isEnabled(),
             oldUserModel.getLastLogin(),
             oldUserModel.getLastFailedLogin(),
-            oldUserModel.getFailedLoginCount()
+            oldUserModel.getFailedLoginAttempts()
         );
     }
 
@@ -210,7 +210,7 @@ public class ConfigurationOverridesStartupComponentTest {
             oldUserModel.isEnabled(),
             oldUserModel.getLastLogin(),
             oldUserModel.getLastFailedLogin(),
-            oldUserModel.getFailedLoginCount()
+            oldUserModel.getFailedLoginAttempts()
         );
     }
 

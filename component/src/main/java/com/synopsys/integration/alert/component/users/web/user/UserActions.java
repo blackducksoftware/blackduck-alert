@@ -178,7 +178,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
                 existingUser.isEnabled(),
                 existingUser.getLastLogin(),
                 existingUser.getLastFailedLogin(),
-                existingUser.getFailedLoginCount()
+                existingUser.getFailedLoginAttempts()
             );
             try {
                 logger.debug(actionMessageCreator.updateStartMessage("user", userName));

@@ -111,7 +111,7 @@ public class ConfigurationOverridesStartupComponent extends StartupComponent {
                 userModel.isEnabled(),
                 userModel.getLastLogin(),
                 userModel.getLastFailedLogin(),
-                userModel.getFailedLoginCount()
+                userModel.getFailedLoginAttempts()
             );
             userAccessor.updateUser(newModel, true);
         }

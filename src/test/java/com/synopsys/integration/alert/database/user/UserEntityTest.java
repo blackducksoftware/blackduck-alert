@@ -25,6 +25,6 @@ class UserEntityTest {
         Assertions.assertEquals(expectedAuthType, entity.getAuthenticationType());
         Assertions.assertEquals(expectedLastLogin, entity.getLastLogin());
         Assertions.assertNull(entity.getLastFailedLogin());
-        Assertions.assertEquals(expectedFailedLoginCount, entity.getFailedLoginCount());
+        Assertions.assertEquals(expectedFailedLoginCount, entity.getFailedLoginAttempts());
     }
 }

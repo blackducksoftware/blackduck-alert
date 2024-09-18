@@ -373,7 +373,7 @@ class DefaultUserAccessorTest {
         Assertions.assertTrue(userModel.getRoleNames().contains(expectedRoleName));
         Assertions.assertEquals(lastLogin, userModel.getLastLogin());
         Assertions.assertNull(userModel.getLastFailedLogin());
-        Assertions.assertEquals(failedLoginCount, userModel.getFailedLoginCount());
+        Assertions.assertEquals(failedLoginCount, userModel.getFailedLoginAttempts());
     }
 
 }

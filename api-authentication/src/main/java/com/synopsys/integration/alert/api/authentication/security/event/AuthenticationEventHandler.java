@@ -39,7 +39,7 @@ public class AuthenticationEventHandler implements AlertEventHandler<AlertAuthen
                         user.isEnabled(),
                         user.getLastLogin(),
                         user.getLastFailedLogin(),
-                        user.getFailedLoginCount()
+                        user.getFailedLoginAttempts()
                     );
                     userAccessor.updateUser(updatedUser, true);
                 } else {

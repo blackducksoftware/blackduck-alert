@@ -24,11 +24,11 @@
     <changeSet author="psantos" id="add-failed-login-count-column">
         <preConditions onFail="MARK_RAN">
             <not>
-                <columnExists schemaName="alert" tableName="users" columnName="failed_login_count"/>
+                <columnExists schemaName="alert" tableName="users" columnName="failed_login_attempts"/>
             </not>
         </preConditions>
        <addColumn schemaName="alert" tableName="users">
-           <column name="failed_login_count" type="BIGINT" defaultValue="0"/>
+           <column name="failed_login_attempts" type="BIGINT" defaultValue="0"/>
        </addColumn>
    </changeSet>
 </databaseChangeLog>

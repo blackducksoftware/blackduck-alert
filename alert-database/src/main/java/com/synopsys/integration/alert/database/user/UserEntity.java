@@ -46,8 +46,8 @@ public class UserEntity extends BaseEntity implements DatabaseEntity {
     private OffsetDateTime lastLogin;
     @Column(name = "last_failed_login")
     private OffsetDateTime lastFailedLogin;
-    @Column(name = "failed_login_count")
-    private Long failedLoginCount;
+    @Column(name = "failed_login_attempts")
+    private Long failedLoginAttempts;
 
     public UserEntity() {
         // JPA requires default constructor definitions
@@ -60,7 +60,7 @@ public class UserEntity extends BaseEntity implements DatabaseEntity {
         Long authenticationType,
         OffsetDateTime lastLogin,
         OffsetDateTime lastFailedLogin,
-        Long failedLoginCount
+        Long failedLoginAttempts
     ) {
         this.userName = userName;
         this.password = password;
@@ -72,7 +72,7 @@ public class UserEntity extends BaseEntity implements DatabaseEntity {
         this.authenticationType = authenticationType;
         this.lastLogin = lastLogin;
         this.lastFailedLogin = lastFailedLogin;
-        this.failedLoginCount = failedLoginCount;
+        this.failedLoginAttempts = failedLoginAttempts;
     }
 
     public UserEntity(
@@ -86,7 +86,7 @@ public class UserEntity extends BaseEntity implements DatabaseEntity {
         Long authenticationType,
         OffsetDateTime lastLogin,
         OffsetDateTime lastFailedLogin,
-        Long failedLoginCount
+        Long failedLoginAttempts
     ) {
         this.userName = userName;
         this.password = password;
@@ -98,7 +98,7 @@ public class UserEntity extends BaseEntity implements DatabaseEntity {
         this.authenticationType = authenticationType;
         this.lastLogin = lastLogin;
         this.lastFailedLogin = lastFailedLogin;
-        this.failedLoginCount = failedLoginCount;
+        this.failedLoginAttempts = failedLoginAttempts;
     }
 
     @Override
@@ -151,7 +151,7 @@ public class UserEntity extends BaseEntity implements DatabaseEntity {
         return lastFailedLogin;
     }
 
-    public Long getFailedLoginCount() {
-        return failedLoginCount;
+    public Long getFailedLoginAttempts() {
+        return failedLoginAttempts;
     }
 }
