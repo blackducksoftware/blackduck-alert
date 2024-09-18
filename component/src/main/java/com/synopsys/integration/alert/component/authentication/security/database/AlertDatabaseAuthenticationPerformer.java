@@ -76,10 +76,9 @@ public class AlertDatabaseAuthenticationPerformer extends AuthenticationPerforme
     public Authentication authenticateWithProvider(Authentication pendingAuthentication) {
         logger.info("Attempting database authentication...");
         String userName = pendingAuthentication.getName();
-        Optional<UserModel> userModel = userAccessor.getUser(userName);
-        boolean locked = userModel.map(this::checkAndUnlockAccount).orElse(true);
-
-        if (locked) {
+        UserModel userModel = userAccessor.getUser(userName).orElseThrow(() -> new BadCredentialsException("Invalid user credentials."));
+        userModel = checkAndUnlockAccount(userModel).orElseThrow(() -> new BadCredentialsException("Invalid user credentials."));
+        if (userModel.isLocked()) {
             pendingAuthentication.setAuthenticated(false);
             return pendingAuthentication;
         }
@@ -91,17 +90,23 @@ public class AlertDatabaseAuthenticationPerformer extends AuthenticationPerforme
             userAuthentication = pendingAuthentication;
             userAuthentication.setAuthenticated(false);
         }
-        boolean authenticated = userAuthentication.isAuthenticated();
-        userModel.ifPresent(model -> updateLoginStats(model, authenticated));
+        updateLoginStats(userModel, userAuthentication.isAuthenticated());
 
         return userAuthentication;
     }
 
-    private boolean checkAndUnlockAccount(UserModel existingUser) {
+    private Optional<UserModel> checkAndUnlockAccount(UserModel existingUser) {
         if (!existingUser.isLocked()) {
-            return false;
+            return Optional.of(existingUser);
         }
+
         Duration durationFromLastFailedLogin = Duration.between(existingUser.getLastFailedLogin(), OffsetDateTime.now());
+        boolean remainLocked = Math.abs(durationFromLastFailedLogin.toSeconds()) < lockoutDurationInSeconds;
+        long failedLoginAttempts = existingUser.getFailedLoginAttempts();
+        // if account should be unlocked reset the failed login attempts to 0.
+        if (!remainLocked) {
+            failedLoginAttempts = 0;
+        }
         UserModel updatedUser = UserModel.existingUser(
             existingUser.getId(),
             existingUser.getName(),
@@ -109,14 +114,13 @@ public class AlertDatabaseAuthenticationPerformer extends AuthenticationPerforme
             existingUser.getEmailAddress(),
             existingUser.getAuthenticationType(),
             existingUser.getRoles(),
-            Math.abs(durationFromLastFailedLogin.toSeconds()) < lockoutDurationInSeconds,
+            remainLocked,
             existingUser.isEnabled(),
             existingUser.getLastLogin(),
             existingUser.getLastFailedLogin(),
-            existingUser.getFailedLoginAttempts()
+            failedLoginAttempts
         );
-        updateUserModel(updatedUser);
-        return Math.abs(durationFromLastFailedLogin.toSeconds()) < lockoutDurationInSeconds;
+        return updateUserModel(updatedUser);
     }
 
     private void updateLoginStats(UserModel userModel, boolean authenticated) {
@@ -146,11 +150,12 @@ public class AlertDatabaseAuthenticationPerformer extends AuthenticationPerforme
         updateUserModel(updatedUser);
     }
 
-    private void updateUserModel(UserModel updatedUser) {
+    private Optional<UserModel> updateUserModel(UserModel updatedUser) {
         try {
-            userAccessor.updateUser(updatedUser, true);
+            return Optional.ofNullable(userAccessor.updateUser(updatedUser, true));
         } catch (AlertException ex) {
             logger.error("Error authenticating user", ex);
         }
+        return Optional.empty();
     }
 }

@@ -70,8 +70,7 @@ class AlertDatabaseAuthenticationPerformerTest {
         Authentication authenticationToken = new UsernamePasswordAuthenticationToken(INVALID_USERNAME, VALID_PASSWORD);
         mockUserAccessorMethods(false);
         mockAuthenticationResponse(authenticationToken, false);
-        Optional<Authentication> authentication = authenticationPerformer.performAuthentication(authenticationToken);
-        Assertions.assertTrue(authentication.isEmpty());
+        Assertions.assertThrows(BadCredentialsException.class, () -> authenticationPerformer.performAuthentication(authenticationToken));
     }
 
     @Test
@@ -179,6 +178,27 @@ class AlertDatabaseAuthenticationPerformerTest {
         Optional<Authentication> authentication = authenticationPerformer.performAuthentication(authenticationToken);
         Assertions.assertTrue(authentication.isPresent());
         Assertions.assertFalse(expectedUserAccessorResponse.isLocked());
+    }
+
+    @Test
+    void testLockoutDurationExpiredAndFailedAttemptsReset() throws AlertForbiddenOperationException, AlertConfigurationException, InterruptedException {
+        AlertDatabaseAuthenticationPerformer authenticationPerformer = new AlertDatabaseAuthenticationPerformer(
+            authenticationEventManager,
+            roleAccessor,
+            alertDatabaseAuthProvider,
+            userAccessor,
+            1,
+            1
+        );
+        Authentication authenticationToken = new UsernamePasswordAuthenticationToken(VALID_USERNAME, INVALID_PASSWORD);
+        expectedUserAccessorResponse = createUserModel(VALID_USERNAME, VALID_PASSWORD, true, OffsetDateTime.now(), 5);
+        mockUserAccessorMethods(false);
+        mockAuthenticationResponse(authenticationToken, false);
+        TimeUnit.SECONDS.sleep(1);
+        Optional<Authentication> authentication = authenticationPerformer.performAuthentication(authenticationToken);
+        Assertions.assertTrue(authentication.isEmpty());
+        Assertions.assertTrue(expectedUserAccessorResponse.isLocked());
+        Assertions.assertEquals(1, expectedUserAccessorResponse.getFailedLoginAttempts());
     }
 
     @Test
