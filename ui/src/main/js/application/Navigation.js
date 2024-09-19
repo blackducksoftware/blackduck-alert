@@ -116,12 +116,13 @@ const Navigation = ({ confirmLogoutPressed, cancelLogout, globalDescriptorMap })
     return (
         <div className={classes.sideNavContent}>
             <ul className={classes.sideNav}>
-                <SideNavItem href="/alert/general/about" icon="home" id="1" label="Home" />
-                <SideNavItem href="/alert/providers/blackduck" icon="truck" id="1" label="Provider" />
-                <SideNavItem hasSubMenu subMenuItems={channelGroup} label="Channels" icon="stream" />
-                <SideNavItem href="/alert/jobs/distribution" icon="archive" id="1" label="Jobs" />
-                <SideNavItem hasSubMenu subMenuItems={manageGroup} label="Manage" icon="toolbox" />
-                <SideNavItem href="/alert/components/settings" label="Settings" icon="cog" />
+                <SideNavItem href="/alert/general/about" icon="home" id="home" label="Home" type="link" />
+                <SideNavItem href="/alert/providers/blackduck" icon="truck" id="providers" label="Provider" type="link" />
+                <SideNavItem hasSubMenu subMenuItems={channelGroup} label="Channels" id="channels" icon="stream" />
+                <SideNavItem href="/alert/jobs/distribution" icon="archive" id="archive" label="Jobs" type="link" />
+                <SideNavItem hasSubMenu subMenuItems={manageGroup} label="Manage" id="manage" icon="toolbox" />
+                <SideNavItem href="/alert/components/settings" label="Settings" id="settings" icon="cog" type="link" />
+                <SideNavItem label="Logout" id="logout" icon="sign-out-alt" onClick={() => confirmLogoutPressed()} />
             </ul>
         </div>
     );

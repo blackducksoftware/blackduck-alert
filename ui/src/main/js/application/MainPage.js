@@ -306,17 +306,11 @@ const MainPage = ({
             </div>
             <div className={classes.main}>{content}</div>
             <div className={classes.footer}>footer</div>
+            <div className="modalsArea">
+                <LogoutConfirmation />
+            </div>
         </div>
     );
-    // return (
-    //     <div>
-    //         <Navigation globalDescriptorMap={globalDescriptorMap} />
-    //         {content}
-    //         <div className="modalsArea">
-    //             <LogoutConfirmation />
-    //         </div>
-    //     </div>
-    // );
 };
 
 MainPage.propTypes = {

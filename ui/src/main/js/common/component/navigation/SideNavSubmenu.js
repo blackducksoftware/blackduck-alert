@@ -1,8 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import SideNavItemGroup from 'common/component/navigation/SideNavItemGroup';
-import SideNavSubmenuItem from 'common/component/navigation/SideNavSubmenuItem';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 const useStyles = createUseStyles({
@@ -64,12 +63,6 @@ const useStyles = createUseStyles({
     }
 });
 
-function renderSubmenuComponent(item, index, submenu) {
-    const isLastItem = index === submenu.length - 1;
-    const Component = item.type === 'group' ? SideNavItemGroup : SideNavSubmenuItem;
-    return <Component key={item.id} showSeparator={!isLastItem} {...item} />;
-}
-
 const SideNavSubmenu = ({ icon, id, label, subMenuItems }) => {
     const classes = useStyles();
 
@@ -98,6 +91,15 @@ const SideNavSubmenu = ({ icon, id, label, subMenuItems }) => {
     );
 }
 
-// SideNavSubmenu.propTypes = SideNavItemPropTypes;
+SideNavSubmenu.propTypes = {
+    icon: PropTypes.string,
+    id: PropTypes.string,
+    label: PropTypes.string,
+    subMenuItems: PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.string,
+        label: PropTypes.string,
+        href: PropTypes.string
+    }))
+};
 
 export default SideNavSubmenu;

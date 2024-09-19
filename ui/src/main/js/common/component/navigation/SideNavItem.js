@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
-import SideNavLinkItem from 'common/component/navigation/SideNavLinkItem';
+import SideNavButtonItem from 'common/component/navigation/SideNavButtonItem';
 import SideNavSubmenu from 'common/component/navigation/SideNavSubmenu';
 
 const useStyles = createUseStyles(theme => ({
@@ -42,14 +42,14 @@ const useStyles = createUseStyles(theme => ({
     }
 }));
 
-const SideNavItem = ({ hasSubMenu, ...props }) => {
+const SideNavItem = ({ hasSubMenu, isComponent, Component, ...props }) => {
     const classes = useStyles();
 
-    const Component = hasSubMenu ? SideNavSubmenu : SideNavLinkItem;
+    const NavItem = hasSubMenu ? SideNavSubmenu : SideNavButtonItem;
 
     return (
         <li className={classes.navItem} role={null}>
-            <Component {...props} />
+            <NavItem {...props} />
         </li>
     );
 }

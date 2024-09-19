@@ -16,9 +16,8 @@ const useStyles = createUseStyles(theme => ({
     }
 }));
 
-const SideNavItemGroup = ({ id, label, showSeparator, groupItems }) => {
+const SideNavItemGroup = ({ groupItems }) => {
     const classes = useStyles();
-    // const groupItems = useSelector(state => state.ui.sidenav.groups[id]) || [];
 
     if (!groupItems.length) {
         return null;
@@ -26,21 +25,19 @@ const SideNavItemGroup = ({ id, label, showSeparator, groupItems }) => {
     
     return (
         <>
-            {/* <BaseMenuItem className={classes.groupLabel}>
-                <div role="separator">{label}</div>
-            </BaseMenuItem> */}
             {groupItems.map(item => (
                 <SideNavSubmenuItem key={item.id} {...item} />
             ))}
-            {/* {showSeparator && <MenuSeparator />} */}
         </>
     );
 }
 
-// SideNavItemGroup.propTypes = {
-//     id: PropTypes.string.isRequired,
-//     label: PropTypes.string.isRequired,
-//     showSeparator: PropTypes.bool
-// };
+SideNavItemGroup.propTypes = {
+    groupItems: PropTypes.shape({
+        id: PropTypes.string,
+        label: PropTypes.string,
+        href: PropTypes.string
+    })
+};
 
 export default SideNavItemGroup;

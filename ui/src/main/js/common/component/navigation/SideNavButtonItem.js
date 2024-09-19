@@ -14,20 +14,33 @@ const useStyles = createUseStyles({
     }
 });
 
-const SideNavLinkItem = ({ href, icon, id, label }) => {
+const SideNavButtonItem = ({ href, icon, id, label, type = 'button', onClick }) => {
     const classes = useStyles();
+    
+    if (type === 'link') {
+        return (
+            <a href={href} tabIndex={0}>
+                <FontAwesomeIcon size="2x" className={classes.icon} icon={icon} fixedWidth />
+                <span id={id} className={classes.navLabel}>{label}</span>
+            </a>
+        );
+    }
+    
+    // Default is button type
     return (
-        <a href={href} tabIndex={0}>
+        <button onClick={onClick}>
             <FontAwesomeIcon size="2x" className={classes.icon} icon={icon} fixedWidth />
             <span id={id} className={classes.navLabel}>{label}</span>
-        </a>
-    );
+        </button>
+    )
 }
 
-SideNavLinkItem.propTypes = {
+SideNavButtonItem.propTypes = {
     id: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
-    href: PropTypes.string.isRequired
+    href: PropTypes.string,
+    onClick: PropTypes.func,
+    type: PropTypes.string,
 };
 
-export default SideNavLinkItem;
+export default SideNavButtonItem;
