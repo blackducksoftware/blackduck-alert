@@ -3,7 +3,6 @@ package com.synopsys.integration.alert.component.authentication.security.databas
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +22,7 @@ import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
+import com.synopsys.integration.alert.test.common.MockAlertProperties;
 
 class AlertDatabaseAuthenticationPerformerTest {
     public static final String VALID_USERNAME = "username";
@@ -34,6 +34,7 @@ class AlertDatabaseAuthenticationPerformerTest {
     private DaoAuthenticationProvider alertDatabaseAuthProvider;
     private UserAccessor userAccessor;
     private UserModel expectedUserAccessorResponse;
+    private MockAlertProperties alertProperties;
 
     @BeforeEach
     public void init() {
@@ -41,6 +42,7 @@ class AlertDatabaseAuthenticationPerformerTest {
         roleAccessor = Mockito.mock(RoleAccessor.class);
         alertDatabaseAuthProvider = Mockito.mock(DaoAuthenticationProvider.class);
         userAccessor = Mockito.mock(UserAccessor.class);
+        alertProperties = new MockAlertProperties();
     }
 
     @Test
@@ -49,10 +51,11 @@ class AlertDatabaseAuthenticationPerformerTest {
             authenticationEventManager,
             roleAccessor,
             alertDatabaseAuthProvider,
-            userAccessor
+            userAccessor,
+            alertProperties
         );
         Authentication authenticationToken = new UsernamePasswordAuthenticationToken(VALID_USERNAME, VALID_PASSWORD);
-        expectedUserAccessorResponse = createUserModel(VALID_USERNAME, VALID_PASSWORD, false, null, 0);
+        expectedUserAccessorResponse = createUserModel(false, null, 0);
         mockUserAccessorMethods(false);
         mockAuthenticationResponse(authenticationToken, true);
         Optional<Authentication> authentication = authenticationPerformer.performAuthentication(authenticationToken);
@@ -65,7 +68,8 @@ class AlertDatabaseAuthenticationPerformerTest {
             authenticationEventManager,
             roleAccessor,
             alertDatabaseAuthProvider,
-            userAccessor
+            userAccessor,
+            alertProperties
         );
         Authentication authenticationToken = new UsernamePasswordAuthenticationToken(INVALID_USERNAME, VALID_PASSWORD);
         mockUserAccessorMethods(false);
@@ -79,10 +83,11 @@ class AlertDatabaseAuthenticationPerformerTest {
             authenticationEventManager,
             roleAccessor,
             alertDatabaseAuthProvider,
-            userAccessor
+            userAccessor,
+            alertProperties
         );
         Authentication authenticationToken = new UsernamePasswordAuthenticationToken(VALID_USERNAME, INVALID_PASSWORD);
-        expectedUserAccessorResponse = createUserModel(VALID_USERNAME, VALID_PASSWORD, false, null, 0);
+        expectedUserAccessorResponse = createUserModel(false, null, 0);
         mockUserAccessorMethods(false);
         mockAuthenticationResponse(authenticationToken, false);
         Optional<Authentication> authentication = authenticationPerformer.performAuthentication(authenticationToken);
@@ -95,10 +100,11 @@ class AlertDatabaseAuthenticationPerformerTest {
             authenticationEventManager,
             roleAccessor,
             alertDatabaseAuthProvider,
-            userAccessor
+            userAccessor,
+            alertProperties
         );
-        Authentication authenticationToken = new UsernamePasswordAuthenticationToken(VALID_USERNAME, INVALID_USERNAME);
-        expectedUserAccessorResponse = createUserModel(VALID_USERNAME, INVALID_PASSWORD, false, null, 0);
+        Authentication authenticationToken = new UsernamePasswordAuthenticationToken(VALID_USERNAME, INVALID_PASSWORD);
+        expectedUserAccessorResponse = createUserModel(false, null, 0);
         mockUserAccessorMethods(false);
         Mockito.when(alertDatabaseAuthProvider.authenticate(authenticationToken)).thenThrow(new BadCredentialsException("Bad user credentials exception test."));
         Optional<Authentication> authentication = authenticationPerformer.performAuthentication(authenticationToken);
@@ -107,17 +113,17 @@ class AlertDatabaseAuthenticationPerformerTest {
 
     @Test
     void testAccountLocked() throws AlertForbiddenOperationException, AlertConfigurationException {
-        int numberOfAttempts = 5;
+        long numberOfAttempts = 5;
+        alertProperties.setLoginLockoutThreshold(numberOfAttempts);
         AlertDatabaseAuthenticationPerformer authenticationPerformer = new AlertDatabaseAuthenticationPerformer(
             authenticationEventManager,
             roleAccessor,
             alertDatabaseAuthProvider,
             userAccessor,
-            numberOfAttempts,
-            AlertDatabaseAuthenticationPerformer.DEFAULT_LOCKOUT_DURATION_IN_SECONDS
+            alertProperties
         );
         Authentication authenticationToken = new UsernamePasswordAuthenticationToken(VALID_USERNAME, INVALID_PASSWORD);
-        expectedUserAccessorResponse = createUserModel(VALID_USERNAME, VALID_PASSWORD, false, null, 0);
+        expectedUserAccessorResponse = createUserModel(false, null, 0);
         mockUserAccessorMethods(false);
         mockAuthenticationResponse(authenticationToken, false);
         long currentAttempts = 0;
@@ -132,18 +138,18 @@ class AlertDatabaseAuthenticationPerformerTest {
     }
 
     @Test
-    void testLockoutDurationInEffect() throws AlertForbiddenOperationException, AlertConfigurationException, InterruptedException {
-        int numberOfAttempts = 5;
+    void testLockoutDurationInEffect() throws AlertForbiddenOperationException, AlertConfigurationException {
+        long numberOfAttempts = 5;
+        alertProperties.setLoginLockoutThreshold(numberOfAttempts);
         AlertDatabaseAuthenticationPerformer authenticationPerformer = new AlertDatabaseAuthenticationPerformer(
             authenticationEventManager,
             roleAccessor,
             alertDatabaseAuthProvider,
             userAccessor,
-            numberOfAttempts,
-            AlertDatabaseAuthenticationPerformer.DEFAULT_LOCKOUT_DURATION_IN_SECONDS
+            alertProperties
         );
         Authentication authenticationToken = new UsernamePasswordAuthenticationToken(VALID_USERNAME, INVALID_PASSWORD);
-        expectedUserAccessorResponse = createUserModel(VALID_USERNAME, VALID_PASSWORD, false, null, 0);
+        expectedUserAccessorResponse = createUserModel(false, null, 0);
         mockUserAccessorMethods(false);
         mockAuthenticationResponse(authenticationToken, false);
         long currentAttempts = 0;
@@ -161,40 +167,40 @@ class AlertDatabaseAuthenticationPerformerTest {
     }
 
     @Test
-    void testLockoutDurationExpired() throws AlertForbiddenOperationException, AlertConfigurationException, InterruptedException {
+    void testLockoutDurationExpired() throws AlertForbiddenOperationException, AlertConfigurationException {
+        alertProperties.setLoginLockoutThreshold(1L);
+        alertProperties.setLoginLockoutMinutes(1L);
         AlertDatabaseAuthenticationPerformer authenticationPerformer = new AlertDatabaseAuthenticationPerformer(
             authenticationEventManager,
             roleAccessor,
             alertDatabaseAuthProvider,
             userAccessor,
-            1,
-            1
+            alertProperties
         );
         Authentication authenticationToken = new UsernamePasswordAuthenticationToken(VALID_USERNAME, VALID_PASSWORD);
-        expectedUserAccessorResponse = createUserModel(VALID_USERNAME, VALID_PASSWORD, true, OffsetDateTime.now(), 1);
+        expectedUserAccessorResponse = createUserModel(true, OffsetDateTime.now().minusMinutes(2L), 1);
         mockUserAccessorMethods(false);
         mockAuthenticationResponse(authenticationToken, true);
-        TimeUnit.SECONDS.sleep(1);
         Optional<Authentication> authentication = authenticationPerformer.performAuthentication(authenticationToken);
         Assertions.assertTrue(authentication.isPresent());
         Assertions.assertFalse(expectedUserAccessorResponse.isLocked());
     }
 
     @Test
-    void testLockoutDurationExpiredAndFailedAttemptsReset() throws AlertForbiddenOperationException, AlertConfigurationException, InterruptedException {
+    void testLockoutDurationExpiredAndFailedAttemptsReset() throws AlertForbiddenOperationException, AlertConfigurationException {
+        alertProperties.setLoginLockoutThreshold(1L);
+        alertProperties.setLoginLockoutMinutes(1L);
         AlertDatabaseAuthenticationPerformer authenticationPerformer = new AlertDatabaseAuthenticationPerformer(
             authenticationEventManager,
             roleAccessor,
             alertDatabaseAuthProvider,
             userAccessor,
-            1,
-            1
+            alertProperties
         );
         Authentication authenticationToken = new UsernamePasswordAuthenticationToken(VALID_USERNAME, INVALID_PASSWORD);
-        expectedUserAccessorResponse = createUserModel(VALID_USERNAME, VALID_PASSWORD, true, OffsetDateTime.now(), 5);
+        expectedUserAccessorResponse = createUserModel(true, OffsetDateTime.now().minusMinutes(2L), 5);
         mockUserAccessorMethods(false);
         mockAuthenticationResponse(authenticationToken, false);
-        TimeUnit.SECONDS.sleep(1);
         Optional<Authentication> authentication = authenticationPerformer.performAuthentication(authenticationToken);
         Assertions.assertTrue(authentication.isEmpty());
         Assertions.assertTrue(expectedUserAccessorResponse.isLocked());
@@ -207,10 +213,11 @@ class AlertDatabaseAuthenticationPerformerTest {
             authenticationEventManager,
             roleAccessor,
             alertDatabaseAuthProvider,
-            userAccessor
+            userAccessor,
+            alertProperties
         );
         Authentication authenticationToken = new UsernamePasswordAuthenticationToken(VALID_USERNAME, VALID_PASSWORD);
-        expectedUserAccessorResponse = createUserModel(VALID_USERNAME, VALID_PASSWORD, false, null, 0);
+        expectedUserAccessorResponse = createUserModel(false, null, 0);
         mockUserAccessorMethods(true);
         mockAuthenticationResponse(authenticationToken, true);
         Optional<Authentication> authentication = authenticationPerformer.performAuthentication(authenticationToken);
@@ -239,12 +246,12 @@ class AlertDatabaseAuthenticationPerformerTest {
             .when(userAccessor).getUser(INVALID_USERNAME);
     }
 
-    private UserModel createUserModel(String username, String password, boolean locked, OffsetDateTime lastFailedLogin, long failedLoginCount) {
+    private UserModel createUserModel(boolean locked, OffsetDateTime lastFailedLogin, long failedLoginCount) {
         return UserModel.existingUser(
             1L,
-            username,
-            password,
-            String.format("%s@email.example.com", username),
+            VALID_USERNAME,
+            VALID_PASSWORD,
+            String.format("%s@email.example.com", VALID_USERNAME),
             AuthenticationType.DATABASE,
             Set.of(),
             locked,

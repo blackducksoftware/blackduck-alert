@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.component.authentication.security.databas
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.authentication.security.AuthenticationPerformer;
 import com.synopsys.integration.alert.api.authentication.security.event.AuthenticationEventManager;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
@@ -29,9 +31,6 @@ import com.synopsys.integration.alert.common.persistence.model.UserModel;
 
 @Component
 public class AlertDatabaseAuthenticationPerformer extends AuthenticationPerformer {
-    public static final long DEFAULT_FAILED_ATTEMPTS = 10;
-    // 15 minute lockout duration 15 * 60 = 900
-    public static final long DEFAULT_LOCKOUT_DURATION_IN_SECONDS = 900;
     private final Logger logger = LoggerFactory.getLogger(AlertDatabaseAuthenticationPerformer.class);
 
     private final DaoAuthenticationProvider alertDatabaseAuthProvider;
@@ -45,26 +44,14 @@ public class AlertDatabaseAuthenticationPerformer extends AuthenticationPerforme
         AuthenticationEventManager authenticationEventManager,
         RoleAccessor roleAccessor,
         DaoAuthenticationProvider alertDatabaseAuthProvider,
-        UserAccessor userAccessor
-    ) {
-        this(authenticationEventManager, roleAccessor, alertDatabaseAuthProvider, userAccessor, DEFAULT_FAILED_ATTEMPTS,
-            DEFAULT_LOCKOUT_DURATION_IN_SECONDS
-        );
-    }
-
-    protected AlertDatabaseAuthenticationPerformer(
-        AuthenticationEventManager authenticationEventManager,
-        RoleAccessor roleAccessor,
-        DaoAuthenticationProvider alertDatabaseAuthProvider,
         UserAccessor userAccessor,
-        long maximumFailedAttempts,
-        long lockoutDurationInSeconds
+        AlertProperties alertProperties
     ) {
         super(authenticationEventManager, roleAccessor);
         this.alertDatabaseAuthProvider = alertDatabaseAuthProvider;
         this.userAccessor = userAccessor;
-        this.maximumFailedAttempts = maximumFailedAttempts;
-        this.lockoutDurationInSeconds = lockoutDurationInSeconds;
+        this.maximumFailedAttempts = alertProperties.getLoginLockoutThreshold();
+        this.lockoutDurationInSeconds = TimeUnit.MINUTES.toSeconds(alertProperties.getLoginLockoutMinutes());
     }
 
     @Override

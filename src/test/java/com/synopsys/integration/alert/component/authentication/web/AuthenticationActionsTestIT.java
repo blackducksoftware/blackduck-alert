@@ -40,6 +40,7 @@ import com.synopsys.integration.alert.api.authentication.security.event.Authenti
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.authentication.ldap.LDAPAuthenticationPerformer;
 import com.synopsys.integration.alert.authentication.ldap.action.LDAPManager;
+import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
@@ -75,6 +76,9 @@ class AuthenticationActionsTestIT {
 
     @Autowired
     private SecurityContextRepository securityContextRepository;
+
+    @Autowired
+    private AlertProperties alertProperties;
 
     @BeforeEach
     public void init() throws Exception {
@@ -167,7 +171,8 @@ class AuthenticationActionsTestIT {
             authenticationEventManager,
             roleAccessor,
             databaseProvider,
-            userAccessor
+            userAccessor,
+            alertProperties
         );
         LDAPAuthenticationPerformer ldapAuthenticationPerformer = new LDAPAuthenticationPerformer(authenticationEventManager, roleAccessor, mockLDAPManager);
         AlertAuthenticationProvider testAuthenticationProvider = new AlertAuthenticationProvider(List.of(ldapAuthenticationPerformer, alertDatabaseAuthenticationPerformer));
