@@ -76,7 +76,7 @@ const Navigation = ({ confirmLogoutPressed, cancelLogout, globalDescriptorMap })
     }, {
         id: 'jira_server',
         label: 'Jira Server',
-        href: JIRA_SERVER_URLS.mainUrl
+        href: JIRA_SERVER_URLS.jiraServerUrl
     }, {
         id: 'microsoft_teams',
         label: 'Microsoft Teams',

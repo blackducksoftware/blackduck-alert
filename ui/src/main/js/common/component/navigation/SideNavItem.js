@@ -42,7 +42,7 @@ const useStyles = createUseStyles(theme => ({
     }
 }));
 
-const SideNavItem = ({ hasSubMenu, isComponent, Component, ...props }) => {
+const SideNavItem = ({ hasSubMenu, ...props }) => {
     const classes = useStyles();
 
     const NavItem = hasSubMenu ? SideNavSubmenu : SideNavButtonItem;
