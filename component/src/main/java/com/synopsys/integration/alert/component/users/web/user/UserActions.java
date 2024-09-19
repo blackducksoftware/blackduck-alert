@@ -176,8 +176,8 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
                 existingUser.getRoles(),
                 existingUser.isLocked(),
                 existingUser.isEnabled(),
-                existingUser.getLastLogin(),
-                existingUser.getLastFailedLogin(),
+                existingUser.getLastLogin().orElse(null),
+                existingUser.getLastFailedLogin().orElse(null),
                 existingUser.getFailedLoginAttempts()
             );
             try {

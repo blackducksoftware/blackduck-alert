@@ -87,7 +87,7 @@ public class AlertDatabaseAuthenticationPerformer extends AuthenticationPerforme
             return Optional.of(existingUser);
         }
 
-        Duration durationFromLastFailedLogin = Duration.between(existingUser.getLastFailedLogin(), OffsetDateTime.now());
+        Duration durationFromLastFailedLogin = Duration.between(existingUser.getLastFailedLogin().orElse(OffsetDateTime.now()), OffsetDateTime.now());
         boolean remainLocked = Math.abs(durationFromLastFailedLogin.toSeconds()) < lockoutDurationInSeconds;
         long failedLoginAttempts = existingUser.getFailedLoginAttempts();
         // if account should be unlocked reset the failed login attempts to 0.
@@ -103,8 +103,8 @@ public class AlertDatabaseAuthenticationPerformer extends AuthenticationPerforme
             existingUser.getRoles(),
             remainLocked,
             existingUser.isEnabled(),
-            existingUser.getLastLogin(),
-            existingUser.getLastFailedLogin(),
+            existingUser.getLastLogin().orElse(null),
+            existingUser.getLastFailedLogin().orElse(null),
             failedLoginAttempts
         );
         return updateUserModel(updatedUser);
@@ -112,8 +112,8 @@ public class AlertDatabaseAuthenticationPerformer extends AuthenticationPerforme
 
     private void updateLoginStats(UserModel userModel, boolean authenticated) {
         long failedLoginAttempts = userModel.getFailedLoginAttempts();
-        OffsetDateTime lastLogin = userModel.getLastLogin();
-        OffsetDateTime lastFailedLogin = userModel.getLastFailedLogin();
+        OffsetDateTime lastLogin = userModel.getLastLogin().orElse(null);
+        OffsetDateTime lastFailedLogin = userModel.getLastFailedLogin().orElse(null);
         if (!authenticated) {
             failedLoginAttempts++;
             lastFailedLogin = OffsetDateTime.now();

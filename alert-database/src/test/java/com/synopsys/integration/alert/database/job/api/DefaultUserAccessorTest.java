@@ -371,8 +371,8 @@ class DefaultUserAccessorTest {
         Assertions.assertEquals(username, userModel.getName());
         Assertions.assertEquals(emailAddress, userModel.getEmailAddress());
         Assertions.assertTrue(userModel.getRoleNames().contains(expectedRoleName));
-        Assertions.assertEquals(lastLogin, userModel.getLastLogin());
-        Assertions.assertNull(userModel.getLastFailedLogin());
+        Assertions.assertEquals(lastLogin, userModel.getLastLogin().orElse(null));
+        Assertions.assertNull(userModel.getLastFailedLogin().orElse(null));
         Assertions.assertEquals(failedLoginCount, userModel.getFailedLoginAttempts());
     }
 

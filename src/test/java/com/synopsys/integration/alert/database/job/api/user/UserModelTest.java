@@ -1,7 +1,7 @@
 package com.synopsys.integration.alert.database.job.api.user;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -17,14 +17,14 @@ import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 
-public class UserModelTest {
+class UserModelTest {
 
     @Test
-    public void testUserModel() {
+    void testUserModel() {
         String expectedUserName = "expectedUser";
         String expectedPassword = "expectedPassword";
         String expectedEmail = "expectedEmail";
-        Set<String> roleNames = new LinkedHashSet<>(Arrays.asList(DefaultUserRole.values()).stream().map(DefaultUserRole::name).collect(Collectors.toList()));
+        Set<String> roleNames = Arrays.stream(DefaultUserRole.values()).map(DefaultUserRole::name).collect(Collectors.toCollection(LinkedHashSet::new));
         Set<UserRoleModel> expectedRoles = roleNames.stream().map(UserRoleModel::of).collect(Collectors.toSet());
         UserModel userModel = UserModel.newUser(expectedUserName, expectedPassword, expectedEmail, AuthenticationType.DATABASE, expectedRoles, true);
 
@@ -42,13 +42,11 @@ public class UserModelTest {
     }
 
     @Test
-    public void testUserModelNullRoles() {
+    void testUserModelNullRoles() {
         String expectedUserName = "expectedUser";
         String expectedPassword = "expectedPassword";
         String expectedEmail = "expectedEmail";
-        Set<String> roleNames = null;
-        Set<UserRoleModel> expectedRoles = null;
-        UserModel userModel = UserModel.newUser(expectedUserName, expectedPassword, expectedEmail, AuthenticationType.DATABASE, expectedRoles, true);
+        UserModel userModel = UserModel.newUser(expectedUserName, expectedPassword, expectedEmail, AuthenticationType.DATABASE, null, true);
 
         assertEquals(expectedUserName, userModel.getName());
         assertEquals(expectedPassword, userModel.getPassword());
@@ -64,7 +62,7 @@ public class UserModelTest {
     }
 
     @Test
-    public void testUserModelEmptyRoles() {
+    void testUserModelEmptyRoles() {
         String expectedUserName = "expectedUser";
         String expectedPassword = "expectedPassword";
         String expectedEmail = "expectedEmail";

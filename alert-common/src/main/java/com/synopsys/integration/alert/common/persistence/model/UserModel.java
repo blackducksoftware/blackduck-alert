@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.common.persistence.model;
 import java.io.Serial;
 import java.time.OffsetDateTime;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -74,6 +75,10 @@ public class UserModel extends AlertSerializableModel {
     }
 
     public static UserModel newUser(String userName, String password, String emailAddress, AuthenticationType authenticationType, Set<UserRoleModel> roles, boolean enabled) {
+        return existingUser(null, userName, password, emailAddress, authenticationType, roles, false, enabled, null, null, 0L);
+    }
+
+    public static UserModel loggedInUser(String userName, String password, String emailAddress, AuthenticationType authenticationType, Set<UserRoleModel> roles, boolean enabled) {
         return existingUser(null, userName, password, emailAddress, authenticationType, roles, false, enabled, OffsetDateTime.now(), null, 0L);
     }
 
@@ -154,12 +159,12 @@ public class UserModel extends AlertSerializableModel {
         return AuthenticationType.DATABASE != authenticationType;
     }
 
-    public OffsetDateTime getLastLogin() {
-        return lastLogin;
+    public Optional<OffsetDateTime> getLastLogin() {
+        return Optional.ofNullable(lastLogin);
     }
 
-    public OffsetDateTime getLastFailedLogin() {
-        return lastFailedLogin;
+    public Optional<OffsetDateTime> getLastFailedLogin() {
+        return Optional.ofNullable(lastFailedLogin);
     }
 
     public Long getFailedLoginAttempts() {

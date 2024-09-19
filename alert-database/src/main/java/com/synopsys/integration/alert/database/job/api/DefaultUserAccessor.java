@@ -129,8 +129,8 @@ public class DefaultUserAccessor implements UserAccessor {
                 user.isPasswordExpired(),
                 user.isEnabled(),
                 existingUser.getAuthenticationType(),
-                user.getLastLogin(),
-                user.getLastFailedLogin(),
+                user.getLastLogin().orElse(null),
+                user.getLastFailedLogin().orElse(null),
                 user.getFailedLoginAttempts()
             );
             newEntity.setId(existingUserId);

@@ -31,7 +31,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @AlertIntegrationTest
-public class ConfigurationOverridesStartupComponentTest {
+class ConfigurationOverridesStartupComponentTest {
     private static final String DEFAULT_ADMIN_USER = "sysadmin";
     private static final String DEFAULT_PASSWORD = "blackduck";
     private static final String DEFAULT_PASSWORD_ENCODED = "$2a$16$Q3wfnhwA.1Qm3Tz3IkqDC.743C5KI7nJIuYlZ4xKXre/WBYpjUEFy";
@@ -61,7 +61,7 @@ public class ConfigurationOverridesStartupComponentTest {
     }
 
     @Test
-    public void testInitializeNoChange() throws AlertException {
+    void testInitializeNoChange() throws AlertException {
         Environment environment = Mockito.mock(Environment.class);
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
 
@@ -101,7 +101,7 @@ public class ConfigurationOverridesStartupComponentTest {
     }
 
     @Test
-    public void testInitializeResetPassword() throws AlertException {
+    void testInitializeResetPassword() throws AlertException {
         Environment environment = Mockito.mock(Environment.class);
         Mockito.when(environment.getProperty(ConfigurationOverridesStartupComponent.ENV_VAR_ADMIN_USER_PASSWORD_RESET)).thenReturn("true");
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
@@ -143,7 +143,7 @@ public class ConfigurationOverridesStartupComponentTest {
     }
 
     @Test
-    public void testInitializeResetPasswordDifferentUsername() throws AlertException {
+    void testInitializeResetPasswordDifferentUsername() throws AlertException {
         Environment environment = Mockito.mock(Environment.class);
         Mockito.when(environment.getProperty(ConfigurationOverridesStartupComponent.ENV_VAR_ADMIN_USER_PASSWORD_RESET)).thenReturn("true");
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
@@ -194,8 +194,8 @@ public class ConfigurationOverridesStartupComponentTest {
             oldUserModel.getRoles(),
             oldUserModel.isLocked(),
             oldUserModel.isEnabled(),
-            oldUserModel.getLastLogin(),
-            oldUserModel.getLastFailedLogin(),
+            oldUserModel.getLastLogin().orElse(null),
+            oldUserModel.getLastFailedLogin().orElse(null),
             oldUserModel.getFailedLoginAttempts()
         );
     }
@@ -208,8 +208,8 @@ public class ConfigurationOverridesStartupComponentTest {
             oldUserModel.getRoles(),
             oldUserModel.isLocked(),
             oldUserModel.isEnabled(),
-            oldUserModel.getLastLogin(),
-            oldUserModel.getLastFailedLogin(),
+            oldUserModel.getLastLogin().orElse(null),
+            oldUserModel.getLastFailedLogin().orElse(null),
             oldUserModel.getFailedLoginAttempts()
         );
     }
