@@ -115,13 +115,8 @@ button + button {
 
 .contentArea {
   background-color: $synopsys-color-section-background;
-  position: fixed;
+  height: 100%;
   overflow: auto;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 250px;
-  z-index: 99;
   padding: 15px;
 }
 
