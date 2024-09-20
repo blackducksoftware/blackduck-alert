@@ -88,15 +88,16 @@ public class AuthenticationHandler {
                 securityContext.requireExplicitSave(true);
                 securityContext.securityContextRepository(securityContextRepository);
             })
-            //            .headers(customizer -> {
-            //                customizer.contentSecurityPolicy(cspCustomizer -> {
-            //                    cspCustomizer.policyDirectives("form-action 'self'; default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' 'www.synopsys.com';");
-            //                });
-            //            })
             .authenticationProvider(authenticationProvider)
             .authorizeHttpRequests(customizer -> {
                 customizer.requestMatchers(allowedRequestMatchers).permitAll();
                 customizer.anyRequest().authenticated();
+            })
+            .headers(customizer -> {
+                customizer.contentSecurityPolicy(cspCustomizer -> {
+                    cspCustomizer.policyDirectives(
+                        "form-action 'self'; default-src 'self' 'https://www.synopsys.com'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' 'https://www.synopsys.com';");
+                });
             })
             .csrf(customizer -> {
                 customizer.csrfTokenRequestHandler(csrfRequestHandler);
