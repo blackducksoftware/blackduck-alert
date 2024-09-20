@@ -84,22 +84,30 @@ public class AuthenticationHandler {
         CsrfTokenRequestAttributeHandler csrfRequestHandler = new CsrfTokenRequestAttributeHandler();
         // set the name of the attribute the CsrfToken will be populated on
         csrfRequestHandler.setCsrfRequestAttributeName(null);
-        http.securityContext((securityContext) -> {
+        http.securityContext(securityContext -> {
                 securityContext.requireExplicitSave(true);
                 securityContext.securityContextRepository(securityContextRepository);
             })
+            //            .headers(customizer -> {
+            //                customizer.contentSecurityPolicy(cspCustomizer -> {
+            //                    cspCustomizer.policyDirectives("form-action 'self'; default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' 'www.synopsys.com';");
+            //                });
+            //            })
             .authenticationProvider(authenticationProvider)
-            .authorizeHttpRequests()
-            .requestMatchers(allowedRequestMatchers).permitAll()
-            .and().authorizeHttpRequests().anyRequest().authenticated()
-            .and().csrf(csrf -> {
-                csrf.csrfTokenRequestHandler(csrfRequestHandler);
-                csrf.csrfTokenRepository(csrfTokenRepository);
-                csrf.ignoringRequestMatchers(allowedRequestMatchers);
+            .authorizeHttpRequests(customizer -> {
+                customizer.requestMatchers(allowedRequestMatchers).permitAll();
+                customizer.anyRequest().authenticated();
             })
-            .authorizeHttpRequests().withObjectPostProcessor(createRoleProcessor())
-            .and().logout()
-            .logoutSuccessUrl(HttpPathManager.PATH_ROOT);
+            .csrf(customizer -> {
+                customizer.csrfTokenRequestHandler(csrfRequestHandler);
+                customizer.csrfTokenRepository(csrfTokenRepository);
+                customizer.ignoringRequestMatchers(allowedRequestMatchers);
+            })
+            .authorizeHttpRequests(customizer -> {
+                customizer.withObjectPostProcessor(createRoleProcessor());
+            })
+            .logout(customizer -> customizer.logoutSuccessUrl(HttpPathManager.PATH_ROOT));
+
         configureSAML(http);
         return http.build();
     }
