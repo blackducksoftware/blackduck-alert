@@ -138,6 +138,41 @@ class AlertDatabaseAuthenticationPerformerTest {
     }
 
     @Test
+    void testFailedLoginsAndSuccessBeforeLocking() throws AlertForbiddenOperationException, AlertConfigurationException {
+        long numberOfFailedAttempts = 5;
+        alertProperties.setLoginLockoutThreshold(numberOfFailedAttempts + 2L);
+        AlertDatabaseAuthenticationPerformer authenticationPerformer = new AlertDatabaseAuthenticationPerformer(
+            authenticationEventManager,
+            roleAccessor,
+            alertDatabaseAuthProvider,
+            userAccessor,
+            alertProperties
+        );
+        Authentication invalidAuthenticationToken = new UsernamePasswordAuthenticationToken(VALID_USERNAME, INVALID_PASSWORD);
+        expectedUserAccessorResponse = createUserModel(false, null, 0);
+        mockUserAccessorMethods(false);
+        mockAuthenticationResponse(invalidAuthenticationToken, false);
+        long currentAttempts = 0;
+        while (currentAttempts < numberOfFailedAttempts) {
+            Optional<Authentication> authenticationAttempt = authenticationPerformer.performAuthentication(invalidAuthenticationToken);
+            Assertions.assertTrue(authenticationAttempt.isEmpty());
+            currentAttempts++;
+        }
+
+        OffsetDateTime lastFailedLogin = expectedUserAccessorResponse.getLastFailedLogin().orElseThrow(() -> new AssertionError("Failed login expected but not found"));
+
+        Authentication validAuthenticationToken = new UsernamePasswordAuthenticationToken(VALID_USERNAME, VALID_PASSWORD);
+        mockAuthenticationResponse(validAuthenticationToken, true);
+        Optional<Authentication> authentication = authenticationPerformer.performAuthentication(validAuthenticationToken);
+        OffsetDateTime lastLogin = expectedUserAccessorResponse.getLastLogin().orElseThrow(() -> new AssertionError("Last login expected but not found."));
+        Assertions.assertTrue(authentication.isPresent());
+        Assertions.assertTrue(authentication.get().isAuthenticated());
+        Assertions.assertFalse(expectedUserAccessorResponse.isLocked());
+        Assertions.assertTrue(lastLogin.isAfter(lastFailedLogin));
+        Assertions.assertEquals(0, expectedUserAccessorResponse.getFailedLoginAttempts());
+    }
+
+    @Test
     void testLockoutDurationInEffect() throws AlertForbiddenOperationException, AlertConfigurationException {
         long numberOfAttempts = 5;
         alertProperties.setLoginLockoutThreshold(numberOfAttempts);
