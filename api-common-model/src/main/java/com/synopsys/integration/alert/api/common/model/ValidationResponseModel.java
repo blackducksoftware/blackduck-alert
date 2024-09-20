@@ -13,7 +13,6 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.api.common.model.errors.FieldStatusSeverity;
 
 public class ValidationResponseModel extends AlertSerializableModel {
     public static final String VALIDATION_SUCCESS_MESSAGE = "The configuration is valid";
@@ -48,11 +47,10 @@ public class ValidationResponseModel extends AlertSerializableModel {
                 if (existingStatus.getSeverity().equals(fieldStatus.getSeverity())) {
                     String combinedMessage = String.format("%s, %s", existingStatus.getFieldMessage(), fieldStatus.getFieldMessage());
                     fieldNameToStatus.put(fieldName, new AlertFieldStatus(fieldName, fieldStatus.getSeverity(), combinedMessage));
-                } else if (FieldStatusSeverity.WARNING.equals(fieldStatus.getSeverity())) {
-                    continue;
                 }
+            } else {
+                fieldNameToStatus.put(fieldName, fieldStatus);
             }
-            fieldNameToStatus.put(fieldName, fieldStatus);
         }
         return new ValidationResponseModel(message, fieldNameToStatus);
     }

@@ -33,11 +33,12 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
 import com.synopsys.integration.alert.component.users.UserSystemValidator;
 import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
+import com.synopsys.integration.alert.component.users.web.user.util.UserCredentialValidator;
 
-public class UserActionsTest {
+class UserActionsTest {
     private final Long id = 1L;
     private final String name = "user";
-    private final String password = "password";
+    private final String password = "testPassword123!@#";
     private final String emailAddress = "noreply@synopsys.com";
     private final Set<UserRoleModel> roles = Set.of();
     private final AuthenticationType authenticationType = AuthenticationType.DATABASE;
@@ -48,6 +49,7 @@ public class UserActionsTest {
     private AuthorizationManager authorizationManager;
     private AuthenticationTypeAccessor authenticationTypeAccessor;
     private UserSystemValidator userSystemValidator;
+    private UserCredentialValidator userCredentialValidator;
 
     @BeforeEach
     public void init() {
@@ -57,15 +59,16 @@ public class UserActionsTest {
         authorizationManager = Mockito.mock(AuthorizationManager.class);
         authenticationTypeAccessor = Mockito.mock(AuthenticationTypeAccessor.class);
         userSystemValidator = Mockito.mock(UserSystemValidator.class);
+        userCredentialValidator = new UserCredentialValidator();
     }
 
     @Test
-    public void testFindExisting() {
+    void testFindExisting() {
         UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true);
 
         Mockito.when(userAccessor.getUser(Mockito.anyLong())).thenReturn(Optional.of(userModel));
 
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator, userCredentialValidator);
         Optional<UserConfig> userConfigOptional = userActions.findExisting(id);
 
         assertTrue(userConfigOptional.isPresent());
@@ -74,17 +77,17 @@ public class UserActionsTest {
     }
 
     @Test
-    public void testFindExistingEmpty() {
+    void testFindExistingEmpty() {
         Mockito.when(userAccessor.getUser(Mockito.anyLong())).thenReturn(Optional.empty());
 
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator, userCredentialValidator);
         Optional<UserConfig> userConfigOptional = userActions.findExisting(id);
 
         assertFalse(userConfigOptional.isPresent());
     }
 
     @Test
-    public void testReadAllWithoutChecks() {
+    void testReadAllWithoutChecks() {
         UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true);
         AuthenticationTypeDetails authenticationTypeDetails = new AuthenticationTypeDetails(1L, authenticationType.name());
 
@@ -92,7 +95,7 @@ public class UserActionsTest {
         Mockito.when(userAccessor.getUsers()).thenReturn(List.of(userModel));
         Mockito.when(authenticationTypeAccessor.getAuthenticationTypeDetails(Mockito.any())).thenReturn(Optional.of(authenticationTypeDetails));
 
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator, userCredentialValidator);
         ActionResponse<MultiUserConfigResponseModel> actionResponse = userActions.getAll();
 
         assertTrue(actionResponse.hasContent());
@@ -107,14 +110,14 @@ public class UserActionsTest {
     }
 
     @Test
-    public void testReadWithoutChecks() {
+    void testReadWithoutChecks() {
         UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true);
 
         Mockito.when(authorizationManager.hasReadPermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
         Mockito.when(userAccessor.getUser(2L)).thenReturn(Optional.empty());
 
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator, userCredentialValidator);
         ActionResponse<UserConfig> actionResponse = userActions.getOne(id);
         ActionResponse<UserConfig> actionResponseEmpty = userActions.getOne(2L);
 
@@ -128,14 +131,14 @@ public class UserActionsTest {
     }
 
     @Test
-    public void testTestWithoutChecks() {
+    void testTestWithoutChecks() {
         Set<String> roleNames = roles
                                     .stream()
                                     .map(UserRoleModel::getName)
                                     .collect(Collectors.toSet());
         roleNames.add(DefaultUserRole.ALERT_ADMIN.name());
-        UserConfig userConfig = new UserConfig(id.toString(), name, "newPassword", emailAddress, roleNames, false, false, false, true, false, authenticationType.name(), false);
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserConfig userConfig = new UserConfig(id.toString(), name, password, emailAddress, roleNames, false, false, false, true, false, authenticationType.name(), false);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator, userCredentialValidator);
         ValidationActionResponse validationActionResponse = userActions.testWithoutChecks(userConfig);
 
         assertFalse(validationActionResponse.isError());
@@ -144,7 +147,7 @@ public class UserActionsTest {
     }
 
     @Test
-    public void testCreateWithoutChecks() throws Exception {
+    void testCreateWithoutChecks() throws Exception {
         UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true);
 
         Mockito.when(userAccessor.addUser(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(userModel);
@@ -154,8 +157,8 @@ public class UserActionsTest {
                                     .stream()
                                     .map(UserRoleModel::getName)
                                     .collect(Collectors.toSet());
-        UserConfig userConfig = new UserConfig(id.toString(), name, "newPassword", emailAddress, roleNames, false, false, false, true, false, authenticationType.name(), false);
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserConfig userConfig = new UserConfig(id.toString(), name, password, emailAddress, roleNames, false, false, false, true, false, authenticationType.name(), false);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator, userCredentialValidator);
         ActionResponse<UserConfig> userConfigActionResponse = userActions.createWithoutChecks(userConfig);
 
         assertFalse(userConfigActionResponse.isError());
@@ -166,15 +169,15 @@ public class UserActionsTest {
     }
 
     @Test
-    public void testCreateWithoutChecksDatabaseError() throws Exception {
+    void testCreateWithoutChecksDatabaseError() throws Exception {
         Mockito.when(userAccessor.addUser(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenThrow(new AlertConfigurationException("Exception for test"));
 
         Set<String> roleNames = roles
                                     .stream()
                                     .map(UserRoleModel::getName)
                                     .collect(Collectors.toSet());
-        UserConfig userConfig = new UserConfig(id.toString(), name, "newPassword", emailAddress, roleNames, false, false, false, true, false, authenticationType.name(), false);
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserConfig userConfig = new UserConfig(id.toString(), name, password, emailAddress, roleNames, false, false, false, true, false, authenticationType.name(), false);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator, userCredentialValidator);
         ActionResponse<UserConfig> userConfigActionResponse = userActions.createWithoutChecks(userConfig);
 
         assertTrue(userConfigActionResponse.isError());
@@ -183,7 +186,7 @@ public class UserActionsTest {
     }
 
     @Test
-    public void testUpdateWithoutChecks() {
+    void testUpdateWithoutChecks() {
         UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true);
 
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
@@ -192,8 +195,8 @@ public class UserActionsTest {
                                     .stream()
                                     .map(UserRoleModel::getName)
                                     .collect(Collectors.toSet());
-        UserConfig userConfig = new UserConfig(id.toString(), name, "newPassword", "newEmailAddress", roleNames, false, false, false, true, false, authenticationType.name(), false);
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserConfig userConfig = new UserConfig(id.toString(), name, password, "newEmailAddress", roleNames, false, false, false, true, false, authenticationType.name(), false);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator, userCredentialValidator);
         ActionResponse<UserConfig> userConfigActionResponse = userActions.updateWithoutChecks(id, userConfig);
 
         assertFalse(userConfigActionResponse.isError());
@@ -202,7 +205,7 @@ public class UserActionsTest {
     }
 
     @Test
-    public void testUpdateWithoutChecksDatabaseError() throws Exception {
+    void testUpdateWithoutChecksDatabaseError() throws Exception {
         UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true);
 
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
@@ -212,8 +215,8 @@ public class UserActionsTest {
                                     .stream()
                                     .map(UserRoleModel::getName)
                                     .collect(Collectors.toSet());
-        UserConfig userConfig = new UserConfig(id.toString(), name, "newPassword", "newEmailAddress", roleNames, false, false, false, true, false, authenticationType.name(), false);
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserConfig userConfig = new UserConfig(id.toString(), name, password, "newEmailAddress", roleNames, false, false, false, true, false, authenticationType.name(), false);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator, userCredentialValidator);
         ActionResponse<UserConfig> userConfigActionResponse = userActions.updateWithoutChecks(id, userConfig);
 
         assertTrue(userConfigActionResponse.isError());
@@ -221,15 +224,15 @@ public class UserActionsTest {
     }
 
     @Test
-    public void testUpdateWithoutChecksNotFound() {
+    void testUpdateWithoutChecksNotFound() {
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.empty());
 
         Set<String> roleNames = roles
                                     .stream()
                                     .map(UserRoleModel::getName)
                                     .collect(Collectors.toSet());
-        UserConfig userConfig = new UserConfig(id.toString(), name, "newPassword", "newEmailAddress", roleNames, false, false, false, true, false, authenticationType.name(), false);
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserConfig userConfig = new UserConfig(id.toString(), name, password, "newEmailAddress", roleNames, false, false, false, true, false, authenticationType.name(), false);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator, userCredentialValidator);
         ActionResponse<UserConfig> userConfigActionResponse = userActions.updateWithoutChecks(id, userConfig);
 
         assertTrue(userConfigActionResponse.isError());
@@ -237,12 +240,12 @@ public class UserActionsTest {
     }
 
     @Test
-    public void testDeleteWithoutChecks() throws Exception {
+    void testDeleteWithoutChecks() throws Exception {
         UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true);
 
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
 
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator, userCredentialValidator);
         ActionResponse<UserConfig> userConfigActionResponse = userActions.deleteWithoutChecks(id);
 
         Mockito.verify(userAccessor).deleteUser(id);
@@ -251,13 +254,13 @@ public class UserActionsTest {
     }
 
     @Test
-    public void testDeleteWithoutChecksException() throws AlertForbiddenOperationException {
+    void testDeleteWithoutChecksException() throws AlertForbiddenOperationException {
         UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true);
 
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
         Mockito.doThrow(new AlertForbiddenOperationException("Exception for test")).when(userAccessor).deleteUser(id);
 
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator, userCredentialValidator);
         ActionResponse<UserConfig> userConfigActionResponse = userActions.deleteWithoutChecks(id);
 
         assertFalse(userConfigActionResponse.hasContent());
@@ -265,10 +268,10 @@ public class UserActionsTest {
     }
 
     @Test
-    public void testDeleteWithoutChecksEmpty() {
+    void testDeleteWithoutChecksEmpty() {
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.empty());
 
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator, userCredentialValidator);
         ActionResponse<UserConfig> userConfigActionResponse = userActions.deleteWithoutChecks(id);
 
         assertFalse(userConfigActionResponse.hasContent());
@@ -276,7 +279,7 @@ public class UserActionsTest {
     }
 
     @Test
-    public void testInternalUserNoEmailValidation() throws Exception {
+    void testInternalUserNoEmailValidation() {
         UserModel userModel = UserModel.existingUser(id, name, password, null, authenticationType, roles, true);
 
         Mockito.when(authorizationManager.hasExecutePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
@@ -286,8 +289,8 @@ public class UserActionsTest {
                                     .stream()
                                     .map(UserRoleModel::getName)
                                     .collect(Collectors.toSet());
-        UserConfig userConfig = new UserConfig(id.toString(), name, "newPassword", null, roleNames, false, false, false, true, false, authenticationType.name(), false);
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserConfig userConfig = new UserConfig(id.toString(), name, password, null, roleNames, false, false, false, true, false, authenticationType.name(), false);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator, userCredentialValidator);
 
         ValidationActionResponse validationActionResponse = userActions.validate(userConfig);
 
@@ -299,7 +302,7 @@ public class UserActionsTest {
     }
 
     @Test
-    public void testExternalUserNoEmailValidation() throws Exception {
+    void testExternalUserNoEmailValidation() {
         AuthenticationType authenticationTypeLDAP = AuthenticationType.LDAP;
 
         UserModel userModel = UserModel.existingUser(id, name, password, null, authenticationTypeLDAP, roles, true);
@@ -312,8 +315,8 @@ public class UserActionsTest {
                                     .map(UserRoleModel::getName)
                                     .collect(Collectors.toSet());
         roleNames.add(DefaultUserRole.ALERT_ADMIN.name());
-        UserConfig userConfig = new UserConfig(id.toString(), name, "newPassword", null, roleNames, false, false, false, true, false, authenticationTypeLDAP.name(), true);
-        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
+        UserConfig userConfig = new UserConfig(id.toString(), name, password, null, roleNames, false, false, false, true, false, authenticationTypeLDAP.name(), true);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator, userCredentialValidator);
 
         ValidationActionResponse validationActionResponse = userActions.validate(userConfig);
 
