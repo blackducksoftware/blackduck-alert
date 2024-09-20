@@ -23,7 +23,7 @@ class UserCredentialValidatorTest {
         assertEquals(1, fieldErrors.size());
         AlertFieldStatus fieldStatus = fieldErrors.stream().findFirst().orElseThrow(() -> new AssertionError("Expected field error but none were found"));
         assertEquals(UserActions.FIELD_KEY_USER_MGMT_PASSWORD, fieldStatus.getFieldName());
-        assertTrue(fieldStatus.getFieldMessage().contains("at least 8 characters"));
+        assertTrue(fieldStatus.getFieldMessage().contains(UserCredentialValidator.PASSWORD_TOO_SHORT_ERROR_MESSAGE));
         assertEquals(FieldStatusSeverity.ERROR, fieldStatus.getSeverity());
     }
 
@@ -35,7 +35,7 @@ class UserCredentialValidatorTest {
         assertEquals(1, fieldErrors.size());
         AlertFieldStatus fieldStatus = fieldErrors.stream().findFirst().orElseThrow(() -> new AssertionError("Expected field error but none were found"));
         assertEquals(UserActions.FIELD_KEY_USER_MGMT_PASSWORD, fieldStatus.getFieldName());
-        assertTrue(fieldStatus.getFieldMessage().contains("less than 128 characters"));
+        assertTrue(fieldStatus.getFieldMessage().contains(UserCredentialValidator.PASSWORD_TOO_LONG_ERROR_MESSAGE));
         assertEquals(FieldStatusSeverity.ERROR, fieldStatus.getSeverity());
     }
 
@@ -55,7 +55,7 @@ class UserCredentialValidatorTest {
         assertEquals(1, fieldErrors.size());
         AlertFieldStatus fieldStatus = fieldErrors.stream().findFirst().orElseThrow(() -> new AssertionError("Expected field error but none were found"));
         assertEquals(UserActions.FIELD_KEY_USER_MGMT_PASSWORD, fieldStatus.getFieldName());
-        assertTrue(fieldStatus.getFieldMessage().contains("at least one digit"));
+        assertTrue(fieldStatus.getFieldMessage().contains(UserCredentialValidator.PASSWORD_NO_DIGIT_MESSAGE));
         assertEquals(FieldStatusSeverity.ERROR, fieldStatus.getSeverity());
     }
 
@@ -67,7 +67,7 @@ class UserCredentialValidatorTest {
         assertEquals(1, fieldErrors.size());
         AlertFieldStatus fieldStatus = fieldErrors.stream().findFirst().orElseThrow(() -> new AssertionError("Expected field error but none were found"));
         assertEquals(UserActions.FIELD_KEY_USER_MGMT_PASSWORD, fieldStatus.getFieldName());
-        assertTrue(fieldStatus.getFieldMessage().contains("at least one upper case character"));
+        assertTrue(fieldStatus.getFieldMessage().contains(UserCredentialValidator.PASSWORD_NO_UPPER_CASE_MESSAGE));
         assertEquals(FieldStatusSeverity.ERROR, fieldStatus.getSeverity());
     }
 
@@ -79,7 +79,7 @@ class UserCredentialValidatorTest {
         assertEquals(1, fieldErrors.size());
         AlertFieldStatus fieldStatus = fieldErrors.stream().findFirst().orElseThrow(() -> new AssertionError("Expected field error but none were found"));
         assertEquals(UserActions.FIELD_KEY_USER_MGMT_PASSWORD, fieldStatus.getFieldName());
-        assertTrue(fieldStatus.getFieldMessage().contains("at least one lower case character"));
+        assertTrue(fieldStatus.getFieldMessage().contains(UserCredentialValidator.PASSWORD_NO_LOWER_CASE_MESSAGE));
         assertEquals(FieldStatusSeverity.ERROR, fieldStatus.getSeverity());
     }
 
@@ -91,7 +91,7 @@ class UserCredentialValidatorTest {
         assertEquals(1, fieldErrors.size());
         AlertFieldStatus fieldStatus = fieldErrors.stream().findFirst().orElseThrow(() -> new AssertionError("Expected field error but none were found"));
         assertEquals(UserActions.FIELD_KEY_USER_MGMT_PASSWORD, fieldStatus.getFieldName());
-        assertTrue(fieldStatus.getFieldMessage().contains("at least one special character"));
+        assertTrue(fieldStatus.getFieldMessage().contains(UserCredentialValidator.PASSWORD_NO_SPECIAL_CHARACTER_MESSAGE));
         assertEquals(FieldStatusSeverity.ERROR, fieldStatus.getSeverity());
     }
 
@@ -119,7 +119,7 @@ class UserCredentialValidatorTest {
         assertEquals(1, fieldErrors.size());
         AlertFieldStatus fieldStatus = fieldErrors.stream().findFirst().orElseThrow(() -> new AssertionError("Expected field error but none were found"));
         assertEquals(UserActions.FIELD_KEY_USER_MGMT_PASSWORD, fieldStatus.getFieldName());
-        assertTrue(fieldStatus.getFieldMessage().contains("password is too easy to guess"));
+        assertTrue(fieldStatus.getFieldMessage().contains(UserCredentialValidator.PASSWORD_TOO_SIMPLE_MESSAGE));
         assertEquals(FieldStatusSeverity.ERROR, fieldStatus.getSeverity());
     }
 

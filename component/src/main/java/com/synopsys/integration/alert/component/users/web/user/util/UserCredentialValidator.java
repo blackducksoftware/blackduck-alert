@@ -19,8 +19,17 @@ import com.synopsys.integration.alert.component.users.web.user.UserActions;
 
 @Component
 public class UserCredentialValidator {
+    public static final String PASSWORD_TOO_SHORT_ERROR_MESSAGE = "The password needs to be at least 8 characters long";
+    public static final String PASSWORD_TOO_LONG_ERROR_MESSAGE = "The password needs to be less than 128 characters long";
+    public static final String PASSWORD_NO_DIGIT_MESSAGE = "The password needs to contain at least one digit";
+    public static final String PASSWORD_NO_UPPER_CASE_MESSAGE = "The password needs to contain at least one upper case character";
+    public static final String PASSWORD_NO_LOWER_CASE_MESSAGE = "The password needs to contain at least one lower case character";
+    public static final String PASSWORD_NO_SPECIAL_CHARACTER_MESSAGE = "The password needs to contain at least one special character";
+    public static final String PASSWORD_TOO_SIMPLE_MESSAGE = "The password is too easy to guess, use a stronger password";
+
     private static final int DEFAULT_MINIMUM_PASSWORD_LENGTH = 8;
     private static final int DEFAULT_MAXIMUM_PASSWORD_LENGTH = 128;
+
     private final Logger logger = AlertLoggerFactory.getLogger(getClass());
     private final Set<String> alertPasswordDictionary = loadDictionary();
 
@@ -34,10 +43,10 @@ public class UserCredentialValidator {
 
     public void validatePasswordLength(List<AlertFieldStatus> fieldErrors, String passwordValue) {
         if (fieldErrors.isEmpty() && DEFAULT_MINIMUM_PASSWORD_LENGTH > passwordValue.length()) {
-            fieldErrors.add(AlertFieldStatus.error(UserActions.FIELD_KEY_USER_MGMT_PASSWORD, "The password needs to be at least 8 characters long."));
+            fieldErrors.add(AlertFieldStatus.error(UserActions.FIELD_KEY_USER_MGMT_PASSWORD, PASSWORD_TOO_SHORT_ERROR_MESSAGE));
         }
         if (fieldErrors.isEmpty() && DEFAULT_MAXIMUM_PASSWORD_LENGTH < passwordValue.length()) {
-            fieldErrors.add(AlertFieldStatus.error(UserActions.FIELD_KEY_USER_MGMT_PASSWORD, "The password needs to be less than 128 characters long."));
+            fieldErrors.add(AlertFieldStatus.error(UserActions.FIELD_KEY_USER_MGMT_PASSWORD, PASSWORD_TOO_LONG_ERROR_MESSAGE));
         }
     }
 
@@ -62,22 +71,22 @@ public class UserCredentialValidator {
             }
         }
         if (!containsDigit) {
-            fieldErrors.add(AlertFieldStatus.error(UserActions.FIELD_KEY_USER_MGMT_PASSWORD, "The password needs to contain at least one digit."));
+            fieldErrors.add(AlertFieldStatus.error(UserActions.FIELD_KEY_USER_MGMT_PASSWORD, PASSWORD_NO_DIGIT_MESSAGE));
         }
         if(!containsUpper) {
-            fieldErrors.add(AlertFieldStatus.error(UserActions.FIELD_KEY_USER_MGMT_PASSWORD, "The password needs to contain at least one upper case character."));
+            fieldErrors.add(AlertFieldStatus.error(UserActions.FIELD_KEY_USER_MGMT_PASSWORD, PASSWORD_NO_UPPER_CASE_MESSAGE));
         }
         if(!containsLower) {
-            fieldErrors.add(AlertFieldStatus.error(UserActions.FIELD_KEY_USER_MGMT_PASSWORD, "The password needs to contain at least one lower case character."));
+            fieldErrors.add(AlertFieldStatus.error(UserActions.FIELD_KEY_USER_MGMT_PASSWORD, PASSWORD_NO_LOWER_CASE_MESSAGE));
         }
         if(!containsSpecial) {
-            fieldErrors.add(AlertFieldStatus.error(UserActions.FIELD_KEY_USER_MGMT_PASSWORD, "The password needs to contain at least one special character."));
+            fieldErrors.add(AlertFieldStatus.error(UserActions.FIELD_KEY_USER_MGMT_PASSWORD, PASSWORD_NO_SPECIAL_CHARACTER_MESSAGE));
         }
     }
 
     public void validateCommonPasswords(List<AlertFieldStatus> fieldErrors, String passwordValue) {
         if (alertPasswordDictionary.contains(passwordValue)) {
-            fieldErrors.add(AlertFieldStatus.error(UserActions.FIELD_KEY_USER_MGMT_PASSWORD, "The password is too easy to guess, use a stronger password."));
+            fieldErrors.add(AlertFieldStatus.error(UserActions.FIELD_KEY_USER_MGMT_PASSWORD, PASSWORD_TOO_SIMPLE_MESSAGE));
         }
     }
 
