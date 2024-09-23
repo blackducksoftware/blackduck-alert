@@ -81,6 +81,11 @@ public class AlertProperties {
     @Value("${alert.hostname:}")
     private String alertHostName;
 
+    @Value("${alert.login.lockout.threshold:10}")
+    private Long loginLockoutThreshold;
+    @Value("${alert.login.lockout.minutes:10}")
+    private Long loginLockoutMinutes;
+
     public String getAlertConfigHome() {
         return StringUtils.trimToNull(alertConfigHome);
     }
@@ -168,6 +173,14 @@ public class AlertProperties {
 
     public Optional<String> getAlertHostName() {
         return getOptionalString(alertHostName);
+    }
+
+    public Long getLoginLockoutThreshold() {
+        return loginLockoutThreshold;
+    }
+
+    public Long getLoginLockoutMinutes() {
+        return loginLockoutMinutes;
     }
 
     private Optional<String> getOptionalString(String value) {

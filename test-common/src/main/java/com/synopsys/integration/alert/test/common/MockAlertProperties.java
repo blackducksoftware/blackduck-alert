@@ -37,6 +37,8 @@ public class MockAlertProperties extends AlertProperties {
     private String alertEmailAttachmentsDir;
 
     private String alertTrustStoreFile;
+    private Long loginLockoutThreshold = 10L;
+    private Long loginLockoutMinutes = 10L;
 
     public MockAlertProperties() {
         alertImagesDir = computeImagesDirPath().toString();
@@ -133,6 +135,24 @@ public class MockAlertProperties extends AlertProperties {
             return super.getTrustStoreFile();
         }
         return Optional.ofNullable(alertTrustStoreFile);
+    }
+
+    @Override
+    public Long getLoginLockoutThreshold() {
+        return this.loginLockoutThreshold;
+    }
+
+    public void setLoginLockoutThreshold(Long loginLockoutThreshold) {
+        this.loginLockoutThreshold = loginLockoutThreshold;
+    }
+
+    @Override
+    public Long getLoginLockoutMinutes() {
+        return this.loginLockoutMinutes;
+    }
+
+    public void setLoginLockoutMinutes(Long loginLockoutMinutes) {
+        this.loginLockoutMinutes = loginLockoutMinutes;
     }
 
     public void setTrustStoreFile(String trustStoreFile) {

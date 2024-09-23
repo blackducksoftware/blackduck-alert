@@ -1,5 +1,18 @@
 package com.synopsys.integration.alert.startup.component;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Optional;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
+
 import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
@@ -12,24 +25,13 @@ import com.synopsys.integration.alert.component.authentication.actions.Authentic
 import com.synopsys.integration.alert.component.authentication.web.AuthenticationActions;
 import com.synopsys.integration.alert.component.authentication.web.LoginConfig;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
-
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @AlertIntegrationTest
-public class ConfigurationOverridesStartupComponentTest {
+class ConfigurationOverridesStartupComponentTest {
     private static final String DEFAULT_ADMIN_USER = "sysadmin";
     private static final String DEFAULT_PASSWORD = "blackduck";
     private static final String DEFAULT_PASSWORD_ENCODED = "$2a$16$Q3wfnhwA.1Qm3Tz3IkqDC.743C5KI7nJIuYlZ4xKXre/WBYpjUEFy";
@@ -59,7 +61,7 @@ public class ConfigurationOverridesStartupComponentTest {
     }
 
     @Test
-    public void testInitializeNoChange() throws AlertException {
+    void testInitializeNoChange() throws AlertException {
         Environment environment = Mockito.mock(Environment.class);
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
 
@@ -99,7 +101,7 @@ public class ConfigurationOverridesStartupComponentTest {
     }
 
     @Test
-    public void testInitializeResetPassword() throws AlertException {
+    void testInitializeResetPassword() throws AlertException {
         Environment environment = Mockito.mock(Environment.class);
         Mockito.when(environment.getProperty(ConfigurationOverridesStartupComponent.ENV_VAR_ADMIN_USER_PASSWORD_RESET)).thenReturn("true");
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
@@ -141,7 +143,7 @@ public class ConfigurationOverridesStartupComponentTest {
     }
 
     @Test
-    public void testInitializeResetPasswordDifferentUsername() throws AlertException {
+    void testInitializeResetPasswordDifferentUsername() throws AlertException {
         Environment environment = Mockito.mock(Environment.class);
         Mockito.when(environment.getProperty(ConfigurationOverridesStartupComponent.ENV_VAR_ADMIN_USER_PASSWORD_RESET)).thenReturn("true");
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
@@ -186,12 +188,30 @@ public class ConfigurationOverridesStartupComponentTest {
 
     private UserModel changeUserPassword(UserModel oldUserModel, String newPassword) {
         return UserModel.existingUser(oldUserModel.getId(), DEFAULT_ADMIN_USER,
-            newPassword, oldUserModel.getEmailAddress(), oldUserModel.getAuthenticationType(), oldUserModel.getRoles(), oldUserModel.isEnabled());
+            newPassword,
+            oldUserModel.getEmailAddress(),
+            oldUserModel.getAuthenticationType(),
+            oldUserModel.getRoles(),
+            oldUserModel.isLocked(),
+            oldUserModel.isEnabled(),
+            oldUserModel.getLastLogin().orElse(null),
+            oldUserModel.getLastFailedLogin().orElse(null),
+            oldUserModel.getFailedLoginAttempts()
+        );
     }
 
     private UserModel changeUserNameAndPassword(UserModel oldUserModel, String newUsername, String newPassword) {
         return UserModel.existingUser(oldUserModel.getId(), newUsername,
-            newPassword, oldUserModel.getEmailAddress(), oldUserModel.getAuthenticationType(), oldUserModel.getRoles(), oldUserModel.isEnabled());
+            newPassword,
+            oldUserModel.getEmailAddress(),
+            oldUserModel.getAuthenticationType(),
+            oldUserModel.getRoles(),
+            oldUserModel.isLocked(),
+            oldUserModel.isEnabled(),
+            oldUserModel.getLastLogin().orElse(null),
+            oldUserModel.getLastFailedLogin().orElse(null),
+            oldUserModel.getFailedLoginAttempts()
+        );
     }
 
 }
