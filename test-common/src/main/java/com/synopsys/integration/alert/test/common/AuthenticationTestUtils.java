@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.test.common;
 
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -112,7 +113,7 @@ public class AuthenticationTestUtils {
     }
 
     public Authentication createAuthentication(Long id, String username, Set<UserRoleModel> roles) {
-        UserModel userModel = UserModel.existingUser(id, username, "", "", AuthenticationType.DATABASE, roles, true);
+        UserModel userModel = UserModel.existingUser(id, username, "", "", AuthenticationType.DATABASE, roles, false, true, OffsetDateTime.now(), null, 0L);
         UserPrincipal userPrincipal = new UserPrincipal(userModel);
         return new UsernamePasswordAuthenticationToken(userPrincipal, null, userPrincipal.getAuthorities());
     }

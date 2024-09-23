@@ -35,7 +35,11 @@ public class AuthenticationEventHandler implements AlertEventHandler<AlertAuthen
                         user.getEmailAddress(),
                         user.getAuthenticationType(),
                         user.getRoles(),
-                        user.isEnabled()
+                        user.isLocked(),
+                        user.isEnabled(),
+                        user.getLastLogin().orElse(null),
+                        user.getLastFailedLogin().orElse(null),
+                        user.getFailedLoginAttempts()
                     );
                     userAccessor.updateUser(updatedUser, true);
                 } else {

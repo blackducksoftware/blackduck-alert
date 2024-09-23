@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +57,7 @@ public class DefaultUserAccessor implements UserAccessor {
     @Transactional(readOnly = true)
     public List<UserModel> getUsers() {
         List<UserEntity> userList = userRepository.findAll();
-        return userList.stream().map(this::createModel).collect(Collectors.toList());
+        return userList.stream().map(this::createModel).toList();
     }
 
     @Override
@@ -91,7 +90,7 @@ public class DefaultUserAccessor implements UserAccessor {
         String password = passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword());
         AuthenticationTypeDetails authenticationType = authenticationTypeAccessor.getAuthenticationTypeDetails(user.getAuthenticationType())
                                                            .orElseThrow(() -> new AlertRuntimeException("Cannot find Authentication Type."));
-        UserEntity newEntity = new UserEntity(username, password, user.getEmailAddress(), authenticationType.getId());
+        UserEntity newEntity = new UserEntity(username, password, user.getEmailAddress(), authenticationType.getId(), null, null, 0L);
         UserEntity savedEntity = userRepository.save(newEntity);
         UserModel model = createModel(savedEntity);
 
@@ -121,7 +120,19 @@ public class DefaultUserAccessor implements UserAccessor {
             }
         } else {
             String password = passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword());
-            UserEntity newEntity = new UserEntity(user.getName(), password, user.getEmailAddress(), user.isExpired(), user.isLocked(), user.isPasswordExpired(), user.isEnabled(), existingUser.getAuthenticationType());
+            UserEntity newEntity = new UserEntity(
+                user.getName(),
+                password,
+                user.getEmailAddress(),
+                user.isExpired(),
+                user.isLocked(),
+                user.isPasswordExpired(),
+                user.isEnabled(),
+                existingUser.getAuthenticationType(),
+                user.getLastLogin().orElse(null),
+                user.getLastFailedLogin().orElse(null),
+                user.getFailedLoginAttempts()
+            );
             newEntity.setId(existingUserId);
             savedEntity = userRepository.save(newEntity);
         }
@@ -185,13 +196,29 @@ public class DefaultUserAccessor implements UserAccessor {
     }
 
     private void changeUserPassword(UserEntity oldEntity, String newPassword) {
-        UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), defaultPasswordEncoder.encode(newPassword), oldEntity.getEmailAddress(), oldEntity.getAuthenticationType());
+        UserEntity updatedEntity = new UserEntity(
+            oldEntity.getUserName(),
+            defaultPasswordEncoder.encode(newPassword),
+            oldEntity.getEmailAddress(),
+            oldEntity.getAuthenticationType(),
+            oldEntity.getLastLogin(),
+            oldEntity.getLastFailedLogin(),
+            oldEntity.getFailedLoginAttempts()
+        );
         updatedEntity.setId(oldEntity.getId());
         userRepository.save(updatedEntity);
     }
 
     private void changeUserEmailAddress(UserEntity oldEntity, String emailAddress) {
-        UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), oldEntity.getPassword(), emailAddress, oldEntity.getAuthenticationType());
+        UserEntity updatedEntity = new UserEntity(
+            oldEntity.getUserName(),
+            oldEntity.getPassword(),
+            emailAddress,
+            oldEntity.getAuthenticationType(),
+            oldEntity.getLastLogin(),
+            oldEntity.getLastFailedLogin(),
+            oldEntity.getFailedLoginAttempts()
+        );
         updatedEntity.setId(oldEntity.getId());
         userRepository.save(updatedEntity);
     }
@@ -209,10 +236,22 @@ public class DefaultUserAccessor implements UserAccessor {
 
     private UserModel createModel(UserEntity user) {
         List<UserRoleRelation> roleRelations = userRoleRepository.findAllByUserId(user.getId());
-        List<Long> roleIdsForUser = roleRelations.stream().map(UserRoleRelation::getRoleId).collect(Collectors.toList());
+        List<Long> roleIdsForUser = roleRelations.stream().map(UserRoleRelation::getRoleId).toList();
         Set<UserRoleModel> roles = roleAccessor.getRoles(roleIdsForUser);
         AuthenticationType authenticationType = authenticationTypeAccessor.getAuthenticationType(user.getAuthenticationType()).orElse(null);
-        return UserModel.existingUser(user.getId(), user.getUserName(), user.getPassword(), user.getEmailAddress(), authenticationType, roles, user.isEnabled());
+        return UserModel.existingUser(
+            user.getId(),
+            user.getUserName(),
+            user.getPassword(),
+            user.getEmailAddress(),
+            authenticationType,
+            roles,
+            user.isLocked(),
+            user.isEnabled(),
+            user.getLastLogin(),
+            user.getLastFailedLogin(),
+            user.getFailedLoginAttempts()
+        );
     }
 
 }
