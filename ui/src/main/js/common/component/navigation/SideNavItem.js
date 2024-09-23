@@ -42,8 +42,14 @@ const useStyles = createUseStyles(theme => ({
     }
 }));
 
-const SideNavItem = ({ hasSubMenu, ...props }) => {
+const SideNavItem = ({ ...props }) => {
     const classes = useStyles();
+    const { hasSubMenu, subMenuItems } = props;
+
+    // If there is no submenu content, don't render anything.
+    if (hasSubMenu && subMenuItems?.length === 0) {
+        return null;
+    }
 
     const NavItem = hasSubMenu ? SideNavSubmenu : SideNavButtonItem;
 
@@ -55,7 +61,8 @@ const SideNavItem = ({ hasSubMenu, ...props }) => {
 }
 
 SideNavItem.propTypes = {
-    hasSubMenu: PropTypes.bool
+    hasSubMenu: PropTypes.bool,
+    subMenuItems: PropTypes.array
 };
 
 export default SideNavItem;

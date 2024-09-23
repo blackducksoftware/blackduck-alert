@@ -66,11 +66,6 @@ const useStyles = createUseStyles({
 const SideNavSubmenu = ({ icon, id, label, subMenuItems }) => {
     const classes = useStyles();
 
-    // If there is no submenu content, don't render anything.
-    if (!subMenuItems?.length) {
-        return null;
-    }
-
     return (
         <Dropdown drop="right">
             <Dropdown.Toggle className={classes.navItem}>
@@ -80,6 +75,10 @@ const SideNavSubmenu = ({ icon, id, label, subMenuItems }) => {
             </Dropdown.Toggle>
             <Dropdown.Menu className={classes.navMenu}>
                 {subMenuItems.map((item) => {
+                    if (!item.showOption) {
+                        return null;
+                    }
+
                     return (
                         <Dropdown.Item className={classes.navMenuItem} href={item.href} key={item.id}>
                             {item.label}
@@ -98,7 +97,8 @@ SideNavSubmenu.propTypes = {
     subMenuItems: PropTypes.arrayOf(PropTypes.shape({
         id: PropTypes.string,
         label: PropTypes.string,
-        href: PropTypes.string
+        href: PropTypes.string,
+        showOption: PropTypes.bool
     }))
 };
 
