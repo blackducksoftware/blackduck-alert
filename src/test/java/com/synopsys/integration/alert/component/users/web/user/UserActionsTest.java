@@ -36,7 +36,6 @@ import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
 import com.synopsys.integration.alert.component.users.UserSystemValidator;
-import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 import com.synopsys.integration.alert.component.users.web.user.util.UserCredentialValidator;
 
 class UserActionsTest {
@@ -343,7 +342,7 @@ class UserActionsTest {
     void invalidPasswordValidateWithoutChecksTest() {
         //Test with a password that does not contain a digit or special character, resulting in a validation error.
         String invalidPassword = "invalidPassword";
-        UserModel userModel = UserModel.existingUser(id, name, invalidPassword, null, AuthenticationType.DATABASE, Set.of(), true);
+        UserModel userModel = UserModel.existingUser(id, name, invalidPassword, null, AuthenticationType.DATABASE, Set.of(), false, true, lastLogin, null, failedLoginCount);
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
         UserConfig userConfig = new UserConfig(id.toString(), name, invalidPassword, null, Set.of(), false, false, false, true, false, AuthenticationType.DATABASE.name(), true);
 
@@ -364,7 +363,7 @@ class UserActionsTest {
     void invalidPasswordCreateTest() {
         //Test with a password that does not contain a digit or special character, resulting in a validation error.
         String invalidPassword = "invalidPassword";
-        UserModel userModel = UserModel.existingUser(id, name, invalidPassword, null, AuthenticationType.DATABASE, Set.of(), true);
+        UserModel userModel = UserModel.existingUser(id, name, invalidPassword, null, AuthenticationType.DATABASE, Set.of(), false, true, lastLogin, null, failedLoginCount);
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
         UserConfig userConfig = new UserConfig(id.toString(), name, invalidPassword, null, Set.of(), false, false, false, true, false, AuthenticationType.DATABASE.name(), true);
 
@@ -379,7 +378,7 @@ class UserActionsTest {
     void invalidPasswordUpdateTest() {
         //Test with a password that does not contain a digit or special character, resulting in a validation error.
         String invalidPassword = "invalidPassword";
-        UserModel userModel = UserModel.existingUser(id, name, invalidPassword, null, AuthenticationType.DATABASE, Set.of(), true);
+        UserModel userModel = UserModel.existingUser(id, name, invalidPassword, null, AuthenticationType.DATABASE, Set.of(), false, true, lastLogin, null, failedLoginCount);
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
         UserConfig userConfig = new UserConfig(id.toString(), name, invalidPassword, null, Set.of(), false, false, false, true, false, AuthenticationType.DATABASE.name(), true);
 
@@ -392,7 +391,7 @@ class UserActionsTest {
 
     @Test
     void validValidateWithoutChecksTest() {
-        UserModel userModel = UserModel.existingUser(id, name, password, null, AuthenticationType.DATABASE, Set.of(), true);
+        UserModel userModel = UserModel.existingUser(id, name, password, null, AuthenticationType.DATABASE, Set.of(), false, true, lastLogin, null, failedLoginCount);
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
         UserConfig userConfig = new UserConfig(id.toString(), name, password, null, Set.of(), false, false, false, true, false, AuthenticationType.DATABASE.name(), true);
 
