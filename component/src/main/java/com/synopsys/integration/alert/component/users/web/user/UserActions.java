@@ -167,7 +167,19 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
             String password = passwordMissing ? existingUser.getPassword() : resource.getPassword();
             String emailAddress = resource.getEmailAddress();
 
-            UserModel newUserModel = UserModel.existingUser(existingUser.getId(), userName, password, emailAddress, existingUser.getAuthenticationType(), existingUser.getRoles(), existingUser.isEnabled());
+            UserModel newUserModel = UserModel.existingUser(
+                existingUser.getId(),
+                userName,
+                password,
+                emailAddress,
+                existingUser.getAuthenticationType(),
+                existingUser.getRoles(),
+                existingUser.isLocked(),
+                existingUser.isEnabled(),
+                existingUser.getLastLogin().orElse(null),
+                existingUser.getLastFailedLogin().orElse(null),
+                existingUser.getFailedLoginAttempts()
+            );
             try {
                 logger.debug(actionMessageCreator.updateStartMessage("user", userName));
                 userAccessor.updateUser(newUserModel, passwordMissing);

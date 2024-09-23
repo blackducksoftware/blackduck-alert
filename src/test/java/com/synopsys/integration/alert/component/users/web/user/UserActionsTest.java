@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
@@ -32,13 +34,14 @@ import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
 import com.synopsys.integration.alert.component.users.UserSystemValidator;
-import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 
-public class UserActionsTest {
+class UserActionsTest {
     private final Long id = 1L;
     private final String name = "user";
     private final String password = "password";
     private final String emailAddress = "noreply@synopsys.com";
+    private final OffsetDateTime lastLogin = OffsetDateTime.now();
+    private final long failedLoginCount = 0L;
     private final Set<UserRoleModel> roles = Set.of();
     private final AuthenticationType authenticationType = AuthenticationType.DATABASE;
 
@@ -60,8 +63,8 @@ public class UserActionsTest {
     }
 
     @Test
-    public void testFindExisting() {
-        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true);
+    void testFindExisting() {
+        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, false, true, lastLogin, null, failedLoginCount);
 
         Mockito.when(userAccessor.getUser(Mockito.anyLong())).thenReturn(Optional.of(userModel));
 
@@ -74,7 +77,7 @@ public class UserActionsTest {
     }
 
     @Test
-    public void testFindExistingEmpty() {
+    void testFindExistingEmpty() {
         Mockito.when(userAccessor.getUser(Mockito.anyLong())).thenReturn(Optional.empty());
 
         UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
@@ -84,8 +87,8 @@ public class UserActionsTest {
     }
 
     @Test
-    public void testReadAllWithoutChecks() {
-        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true);
+    void testReadAllWithoutChecks() {
+        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, false, true, lastLogin, null, failedLoginCount);
         AuthenticationTypeDetails authenticationTypeDetails = new AuthenticationTypeDetails(1L, authenticationType.name());
 
         Mockito.when(authorizationManager.hasReadPermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
@@ -97,8 +100,8 @@ public class UserActionsTest {
 
         assertTrue(actionResponse.hasContent());
         List<UserConfig> userModels = actionResponse.getContent()
-                                          .get()
-                                          .getUsers();
+            .map(MultiUserConfigResponseModel::getUsers)
+            .orElse(List.of());
         assertEquals(1, userModels.size());
         UserConfig userConfig = userModels.get(0);
         assertUserConfig(userConfig);
@@ -107,8 +110,8 @@ public class UserActionsTest {
     }
 
     @Test
-    public void testReadWithoutChecks() {
-        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true);
+    void testReadWithoutChecks() {
+        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, false, true, lastLogin, null, failedLoginCount);
 
         Mockito.when(authorizationManager.hasReadPermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
@@ -120,6 +123,7 @@ public class UserActionsTest {
 
         assertTrue(actionResponse.hasContent());
         assertEquals(HttpStatus.OK, actionResponse.getHttpStatus());
+        assertTrue(actionResponse.getContent().isPresent());
         UserConfig userConfig = actionResponse.getContent().get();
         assertUserConfig(userConfig);
 
@@ -128,7 +132,7 @@ public class UserActionsTest {
     }
 
     @Test
-    public void testTestWithoutChecks() {
+    void testTestWithoutChecks() {
         Set<String> roleNames = roles
                                     .stream()
                                     .map(UserRoleModel::getName)
@@ -140,12 +144,13 @@ public class UserActionsTest {
 
         assertFalse(validationActionResponse.isError());
         assertTrue(validationActionResponse.hasContent());
+        assertTrue(validationActionResponse.getContent().isPresent());
         assertFalse(validationActionResponse.getContent().get().hasErrors());
     }
 
     @Test
-    public void testCreateWithoutChecks() throws Exception {
-        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true);
+    void testCreateWithoutChecks() throws Exception {
+        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, false, true, lastLogin, null, failedLoginCount);
 
         Mockito.when(userAccessor.addUser(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(userModel);
         Mockito.when(userAccessor.getUser(Mockito.anyLong())).thenReturn(Optional.of(userModel));
@@ -160,13 +165,14 @@ public class UserActionsTest {
 
         assertFalse(userConfigActionResponse.isError());
         assertTrue(userConfigActionResponse.hasContent());
+        assertTrue(userConfigActionResponse.getContent().isPresent());
         UserConfig testUserConfig = userConfigActionResponse.getContent().get();
         assertUserConfig(testUserConfig);
         assertEquals(HttpStatus.CREATED, userConfigActionResponse.getHttpStatus());
     }
 
     @Test
-    public void testCreateWithoutChecksDatabaseError() throws Exception {
+    void testCreateWithoutChecksDatabaseError() throws Exception {
         Mockito.when(userAccessor.addUser(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenThrow(new AlertConfigurationException("Exception for test"));
 
         Set<String> roleNames = roles
@@ -183,8 +189,8 @@ public class UserActionsTest {
     }
 
     @Test
-    public void testUpdateWithoutChecks() {
-        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true);
+    void testUpdateWithoutChecks() {
+        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, false, true, lastLogin, null, failedLoginCount);
 
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
 
@@ -202,8 +208,8 @@ public class UserActionsTest {
     }
 
     @Test
-    public void testUpdateWithoutChecksDatabaseError() throws Exception {
-        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true);
+    void testUpdateWithoutChecksDatabaseError() throws Exception {
+        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, false, true, lastLogin, null, failedLoginCount);
 
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
         Mockito.when(userAccessor.updateUser(Mockito.any(), Mockito.anyBoolean())).thenThrow(new AlertConfigurationException("Exception for test"));
@@ -221,7 +227,7 @@ public class UserActionsTest {
     }
 
     @Test
-    public void testUpdateWithoutChecksNotFound() {
+    void testUpdateWithoutChecksNotFound() {
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.empty());
 
         Set<String> roleNames = roles
@@ -237,8 +243,8 @@ public class UserActionsTest {
     }
 
     @Test
-    public void testDeleteWithoutChecks() throws Exception {
-        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true);
+    void testDeleteWithoutChecks() throws Exception {
+        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, false, true, lastLogin, null, failedLoginCount);
 
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
 
@@ -251,8 +257,8 @@ public class UserActionsTest {
     }
 
     @Test
-    public void testDeleteWithoutChecksException() throws AlertForbiddenOperationException {
-        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true);
+    void testDeleteWithoutChecksException() throws AlertForbiddenOperationException {
+        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, false, true, lastLogin, null, failedLoginCount);
 
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
         Mockito.doThrow(new AlertForbiddenOperationException("Exception for test")).when(userAccessor).deleteUser(id);
@@ -265,7 +271,7 @@ public class UserActionsTest {
     }
 
     @Test
-    public void testDeleteWithoutChecksEmpty() {
+    void testDeleteWithoutChecksEmpty() {
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.empty());
 
         UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
@@ -276,8 +282,8 @@ public class UserActionsTest {
     }
 
     @Test
-    public void testInternalUserNoEmailValidation() throws Exception {
-        UserModel userModel = UserModel.existingUser(id, name, password, null, authenticationType, roles, true);
+    void testInternalUserNoEmailValidation() {
+        UserModel userModel = UserModel.existingUser(id, name, password, null, authenticationType, roles, false, true, lastLogin, null, failedLoginCount);
 
         Mockito.when(authorizationManager.hasExecutePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
         Mockito.when(userAccessor.getUser(Mockito.anyLong())).thenReturn(Optional.of(userModel));
@@ -293,16 +299,17 @@ public class UserActionsTest {
 
         assertFalse(validationActionResponse.isError());
         assertTrue(validationActionResponse.hasContent());
+        assertTrue(validationActionResponse.getContent().isPresent());
         ValidationResponseModel validationResponseModel = validationActionResponse.getContent().get();
         assertTrue(validationResponseModel.hasErrors());
         assertTrue(validationResponseModel.getErrors().containsKey(UserActions.FIELD_KEY_USER_MGMT_EMAILADDRESS));
     }
 
     @Test
-    public void testExternalUserNoEmailValidation() throws Exception {
+    void testExternalUserNoEmailValidation() {
         AuthenticationType authenticationTypeLDAP = AuthenticationType.LDAP;
 
-        UserModel userModel = UserModel.existingUser(id, name, password, null, authenticationTypeLDAP, roles, true);
+        UserModel userModel = UserModel.existingUser(id, name, password, null, authenticationTypeLDAP, roles, false, true, lastLogin, null, failedLoginCount);
 
         Mockito.when(authorizationManager.hasExecutePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
         Mockito.when(userAccessor.getUser(Mockito.anyLong())).thenReturn(Optional.of(userModel));
@@ -319,8 +326,10 @@ public class UserActionsTest {
 
         assertFalse(validationActionResponse.isError());
         assertTrue(validationActionResponse.hasContent());
+        assertTrue(validationActionResponse.getContent().isPresent());
         ValidationResponseModel validationResponseModel = validationActionResponse.getContent().get();
         assertFalse(validationResponseModel.hasErrors());
+        assertTrue(validationActionResponse.getMessage().isPresent());
         assertEquals("The user is valid", validationActionResponse.getMessage().get());
     }
 

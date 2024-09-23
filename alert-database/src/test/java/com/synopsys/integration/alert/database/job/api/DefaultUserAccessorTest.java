@@ -6,11 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -33,6 +35,8 @@ class DefaultUserAccessorTest {
     private final String username = "username";
     private final String password = "password";
     private final String emailAddress = "noreply@blackducksoftware.com";
+    private final OffsetDateTime lastLogin = OffsetDateTime.now();
+    private final Long failedLoginCount = 0L;
 
     private UserRepository userRepository;
     private UserRoleRepository userRoleRepository;
@@ -54,10 +58,10 @@ class DefaultUserAccessorTest {
         final Long authenticationTypeId = 1L;
         final String roleName = "userName";
 
-        UserEntity userEntity = new UserEntity(username, password, emailAddress, authenticationTypeId);
+        UserEntity userEntity = new UserEntity(username, password, emailAddress, authenticationTypeId, lastLogin, null, failedLoginCount);
         userEntity.setId(1L);
         UserRoleRelation userRoleRelation = new UserRoleRelation(1L, 2L);
-        UserRoleModel userRoleModel = createUserRoleModel(1L, roleName, true);
+        UserRoleModel userRoleModel = createUserRoleModel(roleName);
 
         Mockito.when(userRepository.findAll()).thenReturn(List.of(userEntity));
         createModelMocks(userRoleRelation, userRoleModel, AuthenticationType.DATABASE);
@@ -67,7 +71,7 @@ class DefaultUserAccessorTest {
 
         assertEquals(1, userModelList.size());
         UserModel userModel = userModelList.get(0);
-        testUserModel(userEntity.getId(), username, emailAddress, roleName, userModel);
+        testUserModel(userEntity.getId(), roleName, userModel);
     }
 
     @Test
@@ -77,10 +81,10 @@ class DefaultUserAccessorTest {
         final Long authenticationTypeId = 1L;
         final String roleName = "userName";
 
-        UserEntity userEntity = new UserEntity(username, password, emailAddress, authenticationTypeId);
+        UserEntity userEntity = new UserEntity(username, password, emailAddress, authenticationTypeId, lastLogin, null, failedLoginCount);
         userEntity.setId(1L);
         UserRoleRelation userRoleRelation = new UserRoleRelation(1L, 2L);
-        UserRoleModel userRoleModel = createUserRoleModel(1L, roleName, true);
+        UserRoleModel userRoleModel = createUserRoleModel(roleName);
 
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(userEntity));
         Mockito.when(userRepository.findById(emptyUserId)).thenReturn(Optional.empty());
@@ -93,7 +97,7 @@ class DefaultUserAccessorTest {
         assertTrue(userModelOptional.isPresent());
         assertFalse(userModelOptionalEmpty.isPresent());
         UserModel userModel = userModelOptional.get();
-        testUserModel(userEntity.getId(), username, emailAddress, roleName, userModel);
+        testUserModel(userEntity.getId(), roleName, userModel);
     }
 
     @Test
@@ -102,10 +106,10 @@ class DefaultUserAccessorTest {
         final Long authenticationTypeId = 1L;
         final String roleName = "userName";
 
-        UserEntity userEntity = new UserEntity(username, password, emailAddress, authenticationTypeId);
+        UserEntity userEntity = new UserEntity(username, password, emailAddress, authenticationTypeId, lastLogin, null, failedLoginCount);
         userEntity.setId(1L);
         UserRoleRelation userRoleRelation = new UserRoleRelation(1L, 2L);
-        UserRoleModel userRoleModel = createUserRoleModel(1L, roleName, true);
+        UserRoleModel userRoleModel = createUserRoleModel(roleName);
 
         Mockito.when(userRepository.findByUserName(username)).thenReturn(Optional.of(userEntity));
         Mockito.when(userRepository.findByUserName(emptyUsername)).thenReturn(Optional.empty());
@@ -118,18 +122,18 @@ class DefaultUserAccessorTest {
         assertTrue(userModelOptional.isPresent());
         assertFalse(userModelOptionalEmpty.isPresent());
         UserModel userModel = userModelOptional.get();
-        testUserModel(userEntity.getId(), username, emailAddress, roleName, userModel);
+        testUserModel(userEntity.getId(), roleName, userModel);
     }
 
     @Test
     void addUserTest() throws Exception {
         final String roleName = "userName";
 
-        UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L);
+        UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L, lastLogin, null, failedLoginCount);
         userEntity.setId(1L);
         AuthenticationTypeDetails authenticationTypeDetails = new AuthenticationTypeDetails(2L, "authentication-name");
         UserRoleRelation userRoleRelation = new UserRoleRelation(1L, 2L);
-        UserRoleModel userRoleModel = createUserRoleModel(1L, roleName, true);
+        UserRoleModel userRoleModel = createUserRoleModel(roleName);
 
         Mockito.when(userRepository.findByUserName(Mockito.any())).thenReturn(Optional.empty());
         Mockito.when(authenticationTypeAccessor.getAuthenticationTypeDetails(Mockito.any())).thenReturn(Optional.of(authenticationTypeDetails));
@@ -139,12 +143,12 @@ class DefaultUserAccessorTest {
         DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, roleAccessor, authenticationTypeAccessor);
         UserModel userModel = defaultUserAccessor.addUser(username, password, emailAddress);
 
-        testUserModel(userEntity.getId(), username, emailAddress, roleName, userModel);
+        testUserModel(userEntity.getId(), roleName, userModel);
     }
 
     @Test
     void addUserExistsTest() {
-        UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L);
+        UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L, lastLogin, null, failedLoginCount);
         userEntity.setId(1L);
 
         Mockito.when(userRepository.findByUserName(Mockito.any())).thenReturn(Optional.of(userEntity));
@@ -164,12 +168,12 @@ class DefaultUserAccessorTest {
         final String roleName = "userName";
         AuthenticationType authenticationType = AuthenticationType.DATABASE;
 
-        UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L);
+        UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L, lastLogin, null, failedLoginCount);
         userEntity.setId(1L);
-        UserRoleModel roles = createUserRoleModel(1L, roleName, true);
-        UserModel userModel = UserModel.existingUser(1L, username, password, emailAddress, authenticationType, Set.of(roles), true);
+        UserRoleModel roles = createUserRoleModel(roleName);
+        UserModel userModel = UserModel.existingUser(1L, username, password, emailAddress, authenticationType, Set.of(roles), false, true, lastLogin, null, failedLoginCount);
         UserRoleRelation userRoleRelation = new UserRoleRelation(1L, 2L);
-        UserRoleModel userRoleModel = createUserRoleModel(1L, roleName, true);
+        UserRoleModel userRoleModel = createUserRoleModel(roleName);
 
         Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(userEntity));
         Mockito.when(authenticationTypeAccessor.getAuthenticationType(Mockito.any())).thenReturn(Optional.of(authenticationType));
@@ -182,7 +186,7 @@ class DefaultUserAccessorTest {
 
         Mockito.verify(roleAccessor).updateUserRoles(Mockito.eq(userEntity.getId()), Mockito.any());
 
-        testUserModel(userEntity.getId(), username, emailAddress, roleName, newUserModel);
+        testUserModel(userEntity.getId(), roleName, newUserModel);
     }
 
     @Test
@@ -190,12 +194,12 @@ class DefaultUserAccessorTest {
         final String roleName = "roleName";
         AuthenticationType authenticationType = AuthenticationType.LDAP;
 
-        UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L);
+        UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L, lastLogin, null, failedLoginCount);
         userEntity.setId(1L);
-        UserRoleModel roles = createUserRoleModel(1L, roleName, true);
-        UserModel userModel = UserModel.existingUser(1L, username, "", emailAddress, authenticationType, Set.of(roles), true);
+        UserRoleModel roles = createUserRoleModel(roleName);
+        UserModel userModel = UserModel.existingUser(1L, username, "", emailAddress, authenticationType, Set.of(roles), false, true, lastLogin, null, failedLoginCount);
         UserRoleRelation userRoleRelation = new UserRoleRelation(1L, 2L);
-        UserRoleModel userRoleModel = createUserRoleModel(1L, roleName, true);
+        UserRoleModel userRoleModel = createUserRoleModel(roleName);
 
         Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(userEntity));
         Mockito.when(authenticationTypeAccessor.getAuthenticationType(Mockito.any())).thenReturn(Optional.of(authenticationType));
@@ -207,7 +211,7 @@ class DefaultUserAccessorTest {
 
         Mockito.verify(roleAccessor).updateUserRoles(Mockito.eq(userEntity.getId()), Mockito.any());
 
-        testUserModel(userEntity.getId(), username, emailAddress, roleName, updatedUserModel);
+        testUserModel(userEntity.getId(), roleName, updatedUserModel);
     }
 
     @Test
@@ -215,14 +219,14 @@ class DefaultUserAccessorTest {
         final String roleName = "roleName";
         AuthenticationType authenticationType = AuthenticationType.LDAP;
 
-        UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L);
+        UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L, lastLogin, null, failedLoginCount);
         userEntity.setId(1L);
-        UserEntity existingUserEntity = new UserEntity("usernam-teste", "existing-password", "old-email.noreply@blackducksoftware.com", 2L);
+        UserEntity existingUserEntity = new UserEntity("usernam-teste", "existing-password", "old-email.noreply@blackducksoftware.com", 2L, lastLogin, null, failedLoginCount);
         existingUserEntity.setId(1L);
-        UserRoleModel roles = createUserRoleModel(1L, roleName, true);
-        UserModel userModel = UserModel.existingUser(1L, username, password, emailAddress, authenticationType, Set.of(roles), true);
+        UserRoleModel roles = createUserRoleModel(roleName);
+        UserModel userModel = UserModel.existingUser(1L, username, password, emailAddress, authenticationType, Set.of(roles), false, true, lastLogin, null, failedLoginCount);
         UserRoleRelation userRoleRelation = new UserRoleRelation(1L, 2L);
-        UserRoleModel userRoleModel = createUserRoleModel(1L, roleName, true);
+        UserRoleModel userRoleModel = createUserRoleModel(roleName);
 
         Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(existingUserEntity));
         Mockito.when(authenticationTypeAccessor.getAuthenticationType(Mockito.any())).thenReturn(Optional.of(authenticationType));
@@ -246,7 +250,7 @@ class DefaultUserAccessorTest {
         final String badUsername = "badUsername";
         final Long roleId = 5L;
 
-        UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L);
+        UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L, lastLogin, null, failedLoginCount);
         userEntity.setId(1L);
 
         Mockito.when(userRepository.findByUserName(username)).thenReturn(Optional.of(userEntity));
@@ -268,9 +272,9 @@ class DefaultUserAccessorTest {
         final String badUsername = "badUsername";
         final String newPassword = "newPassword";
 
-        UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L);
+        UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L, lastLogin, null, failedLoginCount);
         userEntity.setId(1L);
-        UserEntity newUserEntity = new UserEntity(username, newPassword, emailAddress, 2L);
+        UserEntity newUserEntity = new UserEntity(username, newPassword, emailAddress, 2L, lastLogin, null, failedLoginCount);
         userEntity.setId(1L);
 
         Mockito.when(userRepository.findByUserName(username)).thenReturn(Optional.of(userEntity));
@@ -289,9 +293,9 @@ class DefaultUserAccessorTest {
         final String badUsername = "badUsername";
         final String newEmailAddress = "newemail.noreplay@blackducksoftware.com";
 
-        UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L);
+        UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L, lastLogin, null, failedLoginCount);
         userEntity.setId(1L);
-        UserEntity newUserEntity = new UserEntity(username, password, newEmailAddress, 2L);
+        UserEntity newUserEntity = new UserEntity(username, password, newEmailAddress, 2L, lastLogin, null, failedLoginCount);
         userEntity.setId(1L);
 
         Mockito.when(userRepository.findByUserName(username)).thenReturn(Optional.of(userEntity));
@@ -307,7 +311,7 @@ class DefaultUserAccessorTest {
     @Test
     void deleteUserByNameTest() throws Exception {
         //userEntity Id's between 0 and 2 are reserved
-        UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L);
+        UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L, lastLogin, null, failedLoginCount);
         userEntity.setId(5L);
 
         Mockito.when(userRepository.findByUserName(username)).thenReturn(Optional.of(userEntity));
@@ -321,7 +325,7 @@ class DefaultUserAccessorTest {
 
     @Test
     void deleteUserByIdTest() throws Exception {
-        UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L);
+        UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L, lastLogin, null, failedLoginCount);
         userEntity.setId(5L);
 
         Mockito.when(userRepository.findById(userEntity.getId())).thenReturn(Optional.of(userEntity));
@@ -335,7 +339,7 @@ class DefaultUserAccessorTest {
 
     @Test
     void deleteUserReservedIdTest() {
-        UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L);
+        UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L, lastLogin, null, failedLoginCount);
         userEntity.setId(1L);
 
         Mockito.when(userRepository.findByUserName(username)).thenReturn(Optional.of(userEntity));
@@ -357,16 +361,19 @@ class DefaultUserAccessorTest {
         Mockito.when(authenticationTypeAccessor.getAuthenticationType(2L)).thenReturn(Optional.of(authenticationType));
     }
 
-    private UserRoleModel createUserRoleModel(Long id, String name, Boolean custom) {
+    private UserRoleModel createUserRoleModel(String name) {
         PermissionMatrixModel permissionMatrixModel = new PermissionMatrixModel(Map.of());
-        return new UserRoleModel(id, name, custom, permissionMatrixModel);
+        return new UserRoleModel(1L, name, true, permissionMatrixModel);
     }
 
-    private void testUserModel(Long expectedId, String expectedUsername, String expectedEmailAddress, String expectedRoleName, UserModel userModel) {
-        assertEquals(expectedId, userModel.getId());
-        assertEquals(expectedUsername, userModel.getName());
-        assertEquals(expectedEmailAddress, userModel.getEmailAddress());
-        assertTrue(userModel.getRoleNames().contains(expectedRoleName));
+    private void testUserModel(Long expectedId, String expectedRoleName, UserModel userModel) {
+        Assertions.assertEquals(expectedId, userModel.getId());
+        Assertions.assertEquals(username, userModel.getName());
+        Assertions.assertEquals(emailAddress, userModel.getEmailAddress());
+        Assertions.assertTrue(userModel.getRoleNames().contains(expectedRoleName));
+        Assertions.assertEquals(lastLogin, userModel.getLastLogin().orElse(null));
+        Assertions.assertNull(userModel.getLastFailedLogin().orElse(null));
+        Assertions.assertEquals(failedLoginCount, userModel.getFailedLoginAttempts());
     }
 
 }

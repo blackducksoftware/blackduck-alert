@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -33,7 +34,7 @@ import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 
 @Transactional
 @AlertIntegrationTest
-public class UserAccessorTestIT {
+class UserAccessorTestIT {
     @Autowired
     private DefaultUserAccessor userAccessor;
 
@@ -51,41 +52,41 @@ public class UserAccessorTestIT {
     }
 
     @Test
-    public void testGetUsers() throws AlertForbiddenOperationException, AlertConfigurationException {
-        String userName_1 = "testUser_1";
-        String password_1 = "testPassword_1";
-        String email_1 = "testEmail_1";
-        userAccessor.addUser(userName_1, password_1, email_1);
+    void testGetUsers() throws AlertForbiddenOperationException, AlertConfigurationException {
+        String userName1 = "testUser_1";
+        String password1 = "testPassword_1";
+        String email1 = "testEmail_1";
+        userAccessor.addUser(userName1, password1, email1);
 
-        String userName_2 = "testUser_2";
-        String password_2 = "testPassword_2";
-        String email_2 = "testEmail_2";
-        userAccessor.addUser(userName_2, password_2, email_2);
+        String userName2 = "testUser_2";
+        String password2 = "testPassword_2";
+        String email2 = "testEmail_2";
+        userAccessor.addUser(userName2, password2, email2);
 
         List<UserModel> modelList = userAccessor.getUsers();
 
         // default admin, jobmanager, alertuser user will be included
         assertEquals(5, modelList.size());
-        userAccessor.deleteUser(userName_1);
-        userAccessor.deleteUser(userName_2);
+        userAccessor.deleteUser(userName1);
+        userAccessor.deleteUser(userName2);
         modelList = userAccessor.getUsers();
         assertEquals(3, modelList.size());
     }
 
     @Test
-    public void testGetUserByUserName() {
+    void testGetUserByUserName() {
         Optional<UserModel> user = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
         assertTrue(user.isPresent());
     }
 
     @Test
-    public void testGetUserByUserNameNotFound() {
+    void testGetUserByUserNameNotFound() {
         Optional<UserModel> user = userAccessor.getUser("anUnknownUser");
         assertFalse(user.isPresent());
     }
 
     @Test
-    public void testAddUser() throws AlertForbiddenOperationException, AlertConfigurationException {
+    void testAddUser() throws AlertForbiddenOperationException, AlertConfigurationException {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
@@ -100,7 +101,7 @@ public class UserAccessorTestIT {
     }
 
     @Test
-    public void testUpdateUser() throws AlertForbiddenOperationException, AlertConfigurationException {
+    void testUpdateUser() throws AlertForbiddenOperationException, AlertConfigurationException {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
@@ -111,24 +112,36 @@ public class UserAccessorTestIT {
         assertEquals(email, userModel.getEmailAddress());
         assertTrue(userModel.getRoles().isEmpty());
 
-        String another_role = "ANOTHER_ROLE";
-        String admin_role = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN;
-        Set<String> roleNames = new LinkedHashSet<>(Arrays.asList(admin_role, another_role));
+        String anotherRole = "ANOTHER_ROLE";
+        String adminRole = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN;
+        Set<String> roleNames = new LinkedHashSet<>(Arrays.asList(adminRole, anotherRole));
         Set<UserRoleModel> roles = roleNames.stream().map(UserRoleModel::of).collect(Collectors.toSet());
-        UserModel updatedModel = userAccessor.updateUser(UserModel.existingUser(userModel.getId(), userModel.getName(), userModel.getPassword(), userModel.getEmailAddress(), AuthenticationType.DATABASE, roles, true), true);
+        UserModel updatedModel = userAccessor.updateUser(UserModel.existingUser(
+            userModel.getId(),
+            userModel.getName(),
+            userModel.getPassword(),
+            userModel.getEmailAddress(),
+            AuthenticationType.DATABASE,
+            roles,
+            false,
+            true,
+            OffsetDateTime.now(),
+            null,
+            0L
+        ), true);
         assertEquals(userModel.getName(), updatedModel.getName());
         assertEquals(userModel.getEmailAddress(), updatedModel.getEmailAddress());
         assertEquals(userModel.getPassword(), updatedModel.getPassword());
         assertEquals(1, updatedModel.getRoles().size());
 
-        assertFalse(updatedModel.hasRole(another_role));
-        assertTrue(updatedModel.hasRole(admin_role));
+        assertFalse(updatedModel.hasRole(anotherRole));
+        assertTrue(updatedModel.hasRole(adminRole));
         assertFalse(updatedModel.isExternal());
         userAccessor.deleteUser(userName);
     }
 
     @Test
-    public void testChangeUserPassword() throws AlertForbiddenOperationException, AlertConfigurationException {
+    void testChangeUserPassword() throws AlertForbiddenOperationException, AlertConfigurationException {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
@@ -142,13 +155,9 @@ public class UserAccessorTestIT {
         assertTrue(userAccessor.changeUserPassword(userModel.getName(), "new_test_password"));
         Optional<UserModel> foundModel = userAccessor.getUser(userName);
         assertTrue(foundModel.isPresent());
-        if (foundModel.isPresent()) {
-            UserModel updatedModel = foundModel.get();
-            assertEquals(userModel.getName(), updatedModel.getName());
-            assertNotEquals(userModel.getPassword(), updatedModel.getPassword());
-        } else {
-            fail();
-        }
+        UserModel updatedModel = foundModel.get();
+        assertEquals(userModel.getName(), updatedModel.getName());
+        assertNotEquals(userModel.getPassword(), updatedModel.getPassword());
 
         userAccessor.deleteUser(userName);
 
@@ -156,7 +165,7 @@ public class UserAccessorTestIT {
     }
 
     @Test
-    public void testChangeUserEmailAddress() throws AlertForbiddenOperationException, AlertConfigurationException {
+    void testChangeUserEmailAddress() throws AlertForbiddenOperationException, AlertConfigurationException {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
@@ -181,7 +190,7 @@ public class UserAccessorTestIT {
     }
 
     @Test
-    public void testExternalUserUpdateRoles() throws AlertForbiddenOperationException, AlertConfigurationException {
+    void testExternalUserUpdateRoles() throws AlertForbiddenOperationException, AlertConfigurationException {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
@@ -189,7 +198,7 @@ public class UserAccessorTestIT {
         userModel = userAccessor.addUser(userModel, false);
         UserRoleModel userRole = UserRoleModel.of(DefaultUserRole.ALERT_ADMIN.name());
         Set<UserRoleModel> roles = Set.of(userRole);
-        UserModel existingUser = UserModel.existingUser(userModel.getId(), userName, null, email, AuthenticationType.LDAP, roles, true);
+        UserModel existingUser = UserModel.existingUser(userModel.getId(), userName, null, email, AuthenticationType.LDAP, roles, false, true, OffsetDateTime.now(), null, 0L);
         UserModel updatedUser = userAccessor.updateUser(existingUser, true);
 
         assertEquals(roles.stream().map(UserRoleModel::getName).collect(Collectors.toSet()), updatedUser.getRoles().stream().map(UserRoleModel::getName).collect(Collectors.toSet()));
@@ -197,38 +206,74 @@ public class UserAccessorTestIT {
     }
 
     @Test
-    public void testExternalUserUpdateNameException() throws AlertForbiddenOperationException, AlertConfigurationException {
+    void testExternalUserUpdateNameException() throws AlertForbiddenOperationException, AlertConfigurationException {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
 
         UserModel userModel = UserModel.newUser(userName, password, email, AuthenticationType.LDAP, Collections.emptySet(), true);
         userModel = userAccessor.addUser(userModel, false);
-        UserModel updatedUser = UserModel.existingUser(userModel.getId(), userName + "_updated", null, email, AuthenticationType.LDAP, Collections.emptySet(), true);
+        UserModel updatedUser = UserModel.existingUser(
+            userModel.getId(),
+            userName + "_updated",
+            null,
+            email,
+            AuthenticationType.LDAP,
+            Collections.emptySet(),
+            false,
+            true,
+            OffsetDateTime.now(),
+            null,
+            0L
+        );
         testUserUpdateException(updatedUser);
         userAccessor.deleteUser(userName);
     }
 
     @Test
-    public void testExternalUserUpdateEmailException() throws AlertForbiddenOperationException, AlertConfigurationException {
+    void testExternalUserUpdateEmailException() throws AlertForbiddenOperationException, AlertConfigurationException {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
         UserModel userModel = UserModel.newUser(userName, password, email, AuthenticationType.LDAP, Collections.emptySet(), true);
         userModel = userAccessor.addUser(userModel, false);
-        UserModel updatedUser = UserModel.existingUser(userModel.getId(), userName, null, email + "_updated", AuthenticationType.LDAP, Collections.emptySet(), true);
+        UserModel updatedUser = UserModel.existingUser(
+            userModel.getId(),
+            userName,
+            null,
+            email + "_updated",
+            AuthenticationType.LDAP,
+            Collections.emptySet(),
+            false,
+            true,
+            OffsetDateTime.now(),
+            null,
+            0L
+        );
         testUserUpdateException(updatedUser);
         userAccessor.deleteUser(userName);
     }
 
     @Test
-    public void testExternalUserUpdatePasswordException() throws AlertForbiddenOperationException, AlertConfigurationException {
+    void testExternalUserUpdatePasswordException() throws AlertForbiddenOperationException, AlertConfigurationException {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
         UserModel userModel = UserModel.newUser(userName, password, email, AuthenticationType.LDAP, Collections.emptySet(), true);
         userModel = userAccessor.addUser(userModel, false);
-        UserModel updatedUser = UserModel.existingUser(userModel.getId(), userName, password, email, AuthenticationType.LDAP, Collections.emptySet(), true);
+        UserModel updatedUser = UserModel.existingUser(
+            userModel.getId(),
+            userName,
+            password,
+            email,
+            AuthenticationType.LDAP,
+            Collections.emptySet(),
+            false,
+            true,
+            OffsetDateTime.now(),
+            null,
+            0L
+        );
         testUserUpdateException(updatedUser);
         userAccessor.deleteUser(userName);
     }
