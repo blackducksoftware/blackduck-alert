@@ -92,7 +92,7 @@ class AuthenticationActionsTestIT {
         HttpServletRequest servletRequest = new MockHttpServletRequest();
         HttpServletResponse servletResponse = new MockHttpServletResponse();
         AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository, securityContextRepository);
-        ActionResponse<Void> response = authenticationActions.authenticateUser(servletRequest, servletResponse, mockLoginRestModel.createRestModel());
+        ActionResponse<AuthenticationResponseModel> response = authenticationActions.authenticateUser(servletRequest, servletResponse, mockLoginRestModel.createRestModel());
 
         assertTrue(response.isSuccessful());
         assertFalse(response.hasContent());
@@ -106,7 +106,7 @@ class AuthenticationActionsTestIT {
         AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository, securityContextRepository);
         MockLoginRestModel badRestModel = new MockLoginRestModel();
         badRestModel.setAlertPassword("badpassword");
-        ActionResponse<Void> response = authenticationActions.authenticateUser(servletRequest, servletResponse, badRestModel.createRestModel());
+        ActionResponse<AuthenticationResponseModel> response = authenticationActions.authenticateUser(servletRequest, servletResponse, badRestModel.createRestModel());
         assertTrue(response.isError());
         assertFalse(response.hasContent());
     }
@@ -120,7 +120,7 @@ class AuthenticationActionsTestIT {
         mockLoginRestModel.setAlertUsername(userName);
         AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository, securityContextRepository);
         userAccessor.addUser(userName, mockLoginRestModel.getAlertPassword(), "");
-        ActionResponse<Void> response = authenticationActions.authenticateUser(servletRequest, servletResponse, mockLoginRestModel.createRestModel());
+        ActionResponse<AuthenticationResponseModel> response = authenticationActions.authenticateUser(servletRequest, servletResponse, mockLoginRestModel.createRestModel());
 
         assertTrue(response.isError());
         Optional<UserModel> userModel = userAccessor.getUser(userName);
@@ -145,7 +145,7 @@ class AuthenticationActionsTestIT {
         Mockito.when(mockLDAPManager.getAuthenticationProvider()).thenReturn(Optional.of(ldapAuthenticationProvider));
 
         AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository, securityContextRepository);
-        ActionResponse<Void> response = authenticationActions.authenticateUser(servletRequest, servletResponse, mockLoginRestModel.createRestModel());
+        ActionResponse<AuthenticationResponseModel> response = authenticationActions.authenticateUser(servletRequest, servletResponse, mockLoginRestModel.createRestModel());
         assertTrue(response.isSuccessful());
         assertFalse(response.hasContent());
     }
@@ -178,7 +178,7 @@ class AuthenticationActionsTestIT {
         AlertAuthenticationProvider testAuthenticationProvider = new AlertAuthenticationProvider(List.of(ldapAuthenticationPerformer, alertDatabaseAuthenticationPerformer));
 
         AuthenticationActions authenticationActions = new AuthenticationActions(testAuthenticationProvider, csrfTokenRepository, securityContextRepository);
-        ActionResponse<Void> response = authenticationActions.authenticateUser(servletRequest, servletResponse, mockLoginRestModel.createRestModel());
+        ActionResponse<AuthenticationResponseModel> response = authenticationActions.authenticateUser(servletRequest, servletResponse, mockLoginRestModel.createRestModel());
         assertTrue(response.isError());
         Mockito.verify(databaseProvider).authenticate(Mockito.any(Authentication.class));
     }
@@ -218,7 +218,7 @@ class AuthenticationActionsTestIT {
         credentialsLoginRestModel.setAlertUsername(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_USERNAME));
         credentialsLoginRestModel.setAlertPassword(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD));
 
-        ActionResponse<Void> response = authenticationActions.authenticateUser(servletRequest, servletResponse, credentialsLoginRestModel.createRestModel());
+        ActionResponse<AuthenticationResponseModel> response = authenticationActions.authenticateUser(servletRequest, servletResponse, credentialsLoginRestModel.createRestModel());
         assertTrue(response.isError());
         assertEquals(HttpStatus.UNAUTHORIZED, response.getHttpStatus());
     }

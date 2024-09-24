@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -44,6 +45,11 @@ public class AlertAuthenticationProvider implements AuthenticationProvider {
                 if (completedAuthentication.isPresent()) {
                     return completedAuthentication.get();
                 }
+            } catch (LockedException ex) {
+                String authTypeError = String.format("Error with with authentication type %s - cause: %s", authenticationPerformer.getAuthenticationType(), ex.getMessage());
+                logger.error(authTypeError);
+                logger.debug(ex.getMessage(), ex);
+                throw ex;
             } catch (Exception ex) {
                 String authTypeError = String.format("Error with with authentication type %s - cause: %s", authenticationPerformer.getAuthenticationType(), ex.getMessage());
                 logger.error(authTypeError);

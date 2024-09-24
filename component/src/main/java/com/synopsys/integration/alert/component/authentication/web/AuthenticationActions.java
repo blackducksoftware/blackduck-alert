@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -43,8 +44,9 @@ public class AuthenticationActions {
         this.securityContextRepository = securityContextRepository;
     }
 
-    public ActionResponse<Void> authenticateUser(HttpServletRequest servletRequest, HttpServletResponse servletResponse, LoginConfig loginConfig) throws BadCredentialsException {
-        ActionResponse<Void> response = new ActionResponse<>(HttpStatus.UNAUTHORIZED);
+    public ActionResponse<AuthenticationResponseModel> authenticateUser(HttpServletRequest servletRequest, HttpServletResponse servletResponse, LoginConfig loginConfig)
+        throws BadCredentialsException {
+        ActionResponse<AuthenticationResponseModel> response = new ActionResponse<>(HttpStatus.UNAUTHORIZED);
         try {
             Authentication pendingAuthentication = createUsernamePasswordAuthToken(loginConfig);
             Authentication authentication = authenticationProvider.authenticate(pendingAuthentication);
@@ -57,10 +59,13 @@ public class AuthenticationActions {
                 SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
                 securityContext.setAuthentication(authentication);
                 securityContextRepository.saveContext(securityContext, servletRequest, servletResponse);
-                response = new ActionResponse<>(HttpStatus.NO_CONTENT);
+                response = new ActionResponse<>(HttpStatus.OK, new AuthenticationResponseModel(HttpStatus.OK.value(), ""));
             } else {
+                response = new ActionResponse<>(HttpStatus.UNAUTHORIZED, new AuthenticationResponseModel(HttpStatus.UNAUTHORIZED.value(), "Login attempt failed."));
                 servletRequest.getSession().invalidate();
             }
+        } catch (LockedException ex) {
+            response = new ActionResponse<>(HttpStatus.UNAUTHORIZED, new AuthenticationResponseModel(HttpStatus.UNAUTHORIZED.value(), "Account temporarily locked."));
         } catch (AuthenticationException ex) {
             logger.error("Error Authenticating user.", ex);
         }

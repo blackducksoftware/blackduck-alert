@@ -23,6 +23,7 @@ import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.component.authentication.actions.AuthenticationApiAction;
 import com.synopsys.integration.alert.component.authentication.web.AuthenticationActions;
+import com.synopsys.integration.alert.component.authentication.web.AuthenticationResponseModel;
 import com.synopsys.integration.alert.component.authentication.web.LoginConfig;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
@@ -91,7 +92,7 @@ class ConfigurationOverridesStartupComponentTest {
 
         // Try to login with the updated password
         LoginConfig updatedLoginConfig = new LoginConfig(DEFAULT_ADMIN_USER, UPDATED_PASSWORD);
-        ActionResponse<Void> actionResponse = authenticationActions.authenticateUser(servletRequest, servletResponse, updatedLoginConfig);
+        ActionResponse<AuthenticationResponseModel> actionResponse = authenticationActions.authenticateUser(servletRequest, servletResponse, updatedLoginConfig);
         assertEquals(HttpStatus.NO_CONTENT, actionResponse.getHttpStatus());
 
         // Try to login with the default password
@@ -133,7 +134,7 @@ class ConfigurationOverridesStartupComponentTest {
 
         // Try to login with the updated password
         LoginConfig updatedLoginConfig = new LoginConfig(DEFAULT_ADMIN_USER, UPDATED_PASSWORD);
-        ActionResponse<Void> actionResponse = authenticationActions.authenticateUser(servletRequest, servletResponse, updatedLoginConfig);
+        ActionResponse<AuthenticationResponseModel> actionResponse = authenticationActions.authenticateUser(servletRequest, servletResponse, updatedLoginConfig);
         assertEquals(HttpStatus.UNAUTHORIZED, actionResponse.getHttpStatus());
 
         // Try to login with the default password
@@ -177,7 +178,7 @@ class ConfigurationOverridesStartupComponentTest {
 
         // Try to login with the updated password
         LoginConfig updatedLoginConfig = new LoginConfig(newUsername, UPDATED_PASSWORD);
-        ActionResponse<Void> actionResponse = authenticationActions.authenticateUser(servletRequest, servletResponse, updatedLoginConfig);
+        ActionResponse<AuthenticationResponseModel> actionResponse = authenticationActions.authenticateUser(servletRequest, servletResponse, updatedLoginConfig);
         assertEquals(HttpStatus.UNAUTHORIZED, actionResponse.getHttpStatus());
 
         // Try to login with the default password
