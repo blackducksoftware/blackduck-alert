@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { NavLink } from 'react-router-dom';
 
 const useStyles = createUseStyles({
     navLabel: {
@@ -19,11 +20,11 @@ const SideNavButtonItem = ({ href, icon, id, label, type = 'button', onClick }) 
     
     if (type === 'link') {
         return (
-            <a href={href} tabIndex={0}>
+            <NavLink to={href}>
                 <FontAwesomeIcon size="2x" className={classes.icon} icon={icon} fixedWidth />
                 <span id={id} className={classes.navLabel}>{label}</span>
-            </a>
-        );
+            </NavLink>
+        )
     }
     
     // Default is button type

@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { NavLink } from 'react-router-dom';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 const useStyles = createUseStyles({
@@ -27,7 +28,7 @@ const useStyles = createUseStyles({
         `,
         gridTemplateColumns: '16px 1fr 16px',
         color: 'white',
-        backgroundColor: 'transparent',
+        backgroundColor: 'transparent !important',
         border: 'none',
         fontSize: '1em',
         fontWeight: 400,
@@ -56,9 +57,15 @@ const useStyles = createUseStyles({
     navMenuItem: {
         color: 'white',
         padding: ['8px', 0, '8px', '24px'],
+        display: 'block',
+        width: '100%',
+        fontWeight: 400,
+        whiteSpace: 'nowrap',
+        textDecoration: 'none',
         '&:hover': {
             background: '#313944',
-            color: 'white'
+            color: 'white',
+            textDecoration: 'none'
         }
     }
 });
@@ -80,9 +87,9 @@ const SideNavSubmenu = ({ icon, id, label, subMenuItems }) => {
                     }
 
                     return (
-                        <Dropdown.Item className={classes.navMenuItem} href={item.href} key={item.id}>
+                        <NavLink to={item.href} className={classes.navMenuItem} key={item.id}>
                             {item.label}
-                        </Dropdown.Item>
+                        </NavLink>
                     )
                 })}
             </Dropdown.Menu>

@@ -2,7 +2,7 @@ import React from 'react';
 import { createUseStyles } from 'react-jss';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { NavLink, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import SideNavItem from 'common/component/navigation/SideNavItem';
 import { cancelLogout, confirmLogout } from 'store/actions/session';
 import { SLACK_INFO } from 'page/channel/slack/SlackModels';
@@ -44,17 +44,6 @@ const useStyles = createUseStyles({
 
 const Navigation = ({ confirmLogoutPressed, cancelLogout, globalDescriptorMap }) => {
     const classes = useStyles();
-    const createStaticNavItem = (uriPrefix, itemObject) => (
-        <li key={itemObject.key} onClick={() => cancelLogout()}>
-            <NavLink to={`${uriPrefix}${itemObject.url}`} activeClassName="activeNav">
-                {itemObject.label}
-            </NavLink>
-        </li>
-    );
-
-    const channelUri = '/alert/channels/';
-    const providerUri = '/alert/providers/';
-    const componentUri = '/alert/components/';
 
     const hasType = (descriptorType) => Object.values(globalDescriptorMap).some((descriptor) => descriptorType === descriptor.type);
 
