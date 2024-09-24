@@ -1,13 +1,14 @@
 package com.synopsys.integration.alert.component.users.web.user.util;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;
@@ -92,29 +93,20 @@ public class UserCredentialValidator {
 
     private Set<String> loadDictionary() {
         ClassPathResource classPathResource = new ClassPathResource("10k-most-common.txt");
-        File dictionaryFile;
+        InputStream resource;
         try {
-            dictionaryFile = classPathResource.getFile();
-        } catch (IOException e) {
+            resource = classPathResource.getInputStream();
+        }  catch (IOException e) {
             logger.error("Failed to load alert dictionary.", e);
             return Set.of();
         }
 
         Set<String> result = new HashSet<>();
-        if (dictionaryFile.exists()) {
-            int count = 0;
-            try (BufferedReader lines = new BufferedReader(new FileReader(dictionaryFile))) {
-                String line;
-                while ((line = lines.readLine()) != null) {
-                    if (!line.isEmpty()) {
-                        result.add(line.toLowerCase());
-                        ++count;
-                    }
-                }
-                logger.debug("Loaded {} entries into password dictionary from {}", count, dictionaryFile);
-            } catch (IOException ex) {
-                logger.error("Reading password dictionary file {}", dictionaryFile, ex);
-            }
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource))) {
+            result.addAll(reader.lines().collect(Collectors.toSet()));
+            logger.debug("Loaded {} entries into password dictionary", result.size());
+        } catch (IOException ex) {
+            logger.error("Failed to read from alert password dictionary.", ex);
         }
         return result;
     }
