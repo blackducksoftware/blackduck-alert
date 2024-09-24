@@ -44,12 +44,12 @@ const useStyles = createUseStyles((theme) => ({
     },
     modalBody: {
         maxHeight: 'calc(100vh - 355px)',
-        padding: ['16px', 0],
+        padding: ['16px', '32px'],
         overflowY: 'auto'
     },
     noOverflowModalBody: {
         maxHeight: 'calc(100vh - 355px)',
-        padding: ['16px', 0]
+        padding: ['16px', '32px']
     }
 }));
 
