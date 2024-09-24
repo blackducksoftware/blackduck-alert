@@ -29,7 +29,7 @@ const SideNavButtonItem = ({ href, icon, id, label, type = 'button', onClick }) 
     
     // Default is button type
     return (
-        <button onClick={onClick}>
+        <button onClick={onClick} type="button" name={id}>
             <FontAwesomeIcon size="2x" className={classes.icon} icon={icon} fixedWidth />
             <span id={id} className={classes.navLabel}>{label}</span>
         </button>
