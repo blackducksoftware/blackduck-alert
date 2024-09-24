@@ -96,7 +96,8 @@ public class AuthenticationHandler {
             .headers(customizer -> {
                 customizer.contentSecurityPolicy(cspCustomizer -> {
                     cspCustomizer.policyDirectives(
-                        "form-action 'self'; default-src 'self' 'https://www.synopsys.com'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' 'https://www.synopsys.com';");
+                        "form-action 'self'; default-src 'none'; connect-src 'self'; object-src 'self'; script-src 'self' 'unsafe-eval'; img-src 'self' https://www.synopsys.com/ https://images.synopsys.com/; style-src 'self' 'unsafe-inline'; font-src 'self';"
+                    );
                 });
             })
             .csrf(customizer -> {
