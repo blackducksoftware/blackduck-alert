@@ -84,22 +84,32 @@ public class AuthenticationHandler {
         CsrfTokenRequestAttributeHandler csrfRequestHandler = new CsrfTokenRequestAttributeHandler();
         // set the name of the attribute the CsrfToken will be populated on
         csrfRequestHandler.setCsrfRequestAttributeName(null);
-        http.securityContext((securityContext) -> {
+        http.securityContext(securityContext -> {
                 securityContext.requireExplicitSave(true);
                 securityContext.securityContextRepository(securityContextRepository);
             })
             .authenticationProvider(authenticationProvider)
-            .authorizeHttpRequests()
-            .requestMatchers(allowedRequestMatchers).permitAll()
-            .and().authorizeHttpRequests().anyRequest().authenticated()
-            .and().csrf(csrf -> {
-                csrf.csrfTokenRequestHandler(csrfRequestHandler);
-                csrf.csrfTokenRepository(csrfTokenRepository);
-                csrf.ignoringRequestMatchers(allowedRequestMatchers);
+            .authorizeHttpRequests(customizer -> {
+                customizer.requestMatchers(allowedRequestMatchers).permitAll();
+                customizer.anyRequest().authenticated();
             })
-            .authorizeHttpRequests().withObjectPostProcessor(createRoleProcessor())
-            .and().logout()
-            .logoutSuccessUrl(HttpPathManager.PATH_ROOT);
+            .headers(customizer -> {
+                customizer.contentSecurityPolicy(cspCustomizer -> {
+                    cspCustomizer.policyDirectives(
+                        "form-action 'self'; default-src 'none'; connect-src 'self'; object-src 'self'; script-src 'self' 'unsafe-eval'; img-src 'self' https://www.synopsys.com/ https://images.synopsys.com/; style-src 'self' 'unsafe-inline'; font-src 'self';"
+                    );
+                });
+            })
+            .csrf(customizer -> {
+                customizer.csrfTokenRequestHandler(csrfRequestHandler);
+                customizer.csrfTokenRepository(csrfTokenRepository);
+                customizer.ignoringRequestMatchers(allowedRequestMatchers);
+            })
+            .authorizeHttpRequests(customizer -> {
+                customizer.withObjectPostProcessor(createRoleProcessor());
+            })
+            .logout(customizer -> customizer.logoutSuccessUrl(HttpPathManager.PATH_ROOT));
+
         configureSAML(http);
         return http.build();
     }

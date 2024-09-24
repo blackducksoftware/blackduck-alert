@@ -157,12 +157,13 @@ class AboutInfoFooter extends React.Component {
         return (
             <div className="footer">
                 <span className="synopsysLogoSpan">
-                    <img
-                        className="synopsysFooterLogo"
-                        src="https://www.synopsys.com/content/dam/synopsys/company/about/legal/synopsys-logos/blacklogo/synopsys_blk.png"
-                        alt={projectUrl}
-                        href={projectUrl}
-                    />
+                    <a href={projectUrl}>
+                        <img
+                            className="synopsysFooterLogo"
+                            src="https://www.synopsys.com/content/dam/synopsys/company/about/legal/synopsys-logos/blacklogo/synopsys_blk.png"
+                            alt={projectUrl}
+                        />
+                    </a>
                     <span className="synopsysFooterLogoVerticalBarSpace">|</span>
                     ALERT
                 </span>
