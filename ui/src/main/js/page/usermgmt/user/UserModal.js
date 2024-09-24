@@ -41,6 +41,8 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
     const messageContainerClass = classNames(classes.messageContainer, {
         [classes.warningStyle]: type === 'EDIT'
     });
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [confirmPasswordError, setConfirmPasswordError] = useState({});
 
     const fieldErrors = useSelector((state) => state.users.error.fieldErrors);
     const roles = useSelector((state) => state.roles.data);
@@ -50,11 +52,11 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
         let passwordError = {};
         let matching = true;
 
-        if ((user[USER_INPUT_FIELD_KEYS.PASSWORD_KEY] || user[USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY]) && (user[USER_INPUT_FIELD_KEYS.PASSWORD_KEY] !== user[USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY])) {
+        if ((user[USER_INPUT_FIELD_KEYS.PASSWORD_KEY] || confirmPassword) && (user[USER_INPUT_FIELD_KEYS.PASSWORD_KEY] !== confirmPassword)) {
             passwordError = HTTPErrorUtils.createFieldError('Passwords do not match.');
             matching = false;
         }
-        setUserModel(Object.assign(user, { [USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_ERROR_KEY]: passwordError }));
+        setConfirmPasswordError(passwordError);
 
         return matching;
     }
@@ -177,18 +179,18 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
                 />
                 {!external && (
                     <PasswordInput
-                        id={USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY}
-                        name={USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY}
+                        id="confirmPassword"
+                        name="confirmPassword"
                         label="Confirm Password"
                         customDescription="The user's password."
                         placeholder="Confirm password..."
                         readOnly={false}
                         required
-                        isSet={userModel[USER_INPUT_FIELD_KEYS.IS_PASSWORD_SET]}
-                        onChange={handleOnChange(USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY)}
-                        value={userModel[USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY] || undefined}
-                        errorName={USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_KEY}
-                        errorValue={userModel[USER_INPUT_FIELD_KEYS.CONFIRM_PASSWORD_ERROR_KEY]}
+                        isSet={Boolean(confirmPassword)}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        value={confirmPassword || undefined}
+                        errorName="confirmPasswordError"
+                        errorValue={confirmPasswordError}
                     />
                 )}
                 <TextInput
