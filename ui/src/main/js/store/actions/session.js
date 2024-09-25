@@ -161,9 +161,16 @@ export function login(username, password) {
             headers: headersUtil.getHeaders(),
             body: JSON.stringify(body)
         }).then((response) => {
-            if (response.ok && response.headers.get('X-CSRF-TOKEN')) {
-                const token = response.headers.get('X-CSRF-TOKEN');
-                dispatch(loggedIn({ csrfToken: token }));
+            if (response.ok) {
+                response.json().then((responseBody) => {
+                    const { statusCode, message } = responseBody;
+                    const token = response.headers.get('X-CSRF-TOKEN');
+                    if (statusCode === 401) {
+                        dispatch(loginError(message, []));
+                    } else if (statusCode === 200 && token) {
+                        dispatch(loggedIn({ csrfToken: token }));
+                    }
+                });
             } else {
                 dispatch(loginError('Login Failed.', []));
             }
