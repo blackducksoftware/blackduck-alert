@@ -36,7 +36,7 @@ import junit.framework.AssertionFailedError;
 
 @Transactional
 @AlertIntegrationTest
-public class UserControllerTestIT {
+class UserControllerTestIT {
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     @Autowired
     private UserRepository userRepository;
@@ -54,7 +54,7 @@ public class UserControllerTestIT {
 
     private final Long id = Long.MAX_VALUE - 1;
     private final String name = "user";
-    private final String password = "password";
+    private final String password = "testPassword123!@#";
     private final String emailAddress = "noreply@synopsys.com";
     private final Set<UserRoleModel> roles = Set.of();
     private final AuthenticationType authenticationType = AuthenticationType.DATABASE;
@@ -72,7 +72,7 @@ public class UserControllerTestIT {
 
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
-    public void testCreate() throws Exception {
+    void testCreate() throws Exception {
         Set<String> roleNames = roles
                                     .stream()
                                     .map(UserRoleModel::getName)
@@ -90,7 +90,7 @@ public class UserControllerTestIT {
 
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
-    public void testGetOne() throws Exception {
+    void testGetOne() throws Exception {
         UserConfig userConfig = createDefaultUserConfig().orElseThrow(AssertionFailedError::new);
 
         String url = UserController.USER_BASE_PATH + String.format("/%s", userConfig.getId());
@@ -102,7 +102,7 @@ public class UserControllerTestIT {
 
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
-    public void testUpdate() throws Exception {
+    void testUpdate() throws Exception {
         UserConfig userConfig = createDefaultUserConfig().orElseThrow(AssertionFailedError::new);
         Set<String> roleNames = roles
                                     .stream()
@@ -121,7 +121,7 @@ public class UserControllerTestIT {
 
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
-    public void testDelete() throws Exception {
+    void testDelete() throws Exception {
         UserConfig userConfig = createDefaultUserConfig().orElseThrow(AssertionFailedError::new);
 
         String url = UserController.USER_BASE_PATH + String.format("/%s", userConfig.getId());
@@ -133,7 +133,7 @@ public class UserControllerTestIT {
 
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
-    public void testGetAll() throws Exception {
+    void testGetAll() throws Exception {
         String url = UserController.USER_BASE_PATH;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(url))
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
@@ -143,7 +143,7 @@ public class UserControllerTestIT {
 
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
-    public void testValidate() throws Exception {
+    void testValidate() throws Exception {
         UserConfig userConfig = createDefaultUserConfig().orElseThrow(AssertionFailedError::new);
         String url = UserController.USER_BASE_PATH + "/validate";
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(new URI(url))

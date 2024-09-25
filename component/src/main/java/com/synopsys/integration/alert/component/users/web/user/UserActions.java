@@ -40,6 +40,7 @@ import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
 import com.synopsys.integration.alert.component.users.UserSystemValidator;
+import com.synopsys.integration.alert.component.users.web.user.util.UserCredentialValidator;
 
 @Component
 public class UserActions extends AbstractResourceActions<UserConfig, UserModel, MultiUserConfigResponseModel> {
@@ -48,26 +49,32 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
     public static final String FIELD_KEY_USER_MGMT_EMAILADDRESS = "emailAddress";
     public static final String FIELD_KEY_USER_MGMT_ROLES = "roleNames";
 
-    private static final int DEFAULT_PASSWORD_LENGTH = 8;
     private final UserAccessor userAccessor;
     private final RoleAccessor roleAccessor;
     private final AuthorizationManager authorizationManager;
     private final AuthenticationTypeAccessor authenticationTypeAccessor;
     private final UserSystemValidator userSystemValidator;
+    private final UserCredentialValidator userCredentialValidator;
 
     private final Logger logger = AlertLoggerFactory.getLogger(UserActions.class);
     private final ActionMessageCreator actionMessageCreator = new ActionMessageCreator();
 
     @Autowired
-    public UserActions(UserManagementDescriptorKey userManagementDescriptorKey, UserAccessor userAccessor, RoleAccessor roleAccessor, AuthorizationManager authorizationManager,
+    public UserActions(
+        UserManagementDescriptorKey userManagementDescriptorKey,
+        UserAccessor userAccessor, RoleAccessor roleAccessor,
+        AuthorizationManager authorizationManager,
         AuthenticationTypeAccessor authenticationTypeAccessor,
-        UserSystemValidator userSystemValidator) {
+        UserSystemValidator userSystemValidator,
+        UserCredentialValidator userCredentialValidator
+    ) {
         super(userManagementDescriptorKey, ConfigContextEnum.GLOBAL, authorizationManager);
         this.userAccessor = userAccessor;
         this.roleAccessor = roleAccessor;
         this.authorizationManager = authorizationManager;
         this.authenticationTypeAccessor = authenticationTypeAccessor;
         this.userSystemValidator = userSystemValidator;
+        this.userCredentialValidator = userCredentialValidator;
     }
 
     @Override
@@ -233,7 +240,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
 
         if (userConfig.getId() == null) {
             validateUserExistsByName(fieldErrors, userName);
-            validatePasswordLength(fieldErrors, password);
+            validatePassword(fieldErrors, password);
         } else {
             Long userId = Long.valueOf(userConfig.getId());
             validateUserExistsById(userId, userName).ifPresent(fieldErrors::add);
@@ -242,7 +249,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
                 boolean passwordMissing = StringUtils.isBlank(userConfig.getPassword());
 
                 if (!userConfig.isPasswordSet() || !passwordMissing) {
-                    validatePasswordLength(fieldErrors, password);
+                    validatePassword(fieldErrors, password);
                 }
             }
         }
@@ -292,11 +299,9 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
                    .map(user -> AlertFieldStatus.error(FIELD_KEY_USER_MGMT_USERNAME, "A user with that username already exists."));
     }
 
-    private void validatePasswordLength(List<AlertFieldStatus> fieldErrors, String passwordValue) {
+    private void validatePassword(List<AlertFieldStatus> fieldErrors, String passwordValue) {
         validateRequiredField(FIELD_KEY_USER_MGMT_PASSWORD, fieldErrors, passwordValue);
-        if (fieldErrors.isEmpty() && DEFAULT_PASSWORD_LENGTH > passwordValue.length()) {
-            fieldErrors.add(AlertFieldStatus.error(FIELD_KEY_USER_MGMT_PASSWORD, "The password needs to be at least 8 characters long."));
-        }
+        List<AlertFieldStatus> alertFieldStatuses = userCredentialValidator.validatePassword(passwordValue);
+        fieldErrors.addAll(alertFieldStatuses);
     }
-
 }
