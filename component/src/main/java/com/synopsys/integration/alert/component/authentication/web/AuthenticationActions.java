@@ -32,6 +32,8 @@ import jakarta.servlet.http.HttpSession;
 
 @Component
 public class AuthenticationActions {
+    public static final String ERROR_LOGIN_ATTEMPT_FAILED = "Login attempt failed.";
+    public static final String ERROR_ACCOUNT_TEMPORARILY_LOCKED = "Account temporarily locked.";
     private final Logger logger = LoggerFactory.getLogger(AuthenticationActions.class);
     private final AlertAuthenticationProvider authenticationProvider;
     private final CsrfTokenRepository csrfTokenRepository;
@@ -48,7 +50,7 @@ public class AuthenticationActions {
         throws BadCredentialsException {
         ActionResponse<AuthenticationResponseModel> response = new ActionResponse<>(
             HttpStatus.OK,
-            new AuthenticationResponseModel(HttpStatus.UNAUTHORIZED.value(), "Login attempt failed.")
+            new AuthenticationResponseModel(HttpStatus.UNAUTHORIZED.value(), ERROR_LOGIN_ATTEMPT_FAILED)
         );
         try {
             Authentication pendingAuthentication = createUsernamePasswordAuthToken(loginConfig);
@@ -67,7 +69,7 @@ public class AuthenticationActions {
                 servletRequest.getSession().invalidate();
             }
         } catch (LockedException ex) {
-            response = new ActionResponse<>(HttpStatus.OK, new AuthenticationResponseModel(HttpStatus.UNAUTHORIZED.value(), "Account temporarily locked."));
+            response = new ActionResponse<>(HttpStatus.OK, new AuthenticationResponseModel(HttpStatus.UNAUTHORIZED.value(), ERROR_ACCOUNT_TEMPORARILY_LOCKED));
         } catch (AuthenticationException ex) {
             logger.error("Error Authenticating user.", ex);
         }

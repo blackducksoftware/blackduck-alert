@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -93,9 +94,11 @@ class AuthenticationActionsTestIT {
         HttpServletResponse servletResponse = new MockHttpServletResponse();
         AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository, securityContextRepository);
         ActionResponse<AuthenticationResponseModel> response = authenticationActions.authenticateUser(servletRequest, servletResponse, mockLoginRestModel.createRestModel());
-
+        AuthenticationResponseModel responseModel = response.getContent().orElseThrow(() -> new AssertionError("Authentication response expected but not found."));
         assertTrue(response.isSuccessful());
-        assertFalse(response.hasContent());
+        assertTrue(response.hasContent());
+        assertEquals(responseModel.getStatusCode(), HttpStatus.OK.value());
+        assertTrue(StringUtils.isBlank(responseModel.getMessage()));
     }
 
     @Test
@@ -107,8 +110,11 @@ class AuthenticationActionsTestIT {
         MockLoginRestModel badRestModel = new MockLoginRestModel();
         badRestModel.setAlertPassword("badpassword");
         ActionResponse<AuthenticationResponseModel> response = authenticationActions.authenticateUser(servletRequest, servletResponse, badRestModel.createRestModel());
-        assertTrue(response.isError());
-        assertFalse(response.hasContent());
+        AuthenticationResponseModel responseModel = response.getContent().orElseThrow(() -> new AssertionError("Authentication response expected but not found."));
+        assertTrue(response.isSuccessful());
+        assertTrue(response.hasContent());
+        assertEquals(responseModel.getStatusCode(), HttpStatus.UNAUTHORIZED.value());
+        assertEquals(AuthenticationActions.ERROR_LOGIN_ATTEMPT_FAILED, responseModel.getMessage());
     }
 
     @Test
@@ -122,7 +128,11 @@ class AuthenticationActionsTestIT {
         userAccessor.addUser(userName, mockLoginRestModel.getAlertPassword(), "");
         ActionResponse<AuthenticationResponseModel> response = authenticationActions.authenticateUser(servletRequest, servletResponse, mockLoginRestModel.createRestModel());
 
-        assertTrue(response.isError());
+        AuthenticationResponseModel responseModel = response.getContent().orElseThrow(() -> new AssertionError("Authentication response expected but not found."));
+        assertTrue(response.isSuccessful());
+        assertTrue(response.hasContent());
+        assertEquals(responseModel.getStatusCode(), HttpStatus.UNAUTHORIZED.value());
+        assertEquals(AuthenticationActions.ERROR_LOGIN_ATTEMPT_FAILED, responseModel.getMessage());
         Optional<UserModel> userModel = userAccessor.getUser(userName);
         assertTrue(userModel.isPresent());
         UserModel model = userModel.get();
@@ -146,8 +156,11 @@ class AuthenticationActionsTestIT {
 
         AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository, securityContextRepository);
         ActionResponse<AuthenticationResponseModel> response = authenticationActions.authenticateUser(servletRequest, servletResponse, mockLoginRestModel.createRestModel());
+        AuthenticationResponseModel responseModel = response.getContent().orElseThrow(() -> new AssertionError("Authentication response expected but not found."));
         assertTrue(response.isSuccessful());
-        assertFalse(response.hasContent());
+        assertTrue(response.hasContent());
+        assertEquals(responseModel.getStatusCode(), HttpStatus.OK.value());
+        assertTrue(StringUtils.isBlank(responseModel.getMessage()));
     }
 
     @Test
@@ -179,7 +192,11 @@ class AuthenticationActionsTestIT {
 
         AuthenticationActions authenticationActions = new AuthenticationActions(testAuthenticationProvider, csrfTokenRepository, securityContextRepository);
         ActionResponse<AuthenticationResponseModel> response = authenticationActions.authenticateUser(servletRequest, servletResponse, mockLoginRestModel.createRestModel());
-        assertTrue(response.isError());
+        AuthenticationResponseModel responseModel = response.getContent().orElseThrow(() -> new AssertionError("Authentication response expected but not found."));
+        assertTrue(response.isSuccessful());
+        assertTrue(response.hasContent());
+        assertEquals(responseModel.getStatusCode(), HttpStatus.UNAUTHORIZED.value());
+        assertEquals(AuthenticationActions.ERROR_LOGIN_ATTEMPT_FAILED, responseModel.getMessage());
         Mockito.verify(databaseProvider).authenticate(Mockito.any(Authentication.class));
     }
 
@@ -219,8 +236,11 @@ class AuthenticationActionsTestIT {
         credentialsLoginRestModel.setAlertPassword(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD));
 
         ActionResponse<AuthenticationResponseModel> response = authenticationActions.authenticateUser(servletRequest, servletResponse, credentialsLoginRestModel.createRestModel());
-        assertTrue(response.isError());
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getHttpStatus());
+        AuthenticationResponseModel responseModel = response.getContent().orElseThrow(() -> new AssertionError("Authentication response expected but not found."));
+        assertTrue(response.isSuccessful());
+        assertTrue(response.hasContent());
+        assertEquals(responseModel.getStatusCode(), HttpStatus.UNAUTHORIZED.value());
+        assertEquals(AuthenticationActions.ERROR_LOGIN_ATTEMPT_FAILED, responseModel.getMessage());
     }
 
 }
