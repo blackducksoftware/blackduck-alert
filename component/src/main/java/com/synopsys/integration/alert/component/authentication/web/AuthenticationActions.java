@@ -46,7 +46,10 @@ public class AuthenticationActions {
 
     public ActionResponse<AuthenticationResponseModel> authenticateUser(HttpServletRequest servletRequest, HttpServletResponse servletResponse, LoginConfig loginConfig)
         throws BadCredentialsException {
-        ActionResponse<AuthenticationResponseModel> response = new ActionResponse<>(HttpStatus.UNAUTHORIZED);
+        ActionResponse<AuthenticationResponseModel> response = new ActionResponse<>(
+            HttpStatus.OK,
+            new AuthenticationResponseModel(HttpStatus.UNAUTHORIZED.value(), "Login attempt failed.")
+        );
         try {
             Authentication pendingAuthentication = createUsernamePasswordAuthToken(loginConfig);
             Authentication authentication = authenticationProvider.authenticate(pendingAuthentication);
@@ -61,11 +64,10 @@ public class AuthenticationActions {
                 securityContextRepository.saveContext(securityContext, servletRequest, servletResponse);
                 response = new ActionResponse<>(HttpStatus.OK, new AuthenticationResponseModel(HttpStatus.OK.value(), ""));
             } else {
-                response = new ActionResponse<>(HttpStatus.UNAUTHORIZED, new AuthenticationResponseModel(HttpStatus.UNAUTHORIZED.value(), "Login attempt failed."));
                 servletRequest.getSession().invalidate();
             }
         } catch (LockedException ex) {
-            response = new ActionResponse<>(HttpStatus.UNAUTHORIZED, new AuthenticationResponseModel(HttpStatus.UNAUTHORIZED.value(), "Account temporarily locked."));
+            response = new ActionResponse<>(HttpStatus.OK, new AuthenticationResponseModel(HttpStatus.UNAUTHORIZED.value(), "Account temporarily locked."));
         } catch (AuthenticationException ex) {
             logger.error("Error Authenticating user.", ex);
         }
