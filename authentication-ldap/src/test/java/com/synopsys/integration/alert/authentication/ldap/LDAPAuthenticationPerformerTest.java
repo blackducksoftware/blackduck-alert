@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.authentication.ldap;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -118,6 +120,19 @@ class LDAPAuthenticationPerformerTest {
         Authentication returnAuthentication = testLdapAuthenticationPerformer.authenticateWithProvider(inputAuthentication);
         assertTrue(returnAuthentication.isAuthenticated());
         assertEquals("foo", returnAuthentication.getPrincipal());
+    }
+
+    @Test
+    void testAuthenticateLockout() {
+        assertDoesNotThrow(() -> ldapConfigAccessor.createConfiguration(validaLDAPConfigModel));
+
+        LDAPManager spiedLDAPManager = Mockito.spy(ldapManager);
+        LdapAuthenticationProvider ldapAuthenticationProvider = Mockito.mock(LdapAuthenticationProvider.class);
+        Mockito.when(ldapAuthenticationProvider.authenticate(inputAuthentication)).thenThrow(new LockedException("Test Account is locked."));
+        assertDoesNotThrow(() -> Mockito.doReturn(Optional.of(ldapAuthenticationProvider)).when(spiedLDAPManager).createAuthProvider(Mockito.any(LDAPConfigModel.class)));
+
+        LDAPAuthenticationPerformer testLdapAuthenticationPerformer = new LDAPAuthenticationPerformer(mockAuthenticationEventManager, mockRoleAccessor, spiedLDAPManager);
+        assertThrows(LockedException.class, () -> testLdapAuthenticationPerformer.authenticateWithProvider(inputAuthentication));
     }
 
 }

@@ -30,6 +30,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
@@ -198,6 +199,43 @@ class AuthenticationActionsTestIT {
         assertEquals(responseModel.getStatusCode(), HttpStatus.UNAUTHORIZED.value());
         assertEquals(AuthenticationActions.ERROR_LOGIN_ATTEMPT_FAILED, responseModel.getMessage());
         Mockito.verify(databaseProvider).authenticate(Mockito.any(Authentication.class));
+    }
+
+    @Test
+    void testAuthenticationLDAPLockedExceptionIT() throws Exception {
+        HttpServletRequest servletRequest = new MockHttpServletRequest();
+        HttpServletResponse servletResponse = new MockHttpServletResponse();
+        Authentication authentication = Mockito.mock(Authentication.class);
+        Mockito.when(authentication.isAuthenticated()).thenReturn(true);
+        LdapAuthenticationProvider ldapAuthenticationProvider = Mockito.mock(LdapAuthenticationProvider.class);
+        Mockito.when(ldapAuthenticationProvider.authenticate(Mockito.any(Authentication.class))).thenReturn(authentication);
+        LDAPManager mockLDAPManager = Mockito.mock(LDAPManager.class);
+        Mockito.when(mockLDAPManager.isLDAPEnabled()).thenReturn(true);
+        Mockito.when(mockLDAPManager.getAuthenticationProvider()).thenThrow(new LockedException("TEST LDAP ACCOUNT LOCKED EXCEPTION"));
+        DaoAuthenticationProvider databaseProvider = Mockito.mock(DaoAuthenticationProvider.class);
+        Mockito.when(databaseProvider.authenticate(Mockito.any(Authentication.class))).thenReturn(authentication);
+        AuthenticationEventManager authenticationEventManager = Mockito.mock(AuthenticationEventManager.class);
+        Mockito.doNothing().when(authenticationEventManager).sendAuthenticationEvent(Mockito.any(), Mockito.eq(AuthenticationType.LDAP));
+        RoleAccessor roleAccessor = Mockito.mock(RoleAccessor.class);
+
+        AlertDatabaseAuthenticationPerformer alertDatabaseAuthenticationPerformer = new AlertDatabaseAuthenticationPerformer(
+            authenticationEventManager,
+            roleAccessor,
+            databaseProvider,
+            userAccessor,
+            alertProperties
+        );
+        LDAPAuthenticationPerformer ldapAuthenticationPerformer = new LDAPAuthenticationPerformer(authenticationEventManager, roleAccessor, mockLDAPManager);
+        AlertAuthenticationProvider testAuthenticationProvider = new AlertAuthenticationProvider(List.of(ldapAuthenticationPerformer, alertDatabaseAuthenticationPerformer));
+
+        AuthenticationActions authenticationActions = new AuthenticationActions(testAuthenticationProvider, csrfTokenRepository, securityContextRepository);
+        ActionResponse<AuthenticationResponseModel> response = authenticationActions.authenticateUser(servletRequest, servletResponse, mockLoginRestModel.createRestModel());
+        AuthenticationResponseModel responseModel = response.getContent().orElseThrow(() -> new AssertionError("Authentication response expected but not found."));
+        assertTrue(response.isSuccessful());
+        assertTrue(response.hasContent());
+        assertEquals(responseModel.getStatusCode(), HttpStatus.UNAUTHORIZED.value());
+        assertEquals(AuthenticationActions.ERROR_ACCOUNT_TEMPORARILY_LOCKED, responseModel.getMessage());
+        Mockito.verify(databaseProvider, Mockito.times(0)).authenticate(Mockito.any(Authentication.class));
     }
 
     @Test
