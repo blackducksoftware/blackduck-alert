@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.stereotype.Component;
@@ -46,6 +47,8 @@ public class LDAPAuthenticationPerformer extends AuthenticationPerformer {
                 }
             } catch (AlertConfigurationException ex) {
                 logger.error("LDAP Configuration error", ex);
+            } catch (LockedException ex) {
+                throw ex;
             } catch (Exception ex) {
                 logger.error("LDAP Authentication error", ex);
             }

@@ -36,8 +36,7 @@ public class AuthenticationController extends BaseController {
     }
 
     @PostMapping(value = "/login")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void login(HttpServletRequest request, HttpServletResponse response, @RequestBody(required = false) LoginConfig loginConfig) {
-        ResponseFactory.createResponseFromAction(authenticationActions.authenticateUser(request, response, loginConfig));
+    public AuthenticationResponseModel login(HttpServletRequest request, HttpServletResponse response, @RequestBody(required = false) LoginConfig loginConfig) {
+        return ResponseFactory.createContentResponseFromAction(authenticationActions.authenticateUser(request, response, loginConfig));
     }
 }

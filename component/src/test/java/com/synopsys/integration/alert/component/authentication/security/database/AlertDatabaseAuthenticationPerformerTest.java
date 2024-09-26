@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -195,10 +196,8 @@ class AlertDatabaseAuthenticationPerformerTest {
         }
 
         Authentication validAuthenticationToken = new UsernamePasswordAuthenticationToken(VALID_USERNAME, VALID_PASSWORD);
-        Optional<Authentication> authenticationAttempt = authenticationPerformer.performAuthentication(validAuthenticationToken);
-        Assertions.assertTrue(authenticationAttempt.isEmpty());
-        Assertions.assertTrue(expectedUserAccessorResponse.isLocked());
-        Assertions.assertEquals(numberOfAttempts, expectedUserAccessorResponse.getFailedLoginAttempts());
+        Mockito.when(alertDatabaseAuthProvider.authenticate(validAuthenticationToken)).thenThrow(new LockedException("Test account is locked."));
+        Assertions.assertThrows(LockedException.class, () -> authenticationPerformer.performAuthentication(validAuthenticationToken));
     }
 
     @Test

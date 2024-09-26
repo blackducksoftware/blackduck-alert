@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -23,6 +24,7 @@ import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.component.authentication.actions.AuthenticationApiAction;
 import com.synopsys.integration.alert.component.authentication.web.AuthenticationActions;
+import com.synopsys.integration.alert.component.authentication.web.AuthenticationResponseModel;
 import com.synopsys.integration.alert.component.authentication.web.LoginConfig;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
@@ -91,13 +93,23 @@ class ConfigurationOverridesStartupComponentTest {
 
         // Try to login with the updated password
         LoginConfig updatedLoginConfig = new LoginConfig(DEFAULT_ADMIN_USER, UPDATED_PASSWORD);
-        ActionResponse<Void> actionResponse = authenticationActions.authenticateUser(servletRequest, servletResponse, updatedLoginConfig);
-        assertEquals(HttpStatus.NO_CONTENT, actionResponse.getHttpStatus());
+        ActionResponse<AuthenticationResponseModel> actionResponse = authenticationActions.authenticateUser(servletRequest, servletResponse, updatedLoginConfig);
+        assertEquals(HttpStatus.OK, actionResponse.getHttpStatus());
+        AuthenticationResponseModel responseModel = actionResponse.getContent().orElseThrow(() -> new AssertionError("Authentication response expected but not found."));
+        assertTrue(actionResponse.isSuccessful());
+        assertTrue(actionResponse.hasContent());
+        assertEquals(responseModel.getStatusCode(), HttpStatus.OK.value());
+        assertTrue(StringUtils.isBlank(responseModel.getMessage()));
 
         // Try to login with the default password
         LoginConfig defaultLoginConfig = new LoginConfig(DEFAULT_ADMIN_USER, DEFAULT_PASSWORD);
         actionResponse = authenticationActions.authenticateUser(servletRequest, servletResponse, defaultLoginConfig);
-        assertEquals(HttpStatus.UNAUTHORIZED, actionResponse.getHttpStatus());
+        assertEquals(HttpStatus.OK, actionResponse.getHttpStatus());
+        responseModel = actionResponse.getContent().orElseThrow(() -> new AssertionError("Authentication response expected but not found."));
+        assertTrue(actionResponse.isSuccessful());
+        assertTrue(actionResponse.hasContent());
+        assertEquals(responseModel.getStatusCode(), HttpStatus.UNAUTHORIZED.value());
+        assertEquals(AuthenticationActions.ERROR_LOGIN_ATTEMPT_FAILED, responseModel.getMessage());
     }
 
     @Test
@@ -133,13 +145,21 @@ class ConfigurationOverridesStartupComponentTest {
 
         // Try to login with the updated password
         LoginConfig updatedLoginConfig = new LoginConfig(DEFAULT_ADMIN_USER, UPDATED_PASSWORD);
-        ActionResponse<Void> actionResponse = authenticationActions.authenticateUser(servletRequest, servletResponse, updatedLoginConfig);
-        assertEquals(HttpStatus.UNAUTHORIZED, actionResponse.getHttpStatus());
+        ActionResponse<AuthenticationResponseModel> actionResponse = authenticationActions.authenticateUser(servletRequest, servletResponse, updatedLoginConfig);
+        assertEquals(HttpStatus.OK, actionResponse.getHttpStatus());
+        AuthenticationResponseModel responseModel = actionResponse.getContent().orElseThrow(() -> new AssertionError("Authentication response expected but not found."));
+        assertTrue(actionResponse.isSuccessful());
+        assertTrue(actionResponse.hasContent());
+        assertEquals(responseModel.getStatusCode(), HttpStatus.UNAUTHORIZED.value());
+        assertEquals(AuthenticationActions.ERROR_LOGIN_ATTEMPT_FAILED, responseModel.getMessage());
 
         // Try to login with the default password
         LoginConfig defaultLoginConfig = new LoginConfig(DEFAULT_ADMIN_USER, DEFAULT_PASSWORD);
         actionResponse = authenticationActions.authenticateUser(servletRequest, servletResponse, defaultLoginConfig);
-        assertEquals(HttpStatus.NO_CONTENT, actionResponse.getHttpStatus());
+        responseModel = actionResponse.getContent().orElseThrow(() -> new AssertionError("Authentication response expected but not found."));
+        assertEquals(HttpStatus.OK, actionResponse.getHttpStatus());
+        assertEquals(responseModel.getStatusCode(), HttpStatus.OK.value());
+        assertTrue(StringUtils.isBlank(responseModel.getMessage()));
     }
 
     @Test
@@ -177,13 +197,20 @@ class ConfigurationOverridesStartupComponentTest {
 
         // Try to login with the updated password
         LoginConfig updatedLoginConfig = new LoginConfig(newUsername, UPDATED_PASSWORD);
-        ActionResponse<Void> actionResponse = authenticationActions.authenticateUser(servletRequest, servletResponse, updatedLoginConfig);
-        assertEquals(HttpStatus.UNAUTHORIZED, actionResponse.getHttpStatus());
-
+        ActionResponse<AuthenticationResponseModel> actionResponse = authenticationActions.authenticateUser(servletRequest, servletResponse, updatedLoginConfig);
+        assertEquals(HttpStatus.OK, actionResponse.getHttpStatus());
+        AuthenticationResponseModel responseModel = actionResponse.getContent().orElseThrow(() -> new AssertionError("Authentication response expected but not found."));
+        assertTrue(actionResponse.isSuccessful());
+        assertTrue(actionResponse.hasContent());
+        assertEquals(responseModel.getStatusCode(), HttpStatus.UNAUTHORIZED.value());
+        assertEquals(AuthenticationActions.ERROR_LOGIN_ATTEMPT_FAILED, responseModel.getMessage());
         // Try to login with the default password
         LoginConfig defaultLoginConfig = new LoginConfig(newUsername, DEFAULT_PASSWORD);
         actionResponse = authenticationActions.authenticateUser(servletRequest, servletResponse, defaultLoginConfig);
-        assertEquals(HttpStatus.NO_CONTENT, actionResponse.getHttpStatus());
+        responseModel = actionResponse.getContent().orElseThrow(() -> new AssertionError("Authentication response expected but not found."));
+        assertEquals(HttpStatus.OK, actionResponse.getHttpStatus());
+        assertEquals(responseModel.getStatusCode(), HttpStatus.OK.value());
+        assertTrue(StringUtils.isBlank(responseModel.getMessage()));
     }
 
     private UserModel changeUserPassword(UserModel oldUserModel, String newPassword) {

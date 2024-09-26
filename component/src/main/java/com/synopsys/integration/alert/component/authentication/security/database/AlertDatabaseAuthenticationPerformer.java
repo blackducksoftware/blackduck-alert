@@ -65,10 +65,6 @@ public class AlertDatabaseAuthenticationPerformer extends AuthenticationPerforme
         String userName = pendingAuthentication.getName();
         UserModel userModel = userAccessor.getUser(userName).orElseThrow(() -> new BadCredentialsException("Invalid user credentials."));
         userModel = checkAndUnlockAccount(userModel).orElseThrow(() -> new BadCredentialsException("Invalid user credentials."));
-        if (userModel.isLocked()) {
-            pendingAuthentication.setAuthenticated(false);
-            return pendingAuthentication;
-        }
         Authentication userAuthentication;
         try {
             userAuthentication = alertDatabaseAuthProvider.authenticate(pendingAuthentication);
