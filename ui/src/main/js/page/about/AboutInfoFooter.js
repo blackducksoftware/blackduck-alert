@@ -172,10 +172,7 @@ class AboutInfoFooter extends React.Component {
                     {version}
                 </span>
                 <span className="copyright">
-                    &nbsp;©
-                    {' '}
-                    {copyrightYear}
-&nbsp;
+                    &nbsp;© {copyrightYear}&nbsp;
                     <a id="aboutLink" href="https://www.synopsys.com/">Synopsys, Inc.</a>
                     &nbsp;All rights reserved
                 </span>
