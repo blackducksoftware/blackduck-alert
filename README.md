@@ -4,11 +4,13 @@
 This application provides the ability to send notifications from a provider to various distribution channels.
 <!-- description-text-end -->
 ## Build ##
-
 [![Build Status](https://travis-ci.org/blackducksoftware/blackduck-alert.svg?branch=master)](https://travis-ci.org/blackducksoftware/blackduck-alert)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+<!--Not currently operational or new url(s) required-->
+<!--
 [![Black Duck Security Risk](https://copilot.blackducksoftware.com/github/repos/blackducksoftware/blackduck-alert/branches/master/badge-risk.svg)](https://copilot.blackducksoftware.com/github/repos/blackducksoftware/blackduck-alert/branches/master)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=com.synopsys.integration%3Ablackduck-alert&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.synopsys.integration%3Ablackduck-alert)
+-->
 ### Build Steps ###
 #### Requirements ####
  - JDK 17
@@ -16,7 +18,6 @@ This application provides the ability to send notifications from a provider to v
  - NPM 8.11.0 (Recommended)
 
 To compile the UI and create the jar file run:
-
 
 ```bash
 ./gradlew clean build
@@ -67,4 +68,4 @@ All releases are on the GitHub release page. https://github.com/blackducksoftwar
 <!-- project-url-text-end -->
 
 ## Documentation ##
-Our public documentation, including installation instructions, is located here: https://sig-product-docs.synopsys.com/bundle/synopsys-alert/page/topics/general/synopsys-alert-overview.html
+Our public documentation, including installation instructions, is located here: https://documentation.blackduck.com/bundle/alert/page/topics/general/alert-overview.html
