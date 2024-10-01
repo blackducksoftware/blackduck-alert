@@ -3,6 +3,7 @@
 .synopsysLogoSpan {
   display: inline-flex;
   font-family: 'Roboto', 'Arial', sans-serif;
+  line-height: 1.25em;
 }
 
 .synopsysHeaderLogo {
@@ -30,6 +31,7 @@
 }
 
 .headerStandardSize {
+  display: inline-flex;
   margin-bottom: 3px;
   font-size: 1.25em;
   font-weight: lighter;
