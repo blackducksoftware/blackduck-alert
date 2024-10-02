@@ -37,8 +37,8 @@ Environs for Alert Config Map
 Enable SSL for External Postgres
 */}}
 {{- define "enablePostgresSSL" -}}
-{{- if .Values.postgres.sslSecrets.sslMode }}
-ALERT_DB_SSL_MODE: {{ .Values.postgres.sslSecrets.sslMode }}
+{{- if .Values.postgres.sslMode }}
+ALERT_DB_SSL_MODE: {{ .Values.postgres.sslMode }}
 {{- else -}}
 ALERT_DB_SSL_MODE: "disable"
 {{- end -}}
