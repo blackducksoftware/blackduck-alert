@@ -12,6 +12,8 @@ import '../../../css/messages.scss';
 import '../../../css/logos.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+import BlackDuckLogoAllBlack from '/src/main/resources/BlackDuckLogoAllBlack.png';
+
 class AboutInfoFooter extends React.Component {
     constructor(props) {
         super(props);
@@ -156,16 +158,16 @@ class AboutInfoFooter extends React.Component {
         const errorComponent = this.createErrorComponent();
         return (
             <div className="footer">
-                <span className="synopsysLogoSpan">
+                <span className="logoContainer">
                     <a href={projectUrl}>
                         <img
-                            className="synopsysFooterLogo"
-                            src="https://www.synopsys.com/content/dam/synopsys/company/about/legal/synopsys-logos/blacklogo/synopsys_blk.png"
+                            className="blackduckFooterLogo"
+                            src={BlackDuckLogoAllBlack}
                             alt={projectUrl}
                         />
                     </a>
-                    <span className="synopsysFooterLogoVerticalBarSpace">|</span>
-                    ALERT
+                    <span className="logoDivider" />
+                    <span className="footerAlertText">ALERT</span>
                 </span>
                 <span className="productVersion">
                     v
@@ -173,7 +175,7 @@ class AboutInfoFooter extends React.Component {
                 </span>
                 <span className="copyright">
                     &nbsp;© {copyrightYear}&nbsp;
-                    <a id="aboutLink" href="https://www.synopsys.com/">Synopsys, Inc.</a>
+                    <a id="aboutLink" href="https://www.blackduck.com/">Black Duck Software, Inc.</a>
                     &nbsp;All rights reserved
                 </span>
                 {errorComponent}
