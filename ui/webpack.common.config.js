@@ -67,7 +67,7 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            favicon: 'src/main/resources/favicon.ico',
+            favicon: 'src/main/resources/BlackDuckIcon.png',
             template: 'src/main/js/index.html',
             xhtml: true
         })
