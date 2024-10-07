@@ -26,7 +26,8 @@ services:
 #      - ALERT_DB_HOST=alertdb
 #      - ALERT_DB_PORT=5432
 #      - ALERT_DB_NAME=alertdb
-#      - ALERT_DB_SSL_MODE=require
+#     # See https://jdbc.postgresql.org/documentation/ssl/ for valid Postgres sslmode values
+#      - ALERT_DB_SSL_MODE=disable
 #
 #     # -- RabbitMQ Settings
 #      - ALERT_RABBITMQ_HOST=alert-rabbitmq
