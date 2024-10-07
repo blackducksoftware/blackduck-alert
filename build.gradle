@@ -30,7 +30,7 @@ ext {
     javaSourceCompatibility = JavaVersion.VERSION_17
     javaTargetCompatibility = JavaVersion.VERSION_17
 
-    moduleName = 'com.synopsys.integration.alert.main'
+    moduleName = 'com.blackduck.integration.alert.main'
 
     // This version is also in src/test/resources/spring-test.properties for the test jdbc connection
     postgresContainerVersionMigration = '14.10'
@@ -55,7 +55,7 @@ ext {
     envVarsNotExistMsg = 'Skipping as dependent variable are not set or values are false'
 }
 
-mainClassName = 'com.synopsys.integration.alert.Application'
+mainClassName = 'com.blackduck.integration.alert.Application'
 version = '8.0.0-SNAPSHOT'
 
 ext.isSnapshot = project.version.endsWith('-SNAPSHOT')
@@ -78,7 +78,7 @@ if (System.env.HELM_PREPACKAGED_REPOS != null) {
 
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
-apply plugin: 'com.synopsys.integration.solution'
+apply plugin: 'com.blackduck.integration.solution'
 
 apply from: 'buildSrc/buildTasks.gradle'
 apply from: 'buildSrc/runTasks.gradle'
@@ -89,7 +89,7 @@ apply from: 'buildSrc/postman.gradle'
 subprojects {
     if (project.name != 'alert-platform') {
         version = rootProject.version
-        apply plugin: 'com.synopsys.integration.simple'
+        apply plugin: 'com.blackduck.integration.simple'
 
         dependencies {
             implementation platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
