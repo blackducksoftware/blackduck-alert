@@ -38,10 +38,10 @@ import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
-import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
-import com.synopsys.integration.rest.exception.IntegrationRestException;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.jira.common.rest.service.PluginManagerService;
+import com.blackduck.integration.jira.common.server.service.JiraServerServiceFactory;
+import com.blackduck.integration.rest.exception.IntegrationRestException;
 
 class JiraServerCustomFunctionActionTest {
     private final Gson gson = BlackDuckServicesFactory.createDefaultGson();

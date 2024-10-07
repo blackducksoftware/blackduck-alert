@@ -10,11 +10,11 @@ package com.synopsys.integration.alert.channel.jira.server.distribution.delegate
 import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.api.channel.jira.distribution.delegate.JiraIssueTransitioner;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
-import com.synopsys.integration.jira.common.model.request.IssueRequestModel;
-import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
-import com.synopsys.integration.jira.common.server.service.IssueService;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.model.components.StatusDetailsComponent;
+import com.blackduck.integration.jira.common.model.request.IssueRequestModel;
+import com.blackduck.integration.jira.common.model.response.TransitionsResponseModel;
+import com.blackduck.integration.jira.common.server.service.IssueService;
 
 public class JiraServerIssueTransitioner extends JiraIssueTransitioner {
     private final IssueService issueService;

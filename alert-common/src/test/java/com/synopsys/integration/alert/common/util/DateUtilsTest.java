@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.rest.RestConstants;
+import com.blackduck.integration.rest.RestConstants;
 
  class DateUtilsTest {
      @Test

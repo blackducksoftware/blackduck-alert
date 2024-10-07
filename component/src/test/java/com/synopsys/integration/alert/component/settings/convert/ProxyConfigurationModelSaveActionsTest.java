@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.database.settings.proxy.SettingsProxyConfi
 import com.synopsys.integration.alert.database.settings.proxy.SettingsProxyConfigurationRepository;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 class ProxyConfigurationModelSaveActionsTest {
     public static final String TEST_PROXY_HOST = "host";

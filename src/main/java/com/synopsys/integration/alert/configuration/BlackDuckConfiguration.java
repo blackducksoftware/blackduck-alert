@@ -13,11 +13,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.blackduck.http.transform.BlackDuckJsonTransformer;
-import com.synopsys.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.log.Slf4jIntLogger;
-import com.synopsys.integration.rest.support.AuthenticationSupport;
+import com.blackduck.integration.blackduck.http.transform.BlackDuckJsonTransformer;
+import com.blackduck.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.log.Slf4jIntLogger;
+import com.blackduck.integration.rest.support.AuthenticationSupport;
 
 @Configuration
 public class BlackDuckConfiguration {

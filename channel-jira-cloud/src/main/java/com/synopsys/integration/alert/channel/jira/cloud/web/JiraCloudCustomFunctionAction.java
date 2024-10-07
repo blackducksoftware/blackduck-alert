@@ -28,9 +28,9 @@ import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
-import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.cloud.service.JiraCloudServiceFactory;
+import com.blackduck.integration.jira.common.rest.service.PluginManagerService;
 
 @Component
 public class JiraCloudCustomFunctionAction extends CustomFunctionAction<String> {

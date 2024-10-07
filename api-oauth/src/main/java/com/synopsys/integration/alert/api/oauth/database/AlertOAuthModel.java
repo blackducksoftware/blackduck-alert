@@ -3,7 +3,7 @@ package com.synopsys.integration.alert.api.oauth.database;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.synopsys.integration.util.Stringable;
+import com.blackduck.integration.util.Stringable;
 
 public class AlertOAuthModel extends Stringable {
     private final UUID id;

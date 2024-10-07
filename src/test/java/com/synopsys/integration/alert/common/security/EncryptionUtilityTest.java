@@ -17,7 +17,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class EncryptionUtilityTest {
     private static final String TEST_PASSWORD = "testPassword";

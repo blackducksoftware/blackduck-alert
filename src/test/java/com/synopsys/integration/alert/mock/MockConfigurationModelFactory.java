@@ -20,7 +20,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public class MockConfigurationModelFactory {
     public static List<ConfigurationFieldModel> createSlackDistributionFields() {

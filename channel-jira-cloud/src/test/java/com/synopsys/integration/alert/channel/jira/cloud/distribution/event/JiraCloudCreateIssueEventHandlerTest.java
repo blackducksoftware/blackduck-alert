@@ -33,21 +33,21 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.JiraC
 import com.synopsys.integration.alert.database.job.jira.cloud.DefaultJiraCloudJobDetailsAccessor;
 import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.cloud.model.IssueCreationRequestModel;
-import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel;
-import com.synopsys.integration.jira.common.cloud.service.FieldService;
-import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
-import com.synopsys.integration.jira.common.cloud.service.IssueService;
-import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
-import com.synopsys.integration.jira.common.cloud.service.ProjectService;
-import com.synopsys.integration.jira.common.model.components.IssueFieldsComponent;
-import com.synopsys.integration.jira.common.model.components.ProjectComponent;
-import com.synopsys.integration.jira.common.model.response.IssueCreationResponseModel;
-import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
-import com.synopsys.integration.jira.common.model.response.PageOfProjectsResponseModel;
-import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.cloud.model.IssueCreationRequestModel;
+import com.blackduck.integration.jira.common.cloud.model.IssueSearchResponseModel;
+import com.blackduck.integration.jira.common.cloud.service.FieldService;
+import com.blackduck.integration.jira.common.cloud.service.IssueSearchService;
+import com.blackduck.integration.jira.common.cloud.service.IssueService;
+import com.blackduck.integration.jira.common.cloud.service.JiraCloudServiceFactory;
+import com.blackduck.integration.jira.common.cloud.service.ProjectService;
+import com.blackduck.integration.jira.common.model.components.IssueFieldsComponent;
+import com.blackduck.integration.jira.common.model.components.ProjectComponent;
+import com.blackduck.integration.jira.common.model.response.IssueCreationResponseModel;
+import com.blackduck.integration.jira.common.model.response.IssueResponseModel;
+import com.blackduck.integration.jira.common.model.response.PageOfProjectsResponseModel;
+import com.blackduck.integration.jira.common.rest.service.IssuePropertyService;
 
 class JiraCloudCreateIssueEventHandlerTest {
 

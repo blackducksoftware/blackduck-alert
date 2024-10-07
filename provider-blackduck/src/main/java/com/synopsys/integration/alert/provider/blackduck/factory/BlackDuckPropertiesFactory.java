@@ -17,7 +17,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationM
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 @Component
 public class BlackDuckPropertiesFactory extends ProviderPropertiesFactory<BlackDuckProperties> {

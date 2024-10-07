@@ -26,14 +26,14 @@ import com.synopsys.integration.alert.common.persistence.accessor.ProcessingJobA
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.provider.blackduck.processor.detail.RuleViolationNotificationDetailExtractor;
-import com.synopsys.integration.blackduck.api.generated.enumeration.PolicyRuleSeverityType;
-import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
-import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
-import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
-import com.synopsys.integration.blackduck.api.manual.component.RuleViolationNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.synopsys.integration.blackduck.api.manual.view.RuleViolationNotificationView;
-import com.synopsys.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
+import com.blackduck.integration.blackduck.api.generated.enumeration.PolicyRuleSeverityType;
+import com.blackduck.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
+import com.blackduck.integration.blackduck.api.manual.component.ComponentVersionStatus;
+import com.blackduck.integration.blackduck.api.manual.component.PolicyInfo;
+import com.blackduck.integration.blackduck.api.manual.component.RuleViolationNotificationContent;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.blackduck.api.manual.view.RuleViolationNotificationView;
+import com.blackduck.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
 
 public class NotificationProcessorTest {
     private static final Gson GSON = new GsonBuilder().create();

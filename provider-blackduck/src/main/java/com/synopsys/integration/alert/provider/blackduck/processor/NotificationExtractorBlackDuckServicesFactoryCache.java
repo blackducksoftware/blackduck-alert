@@ -20,9 +20,9 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.processor.NotificationProcessingLifecycleCache;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
-import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.log.Slf4jIntLogger;
+import com.blackduck.integration.blackduck.http.client.BlackDuckHttpClient;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.log.Slf4jIntLogger;
 
 /**
  * Caches {@link BlackDuckServicesFactory} by BlackDuck configuration ID.

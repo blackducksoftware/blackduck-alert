@@ -28,7 +28,7 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
 
     testImplementation project(':test-common')
-    testImplementation 'com.synopsys.integration:blackduck-common'
+    testImplementation 'com.blackduck.integration:blackduck-common'
 }
 
 task buildAll(dependsOn: [build]) {

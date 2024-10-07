@@ -30,9 +30,9 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
 import com.synopsys.integration.alert.test.common.TestTags;
-import com.synopsys.integration.blackduck.http.client.ApiTokenBlackDuckHttpClient;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.rest.response.DefaultResponse;
+import com.blackduck.integration.blackduck.http.client.ApiTokenBlackDuckHttpClient;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.rest.response.DefaultResponse;
 
 class BlackDuckDistributionFieldModelTestActionTest {
     private static final String PROJECT_1_HREF = "href";

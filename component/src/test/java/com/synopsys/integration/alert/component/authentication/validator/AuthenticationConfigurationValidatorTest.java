@@ -22,7 +22,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 /**
  * @deprecated This class will be removed in 8.0.0.

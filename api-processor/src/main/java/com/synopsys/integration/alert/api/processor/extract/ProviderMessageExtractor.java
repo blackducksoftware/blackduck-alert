@@ -20,8 +20,8 @@ import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessag
 import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.api.processor.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
-import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.blackduck.api.manual.component.NotificationContentComponent;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public abstract class ProviderMessageExtractor<T extends NotificationContentComponent> {
     private final Logger logger = LoggerFactory.getLogger(getClass());

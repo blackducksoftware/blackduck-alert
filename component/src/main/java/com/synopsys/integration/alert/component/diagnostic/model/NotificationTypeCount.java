@@ -1,7 +1,7 @@
 package com.synopsys.integration.alert.component.diagnostic.model;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public class NotificationTypeCount extends AlertSerializableModel {
 

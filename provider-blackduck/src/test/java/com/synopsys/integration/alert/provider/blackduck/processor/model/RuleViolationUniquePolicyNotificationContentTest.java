@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
-import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
+import com.blackduck.integration.blackduck.api.manual.component.ComponentVersionStatus;
+import com.blackduck.integration.blackduck.api.manual.component.PolicyInfo;
 
 public class RuleViolationUniquePolicyNotificationContentTest {
     private static final String PROJECT_NAME = "ProjectName";

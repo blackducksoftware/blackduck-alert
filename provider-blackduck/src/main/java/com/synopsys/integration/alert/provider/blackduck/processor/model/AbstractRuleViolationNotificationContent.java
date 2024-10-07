@@ -9,8 +9,8 @@ package com.synopsys.integration.alert.provider.blackduck.processor.model;
 
 import java.util.List;
 
-import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
-import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
+import com.blackduck.integration.blackduck.api.manual.component.ComponentVersionStatus;
+import com.blackduck.integration.blackduck.api.manual.component.PolicyInfo;
 
 public abstract class AbstractRuleViolationNotificationContent extends AbstractProjectVersionNotificationContent {
     private final List<ComponentVersionStatus> componentVersionStatuses;

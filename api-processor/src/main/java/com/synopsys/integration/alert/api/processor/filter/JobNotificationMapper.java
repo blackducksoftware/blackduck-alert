@@ -22,7 +22,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistr
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
 import com.synopsys.integration.alert.api.processor.detail.DetailedNotificationContent;
-import com.synopsys.integration.util.Stringable;
+import com.blackduck.integration.util.Stringable;
 
 @Component
 public class JobNotificationMapper {

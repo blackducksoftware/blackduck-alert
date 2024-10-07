@@ -30,8 +30,8 @@ import com.synopsys.integration.alert.azure.boards.common.http.AzureApiVersionAp
 import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;
 import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.alert.azure.boards.common.service.project.AzureProjectService;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.rest.proxy.ProxyInfo;
 
 @Component
 public class AzureBoardsGlobalTestAction {

@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public class MockNotificationRestModel extends MockRestModelUtil<NotificationConfig> {
     private final String createdAt = new Date(400).toString();

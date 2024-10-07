@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.provider.blackduck;
 
-import static com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigKeys.KEYS;
+import static com.blackduck.integration.blackduck.configuration.BlackDuckServerConfigKeys.KEYS;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,16 +26,16 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
-import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
-import com.synopsys.integration.blackduck.http.client.ApiTokenBlackDuckHttpClient;
-import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.log.IntLogger;
-import com.synopsys.integration.log.Slf4jIntLogger;
-import com.synopsys.integration.rest.proxy.ProxyInfo;
-import com.synopsys.integration.util.IntEnvironmentVariables;
-import com.synopsys.integration.util.NoThreadExecutorService;
+import com.blackduck.integration.blackduck.configuration.BlackDuckServerConfig;
+import com.blackduck.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
+import com.blackduck.integration.blackduck.http.client.ApiTokenBlackDuckHttpClient;
+import com.blackduck.integration.blackduck.http.client.BlackDuckHttpClient;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.log.IntLogger;
+import com.blackduck.integration.log.Slf4jIntLogger;
+import com.blackduck.integration.rest.proxy.ProxyInfo;
+import com.blackduck.integration.util.IntEnvironmentVariables;
+import com.blackduck.integration.util.NoThreadExecutorService;
 
 public class BlackDuckProperties extends ProviderProperties {
     public static final int DEFAULT_TIMEOUT = 300;

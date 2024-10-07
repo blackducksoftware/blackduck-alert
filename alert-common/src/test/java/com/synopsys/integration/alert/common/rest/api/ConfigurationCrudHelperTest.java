@@ -20,7 +20,7 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.alert.api.descriptor.model.ChannelKey;
 import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
-import com.synopsys.integration.function.ThrowingSupplier;
+import com.blackduck.integration.function.ThrowingSupplier;
 
 public class ConfigurationCrudHelperTest {
     @Test

@@ -24,14 +24,14 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTracke
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.model.components.IdComponent;
-import com.synopsys.integration.jira.common.model.components.StatusCategory;
-import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
-import com.synopsys.integration.jira.common.model.components.TransitionComponent;
-import com.synopsys.integration.jira.common.model.request.IssueRequestModel;
-import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
-import com.synopsys.integration.jira.common.server.builder.IssueRequestModelFieldsBuilder;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.model.components.IdComponent;
+import com.blackduck.integration.jira.common.model.components.StatusCategory;
+import com.blackduck.integration.jira.common.model.components.StatusDetailsComponent;
+import com.blackduck.integration.jira.common.model.components.TransitionComponent;
+import com.blackduck.integration.jira.common.model.request.IssueRequestModel;
+import com.blackduck.integration.jira.common.model.response.TransitionsResponseModel;
+import com.blackduck.integration.jira.common.server.builder.IssueRequestModelFieldsBuilder;
 
 public abstract class JiraIssueTransitioner extends IssueTrackerIssueTransitioner<String> {
     public static final String TODO_STATUS_CATEGORY_KEY = "new";

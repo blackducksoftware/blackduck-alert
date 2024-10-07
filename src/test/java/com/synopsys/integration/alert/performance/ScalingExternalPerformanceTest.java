@@ -29,12 +29,12 @@ import com.synopsys.integration.alert.performance.utility.jira.server.JiraServer
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
-import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.log.IntLogger;
-import com.synopsys.integration.log.Slf4jIntLogger;
-import com.synopsys.integration.rest.client.IntHttpClient;
-import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.blackduck.integration.blackduck.api.generated.view.PolicyRuleView;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.log.IntLogger;
+import com.blackduck.integration.log.Slf4jIntLogger;
+import com.blackduck.integration.rest.client.IntHttpClient;
+import com.blackduck.integration.rest.proxy.ProxyInfo;
 
 @Tag(TestTags.DEFAULT_PERFORMANCE)
 class ScalingExternalPerformanceTest {

@@ -11,26 +11,26 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.synopsys.integration.alert.provider.blackduck.processor.model.RuleViolationUniquePolicyNotificationContent;
-import com.synopsys.integration.blackduck.api.core.ResourceLink;
-import com.synopsys.integration.blackduck.api.core.ResourceMetadata;
-import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceLongTermView;
-import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceLongTermVulnerabilityRiskView;
-import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceShortTermView;
-import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceShortTermVulnerabilityRiskView;
-import com.synopsys.integration.blackduck.api.generated.component.ProjectVersionComponentVersionLicensesView;
-import com.synopsys.integration.blackduck.api.generated.enumeration.PolicyRuleSeverityType;
-import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
-import com.synopsys.integration.blackduck.api.generated.enumeration.UsageType;
-import com.synopsys.integration.blackduck.api.generated.response.ComponentVersionUpgradeGuidanceView;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
-import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
-import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
-import com.synopsys.integration.blackduck.api.manual.component.RuleViolationNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.synopsys.integration.blackduck.api.manual.temporary.component.VersionBomOriginView;
-import com.synopsys.integration.blackduck.api.manual.view.RuleViolationNotificationView;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.rest.HttpUrl;
+import com.blackduck.integration.blackduck.api.core.ResourceLink;
+import com.blackduck.integration.blackduck.api.core.ResourceMetadata;
+import com.blackduck.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceLongTermView;
+import com.blackduck.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceLongTermVulnerabilityRiskView;
+import com.blackduck.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceShortTermView;
+import com.blackduck.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceShortTermVulnerabilityRiskView;
+import com.blackduck.integration.blackduck.api.generated.component.ProjectVersionComponentVersionLicensesView;
+import com.blackduck.integration.blackduck.api.generated.enumeration.PolicyRuleSeverityType;
+import com.blackduck.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
+import com.blackduck.integration.blackduck.api.generated.enumeration.UsageType;
+import com.blackduck.integration.blackduck.api.generated.response.ComponentVersionUpgradeGuidanceView;
+import com.blackduck.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
+import com.blackduck.integration.blackduck.api.manual.component.ComponentVersionStatus;
+import com.blackduck.integration.blackduck.api.manual.component.PolicyInfo;
+import com.blackduck.integration.blackduck.api.manual.component.RuleViolationNotificationContent;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.blackduck.api.manual.temporary.component.VersionBomOriginView;
+import com.blackduck.integration.blackduck.api.manual.view.RuleViolationNotificationView;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.rest.HttpUrl;
 
 public class BlackDuckResponseTestUtility {
     public ProjectVersionComponentVersionView createProjectVersionComponentVersionView() throws IntegrationException {

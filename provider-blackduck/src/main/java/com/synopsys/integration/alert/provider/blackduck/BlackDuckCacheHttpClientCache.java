@@ -16,9 +16,9 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
-import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.log.Slf4jIntLogger;
+import com.blackduck.integration.blackduck.http.client.BlackDuckHttpClient;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.log.Slf4jIntLogger;
 
 //TODO replace the usage of the class the cach client stored here isn't used at all.
 /**

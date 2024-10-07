@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.api.processor.extract.model.project;
 
-import com.synopsys.integration.blackduck.api.manual.enumeration.OperationType;
+import com.blackduck.integration.blackduck.api.manual.enumeration.OperationType;
 
 public enum ProjectOperation {
     CREATE,

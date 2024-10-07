@@ -17,7 +17,7 @@ import com.synopsys.integration.alert.provider.blackduck.processor.message.servi
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BomComponent404Handler;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckPolicyComponentConcernCreator;
 import com.synopsys.integration.alert.provider.blackduck.processor.model.RuleViolationClearedUniquePolicyNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component
 public class RuleViolationClearedNotificationMessageExtractor extends AbstractRuleViolationNotificationMessageExtractor<RuleViolationClearedUniquePolicyNotificationContent> {

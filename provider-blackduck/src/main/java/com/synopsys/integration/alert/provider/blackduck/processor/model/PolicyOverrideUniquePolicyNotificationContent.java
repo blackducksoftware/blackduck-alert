@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.processor.model;
 
-import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
+import com.blackduck.integration.blackduck.api.manual.component.PolicyInfo;
 
 public class PolicyOverrideUniquePolicyNotificationContent extends AbstractProjectVersionNotificationContent {
     private final String componentName;

@@ -33,11 +33,11 @@ import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
-import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
-import com.synopsys.integration.rest.RestConstants;
-import com.synopsys.integration.rest.exception.IntegrationRestException;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.rest.service.PluginManagerService;
+import com.blackduck.integration.jira.common.server.service.JiraServerServiceFactory;
+import com.blackduck.integration.rest.RestConstants;
+import com.blackduck.integration.rest.exception.IntegrationRestException;
 
 /**
  * @deprecated This class is part of the old Alert REST API. It has since been replaced by JiraServerInstallPluginAction and is set for removal in 8.0.0.

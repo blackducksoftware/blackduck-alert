@@ -8,8 +8,8 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcherResponseModel;
-import com.synopsys.integration.jira.common.model.components.IssueFieldsComponent;
-import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
+import com.blackduck.integration.jira.common.model.components.IssueFieldsComponent;
+import com.blackduck.integration.jira.common.model.response.IssueResponseModel;
 
 public class JiraCallbackUtilsTest {
     private static final String ISSUE_BASE_URL = "https://www.some-url.com/beforePath";

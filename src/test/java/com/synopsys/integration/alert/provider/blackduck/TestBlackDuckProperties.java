@@ -27,11 +27,11 @@ import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDes
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
-import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
-import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.log.IntLogger;
-import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.blackduck.integration.blackduck.configuration.BlackDuckServerConfig;
+import com.blackduck.integration.blackduck.http.client.BlackDuckHttpClient;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.log.IntLogger;
+import com.blackduck.integration.rest.proxy.ProxyInfo;
 
 public class TestBlackDuckProperties extends BlackDuckProperties {
     private final MockAlertProperties testAlertProperties;

@@ -53,7 +53,7 @@ import com.synopsys.integration.alert.component.diagnostic.utility.RabbitMQDiagn
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.job.api.StaticJobAccessor;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component
 public class DefaultDiagnosticAccessor implements DiagnosticAccessor {

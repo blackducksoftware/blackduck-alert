@@ -18,13 +18,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.log.IntLogger;
-import com.synopsys.integration.log.Slf4jIntLogger;
-import com.synopsys.integration.wait.ResilientJobConfig;
-import com.synopsys.integration.wait.WaitJob;
-import com.synopsys.integration.wait.tracker.WaitIntervalTracker;
-import com.synopsys.integration.wait.tracker.WaitIntervalTrackerFactory;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.log.IntLogger;
+import com.blackduck.integration.log.Slf4jIntLogger;
+import com.blackduck.integration.wait.ResilientJobConfig;
+import com.blackduck.integration.wait.WaitJob;
+import com.blackduck.integration.wait.tracker.WaitIntervalTracker;
+import com.blackduck.integration.wait.tracker.WaitIntervalTrackerFactory;
 
 //TODO: Implementations of this class should be replaced with IntegrationPerformanceTestRunner
 @Deprecated(forRemoval = true)

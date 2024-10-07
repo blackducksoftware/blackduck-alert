@@ -1,6 +1,6 @@
 package com.synopsys.integration.alert.performance.utility;
 
-import com.synopsys.integration.exception.IntegrationException;
+import com.blackduck.integration.exception.IntegrationException;
 
 public interface AlertRequestUtility {
     String executeGetRequest(String path, String error) throws IntegrationException;

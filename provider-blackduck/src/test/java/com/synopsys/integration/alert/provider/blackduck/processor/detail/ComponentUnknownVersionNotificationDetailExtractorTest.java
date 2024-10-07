@@ -16,9 +16,9 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.api.processor.detail.DetailedNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.processor.model.ComponentUnknownVersionWithStatusNotificationContent;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
-import com.synopsys.integration.blackduck.api.manual.component.ComponentUnknownVersionNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.view.ComponentUnknownVersionNotificationView;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.blackduck.api.manual.component.ComponentUnknownVersionNotificationContent;
+import com.blackduck.integration.blackduck.api.manual.view.ComponentUnknownVersionNotificationView;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class ComponentUnknownVersionNotificationDetailExtractorTest {
     public static final String NOTIFICATION_JSON_PATH = "json/componentUnknownVersionNotification.json";

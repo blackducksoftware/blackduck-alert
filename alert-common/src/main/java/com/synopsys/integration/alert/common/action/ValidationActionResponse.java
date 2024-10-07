@@ -13,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.rest.exception.IntegrationRestException;
+import com.blackduck.integration.rest.exception.IntegrationRestException;
 
 public class ValidationActionResponse extends ActionResponse<ValidationResponseModel> {
     public static ValidationActionResponse createResponseFromIntegrationRestException(IntegrationRestException integrationRestException) {

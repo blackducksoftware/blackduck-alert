@@ -8,7 +8,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.core.task.SyncTaskExecutor;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 class EventManagerTest {
     @Test

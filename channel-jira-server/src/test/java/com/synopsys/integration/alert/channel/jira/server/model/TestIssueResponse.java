@@ -3,8 +3,8 @@ package com.synopsys.integration.alert.channel.jira.server.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.synopsys.integration.jira.common.model.components.IdComponent;
-import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
+import com.blackduck.integration.jira.common.model.components.IdComponent;
+import com.blackduck.integration.jira.common.model.response.IssueResponseModel;
 
 public class TestIssueResponse extends IssueResponseModel {
     private final String id;

@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckComponentPolicyDetailsCreator;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckComponentPolicyDetailsCreatorFactory;
-import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.blackduck.service.BlackDuckApiClient;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 @Component
 public class BlackDuckMessageBomComponentDetailsCreatorFactory {

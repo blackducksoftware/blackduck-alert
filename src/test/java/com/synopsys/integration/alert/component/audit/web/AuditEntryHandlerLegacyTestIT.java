@@ -70,7 +70,7 @@ import com.synopsys.integration.alert.api.processor.JobNotificationProcessor;
 import com.synopsys.integration.alert.api.processor.NotificationMappingProcessor;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.util.ResourceUtil;
+import com.blackduck.integration.util.ResourceUtil;
 
 /**
  * @deprecated Replaced by AuditEntryController. To be removed in 8.0.0.

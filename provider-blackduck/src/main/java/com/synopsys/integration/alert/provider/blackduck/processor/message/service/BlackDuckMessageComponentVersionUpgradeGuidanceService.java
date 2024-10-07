@@ -18,16 +18,16 @@ import org.slf4j.LoggerFactory;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.BlackDuckMessageLabels;
-import com.synopsys.integration.blackduck.api.core.ResourceLink;
-import com.synopsys.integration.blackduck.api.core.ResourceMetadata;
-import com.synopsys.integration.blackduck.api.core.response.LinkSingleResponse;
-import com.synopsys.integration.blackduck.api.core.response.UrlSingleResponse;
-import com.synopsys.integration.blackduck.api.generated.response.ComponentVersionUpgradeGuidanceView;
-import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
-import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.rest.HttpUrl;
+import com.blackduck.integration.blackduck.api.core.ResourceLink;
+import com.blackduck.integration.blackduck.api.core.ResourceMetadata;
+import com.blackduck.integration.blackduck.api.core.response.LinkSingleResponse;
+import com.blackduck.integration.blackduck.api.core.response.UrlSingleResponse;
+import com.blackduck.integration.blackduck.api.generated.response.ComponentVersionUpgradeGuidanceView;
+import com.blackduck.integration.blackduck.api.generated.view.ComponentVersionView;
+import com.blackduck.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
+import com.blackduck.integration.blackduck.service.BlackDuckApiClient;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.rest.HttpUrl;
 
 public class BlackDuckMessageComponentVersionUpgradeGuidanceService {
     private static final String LINK_UPGRADE_GUIDANCE = "upgrade-guidance";

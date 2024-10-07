@@ -36,12 +36,12 @@ import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServe
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerQueryExecutor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
-import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
-import com.synopsys.integration.jira.common.server.service.FieldService;
-import com.synopsys.integration.jira.common.server.service.IssueSearchService;
-import com.synopsys.integration.jira.common.server.service.IssueService;
-import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
-import com.synopsys.integration.jira.common.server.service.ProjectService;
+import com.blackduck.integration.jira.common.rest.service.IssuePropertyService;
+import com.blackduck.integration.jira.common.server.service.FieldService;
+import com.blackduck.integration.jira.common.server.service.IssueSearchService;
+import com.blackduck.integration.jira.common.server.service.IssueService;
+import com.blackduck.integration.jira.common.server.service.JiraServerServiceFactory;
+import com.blackduck.integration.jira.common.server.service.ProjectService;
 
 @Component
 public class JiraServerTransitionEventHandler extends IssueTrackerTransitionEventHandler<JiraServerTransitionEvent> {

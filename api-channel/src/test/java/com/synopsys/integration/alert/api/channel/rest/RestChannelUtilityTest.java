@@ -16,14 +16,14 @@ import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.rest.HttpMethod;
-import com.synopsys.integration.rest.body.BodyContent;
-import com.synopsys.integration.rest.body.BodyContentConverter;
-import com.synopsys.integration.rest.body.StringBodyContent;
-import com.synopsys.integration.rest.client.IntHttpClient;
-import com.synopsys.integration.rest.request.Request;
-import com.synopsys.integration.rest.response.Response;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.rest.HttpMethod;
+import com.blackduck.integration.rest.body.BodyContent;
+import com.blackduck.integration.rest.body.BodyContentConverter;
+import com.blackduck.integration.rest.body.StringBodyContent;
+import com.blackduck.integration.rest.client.IntHttpClient;
+import com.blackduck.integration.rest.request.Request;
+import com.blackduck.integration.rest.response.Response;
 
 public class RestChannelUtilityTest {
     private static final String CLASS_NAME = RestChannelUtilityTest.class.getSimpleName();

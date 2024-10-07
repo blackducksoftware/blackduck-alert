@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.azure.boards.common.http;
 
 import org.apache.http.HttpStatus;
 
-import com.synopsys.integration.exception.IntegrationException;
+import com.blackduck.integration.exception.IntegrationException;
 
 public class HttpServiceException extends IntegrationException {
     private final int httpErrorCode;

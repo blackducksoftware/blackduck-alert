@@ -12,9 +12,9 @@ import java.util.Optional;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.BlackDuckMessageLabels;
-import com.synopsys.integration.blackduck.api.generated.enumeration.UsageType;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
-import com.synopsys.integration.rest.HttpUrl;
+import com.blackduck.integration.blackduck.api.generated.enumeration.UsageType;
+import com.blackduck.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
+import com.blackduck.integration.rest.HttpUrl;
 
 public final class BlackDuckMessageAttributesUtils {
     public static LinkableItem extractLicense(ProjectVersionComponentVersionView projectVersionComponentVersionView) {

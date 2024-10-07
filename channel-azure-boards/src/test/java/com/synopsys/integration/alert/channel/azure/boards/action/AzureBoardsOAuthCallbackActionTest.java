@@ -50,7 +50,7 @@ import com.synopsys.integration.alert.test.common.database.MockRepositorySorter;
 import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.alert.azure.boards.common.model.AzureArrayResponseModel;
 import com.synopsys.integration.alert.azure.boards.common.service.project.TeamProjectReferenceResponseModel;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 import jakarta.servlet.http.HttpServletRequest;
 

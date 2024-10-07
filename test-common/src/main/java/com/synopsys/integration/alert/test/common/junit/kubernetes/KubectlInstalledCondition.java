@@ -11,7 +11,7 @@ import org.junit.platform.commons.logging.Logger;
 import org.junit.platform.commons.logging.LoggerFactory;
 
 import com.synopsys.integration.alert.test.common.junit.ExecutableExistsUtility;
-import com.synopsys.integration.executable.Executable;
+import com.blackduck.integration.executable.Executable;
 
 public class KubectlInstalledCondition implements ExecutionCondition {
     private final Logger logger = LoggerFactory.getLogger(getClass());

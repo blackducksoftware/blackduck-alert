@@ -62,10 +62,10 @@ import com.synopsys.integration.alert.common.rest.model.JobPagedModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
 import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.rest.HttpMethod;
-import com.synopsys.integration.rest.HttpUrl;
-import com.synopsys.integration.rest.exception.IntegrationRestException;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.rest.HttpMethod;
+import com.blackduck.integration.rest.HttpUrl;
+import com.blackduck.integration.rest.exception.IntegrationRestException;
 
 class JobConfigActionsTest {
     private static final String DESCRIPTOR_KEY_STRING = "descriptorName";

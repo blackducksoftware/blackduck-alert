@@ -27,8 +27,8 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.job.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.database.job.api.StaticJobAccessor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.blackduck.api.generated.enumeration.VulnerabilitySeverityType;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.blackduck.api.generated.enumeration.VulnerabilitySeverityType;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @AlertIntegrationTest
 class DistributionJobRepositoryTestIT {

@@ -27,8 +27,8 @@ import com.synopsys.integration.alert.common.persistence.model.job.JobToNotifica
 import com.synopsys.integration.alert.common.persistence.model.job.SimpleFilteredDistributionJobResponseModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.blackduck.api.manual.component.ProjectVersionNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.blackduck.api.manual.component.ProjectVersionNotificationContent;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 class JobNotificationMapper2Test {
     private AtomicLong notificationId = new AtomicLong(1);

@@ -10,9 +10,9 @@ package com.synopsys.integration.alert.api.channel.jira.distribution.search;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.jira.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.model.response.IssuePropertyResponseModel;
-import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.model.response.IssuePropertyResponseModel;
+import com.blackduck.integration.jira.common.rest.service.IssuePropertyService;
 
 public class JiraIssueAlertPropertiesManager {
     private final Gson gson;

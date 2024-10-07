@@ -16,10 +16,10 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.api.processor.detail.DetailedNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.processor.model.RuleViolationUniquePolicyNotificationContent;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
-import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
-import com.synopsys.integration.blackduck.api.manual.component.RuleViolationNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.view.RuleViolationNotificationView;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.blackduck.api.manual.component.PolicyInfo;
+import com.blackduck.integration.blackduck.api.manual.component.RuleViolationNotificationContent;
+import com.blackduck.integration.blackduck.api.manual.view.RuleViolationNotificationView;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class RuleViolationNotificationDetailExtractorTest {
     public static final String NOTIFICATION_JSON_PATH = "json/ruleViolationNotification.json";

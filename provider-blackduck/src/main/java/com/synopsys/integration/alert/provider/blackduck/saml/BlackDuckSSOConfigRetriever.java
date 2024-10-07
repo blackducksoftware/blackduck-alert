@@ -12,16 +12,16 @@ import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.blackduck.api.core.BlackDuckPath;
-import com.synopsys.integration.blackduck.api.core.response.UrlSingleResponse;
-import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
-import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
-import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
-import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.request.BlackDuckRequest;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.log.Slf4jIntLogger;
+import com.blackduck.integration.blackduck.api.core.BlackDuckPath;
+import com.blackduck.integration.blackduck.api.core.response.UrlSingleResponse;
+import com.blackduck.integration.blackduck.api.generated.discovery.ApiDiscovery;
+import com.blackduck.integration.blackduck.http.BlackDuckRequestBuilder;
+import com.blackduck.integration.blackduck.http.client.BlackDuckHttpClient;
+import com.blackduck.integration.blackduck.service.BlackDuckApiClient;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.blackduck.service.request.BlackDuckRequest;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.log.Slf4jIntLogger;
 
 public class BlackDuckSSOConfigRetriever {
     private static final String SSO_CONFIGURATION_MIME_TYPE = "application/vnd.blackducksoftware.admin-4+json";

@@ -17,7 +17,7 @@ import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraR
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.MessageReplacementValues;
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.MessageValueReplacementResolver;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
-import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
+import com.blackduck.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
 
 public class JiraIssueCreationRequestCreator {
     private final JiraCustomFieldResolver jiraCustomFieldResolver;

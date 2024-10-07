@@ -14,16 +14,16 @@ import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
 import com.synopsys.integration.alert.api.processor.filter.PageRetriever;
 import com.synopsys.integration.alert.api.processor.filter.StatefulAlertPage;
-import com.synopsys.integration.blackduck.api.core.response.UrlMultipleResponses;
-import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
-import com.synopsys.integration.blackduck.api.generated.view.UserView;
-import com.synopsys.integration.blackduck.api.manual.view.NotificationUserView;
-import com.synopsys.integration.blackduck.http.BlackDuckPageResponse;
-import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
-import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
-import com.synopsys.integration.blackduck.service.request.BlackDuckMultipleRequest;
-import com.synopsys.integration.blackduck.service.request.NotificationEditor;
-import com.synopsys.integration.exception.IntegrationException;
+import com.blackduck.integration.blackduck.api.core.response.UrlMultipleResponses;
+import com.blackduck.integration.blackduck.api.generated.discovery.ApiDiscovery;
+import com.blackduck.integration.blackduck.api.generated.view.UserView;
+import com.blackduck.integration.blackduck.api.manual.view.NotificationUserView;
+import com.blackduck.integration.blackduck.http.BlackDuckPageResponse;
+import com.blackduck.integration.blackduck.http.BlackDuckRequestBuilder;
+import com.blackduck.integration.blackduck.service.BlackDuckApiClient;
+import com.blackduck.integration.blackduck.service.request.BlackDuckMultipleRequest;
+import com.blackduck.integration.blackduck.service.request.NotificationEditor;
+import com.blackduck.integration.exception.IntegrationException;
 
 public class BlackDuckNotificationRetriever {
     public static final String PAGE_SORT_FIELD = "notification.createdOn";

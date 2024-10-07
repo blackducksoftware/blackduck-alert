@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.api.processor.extract.model.project.Compon
 import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
 import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseFields;
 import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 class AzureBoardsComponentIssueFinderTest {
     private static final ProviderDetails PROVIDER_DETAILS = new ProviderDetails(15L, new LinkableItem("Provider", "A provider", "https://provider-url"));

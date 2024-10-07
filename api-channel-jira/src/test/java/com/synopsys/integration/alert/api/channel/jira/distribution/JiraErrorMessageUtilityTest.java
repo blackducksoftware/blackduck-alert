@@ -18,13 +18,13 @@ import com.synopsys.integration.alert.api.common.model.errors.FieldStatusSeverit
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.model.components.SchemaComponent;
-import com.synopsys.integration.jira.common.model.response.CustomFieldCreationResponseModel;
-import com.synopsys.integration.rest.HttpMethod;
-import com.synopsys.integration.rest.HttpUrl;
-import com.synopsys.integration.rest.exception.IntegrationRestException;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.model.components.SchemaComponent;
+import com.blackduck.integration.jira.common.model.response.CustomFieldCreationResponseModel;
+import com.blackduck.integration.rest.HttpMethod;
+import com.blackduck.integration.rest.HttpUrl;
+import com.blackduck.integration.rest.exception.IntegrationRestException;
 
 class JiraErrorMessageUtilityTest {
 

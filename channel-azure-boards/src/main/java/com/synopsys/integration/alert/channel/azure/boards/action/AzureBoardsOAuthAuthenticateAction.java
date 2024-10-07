@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;
 import com.synopsys.integration.alert.azure.boards.common.oauth.AzureOAuthScopes;
-import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.blackduck.integration.rest.proxy.ProxyInfo;
 
 @Component
 public class AzureBoardsOAuthAuthenticateAction {

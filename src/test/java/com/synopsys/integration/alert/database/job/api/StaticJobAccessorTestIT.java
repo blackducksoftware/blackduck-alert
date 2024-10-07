@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.MSTea
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @AlertIntegrationTest
 class StaticJobAccessorTestIT {

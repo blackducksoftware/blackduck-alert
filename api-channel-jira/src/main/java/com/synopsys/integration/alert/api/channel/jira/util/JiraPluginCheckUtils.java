@@ -10,8 +10,8 @@ package com.synopsys.integration.alert.api.channel.jira.util;
 import java.util.concurrent.TimeUnit;
 
 import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.rest.service.PluginManagerService;
 
 public final class JiraPluginCheckUtils {
     public static final long MAX_NUMBER_OF_RETRIES = 5L;

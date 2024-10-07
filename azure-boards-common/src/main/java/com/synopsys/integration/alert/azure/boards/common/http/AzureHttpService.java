@@ -15,7 +15,7 @@ import com.google.api.client.http.HttpMethods;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpResponse;
 import com.google.gson.Gson;
-import com.synopsys.integration.function.ThrowingSupplier;
+import com.blackduck.integration.function.ThrowingSupplier;
 
 public class AzureHttpService {
     private final Gson gson;

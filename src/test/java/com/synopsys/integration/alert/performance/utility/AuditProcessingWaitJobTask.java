@@ -8,10 +8,10 @@ import java.util.Set;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.log.IntLogger;
-import com.synopsys.integration.wait.WaitJobCondition;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.log.IntLogger;
+import com.blackduck.integration.wait.WaitJobCondition;
 
 //TODO: Refactor the duplicate code between this WaitJobCondition and AuditCompleteWaitJobTask
 public class AuditProcessingWaitJobTask implements WaitJobCondition {

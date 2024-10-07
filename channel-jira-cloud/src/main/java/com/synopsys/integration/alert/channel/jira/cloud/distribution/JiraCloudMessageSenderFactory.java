@@ -42,12 +42,12 @@ import com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate.J
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate.JiraCloudTransitionGenerator;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.alert.api.descriptor.JiraCloudChannelKey;
-import com.synopsys.integration.jira.common.cloud.service.FieldService;
-import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
-import com.synopsys.integration.jira.common.cloud.service.IssueService;
-import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
-import com.synopsys.integration.jira.common.cloud.service.ProjectService;
-import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
+import com.blackduck.integration.jira.common.cloud.service.FieldService;
+import com.blackduck.integration.jira.common.cloud.service.IssueSearchService;
+import com.blackduck.integration.jira.common.cloud.service.IssueService;
+import com.blackduck.integration.jira.common.cloud.service.JiraCloudServiceFactory;
+import com.blackduck.integration.jira.common.cloud.service.ProjectService;
+import com.blackduck.integration.jira.common.rest.service.IssuePropertyService;
 
 @Component
 public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderFactory<JiraCloudJobDetailsModel, String> {

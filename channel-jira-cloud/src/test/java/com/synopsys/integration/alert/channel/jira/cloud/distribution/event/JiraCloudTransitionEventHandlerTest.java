@@ -31,18 +31,18 @@ import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.Is
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.cloud.service.FieldService;
-import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
-import com.synopsys.integration.jira.common.cloud.service.IssueService;
-import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
-import com.synopsys.integration.jira.common.cloud.service.ProjectService;
-import com.synopsys.integration.jira.common.model.components.StatusCategory;
-import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
-import com.synopsys.integration.jira.common.model.components.TransitionComponent;
-import com.synopsys.integration.jira.common.model.request.IssueRequestModel;
-import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.cloud.service.FieldService;
+import com.blackduck.integration.jira.common.cloud.service.IssueSearchService;
+import com.blackduck.integration.jira.common.cloud.service.IssueService;
+import com.blackduck.integration.jira.common.cloud.service.JiraCloudServiceFactory;
+import com.blackduck.integration.jira.common.cloud.service.ProjectService;
+import com.blackduck.integration.jira.common.model.components.StatusCategory;
+import com.blackduck.integration.jira.common.model.components.StatusDetailsComponent;
+import com.blackduck.integration.jira.common.model.components.TransitionComponent;
+import com.blackduck.integration.jira.common.model.request.IssueRequestModel;
+import com.blackduck.integration.jira.common.model.response.TransitionsResponseModel;
 
 class JiraCloudTransitionEventHandlerTest {
 

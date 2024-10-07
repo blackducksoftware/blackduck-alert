@@ -1,6 +1,6 @@
 package com.synopsys.integration.alert.channel.jira.server.model;
 
-import com.synopsys.integration.jira.common.model.response.IssueTypeResponseModel;
+import com.blackduck.integration.jira.common.model.response.IssueTypeResponseModel;
 
 public class TestIssueTypeResponseModel extends IssueTypeResponseModel {
     private final String id;

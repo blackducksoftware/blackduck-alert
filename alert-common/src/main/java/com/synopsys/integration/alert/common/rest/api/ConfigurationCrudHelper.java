@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
-import com.synopsys.integration.function.ThrowingSupplier;
+import com.blackduck.integration.function.ThrowingSupplier;
 
 public class ConfigurationCrudHelper {
     private final Logger logger = AlertLoggerFactory.getLogger(getClass());

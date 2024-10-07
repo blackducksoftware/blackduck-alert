@@ -17,13 +17,13 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.api.processor.detail.DetailedNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
-import com.synopsys.integration.blackduck.api.manual.view.BomEditNotificationView;
-import com.synopsys.integration.blackduck.api.manual.view.ProjectView;
-import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.rest.HttpUrl;
+import com.blackduck.integration.blackduck.api.generated.view.ProjectVersionView;
+import com.blackduck.integration.blackduck.api.manual.view.BomEditNotificationView;
+import com.blackduck.integration.blackduck.api.manual.view.ProjectView;
+import com.blackduck.integration.blackduck.service.BlackDuckApiClient;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.rest.HttpUrl;
 
 class BomEditNotificationDetailExtractorTest {
     static final String BOM_EDIT_JSON_PATH = "json/bomEditNotification.json";

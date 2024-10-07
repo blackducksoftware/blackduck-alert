@@ -16,10 +16,10 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.api.processor.detail.DetailedNotificationContent;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
-import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
-import com.synopsys.integration.blackduck.api.manual.component.PolicyOverrideNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.view.PolicyOverrideNotificationView;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.blackduck.api.manual.component.PolicyInfo;
+import com.blackduck.integration.blackduck.api.manual.component.PolicyOverrideNotificationContent;
+import com.blackduck.integration.blackduck.api.manual.view.PolicyOverrideNotificationView;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class PolicyOverrideNotificationDetailExtractorTest {
     public static final String POLICY_OVERRIDE_JSON_PATH = "json/policyOverrideNotification.json";

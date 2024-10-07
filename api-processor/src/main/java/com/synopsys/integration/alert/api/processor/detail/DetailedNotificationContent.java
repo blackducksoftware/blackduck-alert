@@ -15,8 +15,8 @@ import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.api.processor.filter.NotificationContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
-import com.synopsys.integration.util.Stringable;
+import com.blackduck.integration.blackduck.api.manual.component.NotificationContentComponent;
+import com.blackduck.integration.util.Stringable;
 
 // NotificationContentWrapper is not serializable, so this class cannot be serializable (and doesn't need to be)
 public class DetailedNotificationContent extends Stringable {

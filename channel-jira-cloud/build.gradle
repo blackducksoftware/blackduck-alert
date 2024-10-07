@@ -11,10 +11,10 @@ dependencies {
     implementation project(':api-descriptor')
     implementation project(':alert-database')
 
-    implementation 'com.synopsys.integration:integration-rest'
+    implementation 'com.blackduck.integration:integration-rest'
     implementation 'org.springframework:spring-web'
 
     testImplementation project(':test-common-channel')
     testImplementation project(':alert-database-job')
-    testImplementation 'com.synopsys.integration:blackduck-common'
+    testImplementation 'com.blackduck.integration:blackduck-common'
 }

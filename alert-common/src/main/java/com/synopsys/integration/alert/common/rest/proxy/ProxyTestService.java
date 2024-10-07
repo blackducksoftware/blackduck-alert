@@ -18,14 +18,14 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.message.model.ConfigurationTestResult;
 import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.log.Slf4jIntLogger;
-import com.synopsys.integration.rest.HttpUrl;
-import com.synopsys.integration.rest.RestConstants;
-import com.synopsys.integration.rest.client.IntHttpClient;
-import com.synopsys.integration.rest.proxy.ProxyInfo;
-import com.synopsys.integration.rest.request.Request;
-import com.synopsys.integration.rest.response.Response;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.log.Slf4jIntLogger;
+import com.blackduck.integration.rest.HttpUrl;
+import com.blackduck.integration.rest.RestConstants;
+import com.blackduck.integration.rest.client.IntHttpClient;
+import com.blackduck.integration.rest.proxy.ProxyInfo;
+import com.blackduck.integration.rest.request.Request;
+import com.blackduck.integration.rest.response.Response;
 
 //TODO: This should be in the component subproject but currently requires several dependencies not available to that subproject.
 @Component

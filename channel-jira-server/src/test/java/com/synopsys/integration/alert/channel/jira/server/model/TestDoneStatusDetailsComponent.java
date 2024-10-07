@@ -1,7 +1,7 @@
 package com.synopsys.integration.alert.channel.jira.server.model;
 
-import com.synopsys.integration.jira.common.model.components.StatusCategory;
-import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
+import com.blackduck.integration.jira.common.model.components.StatusCategory;
+import com.blackduck.integration.jira.common.model.components.StatusDetailsComponent;
 
 public class TestDoneStatusDetailsComponent extends StatusDetailsComponent {
     @Override

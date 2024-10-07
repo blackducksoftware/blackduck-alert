@@ -40,10 +40,10 @@ import com.synopsys.integration.alert.database.job.DistributionJobRepository;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.provider.blackduck.processor.model.VulnerabilityUniqueProjectNotificationContent;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.blackduck.api.generated.enumeration.VulnerabilitySeverityType;
-import com.synopsys.integration.blackduck.api.manual.component.AffectedProjectVersion;
-import com.synopsys.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.blackduck.api.generated.enumeration.VulnerabilitySeverityType;
+import com.blackduck.integration.blackduck.api.manual.component.AffectedProjectVersion;
+import com.blackduck.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @AlertIntegrationTest
 public class ProcessingJobAccessorTestIT {

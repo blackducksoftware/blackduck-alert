@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.processor.extract.model.ProcessedProviderMessageHolder;
 import com.synopsys.integration.alert.api.processor.filter.NotificationContentWrapper;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component
 public final class ProviderMessageExtractionDelegator {

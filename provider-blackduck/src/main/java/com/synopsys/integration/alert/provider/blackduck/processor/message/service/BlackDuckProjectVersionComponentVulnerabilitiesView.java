@@ -10,10 +10,10 @@ package com.synopsys.integration.alert.provider.blackduck.processor.message.serv
 import java.math.BigDecimal;
 
 import com.google.gson.JsonElement;
-import com.synopsys.integration.blackduck.api.core.BlackDuckView;
-import com.synopsys.integration.blackduck.api.generated.component.ProjectVersionComponentVersionVulnerabilityRemediationCvss2View;
-import com.synopsys.integration.blackduck.api.generated.component.ProjectVersionComponentVersionVulnerabilityRemediationCvss3View;
-import com.synopsys.integration.blackduck.api.generated.enumeration.VulnerabilityRemediationStatusType;
+import com.blackduck.integration.blackduck.api.core.BlackDuckView;
+import com.blackduck.integration.blackduck.api.generated.component.ProjectVersionComponentVersionVulnerabilityRemediationCvss2View;
+import com.blackduck.integration.blackduck.api.generated.component.ProjectVersionComponentVersionVulnerabilityRemediationCvss3View;
+import com.blackduck.integration.blackduck.api.generated.enumeration.VulnerabilityRemediationStatusType;
 
 // TODO replace with updated model from blackduck-common-api when available
 //  Copied from: ProjectVersionComponentVersionVulnerabilityRemediationView (blackduck-common-api:2020.8.0.18)

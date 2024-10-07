@@ -36,8 +36,8 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.job.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.database.job.api.StaticJobAccessor;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
-import com.synopsys.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 class ProcessingTaskTest {
     private final BlackDuckResponseResolver blackDuckResponseResolver = new BlackDuckResponseResolver(BlackDuckServicesFactory.createDefaultGson());

@@ -12,9 +12,9 @@ import org.jetbrains.annotations.Nullable;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.wait.WaitJobCondition;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.wait.WaitJobCondition;
 
 public class NotificationReceivedWaitJobTask implements WaitJobCondition {
     private final NotificationAccessor notificationAccessor;

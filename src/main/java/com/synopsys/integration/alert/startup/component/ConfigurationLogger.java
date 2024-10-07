@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
-import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.blackduck.integration.rest.proxy.ProxyInfo;
 
 @Component
 @Order(40)

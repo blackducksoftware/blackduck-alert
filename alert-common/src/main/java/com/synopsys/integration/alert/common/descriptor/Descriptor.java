@@ -15,7 +15,7 @@ import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigur
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
-import com.synopsys.integration.util.Stringable;
+import com.blackduck.integration.util.Stringable;
 
 /**
  * Note when creating a new descriptor you will need to register descriptors in the database.

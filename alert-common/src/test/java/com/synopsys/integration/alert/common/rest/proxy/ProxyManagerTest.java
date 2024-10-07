@@ -14,7 +14,7 @@ import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
-import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.blackduck.integration.rest.proxy.ProxyInfo;
 
 class ProxyManagerTest {
     public static final String HOST = "host";

@@ -27,7 +27,7 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.web.api.metadata.DescriptorMetadataActions;
 import com.synopsys.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
 import com.synopsys.integration.alert.web.documentation.SwaggerConfiguration;
-import com.synopsys.integration.util.ResourceUtil;
+import com.blackduck.integration.util.ResourceUtil;
 
 @Component
 public class AboutReader {

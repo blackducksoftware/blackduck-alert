@@ -30,17 +30,17 @@ import com.synopsys.integration.alert.provider.blackduck.processor.message.Black
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckComponentPolicyDetailsCreator;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageAttributesUtils;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageLinkUtils;
-import com.synopsys.integration.blackduck.api.core.response.LinkMultipleResponses;
-import com.synopsys.integration.blackduck.api.core.response.UrlMultipleResponses;
-import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
-import com.synopsys.integration.blackduck.api.generated.view.ComponentPolicyRulesView;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
-import com.synopsys.integration.blackduck.api.manual.temporary.component.VersionBomOriginView;
-import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
-import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
-import com.synopsys.integration.blackduck.service.request.BlackDuckMultipleRequest;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.rest.HttpUrl;
+import com.blackduck.integration.blackduck.api.core.response.LinkMultipleResponses;
+import com.blackduck.integration.blackduck.api.core.response.UrlMultipleResponses;
+import com.blackduck.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
+import com.blackduck.integration.blackduck.api.generated.view.ComponentPolicyRulesView;
+import com.blackduck.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
+import com.blackduck.integration.blackduck.api.manual.temporary.component.VersionBomOriginView;
+import com.blackduck.integration.blackduck.http.BlackDuckRequestBuilder;
+import com.blackduck.integration.blackduck.service.BlackDuckApiClient;
+import com.blackduck.integration.blackduck.service.request.BlackDuckMultipleRequest;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.rest.HttpUrl;
 
 public class BlackDuckMessageBomComponentDetailsCreator {
     private final Logger logger = LoggerFactory.getLogger(BlackDuckMessageBomComponentDetailsCreator.class);

@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.database;
 
 import java.io.Serializable;
 
-import com.synopsys.integration.util.Stringable;
+import com.blackduck.integration.util.Stringable;
 
 import jakarta.persistence.MappedSuperclass;
 

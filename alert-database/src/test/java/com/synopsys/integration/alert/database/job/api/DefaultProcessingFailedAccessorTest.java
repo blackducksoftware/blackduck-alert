@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.database.audit.AuditFailedNotificationEnti
 import com.synopsys.integration.alert.database.audit.AuditFailedNotificationRepository;
 import com.synopsys.integration.alert.database.job.api.mock.MockAuditFailedEntryRepository;
 import com.synopsys.integration.alert.database.job.api.mock.MockAuditFailedNotificationRepository;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 class DefaultProcessingFailedAccessorTest {
     public static final String TEST_JOB_NAME = "Test Job";

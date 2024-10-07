@@ -1,6 +1,6 @@
 package com.synopsys.integration.alert.channel.jira.server.model;
 
-import com.synopsys.integration.jira.common.model.response.UserDetailsResponseModel;
+import com.blackduck.integration.jira.common.model.response.UserDetailsResponseModel;
 
 public class TestIssueCreator extends UserDetailsResponseModel {
     private final String creator;

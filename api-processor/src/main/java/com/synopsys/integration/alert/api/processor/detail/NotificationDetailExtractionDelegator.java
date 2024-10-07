@@ -19,8 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
-import com.synopsys.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
+import com.blackduck.integration.blackduck.api.manual.view.NotificationView;
+import com.blackduck.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
 
 @Component
 public class NotificationDetailExtractionDelegator {

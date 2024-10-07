@@ -17,7 +17,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAc
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.datastructure.SetMap;
+import com.blackduck.integration.datastructure.SetMap;
 
 public final class MockProviderDataAccessor implements ProviderDataAccessor {
     private final Map<Long, String> providerConfigs;

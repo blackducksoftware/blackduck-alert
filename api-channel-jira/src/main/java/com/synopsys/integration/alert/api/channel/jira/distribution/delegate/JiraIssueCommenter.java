@@ -14,8 +14,8 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.search.ExistingI
 import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueCommenter;
 import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.model.request.IssueCommentRequestModel;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.model.request.IssueCommentRequestModel;
 
 public abstract class JiraIssueCommenter extends IssueTrackerIssueCommenter<String> {
 

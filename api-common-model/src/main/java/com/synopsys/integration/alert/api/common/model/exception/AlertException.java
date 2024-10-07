@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.api.common.model.exception;
 
-import com.synopsys.integration.exception.IntegrationException;
+import com.blackduck.integration.exception.IntegrationException;
 
 public class AlertException extends IntegrationException {
     private static final long serialVersionUID = 7993564907680483145L;

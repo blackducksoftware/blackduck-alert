@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.database.settings.proxy.SettingsProxyConfi
 import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 class SettingsProxyCrudActionsTest {
     private static final String HOST = "hostname";

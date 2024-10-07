@@ -13,7 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
-import com.synopsys.integration.util.Stringable;
+import com.blackduck.integration.util.Stringable;
 
 public class UserPrincipal extends Stringable implements UserDetails {
     private final UserModel userModel;

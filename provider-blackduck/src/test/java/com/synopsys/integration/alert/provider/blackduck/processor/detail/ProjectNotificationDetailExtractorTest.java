@@ -14,9 +14,9 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.api.processor.detail.DetailedNotificationContent;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
-import com.synopsys.integration.blackduck.api.manual.component.ProjectNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.view.ProjectNotificationView;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.blackduck.api.manual.component.ProjectNotificationContent;
+import com.blackduck.integration.blackduck.api.manual.view.ProjectNotificationView;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class ProjectNotificationDetailExtractorTest {
     public static final String NOTIFICATION_JSON_PATH = "json/projectNotification.json";

@@ -28,7 +28,7 @@ import com.synopsys.integration.alert.component.settings.encryption.validator.Se
 import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 class SettingsEncryptionCrudActionsTest {
     private final Gson gson = BlackDuckServicesFactory.createDefaultGson();

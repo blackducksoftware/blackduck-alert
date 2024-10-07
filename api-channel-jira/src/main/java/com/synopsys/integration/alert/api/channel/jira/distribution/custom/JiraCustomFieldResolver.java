@@ -24,9 +24,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.function.ThrowingSupplier;
-import com.synopsys.integration.jira.common.model.response.CustomFieldCreationResponseModel;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.function.ThrowingSupplier;
+import com.blackduck.integration.jira.common.model.response.CustomFieldCreationResponseModel;
 
 public class JiraCustomFieldResolver {
     private static final String CUSTOM_FIELD_TYPE_STRING_VALUE = "string";

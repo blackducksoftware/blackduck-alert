@@ -30,10 +30,10 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.provider.blackduck.processor.model.VulnerabilityUniqueProjectNotificationContent;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.blackduck.api.generated.enumeration.VulnerabilitySeverityType;
-import com.synopsys.integration.blackduck.api.manual.component.AffectedProjectVersion;
-import com.synopsys.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.blackduck.api.generated.enumeration.VulnerabilitySeverityType;
+import com.blackduck.integration.blackduck.api.manual.component.AffectedProjectVersion;
+import com.blackduck.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Transactional
 @AlertIntegrationTest

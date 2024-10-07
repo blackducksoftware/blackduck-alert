@@ -12,10 +12,10 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.function.ThrowingSupplier;
-import com.synopsys.integration.jira.common.model.components.SchemaComponent;
-import com.synopsys.integration.jira.common.model.response.CustomFieldCreationResponseModel;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.function.ThrowingSupplier;
+import com.blackduck.integration.jira.common.model.components.SchemaComponent;
+import com.blackduck.integration.jira.common.model.response.CustomFieldCreationResponseModel;
 
 class JiraCustomFieldResolverTest {
     private static final String FIELD_ID_1 = "first_id";

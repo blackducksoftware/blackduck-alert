@@ -9,5 +9,5 @@ dependencies {
     implementation 'org.springframework.amqp:spring-rabbit'
 
     testImplementation project(':test-common')
-    testImplementation 'com.synopsys.integration:blackduck-common'
+    testImplementation 'com.blackduck.integration:blackduck-common'
 }

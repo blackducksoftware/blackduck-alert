@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.service.email;
 
 import java.util.Properties;
 
-import com.synopsys.integration.builder.Buildable;
+import com.blackduck.integration.builder.Buildable;
 
 public class SmtpConfig implements Buildable {
     private final Properties javamailProperties;

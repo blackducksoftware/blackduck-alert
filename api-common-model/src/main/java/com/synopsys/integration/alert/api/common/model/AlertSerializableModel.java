@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.api.common.model;
 
 import java.io.Serializable;
 
-import com.synopsys.integration.util.Stringable;
+import com.blackduck.integration.util.Stringable;
 
 public abstract class AlertSerializableModel extends Stringable implements Serializable {
 }

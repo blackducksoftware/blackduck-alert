@@ -46,21 +46,21 @@ import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetail
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.blackduck.api.generated.enumeration.PolicyRuleSeverityType;
-import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
-import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
-import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
-import com.synopsys.integration.blackduck.api.manual.component.RuleViolationNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.synopsys.integration.blackduck.api.manual.view.RuleViolationNotificationView;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.log.IntLogger;
-import com.synopsys.integration.log.Slf4jIntLogger;
-import com.synopsys.integration.wait.ResilientJobConfig;
-import com.synopsys.integration.wait.WaitJob;
-import com.synopsys.integration.wait.WaitJobCondition;
-import com.synopsys.integration.wait.tracker.WaitIntervalTracker;
-import com.synopsys.integration.wait.tracker.WaitIntervalTrackerFactory;
+import com.blackduck.integration.blackduck.api.generated.enumeration.PolicyRuleSeverityType;
+import com.blackduck.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
+import com.blackduck.integration.blackduck.api.manual.component.ComponentVersionStatus;
+import com.blackduck.integration.blackduck.api.manual.component.PolicyInfo;
+import com.blackduck.integration.blackduck.api.manual.component.RuleViolationNotificationContent;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.blackduck.api.manual.view.RuleViolationNotificationView;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.log.IntLogger;
+import com.blackduck.integration.log.Slf4jIntLogger;
+import com.blackduck.integration.wait.ResilientJobConfig;
+import com.blackduck.integration.wait.WaitJob;
+import com.blackduck.integration.wait.WaitJobCondition;
+import com.blackduck.integration.wait.tracker.WaitIntervalTracker;
+import com.blackduck.integration.wait.tracker.WaitIntervalTrackerFactory;
 
 @Tag(TestTags.DEFAULT_PERFORMANCE)
 @AlertIntegrationTest

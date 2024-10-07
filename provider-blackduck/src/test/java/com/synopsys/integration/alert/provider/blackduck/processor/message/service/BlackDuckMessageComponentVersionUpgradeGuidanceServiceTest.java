@@ -10,18 +10,18 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
-import com.synopsys.integration.blackduck.api.core.response.LinkSingleResponse;
-import com.synopsys.integration.blackduck.api.core.response.UrlSingleResponse;
-import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceLongTermView;
-import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceLongTermVulnerabilityRiskView;
-import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceShortTermView;
-import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceShortTermVulnerabilityRiskView;
-import com.synopsys.integration.blackduck.api.generated.response.ComponentVersionUpgradeGuidanceView;
-import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
-import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.rest.HttpUrl;
+import com.blackduck.integration.blackduck.api.core.response.LinkSingleResponse;
+import com.blackduck.integration.blackduck.api.core.response.UrlSingleResponse;
+import com.blackduck.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceLongTermView;
+import com.blackduck.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceLongTermVulnerabilityRiskView;
+import com.blackduck.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceShortTermView;
+import com.blackduck.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceShortTermVulnerabilityRiskView;
+import com.blackduck.integration.blackduck.api.generated.response.ComponentVersionUpgradeGuidanceView;
+import com.blackduck.integration.blackduck.api.generated.view.ComponentVersionView;
+import com.blackduck.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
+import com.blackduck.integration.blackduck.service.BlackDuckApiClient;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.rest.HttpUrl;
 
 class BlackDuckMessageComponentVersionUpgradeGuidanceServiceTest {
     @Test

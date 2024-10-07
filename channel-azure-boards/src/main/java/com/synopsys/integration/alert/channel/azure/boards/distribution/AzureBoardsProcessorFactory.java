@@ -46,7 +46,7 @@ import com.synopsys.integration.alert.azure.boards.common.service.project.AzureP
 import com.synopsys.integration.alert.azure.boards.common.service.project.TeamProjectResponseModel;
 import com.synopsys.integration.alert.azure.boards.common.service.query.AzureWorkItemQueryService;
 import com.synopsys.integration.alert.azure.boards.common.service.workitem.AzureWorkItemService;
-import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.blackduck.integration.rest.proxy.ProxyInfo;
 
 @Component
 public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory<AzureBoardsJobDetailsModel, Integer> {

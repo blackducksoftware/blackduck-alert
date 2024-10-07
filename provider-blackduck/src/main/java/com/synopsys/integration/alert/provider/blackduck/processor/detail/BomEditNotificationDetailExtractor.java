@@ -20,15 +20,15 @@ import com.synopsys.integration.alert.api.processor.detail.DetailedNotificationC
 import com.synopsys.integration.alert.api.processor.detail.NotificationDetailExtractor;
 import com.synopsys.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
 import com.synopsys.integration.alert.provider.blackduck.processor.model.BomEditWithProjectNameNotificationContent;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
-import com.synopsys.integration.blackduck.api.manual.component.BomEditNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.view.BomEditNotificationView;
-import com.synopsys.integration.blackduck.api.manual.view.ProjectView;
-import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.rest.HttpUrl;
+import com.blackduck.integration.blackduck.api.generated.view.ProjectVersionView;
+import com.blackduck.integration.blackduck.api.manual.component.BomEditNotificationContent;
+import com.blackduck.integration.blackduck.api.manual.view.BomEditNotificationView;
+import com.blackduck.integration.blackduck.api.manual.view.ProjectView;
+import com.blackduck.integration.blackduck.service.BlackDuckApiClient;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.blackduck.service.model.ProjectVersionWrapper;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.rest.HttpUrl;
 
 @Component
 public class BomEditNotificationDetailExtractor extends NotificationDetailExtractor<BomEditNotificationView> {

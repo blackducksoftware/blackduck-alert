@@ -62,7 +62,7 @@ import com.synopsys.integration.alert.database.job.execution.JobCompletionDurati
 import com.synopsys.integration.alert.database.job.execution.JobCompletionRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 class AuditFailedEventListenerTest {
     public static final String TEST_JOB_NAME = "Test Job";

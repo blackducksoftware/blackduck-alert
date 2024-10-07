@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcern;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
-import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
+import com.blackduck.integration.blackduck.api.manual.component.PolicyInfo;
 
 @Component
 public class BlackDuckPolicyComponentConcernCreator {

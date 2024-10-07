@@ -12,8 +12,8 @@ import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.api.processor.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.api.processor.filter.NotificationContentWrapper;
-import com.synopsys.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.enumeration.LicenseLimitType;
+import com.blackduck.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
+import com.blackduck.integration.blackduck.api.manual.enumeration.LicenseLimitType;
 
 public class LicenseLimitNotificationMessageExtractorTest {
     private final String summary = "License Limit Event";

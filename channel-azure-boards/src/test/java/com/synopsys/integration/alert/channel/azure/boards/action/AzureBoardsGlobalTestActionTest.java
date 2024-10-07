@@ -41,8 +41,8 @@ import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.database.MockRepositorySorter;
 import com.synopsys.integration.alert.azure.boards.common.service.project.AzureProjectService;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.exception.IntegrationException;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.exception.IntegrationException;
 
 @ExtendWith(SpringExtension.class)
 class AzureBoardsGlobalTestActionTest {

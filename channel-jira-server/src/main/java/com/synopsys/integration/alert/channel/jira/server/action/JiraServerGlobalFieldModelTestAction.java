@@ -20,14 +20,14 @@ import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFa
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.model.response.MultiPermissionResponseModel;
-import com.synopsys.integration.jira.common.model.response.PermissionModel;
-import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
-import com.synopsys.integration.jira.common.server.model.IssueSearchResponseModel;
-import com.synopsys.integration.jira.common.server.service.IssueSearchService;
-import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
-import com.synopsys.integration.jira.common.server.service.MyPermissionsService;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.model.response.MultiPermissionResponseModel;
+import com.blackduck.integration.jira.common.model.response.PermissionModel;
+import com.blackduck.integration.jira.common.rest.service.PluginManagerService;
+import com.blackduck.integration.jira.common.server.model.IssueSearchResponseModel;
+import com.blackduck.integration.jira.common.server.service.IssueSearchService;
+import com.blackduck.integration.jira.common.server.service.JiraServerServiceFactory;
+import com.blackduck.integration.jira.common.server.service.MyPermissionsService;
 
 /**
  * @deprecated Global test actions are now handled through JiraServerGlobalTestAction

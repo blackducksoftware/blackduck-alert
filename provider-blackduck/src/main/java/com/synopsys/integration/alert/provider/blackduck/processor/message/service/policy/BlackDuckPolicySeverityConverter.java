@@ -13,7 +13,7 @@ import org.apache.commons.lang3.EnumUtils;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
-import com.synopsys.integration.blackduck.api.generated.enumeration.PolicyRuleSeverityType;
+import com.blackduck.integration.blackduck.api.generated.enumeration.PolicyRuleSeverityType;
 
 @Component
 public class BlackDuckPolicySeverityConverter {

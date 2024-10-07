@@ -12,8 +12,8 @@ import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.rest.service.PluginManagerService;
 
 @ExtendWith(SpringExtension.class)
 public class JiraPluginCheckUtilsTest {

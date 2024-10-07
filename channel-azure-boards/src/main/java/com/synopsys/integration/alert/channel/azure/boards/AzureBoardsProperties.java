@@ -46,7 +46,7 @@ import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestC
 import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;
 import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.alert.azure.boards.common.oauth.AzureAuthorizationCodeFlow;
-import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.blackduck.integration.rest.proxy.ProxyInfo;
 
 public class AzureBoardsProperties {
     private final Logger logger = LoggerFactory.getLogger(getClass());

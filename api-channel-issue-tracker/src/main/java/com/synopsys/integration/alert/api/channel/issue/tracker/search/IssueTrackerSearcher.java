@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.api.processor.extract.model.project.BomCom
 import com.synopsys.integration.alert.api.processor.extract.model.project.MessageReason;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectOperation;
-import com.synopsys.integration.function.ThrowingSupplier;
+import com.blackduck.integration.function.ThrowingSupplier;
 
 public class IssueTrackerSearcher<T extends Serializable> {
     private final Logger logger = LoggerFactory.getLogger(getClass());

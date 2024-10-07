@@ -20,12 +20,12 @@ import com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate.J
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.alert.api.descriptor.JiraCloudChannelKey;
 import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
-import com.synopsys.integration.jira.common.cloud.model.IssueCreationRequestModel;
-import com.synopsys.integration.jira.common.cloud.service.ProjectService;
-import com.synopsys.integration.jira.common.model.components.ProjectComponent;
-import com.synopsys.integration.jira.common.model.response.PageOfProjectsResponseModel;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
+import com.blackduck.integration.jira.common.cloud.model.IssueCreationRequestModel;
+import com.blackduck.integration.jira.common.cloud.service.ProjectService;
+import com.blackduck.integration.jira.common.model.components.ProjectComponent;
+import com.blackduck.integration.jira.common.model.response.PageOfProjectsResponseModel;
 
 public class JiraCloudIssueCreatorTest {
 

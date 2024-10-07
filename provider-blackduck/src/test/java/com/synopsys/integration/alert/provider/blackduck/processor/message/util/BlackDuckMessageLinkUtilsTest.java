@@ -5,9 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.rest.HttpUrl;
+import com.blackduck.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.rest.HttpUrl;
 
 public class BlackDuckMessageLinkUtilsTest {
     public static final String EXAMPLE_BLACKDUCK_PROJECT_VERSION_URL = "https://a-blackduck-server/api/projects/73962982-3b6f-441f-b3b7-1dc78d14611a/versions/77a39f9d-8538-4216-84f4-514964536e41";

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.synopsys.integration.alert.azure.boards.common.util.AzureFieldsExtractor;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class WorkItemFieldsWrapperTest {
     private final AzureFieldsExtractor azureFieldsExtractor = new AzureFieldsExtractor(BlackDuckServicesFactory.createDefaultGson());

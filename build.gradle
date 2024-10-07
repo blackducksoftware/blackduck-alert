@@ -9,7 +9,7 @@ buildscript {
 
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-        classpath "com.synopsys.integration:common-gradle-plugin:${managedCgpVersion}"
+        classpath "com.blackduck.integration:common-gradle-plugin:${managedCgpVersion}"
     }
 }
 
@@ -169,7 +169,7 @@ dependencies {
     testImplementation project(':test-common')
     testImplementation project(':test-common-channel')
 
-    implementation 'com.synopsys.integration:blackduck-common'
+    implementation 'com.blackduck.integration:blackduck-common'
     implementation 'org.apache.tomcat.embed:tomcat-embed-core'
 
     // Logging

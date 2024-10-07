@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.processor.model;
 
-import com.synopsys.integration.blackduck.api.manual.enumeration.ComponentUnknownVersionStatus;
+import com.blackduck.integration.blackduck.api.manual.enumeration.ComponentUnknownVersionStatus;
 
 public class ComponentUnknownVersionWithStatusNotificationContent extends AbstractProjectVersionNotificationContent {
     private String componentName;

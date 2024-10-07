@@ -20,10 +20,10 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
-import com.synopsys.integration.rest.credentials.CredentialsBuilder;
-import com.synopsys.integration.rest.proxy.ProxyInfo;
-import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;
-import com.synopsys.integration.util.ExcludedIncludedWildcardFilter;
+import com.blackduck.integration.rest.credentials.CredentialsBuilder;
+import com.blackduck.integration.rest.proxy.ProxyInfo;
+import com.blackduck.integration.rest.proxy.ProxyInfoBuilder;
+import com.blackduck.integration.util.ExcludedIncludedWildcardFilter;
 
 @Component
 public class ProxyManager {

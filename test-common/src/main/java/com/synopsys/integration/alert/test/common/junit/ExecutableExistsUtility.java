@@ -3,12 +3,12 @@ package com.synopsys.integration.alert.test.common.junit;
 import org.junit.jupiter.api.extension.ConditionEvaluationResult;
 import org.junit.platform.commons.logging.Logger;
 
-import com.synopsys.integration.executable.Executable;
-import com.synopsys.integration.executable.ExecutableOutput;
-import com.synopsys.integration.executable.ExecutableRunnerException;
-import com.synopsys.integration.executable.ProcessBuilderRunner;
-import com.synopsys.integration.log.IntLogger;
-import com.synopsys.integration.log.SilentIntLogger;
+import com.blackduck.integration.executable.Executable;
+import com.blackduck.integration.executable.ExecutableOutput;
+import com.blackduck.integration.executable.ExecutableRunnerException;
+import com.blackduck.integration.executable.ProcessBuilderRunner;
+import com.blackduck.integration.log.IntLogger;
+import com.blackduck.integration.log.SilentIntLogger;
 
 public class ExecutableExistsUtility {
 

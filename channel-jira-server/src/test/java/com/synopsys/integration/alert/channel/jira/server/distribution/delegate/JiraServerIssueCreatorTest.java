@@ -31,12 +31,12 @@ import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServe
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
-import com.synopsys.integration.jira.common.model.components.ProjectComponent;
-import com.synopsys.integration.jira.common.server.model.IssueCreationRequestModel;
-import com.synopsys.integration.jira.common.server.service.IssueService;
-import com.synopsys.integration.jira.common.server.service.ProjectService;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
+import com.blackduck.integration.jira.common.model.components.ProjectComponent;
+import com.blackduck.integration.jira.common.server.model.IssueCreationRequestModel;
+import com.blackduck.integration.jira.common.server.service.IssueService;
+import com.blackduck.integration.jira.common.server.service.ProjectService;
 
 @ExtendWith(SpringExtension.class)
 public class JiraServerIssueCreatorTest {

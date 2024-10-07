@@ -19,17 +19,17 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.performance.model.PerformanceExecutionStatusModel;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.log.IntLogger;
-import com.synopsys.integration.log.Slf4jIntLogger;
-import com.synopsys.integration.wait.ResilientJobConfig;
-import com.synopsys.integration.wait.WaitJob;
-import com.synopsys.integration.wait.WaitJobCondition;
-import com.synopsys.integration.wait.tracker.WaitIntervalTracker;
-import com.synopsys.integration.wait.tracker.WaitIntervalTrackerFactory;
+import com.blackduck.integration.blackduck.api.generated.view.ProjectVersionView;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.blackduck.service.model.ProjectVersionWrapper;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.log.IntLogger;
+import com.blackduck.integration.log.Slf4jIntLogger;
+import com.blackduck.integration.wait.ResilientJobConfig;
+import com.blackduck.integration.wait.WaitJob;
+import com.blackduck.integration.wait.WaitJobCondition;
+import com.blackduck.integration.wait.tracker.WaitIntervalTracker;
+import com.blackduck.integration.wait.tracker.WaitIntervalTrackerFactory;
 
 public class IntegrationPerformanceTestRunner {
     private static final IntLogger intLogger = new Slf4jIntLogger(LoggerFactory.getLogger(IntegrationPerformanceTestRunner.class));

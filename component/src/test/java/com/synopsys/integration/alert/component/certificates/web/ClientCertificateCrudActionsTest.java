@@ -29,7 +29,7 @@ import com.synopsys.integration.alert.component.certificates.CertificatesDescrip
 import com.synopsys.integration.alert.database.job.api.ClientCertificateAccessor;
 import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 @ExtendWith(SpringExtension.class)
 class ClientCertificateCrudActionsTest {

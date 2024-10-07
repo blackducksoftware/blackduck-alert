@@ -5,16 +5,16 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import com.synopsys.integration.blackduck.api.core.ResourceMetadata;
-import com.synopsys.integration.blackduck.api.generated.enumeration.VulnerabilitySeverityType;
-import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityView;
-import com.synopsys.integration.blackduck.api.manual.component.AffectedProjectVersion;
-import com.synopsys.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.component.VulnerabilitySourceQualifiedId;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.rest.HttpUrl;
+import com.blackduck.integration.blackduck.api.core.ResourceMetadata;
+import com.blackduck.integration.blackduck.api.generated.enumeration.VulnerabilitySeverityType;
+import com.blackduck.integration.blackduck.api.generated.view.VulnerabilityView;
+import com.blackduck.integration.blackduck.api.manual.component.AffectedProjectVersion;
+import com.blackduck.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
+import com.blackduck.integration.blackduck.api.manual.component.VulnerabilitySourceQualifiedId;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.blackduck.api.manual.view.NotificationView;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.rest.HttpUrl;
 
 public class NotificationGeneratorUtils {
 

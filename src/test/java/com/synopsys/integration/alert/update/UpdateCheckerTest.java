@@ -30,8 +30,8 @@ import com.synopsys.integration.alert.update.model.UpdateModel;
 import com.synopsys.integration.alert.web.api.about.AboutReader;
 import com.synopsys.integration.alert.web.api.metadata.DescriptorMetadataActions;
 import com.synopsys.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.rest.proxy.ProxyInfo;
 
 public class UpdateCheckerTest {
     private static final String SUFFIX_SNAPSHOT = "SNAPSHOT";

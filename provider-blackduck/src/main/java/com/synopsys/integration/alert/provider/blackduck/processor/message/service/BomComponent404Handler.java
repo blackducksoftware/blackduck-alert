@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.rest.exception.IntegrationRestException;
+import com.blackduck.integration.rest.exception.IntegrationRestException;
 
 @Component
 public class BomComponent404Handler {

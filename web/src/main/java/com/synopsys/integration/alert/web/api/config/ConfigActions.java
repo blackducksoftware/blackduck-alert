@@ -49,8 +49,8 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.rest.exception.IntegrationRestException;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.rest.exception.IntegrationRestException;
 
 @Component
 public class ConfigActions extends AbstractConfigResourceActions {

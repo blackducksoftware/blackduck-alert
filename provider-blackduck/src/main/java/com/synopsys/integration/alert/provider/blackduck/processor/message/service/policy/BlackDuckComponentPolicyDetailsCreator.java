@@ -15,15 +15,15 @@ import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentPolicy;
-import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionExpressionsView;
-import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionView;
-import com.synopsys.integration.blackduck.api.generated.enumeration.PolicyRuleCategoryType;
-import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
-import com.synopsys.integration.blackduck.api.generated.view.ComponentPolicyRulesView;
-import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
-import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.rest.HttpUrl;
+import com.blackduck.integration.blackduck.api.generated.component.PolicyRuleExpressionExpressionsView;
+import com.blackduck.integration.blackduck.api.generated.component.PolicyRuleExpressionView;
+import com.blackduck.integration.blackduck.api.generated.enumeration.PolicyRuleCategoryType;
+import com.blackduck.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
+import com.blackduck.integration.blackduck.api.generated.view.ComponentPolicyRulesView;
+import com.blackduck.integration.blackduck.api.generated.view.PolicyRuleView;
+import com.blackduck.integration.blackduck.service.BlackDuckApiClient;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.rest.HttpUrl;
 
 public class BlackDuckComponentPolicyDetailsCreator {
     private static final String VULNERABILITY_POLICY_EXPRESSION_NAME = "vuln";

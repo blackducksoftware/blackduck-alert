@@ -33,14 +33,14 @@ import com.synopsys.integration.alert.performance.utility.NotificationWaitJobTas
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
-import com.synopsys.integration.log.IntLogger;
-import com.synopsys.integration.log.Slf4jIntLogger;
-import com.synopsys.integration.rest.client.IntHttpClient;
-import com.synopsys.integration.rest.proxy.ProxyInfo;
-import com.synopsys.integration.wait.ResilientJobConfig;
-import com.synopsys.integration.wait.WaitJob;
-import com.synopsys.integration.wait.tracker.WaitIntervalTracker;
-import com.synopsys.integration.wait.tracker.WaitIntervalTrackerFactory;
+import com.blackduck.integration.log.IntLogger;
+import com.blackduck.integration.log.Slf4jIntLogger;
+import com.blackduck.integration.rest.client.IntHttpClient;
+import com.blackduck.integration.rest.proxy.ProxyInfo;
+import com.blackduck.integration.wait.ResilientJobConfig;
+import com.blackduck.integration.wait.WaitJob;
+import com.blackduck.integration.wait.tracker.WaitIntervalTracker;
+import com.blackduck.integration.wait.tracker.WaitIntervalTrackerFactory;
 
 @Tag(TestTags.DEFAULT_PERFORMANCE)
 public class ScalingPerformanceTest {

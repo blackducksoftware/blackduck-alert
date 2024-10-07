@@ -10,7 +10,7 @@ package com.synopsys.integration.alert.api.channel.jira.util;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcherResponseModel;
-import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
+import com.blackduck.integration.jira.common.model.response.IssueResponseModel;
 
 public class JiraCallbackUtils {
     private JiraCallbackUtils() {

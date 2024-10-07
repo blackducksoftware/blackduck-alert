@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.api.environment;
 
-import com.synopsys.integration.util.Stringable;
+import com.blackduck.integration.util.Stringable;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 

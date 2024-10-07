@@ -8,7 +8,7 @@
 package com.synopsys.integration.alert.provider.blackduck.processor.model;
 
 import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageLinkUtils;
-import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
+import com.blackduck.integration.blackduck.api.manual.component.NotificationContentComponent;
 
 public abstract class AbstractProjectVersionNotificationContent extends NotificationContentComponent {
     private final String projectName;

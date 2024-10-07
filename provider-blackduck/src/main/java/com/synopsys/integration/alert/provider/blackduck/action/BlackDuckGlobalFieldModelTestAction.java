@@ -25,16 +25,16 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
 import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckApiTokenValidator;
-import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
-import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
-import com.synopsys.integration.builder.BuilderStatus;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.log.Slf4jIntLogger;
-import com.synopsys.integration.rest.HttpMethod;
-import com.synopsys.integration.rest.HttpUrl;
-import com.synopsys.integration.rest.RestConstants;
-import com.synopsys.integration.rest.client.ConnectionResult;
-import com.synopsys.integration.rest.exception.IntegrationRestException;
+import com.blackduck.integration.blackduck.configuration.BlackDuckServerConfig;
+import com.blackduck.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
+import com.blackduck.integration.builder.BuilderStatus;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.log.Slf4jIntLogger;
+import com.blackduck.integration.rest.HttpMethod;
+import com.blackduck.integration.rest.HttpUrl;
+import com.blackduck.integration.rest.RestConstants;
+import com.blackduck.integration.rest.client.ConnectionResult;
+import com.blackduck.integration.rest.exception.IntegrationRestException;
 
 @Component
 public class BlackDuckGlobalFieldModelTestAction extends FieldModelTestAction {

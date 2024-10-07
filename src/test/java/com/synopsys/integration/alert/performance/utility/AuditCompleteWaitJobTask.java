@@ -32,12 +32,12 @@ import com.synopsys.integration.alert.component.diagnostic.model.AuditDiagnostic
 import com.synopsys.integration.alert.component.diagnostic.model.DiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.NotificationDiagnosticModel;
 import com.synopsys.integration.alert.component.diagnostic.model.RabbitMQDiagnosticModel;
-import com.synopsys.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.log.IntLogger;
-import com.synopsys.integration.rest.exception.IntegrationRestException;
-import com.synopsys.integration.wait.WaitJobCondition;
+import com.blackduck.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.log.IntLogger;
+import com.blackduck.integration.rest.exception.IntegrationRestException;
+import com.blackduck.integration.wait.WaitJobCondition;
 
 public class AuditCompleteWaitJobTask implements WaitJobCondition {
     private static final String AUDIT_ERROR_RESPONSE_MESSAGE = "Could not get the Alert audit entries.";

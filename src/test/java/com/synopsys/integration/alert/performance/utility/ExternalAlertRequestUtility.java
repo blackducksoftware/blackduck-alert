@@ -4,16 +4,16 @@ import java.io.IOException;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.log.IntLogger;
-import com.synopsys.integration.rest.HttpMethod;
-import com.synopsys.integration.rest.HttpUrl;
-import com.synopsys.integration.rest.body.BodyContent;
-import com.synopsys.integration.rest.body.BodyContentConverter;
-import com.synopsys.integration.rest.body.StringBodyContent;
-import com.synopsys.integration.rest.client.IntHttpClient;
-import com.synopsys.integration.rest.request.Request;
-import com.synopsys.integration.rest.response.Response;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.log.IntLogger;
+import com.blackduck.integration.rest.HttpMethod;
+import com.blackduck.integration.rest.HttpUrl;
+import com.blackduck.integration.rest.body.BodyContent;
+import com.blackduck.integration.rest.body.BodyContentConverter;
+import com.blackduck.integration.rest.body.StringBodyContent;
+import com.blackduck.integration.rest.client.IntHttpClient;
+import com.blackduck.integration.rest.request.Request;
+import com.blackduck.integration.rest.response.Response;
 
 public class ExternalAlertRequestUtility implements AlertRequestUtility {
     private final IntLogger intLogger;

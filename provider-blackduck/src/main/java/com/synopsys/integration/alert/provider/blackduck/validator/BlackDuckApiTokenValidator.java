@@ -16,18 +16,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.blackduck.api.core.BlackDuckResponse;
-import com.synopsys.integration.blackduck.api.core.ResourceLink;
-import com.synopsys.integration.blackduck.api.core.response.UrlMultipleResponses;
-import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
-import com.synopsys.integration.blackduck.api.generated.view.RoleAssignmentView;
-import com.synopsys.integration.blackduck.api.generated.view.UserView;
-import com.synopsys.integration.blackduck.http.client.ApiTokenBlackDuckHttpClient;
-import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.log.Slf4jIntLogger;
-import com.synopsys.integration.rest.response.Response;
+import com.blackduck.integration.blackduck.api.core.BlackDuckResponse;
+import com.blackduck.integration.blackduck.api.core.ResourceLink;
+import com.blackduck.integration.blackduck.api.core.response.UrlMultipleResponses;
+import com.blackduck.integration.blackduck.api.generated.discovery.ApiDiscovery;
+import com.blackduck.integration.blackduck.api.generated.view.RoleAssignmentView;
+import com.blackduck.integration.blackduck.api.generated.view.UserView;
+import com.blackduck.integration.blackduck.http.client.ApiTokenBlackDuckHttpClient;
+import com.blackduck.integration.blackduck.service.BlackDuckApiClient;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.log.Slf4jIntLogger;
+import com.blackduck.integration.rest.response.Response;
 
 public class BlackDuckApiTokenValidator {
     public static final String ROLE_NAME_GLOBAL_PROJECT_VIEWER = "Global Project Viewer";

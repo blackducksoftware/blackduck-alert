@@ -7,9 +7,9 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.enumeration.IssueStatus;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.model.components.TransitionComponent;
-import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.model.components.TransitionComponent;
+import com.blackduck.integration.jira.common.model.response.TransitionsResponseModel;
 
 public class JiraIssueStatusCreatorTest {
     private final String resolveTransition = "Done";

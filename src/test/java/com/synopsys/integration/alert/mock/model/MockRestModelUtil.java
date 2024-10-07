@@ -18,7 +18,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.rest.model.Config;
 import com.synopsys.integration.alert.mock.MockUtils;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 public abstract class MockRestModelUtil<R extends Config> implements MockUtils {
 

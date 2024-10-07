@@ -1,6 +1,6 @@
 package com.synopsys.integration.alert.channel.jira.server.model;
 
-import com.synopsys.integration.jira.common.server.model.IssueSearchIssueComponent;
+import com.blackduck.integration.jira.common.server.model.IssueSearchIssueComponent;
 
 public class TestIssueSearchIssueComponent extends IssueSearchIssueComponent {
     private final String id;

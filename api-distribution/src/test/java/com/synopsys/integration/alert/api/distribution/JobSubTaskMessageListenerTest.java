@@ -13,7 +13,7 @@ import org.springframework.core.task.TaskExecutor;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.event.AlertEventHandler;
 import com.synopsys.integration.alert.api.event.distribution.JobSubTaskEvent;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 class JobSubTaskMessageListenerTest {
 

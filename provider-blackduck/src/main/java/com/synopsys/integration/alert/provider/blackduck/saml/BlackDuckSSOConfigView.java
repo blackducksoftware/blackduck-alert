@@ -9,8 +9,8 @@ package com.synopsys.integration.alert.provider.blackduck.saml;
 
 import java.util.Optional;
 
-import com.synopsys.integration.blackduck.api.core.BlackDuckView;
-import com.synopsys.integration.rest.HttpUrl;
+import com.blackduck.integration.blackduck.api.core.BlackDuckView;
+import com.blackduck.integration.rest.HttpUrl;
 
 public class BlackDuckSSOConfigView extends BlackDuckView {
     public static final String SSO_IDP_METADATA_LINK_KEY = "sso-idp-metadata";

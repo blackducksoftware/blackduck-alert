@@ -18,13 +18,13 @@ import com.synopsys.integration.alert.api.processor.extract.model.project.Projec
 import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectOperation;
 import com.synopsys.integration.alert.api.processor.filter.NotificationContentWrapper;
 import com.synopsys.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
-import com.synopsys.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.component.ProjectNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.enumeration.OperationType;
-import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.rest.HttpUrl;
+import com.blackduck.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
+import com.blackduck.integration.blackduck.api.manual.component.ProjectNotificationContent;
+import com.blackduck.integration.blackduck.api.manual.enumeration.OperationType;
+import com.blackduck.integration.blackduck.http.client.BlackDuckHttpClient;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.rest.HttpUrl;
 
 public class ProjectNotificationMessageExtractorTest {
     private static final String PROJECT_URL = "https://projectUrl";

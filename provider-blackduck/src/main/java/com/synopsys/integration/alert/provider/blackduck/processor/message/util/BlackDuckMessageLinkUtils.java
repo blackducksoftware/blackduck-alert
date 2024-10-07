@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
+import com.blackduck.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
 
 public final class BlackDuckMessageLinkUtils {
     public static final String QUERY_PARAM_COMPONENT_NAME = "componentOrVersionName";

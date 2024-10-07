@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.api.channel.jira;
 
 import java.io.Serializable;
 
-import com.synopsys.integration.util.Stringable;
+import com.blackduck.integration.util.Stringable;
 
 public class JiraIssueSearchProperties extends Stringable implements Serializable {
     private String provider;

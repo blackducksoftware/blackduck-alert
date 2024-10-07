@@ -10,11 +10,11 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
-import com.synopsys.integration.blackduck.api.manual.component.ProjectVersionNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.component.RuleViolationNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
+import com.blackduck.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
+import com.blackduck.integration.blackduck.api.manual.component.NotificationContentComponent;
+import com.blackduck.integration.blackduck.api.manual.component.ProjectVersionNotificationContent;
+import com.blackduck.integration.blackduck.api.manual.component.RuleViolationNotificationContent;
+import com.blackduck.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
 
 public class DetailedNotificationContentTest {
     private static final String EXPECTED_NO_POLICY = "Expected no policy name";

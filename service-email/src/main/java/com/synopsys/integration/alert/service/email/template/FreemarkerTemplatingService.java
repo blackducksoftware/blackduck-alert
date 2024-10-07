@@ -13,7 +13,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.exception.IntegrationException;
+import com.blackduck.integration.exception.IntegrationException;
 
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.TemplateLoader;

@@ -26,12 +26,12 @@ import org.junit.platform.commons.util.StringUtils;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
 import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.test.common.junit.kubernetes.EnableIfKubeAndHelmPresent;
-import com.synopsys.integration.executable.Executable;
-import com.synopsys.integration.executable.ExecutableOutput;
-import com.synopsys.integration.executable.ExecutableRunnerException;
-import com.synopsys.integration.executable.ProcessBuilderRunner;
-import com.synopsys.integration.log.BufferedIntLogger;
-import com.synopsys.integration.log.LogLevel;
+import com.blackduck.integration.executable.Executable;
+import com.blackduck.integration.executable.ExecutableOutput;
+import com.blackduck.integration.executable.ExecutableRunnerException;
+import com.blackduck.integration.executable.ProcessBuilderRunner;
+import com.blackduck.integration.log.BufferedIntLogger;
+import com.blackduck.integration.log.LogLevel;
 
 @EnableIfKubeAndHelmPresent
 @Tag(TestTags.DEFAULT_INTEGRATION)

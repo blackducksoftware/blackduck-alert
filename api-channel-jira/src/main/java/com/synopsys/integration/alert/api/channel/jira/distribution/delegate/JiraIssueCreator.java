@@ -39,12 +39,12 @@ import com.synopsys.integration.alert.api.descriptor.model.IssueTrackerChannelKe
 import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernType;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentPolicy;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.exception.JiraPreconditionNotMetException;
-import com.synopsys.integration.jira.common.model.components.IssueFieldsComponent;
-import com.synopsys.integration.jira.common.model.response.IssueCreationResponseModel;
-import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
-import com.synopsys.integration.rest.exception.IntegrationRestException;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.exception.JiraPreconditionNotMetException;
+import com.blackduck.integration.jira.common.model.components.IssueFieldsComponent;
+import com.blackduck.integration.jira.common.model.response.IssueCreationResponseModel;
+import com.blackduck.integration.jira.common.model.response.IssueResponseModel;
+import com.blackduck.integration.rest.exception.IntegrationRestException;
 
 public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<String> {
     private static final String FAILED_TO_CREATE_ISSUE_MESSAGE = "Failed to create an issue in Jira.";

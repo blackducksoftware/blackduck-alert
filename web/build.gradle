@@ -19,7 +19,7 @@ dependencies {
     implementation project(':api-provider')
 
     implementation 'org.apache.tomcat.embed:tomcat-embed-core'
-    implementation 'com.synopsys.integration:integration-rest'
+    implementation 'com.blackduck.integration:integration-rest'
 
     // Spring
     implementation 'org.springframework:spring-webmvc'
@@ -32,5 +32,5 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui'
 
     testImplementation project(':test-common')
-    testImplementation 'com.synopsys.integration:blackduck-common'
+    testImplementation 'com.blackduck.integration:blackduck-common'
 }

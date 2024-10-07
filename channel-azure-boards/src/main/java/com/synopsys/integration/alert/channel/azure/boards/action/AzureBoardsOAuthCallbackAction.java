@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.azure.boards.common.http.HttpServiceExcept
 import com.synopsys.integration.alert.azure.boards.common.model.AzureArrayResponseModel;
 import com.synopsys.integration.alert.azure.boards.common.service.project.AzureProjectService;
 import com.synopsys.integration.alert.azure.boards.common.service.project.TeamProjectReferenceResponseModel;
-import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.blackduck.integration.rest.proxy.ProxyInfo;
 
 import jakarta.servlet.http.HttpServletRequest;
 

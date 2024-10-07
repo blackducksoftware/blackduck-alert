@@ -10,7 +10,7 @@ package com.synopsys.integration.alert.provider.blackduck.processor.message.serv
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
+import com.blackduck.integration.blackduck.service.BlackDuckApiClient;
 
 @Component
 public class BlackDuckComponentPolicyDetailsCreatorFactory {

@@ -57,7 +57,7 @@ import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.rest.RestConstants;
+import com.blackduck.integration.rest.RestConstants;
 
 @Transactional
 @AlertIntegrationTest

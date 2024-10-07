@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.blackduck.api.manual.component.BomEditNotificationContent;
+import com.blackduck.integration.blackduck.api.manual.component.BomEditNotificationContent;
 
 public class BomEditWithProjectNameNotificationContentTest {
     private static final String PROJECT_NAME = "ProjectName";

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.api.processor.detail.DetailedNotificationContent;
 import com.synopsys.integration.alert.api.processor.detail.NotificationDetailExtractor;
-import com.synopsys.integration.blackduck.api.manual.view.LicenseLimitNotificationView;
+import com.blackduck.integration.blackduck.api.manual.view.LicenseLimitNotificationView;
 
 @Component
 public class LicenseLimitNotificationDetailExtractor extends NotificationDetailExtractor<LicenseLimitNotificationView> {

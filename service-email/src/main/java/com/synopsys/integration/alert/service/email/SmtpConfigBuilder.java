@@ -9,8 +9,8 @@ package com.synopsys.integration.alert.service.email;
 
 import java.util.Properties;
 
-import com.synopsys.integration.builder.BuilderStatus;
-import com.synopsys.integration.builder.IntegrationBuilder;
+import com.blackduck.integration.builder.BuilderStatus;
+import com.blackduck.integration.builder.IntegrationBuilder;
 
 public class SmtpConfigBuilder extends IntegrationBuilder<SmtpConfig> {
     private Properties javamailProperties;

@@ -39,10 +39,10 @@ import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.DescriptorMocker;
-import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
-import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
-import com.synopsys.integration.exception.IntegrationException;
+import com.blackduck.integration.blackduck.api.generated.view.PolicyRuleView;
+import com.blackduck.integration.blackduck.api.generated.view.ProjectVersionView;
+import com.blackduck.integration.blackduck.service.model.ProjectVersionWrapper;
+import com.blackduck.integration.exception.IntegrationException;
 
 @Tag(TestTags.DEFAULT_PERFORMANCE)
 @SpringBootTest

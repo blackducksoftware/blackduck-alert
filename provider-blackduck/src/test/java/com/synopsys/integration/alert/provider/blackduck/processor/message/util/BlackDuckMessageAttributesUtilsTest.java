@@ -8,9 +8,9 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.blackduck.api.generated.component.ProjectVersionComponentVersionLicensesView;
-import com.synopsys.integration.blackduck.api.generated.enumeration.UsageType;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
+import com.blackduck.integration.blackduck.api.generated.component.ProjectVersionComponentVersionLicensesView;
+import com.blackduck.integration.blackduck.api.generated.enumeration.UsageType;
+import com.blackduck.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
 
 public class BlackDuckMessageAttributesUtilsTest {
 

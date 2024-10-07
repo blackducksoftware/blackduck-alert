@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.blackduck.api.manual.enumeration.OperationType;
+import com.blackduck.integration.blackduck.api.manual.enumeration.OperationType;
 
 public class CombinableModelTest {
     private static final String KEY_1 = "key1";

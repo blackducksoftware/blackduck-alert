@@ -52,10 +52,10 @@ import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.DescriptorMocker;
-import com.synopsys.integration.blackduck.api.manual.component.ProjectNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.synopsys.integration.blackduck.api.manual.enumeration.OperationType;
-import com.synopsys.integration.blackduck.api.manual.view.ProjectNotificationView;
+import com.blackduck.integration.blackduck.api.manual.component.ProjectNotificationContent;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.blackduck.api.manual.enumeration.OperationType;
+import com.blackduck.integration.blackduck.api.manual.view.ProjectNotificationView;
 
 //TODO: Need to remove transactional from the AlertIntegrationTest annotation. Once IALERT-2228 is resolved we should make this an @AlertIntegrationTest again
 @Tag(TestTags.DEFAULT_INTEGRATION)

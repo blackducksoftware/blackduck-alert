@@ -11,10 +11,10 @@ import java.util.List;
 
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.function.ThrowingFunction;
-import com.synopsys.integration.jira.common.model.components.TransitionComponent;
-import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.function.ThrowingFunction;
+import com.blackduck.integration.jira.common.model.components.TransitionComponent;
+import com.blackduck.integration.jira.common.model.response.TransitionsResponseModel;
 
 public class JiraIssueStatusCreator {
     private final String resolveTransition;

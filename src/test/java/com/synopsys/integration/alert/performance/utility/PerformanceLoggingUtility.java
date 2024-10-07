@@ -4,7 +4,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import com.synopsys.integration.log.IntLogger;
+import com.blackduck.integration.log.IntLogger;
 
 public class PerformanceLoggingUtility {
     IntLogger logger;

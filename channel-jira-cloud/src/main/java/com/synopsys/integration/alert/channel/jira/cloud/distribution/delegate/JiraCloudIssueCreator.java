@@ -28,15 +28,15 @@ import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDes
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.JiraCloudQueryExecutor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.alert.api.descriptor.JiraCloudChannelKey;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.cloud.model.IssueCreationRequestModel;
-import com.synopsys.integration.jira.common.cloud.service.IssueService;
-import com.synopsys.integration.jira.common.cloud.service.ProjectService;
-import com.synopsys.integration.jira.common.model.components.ProjectComponent;
-import com.synopsys.integration.jira.common.model.request.builder.IssueRequestModelFieldsMapBuilder;
-import com.synopsys.integration.jira.common.model.response.IssueCreationResponseModel;
-import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
-import com.synopsys.integration.jira.common.model.response.PageOfProjectsResponseModel;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.cloud.model.IssueCreationRequestModel;
+import com.blackduck.integration.jira.common.cloud.service.IssueService;
+import com.blackduck.integration.jira.common.cloud.service.ProjectService;
+import com.blackduck.integration.jira.common.model.components.ProjectComponent;
+import com.blackduck.integration.jira.common.model.request.builder.IssueRequestModelFieldsMapBuilder;
+import com.blackduck.integration.jira.common.model.response.IssueCreationResponseModel;
+import com.blackduck.integration.jira.common.model.response.IssueResponseModel;
+import com.blackduck.integration.jira.common.model.response.PageOfProjectsResponseModel;
 
 public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequestModel> {
     private Logger logger = LoggerFactory.getLogger(getClass());

@@ -48,7 +48,7 @@ import com.synopsys.integration.alert.database.job.msteams.DefaultMSTeamsJobDeta
 import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.slack.DefaultSlackJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 class StaticJobAccessorTest {
     private DistributionJobRepository distributionJobRepository;

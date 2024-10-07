@@ -3,8 +3,8 @@ package com.synopsys.integration.alert.channel.jira.server.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.synopsys.integration.jira.common.model.components.TransitionComponent;
-import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
+import com.blackduck.integration.jira.common.model.components.TransitionComponent;
+import com.blackduck.integration.jira.common.model.response.TransitionsResponseModel;
 
 public class TestTransitionResponsesModel extends TransitionsResponseModel {
     List<TransitionComponent> transitions;

@@ -8,7 +8,7 @@ dependencies {
     implementation project(':api-distribution')
     implementation project(':api-event')
 
-    implementation 'com.synopsys.integration:blackduck-common'
+    implementation 'com.blackduck.integration:blackduck-common'
     implementation 'org.springframework:spring-context'
     implementation 'org.springframework.amqp:spring-amqp'
 

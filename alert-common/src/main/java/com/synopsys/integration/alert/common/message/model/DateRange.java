@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.rest.RestConstants;
+import com.blackduck.integration.rest.RestConstants;
 
 public class DateRange extends AlertSerializableModel {
     private final OffsetDateTime start;

@@ -17,18 +17,18 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageLinkUtils;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionIssuesView;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
-import com.synopsys.integration.blackduck.api.manual.temporary.component.IssueRequest;
-import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
-import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
-import com.synopsys.integration.blackduck.service.dataservice.IssueService;
-import com.synopsys.integration.blackduck.service.request.BlackDuckResponseRequest;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.rest.HttpMethod;
-import com.synopsys.integration.rest.HttpUrl;
-import com.synopsys.integration.rest.body.BodyContentConverter;
-import com.synopsys.integration.rest.body.StringBodyContent;
+import com.blackduck.integration.blackduck.api.generated.view.ProjectVersionIssuesView;
+import com.blackduck.integration.blackduck.api.generated.view.ProjectVersionView;
+import com.blackduck.integration.blackduck.api.manual.temporary.component.IssueRequest;
+import com.blackduck.integration.blackduck.http.BlackDuckRequestBuilder;
+import com.blackduck.integration.blackduck.service.BlackDuckApiClient;
+import com.blackduck.integration.blackduck.service.dataservice.IssueService;
+import com.blackduck.integration.blackduck.service.request.BlackDuckResponseRequest;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.rest.HttpMethod;
+import com.blackduck.integration.rest.HttpUrl;
+import com.blackduck.integration.rest.body.BodyContentConverter;
+import com.blackduck.integration.rest.body.StringBodyContent;
 
 public class BlackDuckProviderIssueHandler {
     private final Gson gson;

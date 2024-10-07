@@ -15,8 +15,8 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.api.descriptor.SlackChannelKey;
-import com.synopsys.integration.rest.client.IntHttpClient;
-import com.synopsys.integration.rest.request.Request;
+import com.blackduck.integration.rest.client.IntHttpClient;
+import com.blackduck.integration.rest.request.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

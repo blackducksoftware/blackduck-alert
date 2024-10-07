@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.common.persistence.model.CustomCertificate
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.certificates.CertificatesDescriptor;
 import com.synopsys.integration.alert.component.certificates.CertificatesDescriptorKey;
-import com.synopsys.integration.util.IntegrationEscapeUtil;
+import com.blackduck.integration.util.IntegrationEscapeUtil;
 
 @Component
 public class CertificateActions extends AbstractResourceActions<CertificateModel, CustomCertificateModel, MultiCertificateModel> {

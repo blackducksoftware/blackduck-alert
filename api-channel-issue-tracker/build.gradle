@@ -8,10 +8,10 @@ dependencies {
     implementation project(':api-common-model')
     implementation project(':api-descriptor')
 
-    implementation 'com.synopsys.integration:integration-rest'
+    implementation 'com.blackduck.integration:integration-rest'
     implementation 'org.springframework.amqp:spring-amqp'
 
     testImplementation project(':test-common')
     testImplementation 'org.springframework.amqp:spring-rabbit'
-    testImplementation 'com.synopsys.integration:blackduck-common'
+    testImplementation 'com.blackduck.integration:blackduck-common'
 }

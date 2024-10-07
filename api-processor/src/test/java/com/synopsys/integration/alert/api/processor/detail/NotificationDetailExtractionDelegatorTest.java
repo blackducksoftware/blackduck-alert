@@ -14,11 +14,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.provider.blackduck.processor.detail.ProjectVersionNotificationDetailExtractor;
-import com.synopsys.integration.blackduck.api.manual.component.ProjectVersionNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.synopsys.integration.blackduck.api.manual.enumeration.OperationType;
-import com.synopsys.integration.blackduck.api.manual.view.ProjectVersionNotificationView;
-import com.synopsys.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
+import com.blackduck.integration.blackduck.api.manual.component.ProjectVersionNotificationContent;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.blackduck.api.manual.enumeration.OperationType;
+import com.blackduck.integration.blackduck.api.manual.view.ProjectVersionNotificationView;
+import com.blackduck.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
 
 public class NotificationDetailExtractionDelegatorTest {
     private static final Random RANDOM = new Random();

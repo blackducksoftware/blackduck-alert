@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.processor.model;
 
-import com.synopsys.integration.blackduck.api.manual.component.BomEditNotificationContent;
+import com.blackduck.integration.blackduck.api.manual.component.BomEditNotificationContent;
 
 public class BomEditWithProjectNameNotificationContent extends AbstractProjectVersionNotificationContent {
     private final String bomComponent;

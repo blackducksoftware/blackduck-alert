@@ -47,7 +47,7 @@ import com.synopsys.integration.alert.azure.boards.common.service.comment.AzureW
 import com.synopsys.integration.alert.azure.boards.common.service.query.AzureWorkItemQueryService;
 import com.synopsys.integration.alert.azure.boards.common.service.state.AzureWorkItemTypeStateService;
 import com.synopsys.integration.alert.azure.boards.common.service.workitem.AzureWorkItemService;
-import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.blackduck.integration.rest.proxy.ProxyInfo;
 
 @Component
 public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSenderFactory<AzureBoardsJobDetailsModel, Integer> {

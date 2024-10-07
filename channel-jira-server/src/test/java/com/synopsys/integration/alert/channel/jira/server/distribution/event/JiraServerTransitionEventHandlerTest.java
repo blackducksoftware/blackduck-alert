@@ -33,18 +33,18 @@ import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServe
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.model.components.StatusCategory;
-import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
-import com.synopsys.integration.jira.common.model.components.TransitionComponent;
-import com.synopsys.integration.jira.common.model.request.IssueRequestModel;
-import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
-import com.synopsys.integration.jira.common.server.service.FieldService;
-import com.synopsys.integration.jira.common.server.service.IssueSearchService;
-import com.synopsys.integration.jira.common.server.service.IssueService;
-import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
-import com.synopsys.integration.jira.common.server.service.ProjectService;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.model.components.StatusCategory;
+import com.blackduck.integration.jira.common.model.components.StatusDetailsComponent;
+import com.blackduck.integration.jira.common.model.components.TransitionComponent;
+import com.blackduck.integration.jira.common.model.request.IssueRequestModel;
+import com.blackduck.integration.jira.common.model.response.TransitionsResponseModel;
+import com.blackduck.integration.jira.common.server.service.FieldService;
+import com.blackduck.integration.jira.common.server.service.IssueSearchService;
+import com.blackduck.integration.jira.common.server.service.IssueService;
+import com.blackduck.integration.jira.common.server.service.JiraServerServiceFactory;
+import com.blackduck.integration.jira.common.server.service.ProjectService;
 
 class JiraServerTransitionEventHandlerTest {
 

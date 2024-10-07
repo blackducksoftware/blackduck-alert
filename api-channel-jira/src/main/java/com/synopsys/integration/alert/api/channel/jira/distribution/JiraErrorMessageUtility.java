@@ -22,7 +22,7 @@ import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraC
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.rest.exception.IntegrationRestException;
+import com.blackduck.integration.rest.exception.IntegrationRestException;
 
 public class JiraErrorMessageUtility {
     private final Gson gson;

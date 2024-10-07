@@ -17,13 +17,13 @@ import org.slf4j.Logger;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
-import com.synopsys.integration.jira.common.rest.JiraHttpClient;
-import com.synopsys.integration.jira.common.server.configuration.JiraServerBasicAuthRestConfigBuilder;
-import com.synopsys.integration.jira.common.server.configuration.JiraServerBearerAuthRestConfigBuilder;
-import com.synopsys.integration.jira.common.server.configuration.JiraServerRestConfig;
-import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
-import com.synopsys.integration.log.Slf4jIntLogger;
-import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.blackduck.integration.jira.common.rest.JiraHttpClient;
+import com.blackduck.integration.jira.common.server.configuration.JiraServerBasicAuthRestConfigBuilder;
+import com.blackduck.integration.jira.common.server.configuration.JiraServerBearerAuthRestConfigBuilder;
+import com.blackduck.integration.jira.common.server.configuration.JiraServerRestConfig;
+import com.blackduck.integration.jira.common.server.service.JiraServerServiceFactory;
+import com.blackduck.integration.log.Slf4jIntLogger;
+import com.blackduck.integration.rest.proxy.ProxyInfo;
 
 public class JiraServerProperties {
     private final String url;

@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.blackduck.api.manual.enumeration.OperationType;
+import com.blackduck.integration.blackduck.api.manual.enumeration.OperationType;
 
 public class ProjectOperationTest {
     @Test

@@ -22,8 +22,8 @@ import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetail
 import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.api.processor.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.api.processor.filter.NotificationContentWrapper;
-import com.synopsys.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component
 public class LicenseLimitNotificationMessageExtractor extends ProviderMessageExtractor<LicenseLimitNotificationContent> {

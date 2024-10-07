@@ -10,7 +10,7 @@ package com.synopsys.integration.alert.api.processor.detail;
 import java.util.List;
 
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
+import com.blackduck.integration.blackduck.api.manual.view.NotificationView;
 
 // TODO create an interface for this to implement avoid "raw use of parameterized class"
 //  List<DetailedNotificationContent> extractDetailedContent(AlertNotificationModel alertNotificationModel);
