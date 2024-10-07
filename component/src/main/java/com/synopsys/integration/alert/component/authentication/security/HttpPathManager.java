@@ -23,7 +23,7 @@ public class HttpPathManager {
     public static final String PATH_ROOT = "/";
 
     public static final String PATH_CSS_STYLE_CSS = "/css/style.css";
-    public static final String PATH_FAVICON_ICO = "/favicon.ico";
+    public static final String PATH_FAVICON_ICO = "/BlackDuckIcon.png";
     public static final String PATH_FONTS = "/fonts/**";
     public static final String PATH_INDEX_HTML = "/index.html";
     public static final String PATH_JS_BUNDLE_JS = "/js/bundle.js";
