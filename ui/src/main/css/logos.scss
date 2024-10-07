@@ -6,16 +6,14 @@
   line-height: 1.25em;
 }
 
-.synopsysHeaderLogo {
+.blackduckHeaderLogo {
   background: none;
-  margin: auto;
   width: auto;
-  max-height: 17px;
+  max-height: 1.25em;
 }
 
-.synopsysHeaderLogoVerticalBarSpace {
-  margin-left: 8px;
-  margin-right: 8px;
+.blackduckHeaderLogoVerticalBarSpace {
+  margin: 0 8px;
 }
 
 .blackduckFooterLogo {
@@ -39,7 +37,6 @@
 
 .headerStandardSize {
   display: inline-flex;
-  margin-bottom: 3px;
   font-size: 1.25em;
   font-weight: lighter;
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { createUseStyles } from 'react-jss';
 import { NavLink } from 'react-router-dom';
-import BlackDuckLogo from '/src/main/resources/BlackDuckLogo.png';
+import BlackDuckLogo from '../../resources/BlackDuckLogo.png';
 
 const useStyles = createUseStyles({
     topNav: {
@@ -39,7 +39,7 @@ const TopNavBar = () => {
     return (
         <div className={classes.topNav}>
             <div className={classes.logo}>
-                <NavLink to="/alert/general/about" >
+                <NavLink to="/alert/general/about">
                     <div className={classes.logoContainer}>
                         <img src={BlackDuckLogo} alt="logo" height="30px" />
                         <span className={classes.divider} />
