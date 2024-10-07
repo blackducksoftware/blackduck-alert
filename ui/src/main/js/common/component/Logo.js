@@ -1,21 +1,16 @@
 import React from 'react';
-
-import '../../../css/logos.scss';
-import BlackDuckLogo from '../../../resources/BlackDuckLogo.png';
+import '/src/main/css/logos.scss';
+import BlackDuckLogo from '/src/main/resources/BlackDuckLogo.png';
 
 const Logo = () => (
     <div className="productLogo">
-        <span className="blackduckLogoSpan">
-            <img
-                className="blackduckHeaderLogo"
-                src={BlackDuckLogo}
-                alt="Black Duck"
-            />
-            <span className="headerStandardSize">
-                <span className="blackduckHeaderLogoVerticalBarSpace">|</span>
-                ALERT
-            </span>
-        </span>
+        <div className="logo">
+            <div className="logoContainer">
+                <img src={BlackDuckLogo} alt="logo" height="30px" />
+                <span className="divider" />
+                <span className="alertText">ALERT</span>
+            </div>
+        </div>
     </div>
 );
 

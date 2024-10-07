@@ -1,28 +1,5 @@
 @import 'variables';
 
-.blackduckLogoSpan {
-  display: inline-flex;
-  font-family: 'Roboto', 'Arial', sans-serif;
-  line-height: 1.25em;
-}
-
-.blackduckHeaderLogo {
-  background: none;
-  width: auto;
-  max-height: 1.25em;
-}
-
-.blackduckHeaderLogoVerticalBarSpace {
-  margin: 0 8px;
-}
-
-.blackduckFooterLogo {
-  background: none;
-  margin: auto;
-  width: auto;
-  max-height: 14px;
-}
-
 .logoContainer {
   display: flex;
   align-items: center;
@@ -35,8 +12,34 @@
   margin-top: 2px
 }
 
-.headerStandardSize {
-  display: inline-flex;
-  font-size: 1.25em;
-  font-weight: lighter;
+.logo {
+  width: fit-content;
+  & > a {
+    text-decoration: none;
+    color: white
+  }
+}
+
+.logoContainer {
+    display: flex;
+    align-items: center;
+    column-gap: 8px;
+}
+
+.divider {
+  height: 25px;
+  border-left: 1px solid;
+}
+
+.alertText {
+  font-size: 1.5em;
+  line-height: 1.25em;
+  font-family: 'Roboto', 'Arial', 'sans-serif';
+}
+
+.blackduckFooterLogo {
+  background: none;
+  margin: auto;
+  width: auto;
+  max-height: 14px;
 }

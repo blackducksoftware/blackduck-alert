@@ -1,7 +1,6 @@
 @import 'variables';
 
 .header, .fixedHeader {
-  background-color: $synopsys-color-subhead-copy;
   height: 50px;
   line-height: 50px;
   width: 100%;
@@ -9,7 +8,8 @@
   margin: 0;
   padding-left: 15px;
   font-family: 'Roboto', 'Arial', sans-serif;
-  color: $synopsys-color-section-background;
+  background-image: linear-gradient(90deg, #222, #222 30%, #5a2d83 95%, #564c9d);
+  color: white;
   display: inline-flex;
 }
 
