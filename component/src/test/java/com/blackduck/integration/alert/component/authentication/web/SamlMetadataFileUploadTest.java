@@ -1,0 +1,186 @@
+package com.blackduck.integration.alert.component.authentication.web;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+
+import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
+
+import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.blackduck.integration.alert.common.rest.model.ExistenceModel;
+import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
+
+class SamlMetadataFileUploadTest {
+    private final AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
+    private final FilePersistenceUtil filePersistenceUtil = Mockito.mock(FilePersistenceUtil.class);
+    private Resource testResource;
+    private final AuthenticationDescriptorKey descriptorKey = new AuthenticationDescriptorKey();
+    private File tempFile;
+
+    @BeforeEach
+    public void initResource() throws Exception {
+        testResource = Mockito.mock(Resource.class);
+        Mockito.when(testResource.getInputStream()).thenReturn(Mockito.mock(InputStream.class));
+        tempFile = File.createTempFile("TEST_FILE_NAME", ".xml");
+        tempFile.deleteOnExit();
+        ClassPathResource classPathResource = new ClassPathResource("saml/testMetadata.xml");
+        File jsonFile = classPathResource.getFile();
+        String xmlContent = FileUtils.readFileToString(jsonFile, Charset.defaultCharset());
+        Files.write(tempFile.toPath(), xmlContent.getBytes());
+    }
+
+    @Test
+    void performUpload() {
+        SamlMetaDataFileUpload action = new SamlMetaDataFileUpload(descriptorKey, authorizationManager, filePersistenceUtil);
+        Mockito.when(authorizationManager.hasUploadWritePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
+        Mockito.when(filePersistenceUtil.createUploadsFile(Mockito.anyString())).thenReturn(tempFile);
+        ActionResponse<Void> response = action.uploadFile(testResource);
+        assertTrue(response.isSuccessful());
+        assertFalse(response.hasContent());
+        assertEquals(HttpStatus.NO_CONTENT, response.getHttpStatus());
+    }
+
+    @Test
+    void performUploadWithValidationFail() throws IOException {
+        SamlMetaDataFileUpload action = new SamlMetaDataFileUpload(descriptorKey, authorizationManager, filePersistenceUtil);
+        tempFile = File.createTempFile("TEST_FILE_NAME_INVALID", ".xml");
+        tempFile.deleteOnExit();
+        Mockito.when(authorizationManager.hasUploadWritePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
+        Mockito.when(filePersistenceUtil.createUploadsFile(Mockito.anyString())).thenReturn(tempFile);
+        ActionResponse<Void> response = action.uploadFile(testResource);
+        assertTrue(response.isError());
+        assertFalse(response.hasContent());
+        assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatus());
+    }
+
+    @Test
+    void performUploadIOException() throws Exception {
+        SamlMetaDataFileUpload action = new SamlMetaDataFileUpload(descriptorKey, authorizationManager, filePersistenceUtil);
+        Mockito.when(authorizationManager.hasUploadWritePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
+        Mockito.doThrow(IOException.class).when(filePersistenceUtil).writeFileToUploadsDirectory(Mockito.anyString(), Mockito.any(InputStream.class));
+
+        ActionResponse<Void> response = action.uploadFile(testResource);
+        assertTrue(response.isError());
+        assertFalse(response.hasContent());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getHttpStatus());
+    }
+
+    @Test
+    void performUploadMissingTarget() {
+        SamlMetaDataFileUpload action = new SamlMetaDataFileUpload(descriptorKey, authorizationManager, filePersistenceUtil);
+        action.setTarget(null);
+        ActionResponse<Void> response = action.uploadFile(testResource);
+        assertTrue(response.isError());
+        assertFalse(response.hasContent());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getHttpStatus());
+    }
+
+    @Test
+    void performUploadMissingPermissions() {
+        SamlMetaDataFileUpload action = new SamlMetaDataFileUpload(descriptorKey, authorizationManager, filePersistenceUtil);
+        Mockito.when(authorizationManager.hasUploadWritePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.FALSE);
+
+        ActionResponse<Void> response = action.uploadFile(testResource);
+        assertTrue(response.isError());
+        assertFalse(response.hasContent());
+        assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
+    }
+
+    @Test
+    void deleteUpload() {
+        SamlMetaDataFileUpload action = new SamlMetaDataFileUpload(descriptorKey, authorizationManager, filePersistenceUtil);
+        Mockito.when(authorizationManager.hasUploadDeletePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
+        Mockito.when(filePersistenceUtil.createUploadsFile(Mockito.anyString())).thenReturn(Mockito.mock(File.class));
+
+        ActionResponse<Void> response = action.deleteFile();
+        assertTrue(response.isSuccessful());
+        assertFalse(response.hasContent());
+        assertEquals(HttpStatus.NO_CONTENT, response.getHttpStatus());
+
+    }
+
+    @Test
+    void deleteUploadIOException() throws Exception {
+        SamlMetaDataFileUpload action = new SamlMetaDataFileUpload(descriptorKey, authorizationManager, filePersistenceUtil);
+        Mockito.when(authorizationManager.hasUploadDeletePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
+        Mockito.when(filePersistenceUtil.createUploadsFile(Mockito.anyString())).thenReturn(Mockito.mock(File.class));
+        Mockito.doThrow(IOException.class).when(filePersistenceUtil).delete(Mockito.any(File.class));
+
+        ActionResponse<Void> response = action.deleteFile();
+        assertTrue(response.isError());
+        assertFalse(response.hasContent());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getHttpStatus());
+    }
+
+    @Test
+    void deleteUploadMissingTarget() {
+        SamlMetaDataFileUpload action = new SamlMetaDataFileUpload(descriptorKey, authorizationManager, filePersistenceUtil);
+        action.setTarget(null);
+        Mockito.when(filePersistenceUtil.createUploadsFile(Mockito.anyString())).thenReturn(Mockito.mock(File.class));
+
+        ActionResponse<Void> response = action.deleteFile();
+        assertTrue(response.isError());
+        assertFalse(response.hasContent());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getHttpStatus());
+    }
+
+    @Test
+    void deleteUploadMissingPermissions() {
+        SamlMetaDataFileUpload action = new SamlMetaDataFileUpload(descriptorKey, authorizationManager, filePersistenceUtil);
+        Mockito.when(authorizationManager.hasUploadDeletePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.FALSE);
+        Mockito.when(filePersistenceUtil.createUploadsFile(Mockito.anyString())).thenReturn(Mockito.mock(File.class));
+
+        ActionResponse<Void> response = action.deleteFile();
+        assertTrue(response.isError());
+        assertFalse(response.hasContent());
+        assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
+    }
+
+    @Test
+    void fileExists() {
+        SamlMetaDataFileUpload action = new SamlMetaDataFileUpload(descriptorKey, authorizationManager, filePersistenceUtil);
+        Mockito.when(authorizationManager.hasUploadReadPermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
+
+        ActionResponse<ExistenceModel> response = action.uploadFileExists();
+        assertTrue(response.isSuccessful());
+        assertTrue(response.hasContent());
+        assertEquals(HttpStatus.OK, response.getHttpStatus());
+    }
+
+    @Test
+    void fileExistsMissingTarget() {
+        SamlMetaDataFileUpload action = new SamlMetaDataFileUpload(descriptorKey, authorizationManager, filePersistenceUtil);
+        action.setTarget(null);
+        ActionResponse<ExistenceModel> response = action.uploadFileExists();
+        assertTrue(response.isError());
+        assertFalse(response.hasContent());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getHttpStatus());
+    }
+
+    @Test
+    void fileExistsMissingPermissions() {
+        SamlMetaDataFileUpload action = new SamlMetaDataFileUpload(descriptorKey, authorizationManager, filePersistenceUtil);
+        Mockito.when(authorizationManager.hasUploadReadPermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.FALSE);
+
+        ActionResponse<ExistenceModel> response = action.uploadFileExists();
+        assertTrue(response.isError());
+        assertFalse(response.hasContent());
+        assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
+    }
+}
