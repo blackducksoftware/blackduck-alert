@@ -9,7 +9,7 @@ const useStyles = createUseStyles({
         width: '100%',
         backgroundImage: 'linear-gradient(90deg, #222, #222 30%, #5a2d83 95%, #564c9d)'
     },
-    logo:{
+    logo: {
         padding: ['11px', '11px', '11px', '18px'],
         width: 'fit-content',
         '& > a': {
