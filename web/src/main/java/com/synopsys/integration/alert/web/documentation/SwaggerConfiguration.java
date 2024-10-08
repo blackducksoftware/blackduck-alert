@@ -34,7 +34,7 @@ public class SwaggerConfiguration {
     @Bean
     public OpenAPI springShopOpenAPI() {
         return new OpenAPI()
-            .info(new Info().title("Black Duck Alert - REST API")
+            .info(new Info().title("Synopsys Alert - REST API")
                 .description(SWAGGER_DESCRIPTION)
                 .version("preview"));
     }
