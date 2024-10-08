@@ -23,10 +23,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
-import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
+import com.blackduck.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
+import com.blackduck.integration.alert.authentication.saml.model.SAMLConfigModel;
+import com.blackduck.integration.alert.authentication.saml.web.SAMLConfigController;
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;

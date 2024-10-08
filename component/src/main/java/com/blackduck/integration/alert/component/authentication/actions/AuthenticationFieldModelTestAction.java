@@ -23,10 +23,10 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
-import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.authentication.ldap.action.LDAPManager;
-import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
+import com.blackduck.integration.alert.authentication.ldap.action.LDAPManager;
+import com.blackduck.integration.alert.authentication.ldap.model.LDAPConfigModel;
+import com.blackduck.integration.exception.IntegrationException;
 import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;

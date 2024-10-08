@@ -39,6 +39,9 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.blackduck.integration.alert.api.authentication.security.event.AuthenticationEventManager;
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.authentication.ldap.LDAPAuthenticationPerformer;
+import com.blackduck.integration.alert.authentication.ldap.action.LDAPManager;
 import com.blackduck.integration.alert.component.authentication.security.AlertAuthenticationProvider;
 import com.blackduck.integration.alert.component.authentication.security.database.AlertDatabaseAuthenticationPerformer;
 import com.blackduck.integration.alert.component.authentication.web.AuthenticationActions;
@@ -46,9 +49,6 @@ import com.blackduck.integration.alert.component.authentication.web.Authenticati
 import com.blackduck.integration.alert.test.common.TestProperties;
 import com.blackduck.integration.alert.test.common.TestPropertyKey;
 import com.blackduck.integration.alert.test.common.TestTags;
-import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.authentication.ldap.LDAPAuthenticationPerformer;
-import com.synopsys.integration.alert.authentication.ldap.action.LDAPManager;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;

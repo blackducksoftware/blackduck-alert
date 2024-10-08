@@ -39,7 +39,7 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import com.synopsys.integration.alert.authentication.saml.security.SAMLGroupConverter;
+import com.blackduck.integration.alert.authentication.saml.security.SAMLGroupConverter;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
@@ -150,7 +150,7 @@ public class AuthenticationHandler {
     }
 
     private ObjectPostProcessor<AffirmativeBased> createRoleProcessor() {
-        return new ObjectPostProcessor<AffirmativeBased>() {
+        return new ObjectPostProcessor<>() {
             @Override
             public <O extends AffirmativeBased> O postProcess(O affirmativeBased) {
                 WebExpressionVoter webExpressionVoter = new WebExpressionVoter();

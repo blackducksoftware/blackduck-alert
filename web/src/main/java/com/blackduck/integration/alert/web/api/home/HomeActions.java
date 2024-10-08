@@ -16,7 +16,7 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.authentication.saml.security.SAMLManager;
+import com.blackduck.integration.alert.authentication.saml.security.SAMLManager;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 
 import jakarta.servlet.http.HttpServletRequest;

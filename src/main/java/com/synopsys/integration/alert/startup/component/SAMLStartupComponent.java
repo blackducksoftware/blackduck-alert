@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.authentication.saml.security.SAMLManager;
+import com.blackduck.integration.alert.authentication.saml.security.SAMLManager;
 
 @Component
 @Order(70)
