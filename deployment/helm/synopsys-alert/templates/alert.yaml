@@ -74,12 +74,18 @@ spec:
               name: {{ .Release.Name }}-db-creds
         {{- end }}
         {{- if (eq .Values.postgres.sslUseFiles true) }}
+        {{- if .Values.postgres.sslSecrets.sslKeyKey }}
         - name: ALERT_DB_SSL_KEY_PATH
           value: {{ .Values.secretsDirectory }}/{{ .Values.postgres.sslSecrets.sslKeyKey }}
+        {{- end }}
+        {{- if .Values.postgres.sslSecrets.sslCertKey }}
         - name: ALERT_DB_SSL_CERT_PATH
           value: {{ .Values.secretsDirectory }}/{{ .Values.postgres.sslSecrets.sslCertKey }}
+        {{- end }}
+        {{- if .Values.postgres.sslSecrets.sslRootCertKey }}
         - name: ALERT_DB_SSL_ROOT_CERT_PATH
           value: {{ .Values.secretsDirectory }}/{{ .Values.postgres.sslSecrets.sslRootCertKey }}
+        {{- end }}
         {{- end }}
         {{- if .Values.rabbitmq.credential.secretName }}
         - name: ALERT_RABBITMQ_USER
@@ -131,15 +137,21 @@ spec:
         - mountPath: /opt/blackduck/alert/alert-config
           name: dir-alert
         {{- if .Values.postgres.sslUseFiles }}
+        {{- if .Values.postgres.sslSecrets.sslKeyKey }}
         - mountPath: {{ .Values.secretsDirectory }}/{{ .Values.postgres.sslSecrets.sslKeyKey }}
           name: dbcert
           subPath: {{ .Values.postgres.sslSecrets.sslKeyKey }}
+        {{- end }}
+        {{- if .Values.postgres.sslSecrets.sslCertKey }}
         - mountPath: {{ .Values.secretsDirectory }}/{{ .Values.postgres.sslSecrets.sslCertKey }}
           name: dbcert
           subPath: {{ .Values.postgres.sslSecrets.sslCertKey }}
+        {{- end }}
+        {{- if .Values.postgres.sslSecrets.sslRootCertKey }}
         - mountPath: {{ .Values.secretsDirectory }}/{{ .Values.postgres.sslSecrets.sslRootCertKey }}
           name: dbcert
           subPath: {{ .Values.postgres.sslSecrets.sslRootCertKey }}
+        {{- end }}
         {{- end }}
         {{- if .Values.webserverCustomCertificatesSecretName }}
         - mountPath: {{ .Values.secretsDirectory }}/WEBSERVER_CUSTOM_CERT_FILE
