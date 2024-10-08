@@ -12,18 +12,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.blackduck.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
-import com.synopsys.integration.alert.database.configuration.DefinedFieldEntity;
-import com.synopsys.integration.alert.database.configuration.DescriptorConfigEntity;
-import com.synopsys.integration.alert.database.configuration.DescriptorFieldRelation;
-import com.synopsys.integration.alert.database.configuration.FieldValueEntity;
-import com.synopsys.integration.alert.database.configuration.RegisteredDescriptorEntity;
-import com.synopsys.integration.alert.database.configuration.repository.ConfigContextRepository;
-import com.synopsys.integration.alert.database.configuration.repository.DefinedFieldRepository;
-import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
-import com.synopsys.integration.alert.database.configuration.repository.DescriptorFieldRepository;
-import com.synopsys.integration.alert.database.configuration.repository.FieldValueRepository;
-import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
+import com.blackduck.integration.alert.database.configuration.ConfigContextEntity;
+import com.blackduck.integration.alert.database.configuration.DefinedFieldEntity;
+import com.blackduck.integration.alert.database.configuration.DescriptorConfigEntity;
+import com.blackduck.integration.alert.database.configuration.DescriptorFieldRelation;
+import com.blackduck.integration.alert.database.configuration.FieldValueEntity;
+import com.blackduck.integration.alert.database.configuration.RegisteredDescriptorEntity;
+import com.blackduck.integration.alert.database.configuration.repository.ConfigContextRepository;
+import com.blackduck.integration.alert.database.configuration.repository.DefinedFieldRepository;
+import com.blackduck.integration.alert.database.configuration.repository.DescriptorConfigRepository;
+import com.blackduck.integration.alert.database.configuration.repository.DescriptorFieldRepository;
+import com.blackduck.integration.alert.database.configuration.repository.FieldValueRepository;
+import com.blackduck.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @Transactional

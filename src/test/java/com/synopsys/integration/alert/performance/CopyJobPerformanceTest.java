@@ -16,7 +16,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.configuration.ApplicationConfiguration;
-import com.synopsys.integration.alert.database.DatabaseDataSource;
+import com.blackduck.integration.alert.database.DatabaseDataSource;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
 import com.synopsys.integration.alert.performance.utility.ConfigurationManagerLegacy;

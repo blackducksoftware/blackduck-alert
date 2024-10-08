@@ -39,12 +39,12 @@ import com.blackduck.integration.alert.common.security.authorization.Authorizati
 import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.component.audit.AuditDescriptorKey;
 import com.synopsys.integration.alert.component.audit.mock.MockAuditEntryEntity;
-import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
-import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
-import com.synopsys.integration.alert.database.job.api.DefaultNotificationAccessor;
-import com.synopsys.integration.alert.database.job.api.DefaultRestApiAuditAccessor;
-import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
-import com.synopsys.integration.alert.database.notification.NotificationEntity;
+import com.blackduck.integration.alert.database.audit.AuditEntryRepository;
+import com.blackduck.integration.alert.database.audit.AuditNotificationRepository;
+import com.blackduck.integration.alert.database.job.api.DefaultNotificationAccessor;
+import com.blackduck.integration.alert.database.job.api.DefaultRestApiAuditAccessor;
+import com.blackduck.integration.alert.database.notification.NotificationContentRepository;
+import com.blackduck.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.blackduck.integration.alert.test.common.OutputLogger;
 

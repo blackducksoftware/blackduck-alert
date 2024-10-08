@@ -52,8 +52,8 @@ import com.blackduck.integration.alert.common.persistence.model.job.executions.J
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedQueryDetails;
 import com.blackduck.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
-import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
+import com.blackduck.integration.alert.database.audit.AuditEntryRepository;
+import com.blackduck.integration.alert.database.notification.NotificationContentRepository;
 
 @Component
 public class DefaultDiagnosticAccessor implements DiagnosticAccessor {

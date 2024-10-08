@@ -13,8 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
-import com.synopsys.integration.alert.database.notification.NotificationEntity;
+import com.blackduck.integration.alert.database.notification.NotificationContentRepository;
+import com.blackduck.integration.alert.database.notification.NotificationEntity;
 import com.blackduck.integration.alert.test.common.database.MockRepositoryContainer;
 
 public class MockNotificationContentRepository extends MockRepositoryContainer<Long, NotificationEntity> implements NotificationContentRepository {

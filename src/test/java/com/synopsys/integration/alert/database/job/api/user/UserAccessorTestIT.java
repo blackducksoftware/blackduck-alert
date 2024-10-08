@@ -28,7 +28,7 @@ import com.blackduck.integration.alert.common.exception.AlertForbiddenOperationE
 import com.blackduck.integration.alert.common.persistence.accessor.UserAccessor;
 import com.blackduck.integration.alert.common.persistence.model.UserModel;
 import com.blackduck.integration.alert.common.persistence.model.UserRoleModel;
-import com.synopsys.integration.alert.database.job.api.DefaultUserAccessor;
+import com.blackduck.integration.alert.database.job.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 

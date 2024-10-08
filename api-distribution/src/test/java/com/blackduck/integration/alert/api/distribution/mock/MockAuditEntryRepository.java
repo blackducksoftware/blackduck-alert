@@ -9,11 +9,11 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
-import com.synopsys.integration.alert.database.audit.AuditEntryNotificationView;
-import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
-import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
-import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
+import com.blackduck.integration.alert.database.audit.AuditEntryEntity;
+import com.blackduck.integration.alert.database.audit.AuditEntryNotificationView;
+import com.blackduck.integration.alert.database.audit.AuditEntryRepository;
+import com.blackduck.integration.alert.database.audit.AuditNotificationRelation;
+import com.blackduck.integration.alert.database.audit.AuditNotificationRepository;
 import com.blackduck.integration.alert.test.common.database.MockRepositoryContainer;
 
 public class MockAuditEntryRepository extends MockRepositoryContainer<Long, AuditEntryEntity> implements AuditEntryRepository {

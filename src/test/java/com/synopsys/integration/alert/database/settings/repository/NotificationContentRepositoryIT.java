@@ -50,12 +50,12 @@ import com.blackduck.integration.alert.common.persistence.model.job.Distribution
 import com.blackduck.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
-import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
-import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
-import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
-import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
-import com.synopsys.integration.alert.database.notification.NotificationEntity;
+import com.blackduck.integration.alert.database.audit.AuditEntryEntity;
+import com.blackduck.integration.alert.database.audit.AuditEntryRepository;
+import com.blackduck.integration.alert.database.audit.AuditNotificationRelation;
+import com.blackduck.integration.alert.database.audit.AuditNotificationRepository;
+import com.blackduck.integration.alert.database.notification.NotificationContentRepository;
+import com.blackduck.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 

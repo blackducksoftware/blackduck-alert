@@ -7,9 +7,9 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.database.job.jira.cloud.custom_field.JiraCloudJobCustomFieldEntity;
-import com.synopsys.integration.alert.database.job.jira.cloud.custom_field.JiraCloudJobCustomFieldPK;
-import com.synopsys.integration.alert.database.job.jira.cloud.custom_field.JiraCloudJobCustomFieldRepository;
+import com.blackduck.integration.alert.database.job.jira.cloud.custom_field.JiraCloudJobCustomFieldEntity;
+import com.blackduck.integration.alert.database.job.jira.cloud.custom_field.JiraCloudJobCustomFieldPK;
+import com.blackduck.integration.alert.database.job.jira.cloud.custom_field.JiraCloudJobCustomFieldRepository;
 import com.blackduck.integration.alert.test.common.database.MockRepositoryContainer;
 
 public class MockJiraCloudJobCustomFieldRepository extends MockRepositoryContainer<JiraCloudJobCustomFieldPK, JiraCloudJobCustomFieldEntity>

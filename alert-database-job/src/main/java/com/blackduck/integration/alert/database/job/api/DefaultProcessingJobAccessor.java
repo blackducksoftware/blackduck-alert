@@ -26,8 +26,8 @@ import com.blackduck.integration.alert.common.persistence.model.job.BlackDuckPro
 import com.blackduck.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
 import com.blackduck.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
-import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
+import com.blackduck.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
+import com.blackduck.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
 
 @Component
 public class DefaultProcessingJobAccessor implements ProcessingJobAccessor {

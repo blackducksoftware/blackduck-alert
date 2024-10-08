@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
-import com.synopsys.integration.alert.database.audit.AuditNotificationRelationPK;
-import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
+import com.blackduck.integration.alert.database.audit.AuditNotificationRelation;
+import com.blackduck.integration.alert.database.audit.AuditNotificationRelationPK;
+import com.blackduck.integration.alert.database.audit.AuditNotificationRepository;
 import com.blackduck.integration.alert.test.common.database.MockRepositoryContainer;
 
 public class MockAuditNotificationRepository extends MockRepositoryContainer<AuditNotificationRelationPK, AuditNotificationRelation> implements AuditNotificationRepository {

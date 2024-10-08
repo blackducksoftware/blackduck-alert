@@ -2,8 +2,8 @@ package com.blackduck.integration.alert.channel.jira.cloud.database.accessor.moc
 
 import java.util.UUID;
 
-import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsRepository;
+import com.blackduck.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsEntity;
+import com.blackduck.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsRepository;
 import com.blackduck.integration.alert.test.common.database.MockRepositoryContainer;
 
 public class MockJiraCloudJobDetailsRepository extends MockRepositoryContainer<UUID, JiraCloudJobDetailsEntity> implements JiraCloudJobDetailsRepository {

@@ -30,7 +30,7 @@ import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudPropertiesFac
 import com.blackduck.integration.alert.channel.jira.cloud.distribution.JiraCloudMessageSenderFactory;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
-import com.synopsys.integration.alert.database.job.jira.cloud.DefaultJiraCloudJobDetailsAccessor;
+import com.blackduck.integration.alert.database.job.jira.cloud.DefaultJiraCloudJobDetailsAccessor;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;

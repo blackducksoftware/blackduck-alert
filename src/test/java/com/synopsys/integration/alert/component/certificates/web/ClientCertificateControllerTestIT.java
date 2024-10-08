@@ -22,7 +22,7 @@ import com.google.gson.Gson;
 import com.blackduck.integration.alert.common.AlertProperties;
 import com.blackduck.integration.alert.common.persistence.model.ClientCertificateModel;
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.database.job.api.ClientCertificateAccessor;
+import com.blackduck.integration.alert.database.job.api.ClientCertificateAccessor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 

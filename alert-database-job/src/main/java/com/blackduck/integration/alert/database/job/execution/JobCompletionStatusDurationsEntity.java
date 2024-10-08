@@ -2,7 +2,7 @@ package com.blackduck.integration.alert.database.job.execution;
 
 import java.util.UUID;
 
-import com.synopsys.integration.alert.database.BaseEntity;
+import com.blackduck.integration.alert.database.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

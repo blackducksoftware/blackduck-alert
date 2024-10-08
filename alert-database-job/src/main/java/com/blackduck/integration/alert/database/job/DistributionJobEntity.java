@@ -12,11 +12,11 @@ import java.util.UUID;
 
 import com.blackduck.integration.alert.channel.email.database.job.EmailJobDetailsEntity;
 import com.blackduck.integration.alert.channel.jira.server.database.job.JiraServerJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
+import com.blackduck.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
+import com.blackduck.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
+import com.blackduck.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsEntity;
+import com.blackduck.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
+import com.blackduck.integration.alert.database.job.slack.SlackJobDetailsEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

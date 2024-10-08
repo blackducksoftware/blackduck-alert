@@ -23,7 +23,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.configuration.ApplicationConfiguration;
-import com.synopsys.integration.alert.database.DatabaseDataSource;
+import com.blackduck.integration.alert.database.DatabaseDataSource;
 import com.blackduck.integration.alert.test.common.TestTags;
 
 @Target(ElementType.TYPE)

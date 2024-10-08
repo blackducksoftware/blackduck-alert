@@ -47,16 +47,16 @@ import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.util.DataStructureUtils;
 import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.common.util.SortUtil;
-import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.azure.boards.DefaultAzureBoardsJobDetailsAccessor;
-import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
-import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.jira.cloud.DefaultJiraCloudJobDetailsAccessor;
-import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.msteams.DefaultMSTeamsJobDetailsAccessor;
-import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.slack.DefaultSlackJobDetailsAccessor;
-import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
+import com.blackduck.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
+import com.blackduck.integration.alert.database.job.azure.boards.DefaultAzureBoardsJobDetailsAccessor;
+import com.blackduck.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
+import com.blackduck.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
+import com.blackduck.integration.alert.database.job.jira.cloud.DefaultJiraCloudJobDetailsAccessor;
+import com.blackduck.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsEntity;
+import com.blackduck.integration.alert.database.job.msteams.DefaultMSTeamsJobDetailsAccessor;
+import com.blackduck.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
+import com.blackduck.integration.alert.database.job.slack.DefaultSlackJobDetailsAccessor;
+import com.blackduck.integration.alert.database.job.slack.SlackJobDetailsEntity;
 
 @Component
 public class StaticJobAccessor implements JobAccessor {

@@ -9,19 +9,19 @@ import org.springframework.transaction.annotation.Transactional;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.enumeration.DescriptorType;
 import com.blackduck.integration.alert.common.persistence.model.DefinedFieldModel;
-import com.synopsys.integration.alert.database.DatabaseEntity;
-import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
-import com.synopsys.integration.alert.database.configuration.DefinedFieldEntity;
-import com.synopsys.integration.alert.database.configuration.DescriptorFieldRelation;
-import com.synopsys.integration.alert.database.configuration.DescriptorTypeEntity;
-import com.synopsys.integration.alert.database.configuration.FieldContextRelation;
-import com.synopsys.integration.alert.database.configuration.RegisteredDescriptorEntity;
-import com.synopsys.integration.alert.database.configuration.repository.ConfigContextRepository;
-import com.synopsys.integration.alert.database.configuration.repository.DefinedFieldRepository;
-import com.synopsys.integration.alert.database.configuration.repository.DescriptorFieldRepository;
-import com.synopsys.integration.alert.database.configuration.repository.DescriptorTypeRepository;
-import com.synopsys.integration.alert.database.configuration.repository.FieldContextRepository;
-import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
+import com.blackduck.integration.alert.database.DatabaseEntity;
+import com.blackduck.integration.alert.database.configuration.ConfigContextEntity;
+import com.blackduck.integration.alert.database.configuration.DefinedFieldEntity;
+import com.blackduck.integration.alert.database.configuration.DescriptorFieldRelation;
+import com.blackduck.integration.alert.database.configuration.DescriptorTypeEntity;
+import com.blackduck.integration.alert.database.configuration.FieldContextRelation;
+import com.blackduck.integration.alert.database.configuration.RegisteredDescriptorEntity;
+import com.blackduck.integration.alert.database.configuration.repository.ConfigContextRepository;
+import com.blackduck.integration.alert.database.configuration.repository.DefinedFieldRepository;
+import com.blackduck.integration.alert.database.configuration.repository.DescriptorFieldRepository;
+import com.blackduck.integration.alert.database.configuration.repository.DescriptorTypeRepository;
+import com.blackduck.integration.alert.database.configuration.repository.FieldContextRepository;
+import com.blackduck.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
 
 @Transactional
 public class DescriptorMocker {

@@ -25,10 +25,10 @@ import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.common.rest.model.SettingsProxyModel;
 import com.blackduck.integration.alert.common.security.EncryptionUtility;
 import com.blackduck.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.settings.proxy.NonProxyHostConfigurationEntity;
-import com.synopsys.integration.alert.database.settings.proxy.NonProxyHostsConfigurationRepository;
-import com.synopsys.integration.alert.database.settings.proxy.SettingsProxyConfigurationEntity;
-import com.synopsys.integration.alert.database.settings.proxy.SettingsProxyConfigurationRepository;
+import com.blackduck.integration.alert.database.settings.proxy.NonProxyHostConfigurationEntity;
+import com.blackduck.integration.alert.database.settings.proxy.NonProxyHostsConfigurationRepository;
+import com.blackduck.integration.alert.database.settings.proxy.SettingsProxyConfigurationEntity;
+import com.blackduck.integration.alert.database.settings.proxy.SettingsProxyConfigurationRepository;
 
 @Component
 public class SettingsProxyConfigAccessor implements UniqueConfigurationAccessor<SettingsProxyModel> {

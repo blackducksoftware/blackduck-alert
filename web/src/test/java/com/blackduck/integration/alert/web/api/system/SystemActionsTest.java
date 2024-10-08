@@ -19,8 +19,8 @@ import org.springframework.http.HttpStatus;
 import com.blackduck.integration.rest.RestConstants;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.persistence.model.SystemMessageModel;
-import com.synopsys.integration.alert.database.job.api.DefaultSystemStatusAccessor;
-import com.synopsys.integration.alert.database.system.DefaultSystemMessageAccessor;
+import com.blackduck.integration.alert.database.job.api.DefaultSystemStatusAccessor;
+import com.blackduck.integration.alert.database.system.DefaultSystemMessageAccessor;
 
 public class SystemActionsTest {
     private DefaultSystemStatusAccessor defaultSystemStatusUtility;

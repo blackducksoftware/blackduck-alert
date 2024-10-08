@@ -52,9 +52,9 @@ import com.blackduck.integration.alert.common.persistence.model.job.details.Slac
 import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.configuration.ApplicationConfiguration;
-import com.synopsys.integration.alert.database.DatabaseDataSource;
-import com.synopsys.integration.alert.database.job.api.DefaultConfigurationModelConfigurationAccessor;
-import com.synopsys.integration.alert.database.job.api.DefaultNotificationAccessor;
+import com.blackduck.integration.alert.database.DatabaseDataSource;
+import com.blackduck.integration.alert.database.job.api.DefaultConfigurationModelConfigurationAccessor;
+import com.blackduck.integration.alert.database.job.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.util.DescriptorMocker;
 
 //TODO: Need to remove transactional from the AlertIntegrationTest annotation. Once IALERT-2228 is resolved we should make this an @AlertIntegrationTest again

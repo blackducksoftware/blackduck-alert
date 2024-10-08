@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import com.blackduck.integration.alert.authentication.saml.model.SAMLMetadataMode;
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.database.BaseEntity;
+import com.blackduck.integration.alert.database.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

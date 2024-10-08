@@ -49,20 +49,20 @@ import com.blackduck.integration.alert.common.persistence.model.job.Distribution
 import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobModelBuilder;
 import com.blackduck.integration.alert.common.persistence.model.job.executions.JobCompletionStatusModel;
 import com.blackduck.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
-import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
-import com.synopsys.integration.alert.database.audit.AuditFailedEntity;
-import com.synopsys.integration.alert.database.audit.AuditFailedEntryRepository;
-import com.synopsys.integration.alert.database.audit.AuditFailedNotificationEntity;
-import com.synopsys.integration.alert.database.audit.AuditFailedNotificationRepository;
-import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
-import com.synopsys.integration.alert.database.audit.AuditNotificationRelationPK;
-import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
-import com.synopsys.integration.alert.database.job.api.DefaultNotificationAccessor;
-import com.synopsys.integration.alert.database.job.api.DefaultProcessingAuditAccessor;
-import com.synopsys.integration.alert.database.job.api.DefaultProcessingFailedAccessor;
-import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
-import com.synopsys.integration.alert.database.notification.NotificationEntity;
+import com.blackduck.integration.alert.database.audit.AuditEntryEntity;
+import com.blackduck.integration.alert.database.audit.AuditEntryRepository;
+import com.blackduck.integration.alert.database.audit.AuditFailedEntity;
+import com.blackduck.integration.alert.database.audit.AuditFailedEntryRepository;
+import com.blackduck.integration.alert.database.audit.AuditFailedNotificationEntity;
+import com.blackduck.integration.alert.database.audit.AuditFailedNotificationRepository;
+import com.blackduck.integration.alert.database.audit.AuditNotificationRelation;
+import com.blackduck.integration.alert.database.audit.AuditNotificationRelationPK;
+import com.blackduck.integration.alert.database.audit.AuditNotificationRepository;
+import com.blackduck.integration.alert.database.job.api.DefaultNotificationAccessor;
+import com.blackduck.integration.alert.database.job.api.DefaultProcessingAuditAccessor;
+import com.blackduck.integration.alert.database.job.api.DefaultProcessingFailedAccessor;
+import com.blackduck.integration.alert.database.notification.NotificationContentRepository;
+import com.blackduck.integration.alert.database.notification.NotificationEntity;
 
 class AuditFailedEventListenerTest {
     public static final String TEST_JOB_NAME = "Test Job";

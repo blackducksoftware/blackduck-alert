@@ -16,7 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.database.job.api.DefaultSystemStatusAccessor;
+import com.blackduck.integration.alert.database.job.api.DefaultSystemStatusAccessor;
+import com.blackduck.integration.alert.database.system.SystemStatusEntity;
+import com.blackduck.integration.alert.database.system.SystemStatusRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @Transactional

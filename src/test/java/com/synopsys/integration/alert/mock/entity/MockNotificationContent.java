@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import com.google.gson.JsonObject;
 import com.blackduck.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.notification.NotificationEntity;
+import com.blackduck.integration.alert.database.notification.NotificationEntity;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public class MockNotificationContent extends MockEntityUtil<NotificationEntity> {

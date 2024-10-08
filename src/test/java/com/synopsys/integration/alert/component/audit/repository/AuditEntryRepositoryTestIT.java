@@ -28,8 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
-import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
-import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
+import com.blackduck.integration.alert.database.audit.AuditEntryEntity;
+import com.blackduck.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @Transactional

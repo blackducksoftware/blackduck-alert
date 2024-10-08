@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.synopsys.integration.alert.component.audit.mock.MockAuditEntryEntity;
-import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
+import com.blackduck.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.settings.EntityTest;
 
 public class AuditEntryEntityTest extends EntityTest<AuditEntryEntity> {

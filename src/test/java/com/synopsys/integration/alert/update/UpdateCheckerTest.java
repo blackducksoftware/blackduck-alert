@@ -30,7 +30,7 @@ import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.rest.AlertWebServerUrlManager;
 import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 import com.blackduck.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.job.api.DefaultSystemStatusAccessor;
+import com.blackduck.integration.alert.database.job.api.DefaultSystemStatusAccessor;
 import com.synopsys.integration.alert.update.model.UpdateModel;
 
 public class UpdateCheckerTest {

@@ -19,11 +19,11 @@ import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.enumeration.DescriptorType;
 import com.blackduck.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.RegisteredDescriptorModel;
-import com.synopsys.integration.alert.database.configuration.repository.ConfigContextRepository;
-import com.synopsys.integration.alert.database.configuration.repository.DefinedFieldRepository;
-import com.synopsys.integration.alert.database.configuration.repository.DescriptorTypeRepository;
-import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
-import com.synopsys.integration.alert.database.job.api.DefaultDescriptorAccessor;
+import com.blackduck.integration.alert.database.configuration.repository.ConfigContextRepository;
+import com.blackduck.integration.alert.database.configuration.repository.DefinedFieldRepository;
+import com.blackduck.integration.alert.database.configuration.repository.DescriptorTypeRepository;
+import com.blackduck.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
+import com.blackduck.integration.alert.database.job.api.DefaultDescriptorAccessor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.DescriptorMocker;
 

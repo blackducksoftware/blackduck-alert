@@ -33,9 +33,9 @@ import com.blackduck.integration.alert.common.persistence.model.ConfigurationFie
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
 import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.job.api.DefaultConfigurationModelConfigurationAccessor;
-import com.synopsys.integration.alert.database.job.api.DefaultNotificationAccessor;
-import com.synopsys.integration.alert.database.notification.NotificationEntity;
+import com.blackduck.integration.alert.database.job.api.DefaultConfigurationModelConfigurationAccessor;
+import com.blackduck.integration.alert.database.job.api.DefaultNotificationAccessor;
+import com.blackduck.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 

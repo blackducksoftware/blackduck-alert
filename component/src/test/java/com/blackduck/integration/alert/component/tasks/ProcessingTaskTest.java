@@ -37,7 +37,7 @@ import com.blackduck.integration.alert.common.persistence.accessor.NotificationA
 import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.job.api.DefaultNotificationAccessor;
+import com.blackduck.integration.alert.database.job.api.DefaultNotificationAccessor;
 
 class ProcessingTaskTest {
     private final BlackDuckResponseResolver blackDuckResponseResolver = new BlackDuckResponseResolver(BlackDuckServicesFactory.createDefaultGson());

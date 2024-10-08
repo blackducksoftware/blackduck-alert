@@ -10,6 +10,7 @@ import java.time.OffsetDateTime;
 import org.junit.jupiter.api.Test;
 
 import com.blackduck.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.database.system.SystemStatusEntity;
 
 public class SystemStatusTest {
 

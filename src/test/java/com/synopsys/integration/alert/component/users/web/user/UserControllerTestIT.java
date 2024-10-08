@@ -30,7 +30,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.blackduck.integration.alert.common.enumeration.AuthenticationType;
 import com.blackduck.integration.alert.common.persistence.model.UserRoleModel;
-import com.synopsys.integration.alert.database.user.UserRepository;
+import com.blackduck.integration.alert.database.user.UserRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 

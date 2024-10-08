@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import com.google.gson.JsonObject;
 import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
-import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
+import com.blackduck.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.mock.entity.MockEntityUtil;
 
 public class MockAuditEntryEntity extends MockEntityUtil<AuditEntryEntity> {

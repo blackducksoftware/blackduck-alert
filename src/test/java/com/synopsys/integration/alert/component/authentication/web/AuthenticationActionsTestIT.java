@@ -55,7 +55,7 @@ import com.blackduck.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.blackduck.integration.alert.common.enumeration.AuthenticationType;
 import com.blackduck.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.blackduck.integration.alert.common.persistence.model.UserModel;
-import com.synopsys.integration.alert.database.job.api.DefaultUserAccessor;
+import com.blackduck.integration.alert.database.job.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;

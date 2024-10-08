@@ -26,8 +26,8 @@ import com.blackduck.integration.alert.common.descriptor.config.ui.DescriptorMet
 import com.blackduck.integration.alert.common.persistence.model.SystemMessageModel;
 import com.blackduck.integration.alert.common.rest.AlertWebServerUrlManager;
 import com.blackduck.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.job.api.DefaultSystemStatusAccessor;
-import com.synopsys.integration.alert.database.system.DefaultSystemMessageAccessor;
+import com.blackduck.integration.alert.database.job.api.DefaultSystemStatusAccessor;
+import com.blackduck.integration.alert.database.system.DefaultSystemMessageAccessor;
 
 public class AboutReaderTest {
     private AlertWebServerUrlManager alertWebServerUrlManager;

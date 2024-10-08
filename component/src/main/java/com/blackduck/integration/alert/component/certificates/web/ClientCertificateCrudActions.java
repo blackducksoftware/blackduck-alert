@@ -13,7 +13,7 @@ import com.blackduck.integration.alert.common.logging.AlertLoggerFactory;
 import com.blackduck.integration.alert.common.persistence.model.ClientCertificateModel;
 import com.blackduck.integration.alert.common.rest.api.ConfigurationCrudHelper;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.database.job.api.ClientCertificateAccessor;
+import com.blackduck.integration.alert.database.job.api.ClientCertificateAccessor;
 
 @Component
 public class ClientCertificateCrudActions {

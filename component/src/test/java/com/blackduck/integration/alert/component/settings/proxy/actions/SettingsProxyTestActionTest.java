@@ -32,9 +32,9 @@ import com.blackduck.integration.alert.component.settings.descriptor.SettingsDes
 import com.blackduck.integration.alert.component.settings.proxy.action.SettingsProxyTestAction;
 import com.blackduck.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;
 import com.blackduck.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
-import com.synopsys.integration.alert.database.settings.proxy.NonProxyHostsConfigurationRepository;
-import com.synopsys.integration.alert.database.settings.proxy.SettingsProxyConfigurationEntity;
-import com.synopsys.integration.alert.database.settings.proxy.SettingsProxyConfigurationRepository;
+import com.blackduck.integration.alert.database.settings.proxy.NonProxyHostsConfigurationRepository;
+import com.blackduck.integration.alert.database.settings.proxy.SettingsProxyConfigurationEntity;
+import com.blackduck.integration.alert.database.settings.proxy.SettingsProxyConfigurationRepository;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
 import com.blackduck.integration.alert.test.common.MockAlertProperties;

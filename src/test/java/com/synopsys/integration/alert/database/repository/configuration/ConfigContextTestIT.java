@@ -14,12 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
-import com.synopsys.integration.alert.database.configuration.DescriptorConfigEntity;
-import com.synopsys.integration.alert.database.configuration.RegisteredDescriptorEntity;
-import com.synopsys.integration.alert.database.configuration.repository.ConfigContextRepository;
-import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
-import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
+import com.blackduck.integration.alert.database.configuration.ConfigContextEntity;
+import com.blackduck.integration.alert.database.configuration.DescriptorConfigEntity;
+import com.blackduck.integration.alert.database.configuration.RegisteredDescriptorEntity;
+import com.blackduck.integration.alert.database.configuration.repository.ConfigContextRepository;
+import com.blackduck.integration.alert.database.configuration.repository.DescriptorConfigRepository;
+import com.blackduck.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @Transactional

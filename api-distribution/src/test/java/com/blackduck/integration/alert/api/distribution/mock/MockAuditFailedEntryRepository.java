@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.synopsys.integration.alert.database.audit.AuditFailedEntity;
-import com.synopsys.integration.alert.database.audit.AuditFailedEntryRepository;
+import com.blackduck.integration.alert.database.audit.AuditFailedEntity;
+import com.blackduck.integration.alert.database.audit.AuditFailedEntryRepository;
 import com.blackduck.integration.alert.test.common.database.MockRepositoryContainer;
 
 public class MockAuditFailedEntryRepository extends MockRepositoryContainer<UUID, AuditFailedEntity> implements AuditFailedEntryRepository {

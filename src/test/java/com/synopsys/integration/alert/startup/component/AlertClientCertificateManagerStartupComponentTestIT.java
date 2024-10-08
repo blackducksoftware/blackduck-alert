@@ -19,7 +19,7 @@ import com.blackduck.integration.alert.common.AlertProperties;
 import com.blackduck.integration.alert.common.persistence.model.ClientCertificateModel;
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.component.certificates.web.CertificateTestUtil;
-import com.synopsys.integration.alert.database.job.api.ClientCertificateAccessor;
+import com.blackduck.integration.alert.database.job.api.ClientCertificateAccessor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @AlertIntegrationTest

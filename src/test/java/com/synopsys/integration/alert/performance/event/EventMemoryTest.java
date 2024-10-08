@@ -21,7 +21,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import com.synopsys.integration.alert.Application;
 import com.blackduck.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.configuration.ApplicationConfiguration;
-import com.synopsys.integration.alert.database.DatabaseDataSource;
+import com.blackduck.integration.alert.database.DatabaseDataSource;
 import com.blackduck.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.DescriptorMocker;
 

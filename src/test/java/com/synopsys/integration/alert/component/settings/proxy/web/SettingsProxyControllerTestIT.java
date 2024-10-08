@@ -30,8 +30,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.common.rest.model.SettingsProxyModel;
-import com.synopsys.integration.alert.database.settings.proxy.NonProxyHostsConfigurationRepository;
-import com.synopsys.integration.alert.database.settings.proxy.SettingsProxyConfigurationRepository;
+import com.blackduck.integration.alert.database.settings.proxy.NonProxyHostsConfigurationRepository;
+import com.blackduck.integration.alert.database.settings.proxy.SettingsProxyConfigurationRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 

@@ -34,7 +34,7 @@ import com.blackduck.integration.alert.common.enumeration.SystemMessageType;
 import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.blackduck.integration.alert.common.persistence.accessor.SystemMessageAccessor;
 import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
-import com.synopsys.integration.alert.database.system.DefaultSystemMessageAccessor;
+import com.blackduck.integration.alert.database.system.DefaultSystemMessageAccessor;
 
 class SystemValidatorTest {
     private static final String DEFAULT_CONFIG_NAME = "Default";

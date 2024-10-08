@@ -29,7 +29,7 @@ import com.blackduck.integration.alert.common.persistence.model.PermissionMatrix
 import com.blackduck.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.blackduck.integration.alert.common.security.EncryptionUtility;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.database.job.api.ClientCertificateAccessor;
+import com.blackduck.integration.alert.database.job.api.ClientCertificateAccessor;
 
 @ExtendWith(SpringExtension.class)
 class ClientCertificateCrudActionsTest {

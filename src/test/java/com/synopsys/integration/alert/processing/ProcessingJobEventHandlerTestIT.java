@@ -72,8 +72,8 @@ import com.blackduck.integration.alert.common.persistence.model.job.Distribution
 import com.blackduck.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.database.job.api.DefaultConfigurationModelConfigurationAccessor;
-import com.synopsys.integration.alert.database.job.api.DefaultNotificationAccessor;
+import com.blackduck.integration.alert.database.job.api.DefaultConfigurationModelConfigurationAccessor;
+import com.blackduck.integration.alert.database.job.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @AlertIntegrationTest

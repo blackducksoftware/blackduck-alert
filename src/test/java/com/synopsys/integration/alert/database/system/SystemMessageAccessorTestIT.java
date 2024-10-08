@@ -22,6 +22,9 @@ import com.blackduck.integration.alert.common.enumeration.SystemMessageType;
 import com.blackduck.integration.alert.common.message.model.DateRange;
 import com.blackduck.integration.alert.common.persistence.model.SystemMessageModel;
 import com.blackduck.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.database.system.DefaultSystemMessageAccessor;
+import com.blackduck.integration.alert.database.system.SystemMessageEntity;
+import com.blackduck.integration.alert.database.system.SystemMessageRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @Transactional

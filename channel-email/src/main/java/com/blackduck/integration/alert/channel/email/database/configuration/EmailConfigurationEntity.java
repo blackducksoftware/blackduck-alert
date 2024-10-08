@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.blackduck.integration.alert.channel.email.database.configuration.properties.EmailConfigurationsPropertyEntity;
-import com.synopsys.integration.alert.database.BaseEntity;
+import com.blackduck.integration.alert.database.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
