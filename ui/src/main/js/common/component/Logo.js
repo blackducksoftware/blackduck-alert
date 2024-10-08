@@ -1,12 +1,11 @@
 import React from 'react';
 import '/src/main/css/logos.scss';
-import BlackDuckLogo from '/src/main/resources/BlackDuckLogo.png';
 
 const Logo = () => (
     <div className="productLogo">
         <div className="logo">
             <div className="logoContainer">
-                <img src={BlackDuckLogo} alt="logo" height="30px" />
+                <img src="https://www.blackduck.com/content/dam/black-duck/en-us/images/BlackDuckLogo-OnDark.svg" alt="logo" height="30px" />
                 <span className="divider" />
                 <span className="alertText">ALERT</span>
             </div>
