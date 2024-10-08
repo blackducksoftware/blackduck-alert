@@ -8,10 +8,7 @@ const useStyles = createUseStyles({
     topNav: {
         height: '100%',
         width: '100%',
-        backgroundImage: 'linear-gradient(90deg, #222, #222 30%, #5a2d83 95%, #564c9d)',
-        display: 'flex',
-        alignItems: 'center',
-        paddingLeft: '15px'
+        backgroundImage: 'linear-gradient(90deg, #222, #222 30%, #5a2d83 95%, #564c9d)'
     }
 });
 
