@@ -18,7 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
-import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
+import com.blackduck.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
