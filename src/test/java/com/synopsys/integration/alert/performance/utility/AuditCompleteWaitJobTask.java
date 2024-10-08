@@ -27,11 +27,11 @@ import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusMod
 import com.synopsys.integration.alert.common.rest.model.JobAuditModel;
 import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.component.diagnostic.model.AlertQueueInformation;
-import com.synopsys.integration.alert.component.diagnostic.model.AuditDiagnosticModel;
-import com.synopsys.integration.alert.component.diagnostic.model.DiagnosticModel;
-import com.synopsys.integration.alert.component.diagnostic.model.NotificationDiagnosticModel;
-import com.synopsys.integration.alert.component.diagnostic.model.RabbitMQDiagnosticModel;
+import com.blackduck.integration.alert.component.diagnostic.model.AlertQueueInformation;
+import com.blackduck.integration.alert.component.diagnostic.model.AuditDiagnosticModel;
+import com.blackduck.integration.alert.component.diagnostic.model.DiagnosticModel;
+import com.blackduck.integration.alert.component.diagnostic.model.NotificationDiagnosticModel;
+import com.blackduck.integration.alert.component.diagnostic.model.RabbitMQDiagnosticModel;
 import com.blackduck.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.blackduck.integration.exception.IntegrationException;

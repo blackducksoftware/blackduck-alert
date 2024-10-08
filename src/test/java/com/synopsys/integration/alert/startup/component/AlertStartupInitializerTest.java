@@ -16,7 +16,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
+import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

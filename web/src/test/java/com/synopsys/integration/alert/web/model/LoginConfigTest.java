@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.component.authentication.web.LoginConfig;
+import com.blackduck.integration.alert.component.authentication.web.LoginConfig;
 
 public class LoginConfigTest {
 

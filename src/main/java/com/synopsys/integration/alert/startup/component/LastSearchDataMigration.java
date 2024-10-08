@@ -22,7 +22,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPr
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
-import com.synopsys.integration.alert.provider.blackduck.task.accumulator.BlackDuckAccumulatorSearchDateManager;
+import com.blackduck.integration.alert.provider.blackduck.task.accumulator.BlackDuckAccumulatorSearchDateManager;
 
 @Component
 @Order(55)

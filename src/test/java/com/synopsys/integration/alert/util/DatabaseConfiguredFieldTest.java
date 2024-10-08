@@ -21,7 +21,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 
 @AlertIntegrationTest
 public abstract class DatabaseConfiguredFieldTest {

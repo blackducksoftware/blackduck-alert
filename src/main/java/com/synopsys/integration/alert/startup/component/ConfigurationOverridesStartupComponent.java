@@ -30,7 +30,7 @@ import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.component.authentication.actions.AuthenticationApiAction;
+import com.blackduck.integration.alert.component.authentication.actions.AuthenticationApiAction;
 
 @Component
 @Order(11)

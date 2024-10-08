@@ -10,7 +10,7 @@ package com.synopsys.integration.alert.test.common.blackduck;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.synopsys.integration.alert.provider.blackduck.processor.model.RuleViolationUniquePolicyNotificationContent;
+import com.blackduck.integration.alert.provider.blackduck.processor.model.RuleViolationUniquePolicyNotificationContent;
 import com.blackduck.integration.blackduck.api.core.ResourceLink;
 import com.blackduck.integration.blackduck.api.core.ResourceMetadata;
 import com.blackduck.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceLongTermView;

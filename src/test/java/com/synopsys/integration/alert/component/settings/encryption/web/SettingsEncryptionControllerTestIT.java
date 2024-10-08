@@ -20,7 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.component.settings.encryption.model.SettingsEncryptionModel;
+import com.blackduck.integration.alert.component.settings.encryption.model.SettingsEncryptionModel;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 

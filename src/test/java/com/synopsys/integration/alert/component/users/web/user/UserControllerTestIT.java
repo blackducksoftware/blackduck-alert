@@ -24,6 +24,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.blackduck.integration.alert.component.users.web.user.UserConfig;
+import com.blackduck.integration.alert.component.users.web.user.UserController;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;

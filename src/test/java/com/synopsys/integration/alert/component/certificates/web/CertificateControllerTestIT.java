@@ -21,6 +21,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.blackduck.integration.alert.component.certificates.web.CertificateActions;
+import com.blackduck.integration.alert.component.certificates.web.CertificateModel;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.certificates.AlertTrustStoreManager;
 import com.synopsys.integration.alert.common.AlertProperties;
@@ -29,7 +31,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.CustomCertific
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.component.certificates.CertificatesDescriptorKey;
+import com.blackduck.integration.alert.component.certificates.CertificatesDescriptorKey;
 import com.synopsys.integration.alert.database.certificates.CustomCertificateRepository;
 import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;

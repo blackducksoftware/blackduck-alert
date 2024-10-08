@@ -8,9 +8,10 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.blackduck.integration.alert.component.diagnostic.utility.RabbitMQDiagnosticUtility;
 import com.synopsys.integration.alert.api.event.AlertMessageListener;
-import com.synopsys.integration.alert.component.diagnostic.model.AlertQueueInformation;
-import com.synopsys.integration.alert.component.diagnostic.model.RabbitMQDiagnosticModel;
+import com.blackduck.integration.alert.component.diagnostic.model.AlertQueueInformation;
+import com.blackduck.integration.alert.component.diagnostic.model.RabbitMQDiagnosticModel;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @AlertIntegrationTest

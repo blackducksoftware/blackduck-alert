@@ -37,8 +37,8 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Slack
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
 import com.synopsys.integration.alert.database.job.DistributionJobRepository;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.synopsys.integration.alert.provider.blackduck.processor.model.VulnerabilityUniqueProjectNotificationContent;
+import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.blackduck.integration.alert.provider.blackduck.processor.model.VulnerabilityUniqueProjectNotificationContent;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.blackduck.integration.blackduck.api.generated.enumeration.VulnerabilitySeverityType;
 import com.blackduck.integration.blackduck.api.manual.component.AffectedProjectVersion;

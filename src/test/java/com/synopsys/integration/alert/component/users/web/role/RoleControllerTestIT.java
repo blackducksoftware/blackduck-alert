@@ -23,6 +23,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.blackduck.integration.alert.component.users.web.role.PermissionModel;
+import com.blackduck.integration.alert.component.users.web.role.RoleController;
+import com.blackduck.integration.alert.component.users.web.role.RolePermissionModel;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.alert.database.user.RoleRepository;

@@ -25,7 +25,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.NotificationAc
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.provider.blackduck.processor.detail.RuleViolationNotificationDetailExtractor;
+import com.blackduck.integration.alert.provider.blackduck.processor.detail.RuleViolationNotificationDetailExtractor;
 import com.blackduck.integration.blackduck.api.generated.enumeration.PolicyRuleSeverityType;
 import com.blackduck.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
 import com.blackduck.integration.blackduck.api.manual.component.ComponentVersionStatus;

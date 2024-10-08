@@ -22,10 +22,10 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationM
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
-import com.synopsys.integration.alert.component.authentication.actions.AuthenticationApiAction;
-import com.synopsys.integration.alert.component.authentication.web.AuthenticationActions;
-import com.synopsys.integration.alert.component.authentication.web.AuthenticationResponseModel;
-import com.synopsys.integration.alert.component.authentication.web.LoginConfig;
+import com.blackduck.integration.alert.component.authentication.actions.AuthenticationApiAction;
+import com.blackduck.integration.alert.component.authentication.web.AuthenticationActions;
+import com.blackduck.integration.alert.component.authentication.web.AuthenticationResponseModel;
+import com.blackduck.integration.alert.component.authentication.web.LoginConfig;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 import jakarta.servlet.http.HttpServletRequest;

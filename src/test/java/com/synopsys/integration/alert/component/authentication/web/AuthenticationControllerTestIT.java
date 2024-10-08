@@ -29,6 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.blackduck.integration.alert.component.authentication.web.AuthenticationActions;
+import com.blackduck.integration.alert.component.authentication.web.AuthenticationController;
+import com.blackduck.integration.alert.component.authentication.web.AuthenticationResponseModel;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.authentication.ldap.action.LDAPManager;
 import com.synopsys.integration.alert.common.AlertProperties;

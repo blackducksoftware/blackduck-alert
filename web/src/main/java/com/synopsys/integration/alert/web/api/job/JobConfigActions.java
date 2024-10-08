@@ -72,7 +72,7 @@ import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldM
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
+import com.blackduck.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
 import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.rest.exception.IntegrationRestException;

@@ -21,7 +21,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.synopsys.integration.alert.component.authentication.security.database.UserDatabaseService;
+import com.blackduck.integration.alert.component.authentication.security.database.UserDatabaseService;
 
 @EnableJpaRepositories(basePackages = { "com.synopsys.integration.alert.database", "com.synopsys.integration.alert.channel", "com.synopsys.integration.alert.api.oauth", "com.synopsys.integration.alert.authentication" })
 @EnableTransactionManagement

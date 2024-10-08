@@ -38,12 +38,12 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
-import com.synopsys.integration.alert.component.scheduling.workflow.PurgeTask;
+import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
+import com.blackduck.integration.alert.component.scheduling.workflow.PurgeTask;
 import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerLegacy;
 import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.blackduck.integration.blackduck.api.generated.enumeration.PolicyRuleSeverityType;

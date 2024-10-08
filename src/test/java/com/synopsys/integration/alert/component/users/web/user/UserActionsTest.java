@@ -17,6 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 
+import com.blackduck.integration.alert.component.users.web.user.MultiUserConfigResponseModel;
+import com.blackduck.integration.alert.component.users.web.user.UserActions;
+import com.blackduck.integration.alert.component.users.web.user.UserConfig;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
@@ -34,9 +37,9 @@ import com.synopsys.integration.alert.common.persistence.model.AuthenticationTyp
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
-import com.synopsys.integration.alert.component.users.UserSystemValidator;
-import com.synopsys.integration.alert.component.users.web.user.util.UserCredentialValidator;
+import com.blackduck.integration.alert.component.users.UserManagementDescriptorKey;
+import com.blackduck.integration.alert.component.users.UserSystemValidator;
+import com.blackduck.integration.alert.component.users.web.user.util.UserCredentialValidator;
 
 class UserActionsTest {
     private final Long id = 10L;

@@ -32,6 +32,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.blackduck.integration.alert.component.audit.web.AuditEntryActionsLegacy;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -52,8 +53,8 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Slack
 import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.component.audit.AuditDescriptor;
-import com.synopsys.integration.alert.component.audit.AuditDescriptorKey;
+import com.blackduck.integration.alert.component.audit.AuditDescriptor;
+import com.blackduck.integration.alert.component.audit.AuditDescriptorKey;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
@@ -68,7 +69,7 @@ import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.api.processor.JobNotificationProcessor;
 import com.synopsys.integration.alert.api.processor.NotificationMappingProcessor;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.blackduck.integration.util.ResourceUtil;
 
