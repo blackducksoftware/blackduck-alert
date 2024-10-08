@@ -13,22 +13,22 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import com.google.gson.Gson;
-import com.synopsys.integration.alert.Application;
-import com.synopsys.integration.alert.configuration.ApplicationConfiguration;
-import com.blackduck.integration.alert.database.DatabaseDataSource;
+import com.blackduck.integration.alert.Application;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
-import com.synopsys.integration.alert.performance.utility.ConfigurationManagerLegacy;
-import com.synopsys.integration.alert.performance.utility.ExternalAlertRequestUtility;
-import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerLegacy;
+import com.blackduck.integration.alert.configuration.ApplicationConfiguration;
+import com.blackduck.integration.alert.database.DatabaseDataSource;
 import com.blackduck.integration.alert.test.common.TestTags;
-import com.synopsys.integration.alert.util.DescriptorMocker;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.log.IntLogger;
 import com.blackduck.integration.log.Slf4jIntLogger;
 import com.blackduck.integration.rest.client.IntHttpClient;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
+import com.google.gson.Gson;
+import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
+import com.synopsys.integration.alert.performance.utility.ConfigurationManagerLegacy;
+import com.synopsys.integration.alert.performance.utility.ExternalAlertRequestUtility;
+import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerLegacy;
+import com.synopsys.integration.alert.util.DescriptorMocker;
 
 @Tag(TestTags.DEFAULT_PERFORMANCE)
 @SpringBootTest

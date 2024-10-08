@@ -14,21 +14,21 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.google.gson.Gson;
-import com.synopsys.integration.alert.Application;
+import com.blackduck.integration.alert.Application;
+import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.configuration.ApplicationConfiguration;
+import com.blackduck.integration.alert.configuration.ApplicationConfiguration;
 import com.blackduck.integration.alert.database.DatabaseDataSource;
-import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
+import com.blackduck.integration.alert.test.common.TestProperties;
+import com.blackduck.integration.alert.test.common.TestTags;
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
 import com.synopsys.integration.alert.performance.utility.ConfigurationManager;
 import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunner;
 import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerLegacy;
 import com.synopsys.integration.alert.performance.utility.jira.server.JiraServerPerformanceUtility;
-import com.blackduck.integration.alert.test.common.TestProperties;
-import com.blackduck.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.DescriptorMocker;
 
 @Tag(TestTags.DEFAULT_PERFORMANCE)

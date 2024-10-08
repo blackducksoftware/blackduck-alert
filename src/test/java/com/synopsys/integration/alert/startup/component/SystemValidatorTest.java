@@ -14,12 +14,19 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.blackduck.integration.alert.api.provider.state.StatefulProvider;
+import com.blackduck.integration.alert.common.enumeration.SystemMessageSeverity;
+import com.blackduck.integration.alert.common.enumeration.SystemMessageType;
+import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.SystemMessageAccessor;
+import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 import com.blackduck.integration.alert.component.settings.validator.SettingsSystemValidator;
 import com.blackduck.integration.alert.component.users.UserSystemValidator;
+import com.blackduck.integration.alert.database.system.DefaultSystemMessageAccessor;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckApiTokenValidator;
 import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
+import com.blackduck.integration.alert.startup.component.SystemMessageInitializer;
 import com.blackduck.integration.alert.test.common.OutputLogger;
 import com.blackduck.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.blackduck.integration.exception.IntegrationException;
@@ -29,12 +36,6 @@ import com.blackduck.integration.rest.credentials.CredentialsBuilder;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
 import com.blackduck.integration.rest.proxy.ProxyInfoBuilder;
 import com.blackduck.integration.rest.response.Response;
-import com.blackduck.integration.alert.common.enumeration.SystemMessageSeverity;
-import com.blackduck.integration.alert.common.enumeration.SystemMessageType;
-import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
-import com.blackduck.integration.alert.common.persistence.accessor.SystemMessageAccessor;
-import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
-import com.blackduck.integration.alert.database.system.DefaultSystemMessageAccessor;
 
 class SystemValidatorTest {
     private static final String DEFAULT_CONFIG_NAME = "Default";

@@ -12,10 +12,10 @@ import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.test.common.TestTags;
-import com.synopsys.integration.alert.update.model.DockerTagModel;
-import com.synopsys.integration.alert.update.model.DockerTagsResponseModel;
+import com.blackduck.integration.alert.update.DockerTagRetriever;
+import com.blackduck.integration.alert.update.model.DockerTagModel;
+import com.blackduck.integration.alert.update.model.DockerTagsResponseModel;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.log.IntLogger;
@@ -26,6 +26,7 @@ import com.blackduck.integration.rest.client.IntHttpClient;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
 import com.blackduck.integration.rest.request.Request;
 import com.blackduck.integration.rest.response.Response;
+import com.google.gson.Gson;
 
 public class DockerTagRetrieverTest {
     private static final int TAGS_COUNT = 2;

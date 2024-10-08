@@ -48,16 +48,6 @@ import com.blackduck.integration.alert.api.processor.filter.NotificationContentW
 import com.blackduck.integration.alert.api.processor.summarize.ProjectMessageSummarizer;
 import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
 import com.blackduck.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
-import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.blackduck.integration.alert.provider.blackduck.processor.message.BlackDuckMessageLabels;
-import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
-import com.blackduck.integration.alert.test.common.TestProperties;
-import com.blackduck.integration.alert.test.common.TestPropertyKey;
-import com.blackduck.integration.alert.test.common.TestResourceUtils;
-import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.blackduck.integration.blackduck.api.manual.view.VulnerabilityNotificationView;
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.enumeration.FrequencyType;
 import com.blackduck.integration.alert.common.enumeration.ProcessingType;
@@ -74,6 +64,17 @@ import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.database.job.api.DefaultConfigurationModelConfigurationAccessor;
 import com.blackduck.integration.alert.database.job.api.DefaultNotificationAccessor;
+import com.blackduck.integration.alert.processing.ProcessingJobEventHandler;
+import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.blackduck.integration.alert.provider.blackduck.processor.message.BlackDuckMessageLabels;
+import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
+import com.blackduck.integration.alert.test.common.TestProperties;
+import com.blackduck.integration.alert.test.common.TestPropertyKey;
+import com.blackduck.integration.alert.test.common.TestResourceUtils;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.blackduck.api.manual.view.VulnerabilityNotificationView;
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @AlertIntegrationTest

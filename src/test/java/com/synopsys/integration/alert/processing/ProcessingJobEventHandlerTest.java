@@ -9,10 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
-import com.blackduck.integration.alert.common.persistence.accessor.JobAccessor;
-import com.blackduck.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
-import com.blackduck.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
-import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.blackduck.integration.alert.api.processor.JobNotificationContentProcessor;
 import com.blackduck.integration.alert.api.processor.NotificationProcessingLifecycleCache;
 import com.blackduck.integration.alert.api.processor.detail.NotificationDetailExtractionDelegator;
@@ -21,6 +17,11 @@ import com.blackduck.integration.alert.api.processor.distribute.ProviderMessageD
 import com.blackduck.integration.alert.api.processor.event.JobProcessingEvent;
 import com.blackduck.integration.alert.api.processor.extract.ProviderMessageExtractionDelegator;
 import com.blackduck.integration.alert.api.processor.summarize.ProjectMessageSummarizer;
+import com.blackduck.integration.alert.common.persistence.accessor.JobAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
+import com.blackduck.integration.alert.processing.ProcessingJobEventHandler;
 
 class ProcessingJobEventHandlerTest {
     @Test

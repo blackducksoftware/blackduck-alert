@@ -23,11 +23,26 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import com.blackduck.integration.alert.Application;
 import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.api.event.NotificationReceivedEvent;
 import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.enumeration.FrequencyType;
+import com.blackduck.integration.alert.common.enumeration.ProcessingType;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
+import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
+import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
+import com.blackduck.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.configuration.ApplicationConfiguration;
+import com.blackduck.integration.alert.database.DatabaseDataSource;
+import com.blackduck.integration.alert.database.job.api.DefaultConfigurationModelConfigurationAccessor;
+import com.blackduck.integration.alert.database.job.api.DefaultNotificationAccessor;
 import com.blackduck.integration.alert.database.job.api.StaticJobAccessor;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
@@ -40,21 +55,6 @@ import com.blackduck.integration.blackduck.api.manual.enumeration.OperationType;
 import com.blackduck.integration.blackduck.api.manual.view.ProjectNotificationView;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.Application;
-import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
-import com.blackduck.integration.alert.common.enumeration.FrequencyType;
-import com.blackduck.integration.alert.common.enumeration.ProcessingType;
-import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
-import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobModel;
-import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
-import com.blackduck.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
-import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
-import com.blackduck.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.configuration.ApplicationConfiguration;
-import com.blackduck.integration.alert.database.DatabaseDataSource;
-import com.blackduck.integration.alert.database.job.api.DefaultConfigurationModelConfigurationAccessor;
-import com.blackduck.integration.alert.database.job.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.util.DescriptorMocker;
 
 //TODO: Need to remove transactional from the AlertIntegrationTest annotation. Once IALERT-2228 is resolved we should make this an @AlertIntegrationTest again

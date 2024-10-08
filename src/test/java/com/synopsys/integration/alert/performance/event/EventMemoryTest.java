@@ -18,9 +18,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import com.synopsys.integration.alert.Application;
+import com.blackduck.integration.alert.Application;
 import com.blackduck.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.configuration.ApplicationConfiguration;
+import com.blackduck.integration.alert.configuration.ApplicationConfiguration;
 import com.blackduck.integration.alert.database.DatabaseDataSource;
 import com.blackduck.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.DescriptorMocker;
