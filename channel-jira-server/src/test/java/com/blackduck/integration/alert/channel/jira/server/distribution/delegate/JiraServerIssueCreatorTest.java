@@ -17,6 +17,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.blackduck.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
+import com.blackduck.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
+import com.blackduck.integration.alert.api.channel.jira.distribution.custom.MessageReplacementValues;
+import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
+import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraSearcherResponseModel;
 import com.blackduck.integration.alert.channel.jira.server.distribution.JiraServerQueryExecutor;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
@@ -28,11 +33,6 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.callback.IssueTr
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
-import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
-import com.synopsys.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
-import com.synopsys.integration.alert.api.channel.jira.distribution.custom.MessageReplacementValues;
-import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
-import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcherResponseModel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;

@@ -10,7 +10,7 @@ package com.synopsys.integration.alert.api.channel.issue.tracker.convert;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.synopsys.integration.alert.api.channel.convert.ChannelMessageFormatter;
+import com.blackduck.integration.alert.api.channel.convert.ChannelMessageFormatter;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentPolicy;

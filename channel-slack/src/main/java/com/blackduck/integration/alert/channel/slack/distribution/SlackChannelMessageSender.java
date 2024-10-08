@@ -16,12 +16,12 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackduck.integration.alert.api.channel.ChannelMessageSender;
+import com.blackduck.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
+import com.blackduck.integration.alert.api.channel.rest.RestChannelUtility;
 import com.blackduck.integration.rest.client.IntHttpClient;
 import com.blackduck.integration.rest.request.Request;
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.api.channel.ChannelMessageSender;
-import com.synopsys.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
-import com.synopsys.integration.alert.api.channel.rest.RestChannelUtility;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.descriptor.SlackChannelKey;
 import com.synopsys.integration.alert.common.message.model.MessageResult;

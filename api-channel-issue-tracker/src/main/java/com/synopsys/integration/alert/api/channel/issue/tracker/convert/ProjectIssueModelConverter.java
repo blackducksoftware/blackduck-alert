@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.api.channel.convert.BomComponentDetailConverter;
-import com.synopsys.integration.alert.api.channel.convert.LinkableItemConverter;
+import com.blackduck.integration.alert.api.channel.convert.BomComponentDetailConverter;
+import com.blackduck.integration.alert.api.channel.convert.LinkableItemConverter;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueComponentUnknownVersionDetails;
@@ -26,15 +26,15 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrans
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueVulnerabilityDetails;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernType;
+import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilder;
 import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilderRechunker;
 import com.synopsys.integration.alert.common.channel.message.RechunkedModel;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernType;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
 
 public class ProjectIssueModelConverter {
     public static final int COMPONENT_CONCERN_TITLE_SECTION_CHAR_COUNT = 20;

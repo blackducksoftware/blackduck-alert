@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackduck.integration.alert.api.channel.ChannelMessageSender;
 import com.blackduck.integration.alert.channel.email.attachment.EmailAttachmentFormat;
 import com.blackduck.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.blackduck.integration.alert.channel.email.descriptor.EmailDescriptor;
@@ -28,7 +29,6 @@ import com.blackduck.integration.alert.service.email.EmailTarget;
 import com.blackduck.integration.alert.service.email.JavamailPropertiesFactory;
 import com.blackduck.integration.alert.service.email.SmtpConfig;
 import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
-import com.synopsys.integration.alert.api.channel.ChannelMessageSender;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.api.common.model.errors.FieldStatusSeverity;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;

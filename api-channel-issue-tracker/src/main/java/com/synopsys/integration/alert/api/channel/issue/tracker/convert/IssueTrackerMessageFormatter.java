@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.api.channel.issue.tracker.convert;
 
-import com.synopsys.integration.alert.api.channel.convert.ChannelMessageFormatter;
+import com.blackduck.integration.alert.api.channel.convert.ChannelMessageFormatter;
 
 public abstract class IssueTrackerMessageFormatter extends ChannelMessageFormatter {
     private final int maxTitleLength;

@@ -14,11 +14,15 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.blackduck.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
 import com.blackduck.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.blackduck.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
 import com.blackduck.integration.alert.channel.jira.server.distribution.JiraServerProcessorFactory;
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
+import com.blackduck.integration.alert.test.common.TestProperties;
+import com.blackduck.integration.alert.test.common.TestPropertyKey;
+import com.blackduck.integration.alert.test.common.TestTags;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.tracker.IssueTrackerProcessor;
@@ -26,7 +30,6 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.callback.IssueTr
 import com.synopsys.integration.alert.api.channel.issue.tracker.convert.ProjectMessageToIssueModelTransformer;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
-import com.synopsys.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.descriptor.JiraServerChannelKey;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
@@ -43,9 +46,6 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
-import com.blackduck.integration.alert.test.common.TestProperties;
-import com.blackduck.integration.alert.test.common.TestPropertyKey;
-import com.blackduck.integration.alert.test.common.TestTags;
 
 @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
 class JiraServerExternalConnectionTest {

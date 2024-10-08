@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import com.synopsys.integration.alert.api.channel.convert.ChannelMessageFormatter;
+import com.blackduck.integration.alert.api.channel.convert.ChannelMessageFormatter;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueComponentUnknownVersionDetails;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueEstimatedRiskModel;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;

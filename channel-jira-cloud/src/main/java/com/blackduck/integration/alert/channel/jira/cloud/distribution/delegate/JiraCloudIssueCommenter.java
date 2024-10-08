@@ -7,12 +7,12 @@
  */
 package com.blackduck.integration.alert.channel.jira.cloud.distribution.delegate;
 
-import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueResponseCreator;
-import com.synopsys.integration.alert.api.channel.jira.distribution.delegate.JiraIssueCommenter;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
+import com.blackduck.integration.alert.api.channel.jira.distribution.delegate.JiraIssueCommenter;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.cloud.service.IssueService;
 import com.blackduck.integration.jira.common.model.request.IssueCommentRequestModel;
+import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueResponseCreator;
+import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 
 public class JiraCloudIssueCommenter extends JiraIssueCommenter {
     private final IssueService issueService;

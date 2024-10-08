@@ -11,14 +11,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcherResponseModel;
-import com.synopsys.integration.alert.api.channel.jira.distribution.search.JqlQueryExecutor;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraSearcherResponseModel;
+import com.blackduck.integration.alert.api.channel.jira.distribution.search.JqlQueryExecutor;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.cloud.model.IssueSearchResponseModel;
 import com.blackduck.integration.jira.common.cloud.service.IssueSearchService;
 import com.blackduck.integration.jira.common.model.components.IssueFieldsComponent;
 import com.blackduck.integration.jira.common.model.response.IssueResponseModel;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 
 public class JiraCloudQueryExecutor implements JqlQueryExecutor {
     private final IssueSearchService issueSearchService;

@@ -12,13 +12,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
-import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
-import com.synopsys.integration.alert.api.channel.jira.action.JiraGlobalFieldModelTestAction;
+import com.blackduck.integration.alert.api.channel.jira.JiraConstants;
+import com.blackduck.integration.alert.api.channel.jira.action.JiraGlobalFieldModelTestAction;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudPropertiesFactory;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.cloud.model.IssueSearchResponseModel;
 import com.blackduck.integration.jira.common.cloud.service.IssueSearchService;
@@ -27,6 +25,8 @@ import com.blackduck.integration.jira.common.cloud.service.MyPermissionsService;
 import com.blackduck.integration.jira.common.model.response.MultiPermissionResponseModel;
 import com.blackduck.integration.jira.common.model.response.PermissionModel;
 import com.blackduck.integration.jira.common.rest.service.PluginManagerService;
+import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 
 @Component
 public class JiraCloudGlobalFieldModelTestAction extends JiraGlobalFieldModelTestAction {

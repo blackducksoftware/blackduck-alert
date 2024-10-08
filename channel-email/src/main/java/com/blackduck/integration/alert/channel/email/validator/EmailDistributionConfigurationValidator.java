@@ -12,8 +12,8 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackduck.integration.alert.api.channel.CommonChannelDistributionValidator;
 import com.blackduck.integration.alert.channel.email.descriptor.EmailDescriptor;
-import com.synopsys.integration.alert.api.channel.CommonChannelDistributionValidator;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;

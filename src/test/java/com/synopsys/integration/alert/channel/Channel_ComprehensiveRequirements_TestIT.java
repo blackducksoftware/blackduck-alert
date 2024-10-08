@@ -11,12 +11,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.api.channel.DistributionChannel;
-import com.synopsys.integration.alert.api.channel.DistributionEventReceiver;
+import com.blackduck.integration.alert.api.channel.DistributionChannel;
+import com.blackduck.integration.alert.api.channel.DistributionEventReceiver;
 import com.synopsys.integration.alert.api.channel.issue.tracker.action.IssueTrackerTestAction;
-import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
 import com.synopsys.integration.alert.api.descriptor.model.ChannelKey;
 import com.synopsys.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
+import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 /*

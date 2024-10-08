@@ -11,9 +11,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import com.synopsys.integration.alert.api.channel.convert.ChannelMessageFormatter;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.api.channel.convert.ChannelMessageFormatter;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public class ComponentVulnerabilitiesConverter {
     private static final String LABEL_VULNERABILITIES_SECTION = "Current Vulnerabilities: ";

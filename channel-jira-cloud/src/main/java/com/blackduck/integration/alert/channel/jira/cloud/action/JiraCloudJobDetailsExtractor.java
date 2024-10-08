@@ -12,14 +12,14 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.channel.jira.action.JiraJobDetailsExtractor;
+import com.blackduck.integration.alert.api.channel.jira.action.JiraJobDetailsExtractor;
 import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
+import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.descriptor.JiraCloudChannelKey;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
-import com.synopsys.integration.alert.api.descriptor.JiraCloudChannelKey;
 
 @Component
 public class JiraCloudJobDetailsExtractor extends JiraJobDetailsExtractor {

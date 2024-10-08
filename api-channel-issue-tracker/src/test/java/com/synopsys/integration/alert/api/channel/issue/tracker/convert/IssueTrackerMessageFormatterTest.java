@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.api.channel.convert.ChannelMessageFormatter;
+import com.blackduck.integration.alert.api.channel.convert.ChannelMessageFormatter;
 
 public class IssueTrackerMessageFormatterTest {
     @Test

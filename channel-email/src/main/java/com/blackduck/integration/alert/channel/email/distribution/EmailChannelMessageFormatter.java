@@ -9,7 +9,7 @@ package com.blackduck.integration.alert.channel.email.distribution;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.channel.convert.ChannelMessageFormatter;
+import com.blackduck.integration.alert.api.channel.convert.ChannelMessageFormatter;
 
 @Component
 public class EmailChannelMessageFormatter extends ChannelMessageFormatter {

@@ -10,12 +10,10 @@ package com.blackduck.integration.alert.channel.jira.server.action;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
+import com.blackduck.integration.alert.api.channel.jira.JiraConstants;
 import com.blackduck.integration.alert.channel.jira.server.JiraServerProperties;
 import com.blackduck.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
-import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.model.response.MultiPermissionResponseModel;
 import com.blackduck.integration.jira.common.model.response.PermissionModel;
@@ -24,6 +22,8 @@ import com.blackduck.integration.jira.common.server.model.IssueSearchResponseMod
 import com.blackduck.integration.jira.common.server.service.IssueSearchService;
 import com.blackduck.integration.jira.common.server.service.JiraServerServiceFactory;
 import com.blackduck.integration.jira.common.server.service.MyPermissionsService;
+import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 
 public class JiraServerGlobalTestActionWrapper {
     private final Logger logger = LoggerFactory.getLogger(getClass());

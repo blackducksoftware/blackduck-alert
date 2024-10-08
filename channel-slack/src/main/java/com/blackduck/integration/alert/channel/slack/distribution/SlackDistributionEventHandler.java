@@ -10,7 +10,7 @@ package com.blackduck.integration.alert.channel.slack.distribution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.channel.DistributionEventHandler;
+import com.blackduck.integration.alert.api.channel.DistributionEventHandler;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.persistence.accessor.SlackJobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;

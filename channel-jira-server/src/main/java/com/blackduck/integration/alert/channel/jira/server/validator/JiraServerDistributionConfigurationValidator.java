@@ -13,15 +13,15 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.channel.CommonChannelDistributionValidator;
-import com.synopsys.integration.alert.api.channel.jira.validation.JiraFieldMappingValidator;
-import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.blackduck.integration.alert.api.channel.CommonChannelDistributionValidator;
+import com.blackduck.integration.alert.api.channel.jira.validation.JiraFieldMappingValidator;
 import com.blackduck.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
+import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.api.descriptor.JiraServerChannelKey;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
-import com.synopsys.integration.alert.api.descriptor.JiraServerChannelKey;
 
 @Component
 public class JiraServerDistributionConfigurationValidator implements DistributionConfigurationValidator {

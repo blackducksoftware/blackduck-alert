@@ -18,26 +18,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationFieldModelValidator;
-import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
-import com.synopsys.integration.alert.api.channel.jira.util.JiraPluginCheckUtils;
-import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.blackduck.integration.alert.api.channel.jira.JiraConstants;
+import com.blackduck.integration.alert.api.channel.jira.util.JiraPluginCheckUtils;
 import com.blackduck.integration.alert.channel.jira.server.JiraServerProperties;
 import com.blackduck.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.blackduck.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.blackduck.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationFieldModelValidator;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.rest.service.PluginManagerService;
+import com.blackduck.integration.jira.common.server.service.JiraServerServiceFactory;
+import com.blackduck.integration.rest.RestConstants;
+import com.blackduck.integration.rest.exception.IntegrationRestException;
+import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.blackduck.integration.exception.IntegrationException;
-import com.blackduck.integration.jira.common.rest.service.PluginManagerService;
-import com.blackduck.integration.jira.common.server.service.JiraServerServiceFactory;
-import com.blackduck.integration.rest.RestConstants;
-import com.blackduck.integration.rest.exception.IntegrationRestException;
 
 /**
  * @deprecated This class is part of the old Alert REST API. It has since been replaced by JiraServerInstallPluginAction and is set for removal in 8.0.0.

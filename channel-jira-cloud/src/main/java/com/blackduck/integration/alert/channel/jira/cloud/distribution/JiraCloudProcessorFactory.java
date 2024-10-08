@@ -16,6 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.certificates.AlertSSLContextManager;
+import com.blackduck.integration.alert.api.channel.jira.JiraConstants;
+import com.blackduck.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
+import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
+import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraIssueStatusCreator;
+import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraSearcherFactory;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.blackduck.integration.exception.IntegrationException;
@@ -32,11 +37,6 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.convert.ProjectM
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueTrackerSearcher;
 import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerAsyncMessageSender;
-import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
-import com.synopsys.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
-import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
-import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueStatusCreator;
-import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcherFactory;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.descriptor.JiraCloudChannelKey;

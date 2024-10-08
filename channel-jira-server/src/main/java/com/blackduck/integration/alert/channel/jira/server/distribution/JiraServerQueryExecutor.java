@@ -10,13 +10,13 @@ package com.blackduck.integration.alert.channel.jira.server.distribution;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcherResponseModel;
-import com.synopsys.integration.alert.api.channel.jira.distribution.search.JqlQueryExecutor;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraSearcherResponseModel;
+import com.blackduck.integration.alert.api.channel.jira.distribution.search.JqlQueryExecutor;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.server.model.IssueSearchIssueComponent;
 import com.blackduck.integration.jira.common.server.model.IssueSearchResponseModel;
 import com.blackduck.integration.jira.common.server.service.IssueSearchService;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 
 public class JiraServerQueryExecutor implements JqlQueryExecutor {
     private final IssueSearchService issueSearchService;

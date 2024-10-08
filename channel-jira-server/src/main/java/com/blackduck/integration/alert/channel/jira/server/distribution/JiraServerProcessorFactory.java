@@ -15,8 +15,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackduck.integration.alert.api.channel.jira.JiraConstants;
+import com.blackduck.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
+import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
+import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraIssueStatusCreator;
+import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraSearcherFactory;
 import com.blackduck.integration.alert.channel.jira.server.JiraServerProperties;
 import com.blackduck.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.rest.service.IssuePropertyService;
+import com.blackduck.integration.jira.common.rest.service.PluginManagerService;
+import com.blackduck.integration.jira.common.server.service.IssueSearchService;
+import com.blackduck.integration.jira.common.server.service.IssueService;
+import com.blackduck.integration.jira.common.server.service.JiraServerServiceFactory;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.tracker.IssueTrackerModelExtractor;
 import com.synopsys.integration.alert.api.channel.issue.tracker.IssueTrackerProcessor;
@@ -25,20 +36,9 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.convert.ProjectM
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueTrackerSearcher;
 import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerAsyncMessageSender;
-import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
-import com.synopsys.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
-import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
-import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueStatusCreator;
-import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcherFactory;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
-import com.blackduck.integration.exception.IntegrationException;
-import com.blackduck.integration.jira.common.rest.service.IssuePropertyService;
-import com.blackduck.integration.jira.common.rest.service.PluginManagerService;
-import com.blackduck.integration.jira.common.server.service.IssueSearchService;
-import com.blackduck.integration.jira.common.server.service.IssueService;
-import com.blackduck.integration.jira.common.server.service.JiraServerServiceFactory;
 
 @Component
 public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<JiraServerJobDetailsModel, String> {

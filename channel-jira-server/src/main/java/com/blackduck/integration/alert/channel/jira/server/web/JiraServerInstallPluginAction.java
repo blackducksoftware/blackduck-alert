@@ -15,25 +15,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.channel.jira.server.action.JiraServerGlobalValidationAction;
-import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
-import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
-import com.synopsys.integration.alert.api.channel.jira.util.JiraPluginCheckUtils;
-import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.api.channel.jira.JiraConstants;
+import com.blackduck.integration.alert.api.channel.jira.util.JiraPluginCheckUtils;
 import com.blackduck.integration.alert.channel.jira.server.JiraServerProperties;
 import com.blackduck.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
+import com.blackduck.integration.alert.channel.jira.server.action.JiraServerGlobalValidationAction;
 import com.blackduck.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.rest.service.PluginManagerService;
 import com.blackduck.integration.jira.common.server.service.JiraServerServiceFactory;
 import com.blackduck.integration.rest.RestConstants;
 import com.blackduck.integration.rest.exception.IntegrationRestException;
+import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Component
 public class JiraServerInstallPluginAction {

@@ -10,7 +10,7 @@ import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
 
-import com.synopsys.integration.alert.api.channel.DistributionChannel;
+import com.blackduck.integration.alert.api.channel.DistributionChannel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessageHolder;

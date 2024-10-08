@@ -14,7 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.channel.convert.AbstractChannelMessageConverter;
+import com.blackduck.integration.alert.api.channel.convert.AbstractChannelMessageConverter;
 import com.synopsys.integration.alert.api.processor.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
