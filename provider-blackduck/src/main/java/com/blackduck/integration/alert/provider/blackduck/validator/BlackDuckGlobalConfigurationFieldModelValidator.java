@@ -21,14 +21,14 @@ import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.blackduck.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
+import com.blackduck.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.enumeration.DescriptorType;
+import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
+import com.blackduck.integration.alert.common.rest.model.FieldModel;
 
 @Component
 public class BlackDuckGlobalConfigurationFieldModelValidator implements GlobalConfigurationFieldModelValidator {

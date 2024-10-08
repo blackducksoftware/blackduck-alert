@@ -12,13 +12,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
-import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.system.BaseSystemValidator;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.enumeration.SystemMessageSeverity;
+import com.blackduck.integration.alert.common.enumeration.SystemMessageType;
+import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.SystemMessageAccessor;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
+import com.blackduck.integration.alert.common.system.BaseSystemValidator;
 
 @Component
 public class ProviderConfigMissingValidator extends BaseSystemValidator {

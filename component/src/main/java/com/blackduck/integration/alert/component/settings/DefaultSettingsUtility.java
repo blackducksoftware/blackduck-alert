@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;
-import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
-import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
+import com.blackduck.integration.alert.common.descriptor.accessor.SettingsUtility;
+import com.blackduck.integration.alert.common.rest.model.SettingsProxyModel;
 import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 

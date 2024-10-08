@@ -13,8 +13,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.enumeration.ItemOperation;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 class MessageContentGroupTest {
     private static final String PROVIDER_NAME = "test-providerName";

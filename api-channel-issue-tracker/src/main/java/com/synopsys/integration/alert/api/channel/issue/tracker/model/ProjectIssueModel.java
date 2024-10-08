@@ -12,7 +12,7 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderMessage;
 

@@ -14,10 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.blackduck.integration.alert.common.rest.model.FieldModel;
+import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
+import com.blackduck.integration.alert.common.rest.model.JobFieldModel;
 
 public class FieldModelUtils {
     public static final String DEFAULT_MODEL_DESCRIPTOR_NAME = "Descriptor Name";

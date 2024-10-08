@@ -21,10 +21,10 @@ import com.blackduck.integration.alert.api.distribution.execution.JobStageStarte
 import com.blackduck.integration.alert.api.event.AlertEventHandler;
 import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.api.processor.distribute.DistributionEvent;
-import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
-import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.util.AuditStackTraceUtil;
+import com.blackduck.integration.alert.common.logging.AlertLoggerFactory;
+import com.blackduck.integration.alert.common.persistence.accessor.JobDetailsAccessor;
+import com.blackduck.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.util.AuditStackTraceUtil;
 
 public class DistributionEventHandler<D extends DistributionJobDetailsModel> implements AlertEventHandler<DistributionEvent> {
     private final Logger notificationLogger = AlertLoggerFactory.getNotificationLogger(getClass());

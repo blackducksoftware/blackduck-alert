@@ -16,11 +16,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
+import com.blackduck.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.provider.blackduck.task.accumulator.BlackDuckAccumulatorSearchDateManager;
 

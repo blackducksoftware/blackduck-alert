@@ -24,8 +24,8 @@ import com.blackduck.integration.alert.api.processor.extract.model.project.Compo
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectOperation;
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.enumeration.ItemOperation;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 @ExtendWith(SpringExtension.class)
 class ProjectMessageToMessageContentGroupConversionUtilsTest {

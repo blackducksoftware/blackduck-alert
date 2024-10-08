@@ -8,8 +8,8 @@
 package com.blackduck.integration.alert.component.scheduling;
 
 import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.rest.model.Configuration;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
+import com.blackduck.integration.alert.common.rest.model.Configuration;
 
 public class SchedulingConfiguration extends Configuration {
     private final String dailyDigestHourOfDay;

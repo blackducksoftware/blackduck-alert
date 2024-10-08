@@ -27,20 +27,20 @@ import com.blackduck.integration.jira.common.server.service.JiraServerServiceFac
 import com.blackduck.integration.rest.exception.IntegrationRestException;
 import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
-import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
-import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
-import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.enumeration.FrequencyType;
+import com.blackduck.integration.alert.common.enumeration.ProcessingType;
+import com.blackduck.integration.alert.common.persistence.accessor.JobAccessor;
+import com.blackduck.integration.alert.common.persistence.model.PermissionKey;
+import com.blackduck.integration.alert.common.persistence.model.PermissionMatrixModel;
+import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.rest.HttpServletContentWrapper;
+import com.blackduck.integration.alert.common.rest.model.FieldModel;
+import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
+import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
 
 class JiraServerCustomFunctionActionTest {

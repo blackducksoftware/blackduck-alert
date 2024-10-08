@@ -17,9 +17,9 @@ import com.blackduck.integration.alert.channel.jira.server.database.accessor.Jir
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
-import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.common.persistence.accessor.JobAccessor;
+import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 
 @Component
 public class JiraServerPropertiesFactory {

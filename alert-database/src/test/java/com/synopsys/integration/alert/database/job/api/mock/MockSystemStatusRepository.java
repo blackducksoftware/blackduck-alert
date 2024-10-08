@@ -9,7 +9,7 @@ import java.util.function.Function;
 import org.springframework.data.domain.Example;
 import org.springframework.data.repository.query.FluentQuery;
 
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.system.SystemStatusEntity;
 import com.synopsys.integration.alert.database.system.SystemStatusRepository;
 

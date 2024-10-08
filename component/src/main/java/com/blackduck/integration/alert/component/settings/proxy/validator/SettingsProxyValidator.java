@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatusMessages;
-import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
+import com.blackduck.integration.alert.common.rest.model.SettingsProxyModel;
 
 @Component
 public class SettingsProxyValidator {

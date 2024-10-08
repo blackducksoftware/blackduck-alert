@@ -14,11 +14,11 @@ import org.mockito.Mockito;
 import com.blackduck.integration.alert.api.processor.detail.DetailedNotificationContent;
 import com.blackduck.integration.blackduck.api.manual.component.NotificationContentComponent;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
-import com.synopsys.integration.alert.common.persistence.model.job.SimpleFilteredDistributionJobResponseModel;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.blackduck.integration.alert.common.enumeration.ProcessingType;
+import com.blackduck.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
+import com.blackduck.integration.alert.common.persistence.model.job.SimpleFilteredDistributionJobResponseModel;
+import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 
 class JobNotificationFilterUtilsTest {
     private static final String PROJECT_NAME = "projectName";

@@ -10,9 +10,9 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.rest.model.SettingsProxyModel;
+import com.blackduck.integration.alert.common.util.DateUtils;
 
 class SettingsProxyValidatorTest {
     private static final String ID = UUID.randomUUID().toString();

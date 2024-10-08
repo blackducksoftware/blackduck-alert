@@ -31,9 +31,9 @@ import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
-import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
-import com.synopsys.integration.alert.common.util.MarkupEncoderUtil;
+import com.blackduck.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
+import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.common.util.MarkupEncoderUtil;
 
 class SlackChannelTestIT {
     private Gson gson;

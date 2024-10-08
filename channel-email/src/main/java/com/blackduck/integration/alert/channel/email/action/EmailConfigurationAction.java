@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.synopsys.integration.alert.common.action.ConfigurationAction;
+import com.blackduck.integration.alert.common.action.ConfigurationAction;
 
 /**
  * @deprecated Global configuration actions for Email channel are now handled through EmailGlobalCrudActions

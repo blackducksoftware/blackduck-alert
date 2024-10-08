@@ -15,8 +15,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.blackduck.integration.alert.common.AlertProperties;
+import com.blackduck.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.blackduck.integration.alert.common.security.EncryptionUtility;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class EncryptionUtilityTest {

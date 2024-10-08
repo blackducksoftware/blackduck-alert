@@ -44,7 +44,7 @@ import com.blackduck.integration.alert.api.descriptor.model.IssueTrackerChannelK
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernType;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentPolicy;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<String> {
     private static final String FAILED_TO_CREATE_ISSUE_MESSAGE = "Failed to create an issue in Jira.";

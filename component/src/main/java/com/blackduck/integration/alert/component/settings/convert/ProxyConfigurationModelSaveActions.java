@@ -14,10 +14,10 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.blackduck.integration.alert.component.settings.proxy.action.SettingsProxyCrudActions;
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.action.api.GlobalConfigurationModelToConcreteSaveActions;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.action.api.GlobalConfigurationModelToConcreteSaveActions;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
+import com.blackduck.integration.alert.common.rest.model.SettingsProxyModel;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 
 /**

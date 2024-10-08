@@ -29,12 +29,12 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.search.ExistingI
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernType;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
-import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilder;
-import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilderRechunker;
-import com.synopsys.integration.alert.common.channel.message.RechunkedModel;
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.blackduck.integration.alert.common.channel.message.ChunkedStringBuilder;
+import com.blackduck.integration.alert.common.channel.message.ChunkedStringBuilderRechunker;
+import com.blackduck.integration.alert.common.channel.message.RechunkedModel;
+import com.blackduck.integration.alert.common.enumeration.ItemOperation;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 public class ProjectIssueModelConverter {
     public static final int COMPONENT_CONCERN_TITLE_SECTION_CHAR_COUNT = 20;

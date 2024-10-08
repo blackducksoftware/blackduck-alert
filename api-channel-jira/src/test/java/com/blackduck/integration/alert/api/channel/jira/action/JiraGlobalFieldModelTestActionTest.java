@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.blackduck.integration.exception.IntegrationException;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
+import com.blackduck.integration.alert.common.message.model.MessageResult;
 
 public class JiraGlobalFieldModelTestActionTest {
     private static final String EXPECTED_EXCEPTION = "Expected an exception to be thrown";

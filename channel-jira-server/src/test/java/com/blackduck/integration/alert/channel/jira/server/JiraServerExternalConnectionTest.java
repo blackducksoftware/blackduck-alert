@@ -37,15 +37,15 @@ import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderMessageHolder;
 import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
-import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModelBuilder;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
-import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.common.enumeration.FrequencyType;
+import com.blackduck.integration.alert.common.enumeration.ProcessingType;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.persistence.accessor.JobAccessor;
+import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobModelBuilder;
+import com.blackduck.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
+import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 
 @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
 class JiraServerExternalConnectionTest {

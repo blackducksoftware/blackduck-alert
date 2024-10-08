@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackduck.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
-import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
+import com.blackduck.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
+import com.blackduck.integration.alert.common.rest.api.AbstractFunctionController;
 
 /**
  * @deprecated This controller is replaced by the oAuthAuthenticate endpoint of AzureBoardsGlobalConfigController.

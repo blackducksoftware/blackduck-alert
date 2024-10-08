@@ -30,8 +30,8 @@ import com.blackduck.integration.alert.api.environment.EnvironmentVariableUtilit
 import com.blackduck.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.blackduck.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
 import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.util.DateUtils;
 
 @Component
 public class EmailEnvironmentVariableHandler extends EnvironmentVariableHandler<EmailGlobalConfigModel> {

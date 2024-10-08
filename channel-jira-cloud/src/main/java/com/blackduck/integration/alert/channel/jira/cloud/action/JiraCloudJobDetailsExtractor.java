@@ -16,10 +16,10 @@ import com.blackduck.integration.alert.api.channel.jira.action.JiraJobDetailsExt
 import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.descriptor.JiraCloudChannelKey;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
 
 @Component
 public class JiraCloudJobDetailsExtractor extends JiraJobDetailsExtractor {

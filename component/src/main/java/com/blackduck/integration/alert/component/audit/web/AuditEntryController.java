@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.common.rest.api.BaseController;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.persistence.model.AuditEntryPageModel;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.rest.ResponseFactory;
+import com.blackduck.integration.alert.common.rest.api.BaseController;
 
 @RestController
 @RequestMapping(AuditEntryController.AUDIT_FAILED_PATH)

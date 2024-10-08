@@ -17,13 +17,13 @@ import com.blackduck.integration.alert.component.scheduling.descriptor.Schedulin
 import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.api.task.TaskManager;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.message.model.DateRange;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.enumeration.FrequencyType;
+import com.blackduck.integration.alert.common.message.model.DateRange;
+import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.JobAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.component.tasks.ProcessingTask;
 import com.blackduck.integration.alert.api.processor.NotificationMappingProcessor;
 

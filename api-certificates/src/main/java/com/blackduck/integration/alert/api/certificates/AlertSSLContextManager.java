@@ -11,7 +11,7 @@ import org.springframework.boot.ssl.SslManagerBundle;
 import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 
 @Component
 public class AlertSSLContextManager {

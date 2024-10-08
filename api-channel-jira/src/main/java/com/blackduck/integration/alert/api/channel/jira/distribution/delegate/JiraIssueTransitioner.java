@@ -30,8 +30,8 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTracke
 import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueTransitioner;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
+import com.blackduck.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.blackduck.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
 
 public abstract class JiraIssueTransitioner extends IssueTrackerIssueTransitioner<String> {
     public static final String TODO_STATUS_CATEGORY_KEY = "new";

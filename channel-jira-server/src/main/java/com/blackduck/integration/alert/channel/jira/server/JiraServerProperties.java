@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 
 import com.google.gson.Gson;
 import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
-import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
+import com.blackduck.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 import com.blackduck.integration.jira.common.rest.JiraHttpClient;
 import com.blackduck.integration.jira.common.server.configuration.JiraServerBasicAuthRestConfigBuilder;
 import com.blackduck.integration.jira.common.server.configuration.JiraServerBearerAuthRestConfigBuilder;

@@ -1,7 +1,7 @@
 package com.synopsys.integration.alert.update;
 
-import static com.synopsys.integration.alert.common.util.DateUtils.DOCKER_DATE_FORMAT;
-import static com.synopsys.integration.alert.common.util.DateUtils.formatDate;
+import static com.blackduck.integration.alert.common.util.DateUtils.DOCKER_DATE_FORMAT;
+import static com.blackduck.integration.alert.common.util.DateUtils.formatDate;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -25,11 +25,11 @@ import com.blackduck.integration.alert.web.api.metadata.model.DescriptorsRespons
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.rest.AlertWebServerUrlManager;
-import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.AlertProperties;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.rest.AlertWebServerUrlManager;
+import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.job.api.DefaultSystemStatusAccessor;
 import com.synopsys.integration.alert.update.model.UpdateModel;
 

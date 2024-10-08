@@ -17,10 +17,10 @@ import org.springframework.core.io.ClassPathResource;
 import com.blackduck.integration.alert.component.certificates.web.CertificateActions;
 import com.blackduck.integration.alert.component.certificates.web.CertificateModel;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.AlertProperties;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.persistence.model.ClientCertificateModel;
+import com.blackduck.integration.alert.common.util.DateUtils;
 
 import io.micrometer.common.util.StringUtils;
 

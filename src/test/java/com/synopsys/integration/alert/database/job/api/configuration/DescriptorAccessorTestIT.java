@@ -15,10 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.enumeration.DescriptorType;
+import com.blackduck.integration.alert.common.persistence.model.DefinedFieldModel;
+import com.blackduck.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.database.configuration.repository.ConfigContextRepository;
 import com.synopsys.integration.alert.database.configuration.repository.DefinedFieldRepository;
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorTypeRepository;

@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.common.rest.model.DistributionWithAuditInfo;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.rest.ResponseFactory;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
+import com.blackduck.integration.alert.common.rest.model.DistributionWithAuditInfo;
 
 @RestController
 @RequestMapping(DistributionController.JOB_AUDIT_PATH)

@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.blackduck.integration.alert.common.descriptor.ChannelDescriptor;
+import com.blackduck.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
+import com.blackduck.integration.alert.common.enumeration.FrequencyType;
 
 @Component
 public class CommonChannelDistributionValidator {

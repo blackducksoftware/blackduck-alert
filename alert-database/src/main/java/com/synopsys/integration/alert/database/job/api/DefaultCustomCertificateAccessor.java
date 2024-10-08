@@ -15,9 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
-import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
+import com.blackduck.integration.alert.common.persistence.model.CustomCertificateModel;
+import com.blackduck.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.certificates.CustomCertificateEntity;
 import com.synopsys.integration.alert.database.certificates.CustomCertificateRepository;
 

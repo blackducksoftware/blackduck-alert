@@ -13,7 +13,7 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 public abstract class AbstractBomComponentDetails extends AlertSerializableModel {
     private final LinkableItem component;

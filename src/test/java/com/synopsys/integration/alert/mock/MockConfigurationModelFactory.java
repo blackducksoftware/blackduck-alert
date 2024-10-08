@@ -15,12 +15,12 @@ import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
 import com.blackduck.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.blackduck.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.util.DataStructureUtils;
+import com.blackduck.integration.alert.common.descriptor.ChannelDescriptor;
+import com.blackduck.integration.alert.common.enumeration.FrequencyType;
+import com.blackduck.integration.alert.common.enumeration.ProcessingType;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
+import com.blackduck.integration.alert.common.util.DataStructureUtils;
 
 public class MockConfigurationModelFactory {
     public static List<ConfigurationFieldModel> createSlackDistributionFields() {

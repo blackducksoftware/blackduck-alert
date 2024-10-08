@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.channel.DistributionEventHandler;
 import com.blackduck.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.common.persistence.accessor.MSTeamsJobDetailsAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.accessor.MSTeamsJobDetailsAccessor;
+import com.blackduck.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 
 @Component
 public class MSTeamsDistributionEventHandler extends DistributionEventHandler<MSTeamsJobDetailsModel> {

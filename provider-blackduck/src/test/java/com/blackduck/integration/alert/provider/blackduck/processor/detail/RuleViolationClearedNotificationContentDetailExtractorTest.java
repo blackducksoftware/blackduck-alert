@@ -12,7 +12,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.api.processor.detail.DetailedNotificationContent;
 import com.blackduck.integration.alert.provider.blackduck.processor.model.RuleViolationClearedUniquePolicyNotificationContent;
 import com.blackduck.integration.alert.test.common.TestResourceUtils;

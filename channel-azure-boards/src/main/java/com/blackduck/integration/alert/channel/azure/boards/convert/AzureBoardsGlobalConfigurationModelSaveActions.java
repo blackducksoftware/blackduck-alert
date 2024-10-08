@@ -11,9 +11,9 @@ import com.blackduck.integration.alert.channel.azure.boards.database.accessor.Az
 import com.blackduck.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
-import com.synopsys.integration.alert.common.action.api.GlobalConfigurationModelToConcreteSaveActions;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.action.api.GlobalConfigurationModelToConcreteSaveActions;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 
 /**
  * @deprecated This class is required for converting an old ConfigurationModel into the new GlobalConfigModel classes. This is a temporary class that should be removed once we

@@ -15,9 +15,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
-import com.synopsys.integration.alert.common.persistence.model.UserModel;
-import com.synopsys.integration.alert.common.security.UserPrincipal;
+import com.blackduck.integration.alert.common.persistence.accessor.UserAccessor;
+import com.blackduck.integration.alert.common.persistence.model.UserModel;
+import com.blackduck.integration.alert.common.security.UserPrincipal;
 
 @Service
 public class UserDatabaseService implements UserDetailsService {

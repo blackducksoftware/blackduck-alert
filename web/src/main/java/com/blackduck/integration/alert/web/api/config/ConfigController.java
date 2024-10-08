@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.common.rest.api.ConfigResourceController;
-import com.synopsys.integration.alert.common.rest.api.TestController;
-import com.synopsys.integration.alert.common.rest.api.ValidateController;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.MultiFieldModel;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.rest.ResponseFactory;
+import com.blackduck.integration.alert.common.rest.api.ConfigResourceController;
+import com.blackduck.integration.alert.common.rest.api.TestController;
+import com.blackduck.integration.alert.common.rest.api.ValidateController;
+import com.blackduck.integration.alert.common.rest.model.FieldModel;
+import com.blackduck.integration.alert.common.rest.model.MultiFieldModel;
 
 @RestController
 @RequestMapping(AlertRestConstants.CONFIGURATION_PATH)

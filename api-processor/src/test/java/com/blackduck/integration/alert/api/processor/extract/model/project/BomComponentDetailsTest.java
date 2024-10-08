@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.enumeration.ItemOperation;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 public class BomComponentDetailsTest {
     private static final LinkableItem CRITICAL_VULNERABILITY = new LinkableItem("Vulnerability", "CVE-123", "https://vuln-url");

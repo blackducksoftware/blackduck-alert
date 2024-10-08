@@ -27,7 +27,7 @@ import com.blackduck.integration.jira.common.server.service.IssueSearchService;
 import com.blackduck.integration.jira.common.server.service.JiraServerServiceFactory;
 import com.blackduck.integration.jira.common.server.service.MyPermissionsService;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.blackduck.integration.alert.common.persistence.accessor.FieldUtility;
 
 /**
  * @deprecated Global test actions are now handled through JiraServerGlobalTestAction

@@ -26,8 +26,8 @@ import com.blackduck.integration.alert.api.authentication.security.event.Authent
 import com.blackduck.integration.alert.authentication.ldap.action.LDAPManager;
 import com.blackduck.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
 import com.blackduck.integration.alert.authentication.ldap.model.LDAPConfigModel;
-import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
-import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
+import com.blackduck.integration.alert.common.descriptor.accessor.RoleAccessor;
+import com.blackduck.integration.alert.common.enumeration.AuthenticationType;
 
 class LDAPAuthenticationPerformerTest {
     private final LDAPConfigAccessor ldapConfigAccessor = LDAPTestHelper.createTestLDAPConfigAccessor();

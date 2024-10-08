@@ -21,9 +21,9 @@ import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJob;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.distribution.mock.MockJobCompletionStatusRepository;
-import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
-import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.executions.JobCompletionStatusModel;
+import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
+import com.blackduck.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
+import com.blackduck.integration.alert.common.persistence.model.job.executions.JobCompletionStatusModel;
 
 class AuditSuccessEventListenerTest {
     private final Gson gson = BlackDuckServicesFactory.createDefaultGson();

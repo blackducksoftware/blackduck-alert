@@ -9,8 +9,8 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
-import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
+import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
+import com.blackduck.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class MockAuditJobStatusModel {

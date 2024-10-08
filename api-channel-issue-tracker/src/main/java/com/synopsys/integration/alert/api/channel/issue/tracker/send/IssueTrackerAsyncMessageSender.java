@@ -17,7 +17,7 @@ import com.blackduck.integration.alert.api.distribution.execution.JobStage;
 import com.blackduck.integration.alert.api.distribution.execution.JobStageStartedEvent;
 import com.blackduck.integration.alert.api.event.AlertEvent;
 import com.blackduck.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
+import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
 
 public class IssueTrackerAsyncMessageSender<T extends Serializable> {
     private final IssueTrackerCreationEventGenerator issueCreateEventGenerator;

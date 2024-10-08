@@ -16,11 +16,11 @@ import com.blackduck.integration.alert.authentication.saml.database.accessor.SAM
 import com.blackduck.integration.alert.authentication.saml.model.SAMLConfigModel;
 import com.blackduck.integration.alert.authentication.saml.security.SAMLManager;
 import com.blackduck.integration.alert.authentication.saml.validator.SAMLConfigurationValidator;
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.blackduck.integration.alert.common.rest.api.ConfigurationCrudHelper;
+import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Component
 public class SAMLCrudActions {

@@ -14,7 +14,7 @@ import java.util.Optional;
 import com.blackduck.integration.alert.api.channel.convert.ChannelMessageFormatter;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueComponentUnknownVersionDetails;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueEstimatedRiskModel;
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.blackduck.integration.alert.common.enumeration.ItemOperation;
 
 public class IssueComponentUnknownVersionDetailsConverter {
     private static final String TEXT_COMPONENT_DELETE = "Component was removed or the version was set.";

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackduck.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.blackduck.integration.alert.common.rest.ResponseFactory;
 
 @RestController
 @RequestMapping(DescriptorController.BASE_PATH)

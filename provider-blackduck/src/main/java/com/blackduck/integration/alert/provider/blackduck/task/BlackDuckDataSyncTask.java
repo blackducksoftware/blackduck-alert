@@ -35,8 +35,8 @@ import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.log.Slf4jIntLogger;
 import com.blackduck.integration.rest.HttpUrl;
 import com.blackduck.integration.alert.api.task.ScheduledTask;
-import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
+import com.blackduck.integration.alert.common.persistence.accessor.ProviderDataAccessor;
+import com.blackduck.integration.alert.common.persistence.model.ProviderProject;
 
 public class BlackDuckDataSyncTask extends ProviderTask {
     private final Logger logger = LoggerFactory.getLogger(BlackDuckDataSyncTask.class);

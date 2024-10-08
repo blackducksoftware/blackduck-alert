@@ -23,10 +23,10 @@ import com.blackduck.integration.alert.test.common.MockAlertProperties;
 import com.blackduck.integration.alert.test.common.database.MockRepositorySorter;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.blackduck.integration.alert.common.AlertProperties;
+import com.blackduck.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.security.EncryptionUtility;
 
 class AzureBoardsEnvironmentVariableHandlerTest {
     private final String ORGANIZATION_NAME = "A Organization Name";

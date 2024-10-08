@@ -22,7 +22,7 @@ import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.blackduck.integration.alert.api.processor.filter.NotificationContentWrapper;
 import com.blackduck.integration.alert.api.processor.summarize.ProjectMessageSummarizer;
-import com.synopsys.integration.alert.common.enumeration.ProcessingType;
+import com.blackduck.integration.alert.common.enumeration.ProcessingType;
 
 @Component
 public class NotificationContentProcessor {

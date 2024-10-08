@@ -23,7 +23,7 @@ import com.blackduck.integration.alert.web.api.metadata.DescriptorController;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.common.descriptor.Descriptor;
+import com.blackduck.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 

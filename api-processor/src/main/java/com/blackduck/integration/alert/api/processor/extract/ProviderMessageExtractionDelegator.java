@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.processor.extract.model.ProcessedProviderMessageHolder;
 import com.blackduck.integration.alert.api.processor.filter.NotificationContentWrapper;
-import com.synopsys.integration.alert.common.util.DataStructureUtils;
+import com.blackduck.integration.alert.common.util.DataStructureUtils;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component

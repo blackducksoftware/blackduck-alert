@@ -8,10 +8,10 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
-import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
-import com.synopsys.integration.alert.common.rest.model.JobAuditModel;
-import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
+import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
+import com.blackduck.integration.alert.common.persistence.model.AuditEntryModel;
+import com.blackduck.integration.alert.common.rest.model.JobAuditModel;
+import com.blackduck.integration.alert.common.rest.model.NotificationConfig;
 
 public class AuditEntryRestModelTest {
 

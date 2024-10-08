@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
 
 @Component

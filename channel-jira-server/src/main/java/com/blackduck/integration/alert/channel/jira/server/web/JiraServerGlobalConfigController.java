@@ -20,12 +20,12 @@ import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.channel.jira.server.action.JiraServerGlobalTestAction;
 import com.blackduck.integration.alert.channel.jira.server.action.JiraServerGlobalValidationAction;
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.common.rest.api.ReadPageController;
-import com.synopsys.integration.alert.common.rest.api.StaticConfigResourceController;
-import com.synopsys.integration.alert.common.rest.api.ValidateController;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.rest.ResponseFactory;
+import com.blackduck.integration.alert.common.rest.api.ReadPageController;
+import com.blackduck.integration.alert.common.rest.api.StaticConfigResourceController;
+import com.blackduck.integration.alert.common.rest.api.ValidateController;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 
 @RestController
 @RequestMapping(AlertRestConstants.JIRA_SERVER_CONFIGURATION_PATH)

@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.persistence.accessor.MSTeamsJobDetailsAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.accessor.MSTeamsJobDetailsAccessor;
+import com.blackduck.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 
 @Component
 public class DefaultMSTeamsJobDetailsAccessor implements MSTeamsJobDetailsAccessor {

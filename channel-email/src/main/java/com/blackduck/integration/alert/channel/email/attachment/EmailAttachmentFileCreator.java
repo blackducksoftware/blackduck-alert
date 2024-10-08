@@ -25,8 +25,8 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.AlertProperties;
+import com.blackduck.integration.alert.common.util.DateUtils;
 
 @Component
 public class EmailAttachmentFileCreator {

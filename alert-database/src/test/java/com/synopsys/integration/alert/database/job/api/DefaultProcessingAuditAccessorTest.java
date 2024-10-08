@@ -14,8 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
-import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
+import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
+import com.blackduck.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryNotificationView;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;

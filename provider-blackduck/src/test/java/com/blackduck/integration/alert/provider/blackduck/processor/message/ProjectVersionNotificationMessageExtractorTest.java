@@ -8,9 +8,9 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
+import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderMessageHolder;
 import com.blackduck.integration.alert.api.processor.extract.model.project.MessageReason;

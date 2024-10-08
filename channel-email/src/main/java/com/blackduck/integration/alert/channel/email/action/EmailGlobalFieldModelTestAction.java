@@ -18,10 +18,10 @@ import com.blackduck.integration.alert.service.email.JavamailPropertiesFactory;
 import com.blackduck.integration.alert.service.email.SmtpConfig;
 import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.action.FieldModelTestAction;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.blackduck.integration.alert.common.action.FieldModelTestAction;
+import com.blackduck.integration.alert.common.message.model.MessageResult;
+import com.blackduck.integration.alert.common.persistence.accessor.FieldUtility;
+import com.blackduck.integration.alert.common.rest.model.FieldModel;
 
 import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;

@@ -19,8 +19,8 @@ import org.springframework.stereotype.Component;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.api.processor.extract.model.ProcessedProviderMessageHolder;
-import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
-import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
+import com.blackduck.integration.alert.common.logging.AlertLoggerFactory;
+import com.blackduck.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 

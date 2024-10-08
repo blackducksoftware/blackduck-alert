@@ -14,8 +14,8 @@ import com.blackduck.integration.alert.api.common.model.exception.AlertException
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
 import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.api.processor.distribute.DistributionEvent;
-import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.accessor.JobDetailsAccessor;
+import com.blackduck.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 
 class DistributionEventHandlerTest {
     private final ChannelKey channelKey = new ChannelKey("test universal key", "Test Universal Key");

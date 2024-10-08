@@ -19,7 +19,7 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.IssueTrackerResp
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrackerResponse;
 import com.blackduck.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerCallbackEvent;
+import com.blackduck.integration.alert.common.channel.issuetracker.IssueTrackerCallbackEvent;
 
 @Component
 public class ProviderCallbackIssueTrackerResponsePostProcessor implements IssueTrackerResponsePostProcessor {

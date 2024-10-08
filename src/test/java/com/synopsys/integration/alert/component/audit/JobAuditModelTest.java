@@ -7,9 +7,9 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
-import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
-import com.synopsys.integration.alert.common.rest.model.JobAuditModel;
+import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
+import com.blackduck.integration.alert.common.persistence.model.AuditJobStatusModel;
+import com.blackduck.integration.alert.common.rest.model.JobAuditModel;
 
 public class JobAuditModelTest {
     @Test

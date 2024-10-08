@@ -19,8 +19,8 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrack
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTransitionModel;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 @ExtendWith(SpringExtension.class)
 class IssueTrackerAsyncMessageSenderTest {

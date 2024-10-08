@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.rest.api.BaseController;
+import com.blackduck.integration.alert.common.rest.api.BaseController;
 
 public class BaseControllerTest {
 

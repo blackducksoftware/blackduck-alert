@@ -23,8 +23,8 @@ import com.blackduck.integration.alert.component.settings.environment.ProxySetti
 import com.blackduck.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;
 import com.blackduck.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
 import com.blackduck.integration.alert.test.common.EnvironmentVariableMockingUtil;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @AlertIntegrationTest

@@ -8,8 +8,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.blackduck.integration.alert.common.persistence.model.AuditEntryModel;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 
 public class AlertPagedRestModelTest {
     @Test

@@ -13,8 +13,8 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
+import com.blackduck.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.blackduck.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
 
 public class IssueTrackerIssueResponseModel<T extends Serializable> extends AlertSerializableModel {
     private final T issueId;

@@ -26,12 +26,12 @@ import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpRequest
 import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpService;
 import com.blackduck.integration.alert.azure.boards.common.http.HttpServiceException;
 import com.blackduck.integration.alert.azure.boards.common.service.project.AzureProjectService;
-import com.synopsys.integration.alert.common.action.FieldModelTestAction;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.common.action.FieldModelTestAction;
+import com.blackduck.integration.alert.common.message.model.MessageResult;
+import com.blackduck.integration.alert.common.persistence.accessor.FieldUtility;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.blackduck.integration.alert.common.rest.model.FieldModel;
+import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 
 /**
  * @deprecated Replaced by AzureBoardsGlobalTestAction. To be removed in 8.0.0.

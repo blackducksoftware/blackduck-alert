@@ -12,10 +12,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.enumeration.DescriptorType;
+import com.blackduck.integration.alert.common.persistence.model.DefinedFieldModel;
+import com.blackduck.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
 import com.synopsys.integration.alert.database.configuration.DefinedFieldEntity;
 import com.synopsys.integration.alert.database.configuration.DescriptorTypeEntity;

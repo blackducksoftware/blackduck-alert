@@ -15,10 +15,10 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.channel.slack.validator.SlackDistributionConfigurationValidator;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.descriptor.ChannelDescriptor;
+import com.blackduck.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
+import com.blackduck.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 
 @Component
 public class SlackDescriptor extends ChannelDescriptor {

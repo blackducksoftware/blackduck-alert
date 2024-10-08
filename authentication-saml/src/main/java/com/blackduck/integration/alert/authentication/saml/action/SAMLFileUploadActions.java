@@ -7,11 +7,11 @@ import org.springframework.stereotype.Component;
 import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
 import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.blackduck.integration.alert.authentication.saml.validator.SAMLFileUploadValidator;
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.common.rest.api.FileUploadHelper;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.blackduck.integration.alert.common.rest.api.FileUploadHelper;
+import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Component
 public class SAMLFileUploadActions {

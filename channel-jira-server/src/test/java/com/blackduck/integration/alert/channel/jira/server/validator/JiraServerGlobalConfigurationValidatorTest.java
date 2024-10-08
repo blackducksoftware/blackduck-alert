@@ -14,9 +14,9 @@ import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGloba
 import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.util.DateUtils;
 
 class JiraServerGlobalConfigurationValidatorTest {
     private final String ID = UUID.randomUUID().toString();

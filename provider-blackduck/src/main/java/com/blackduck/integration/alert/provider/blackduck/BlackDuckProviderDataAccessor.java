@@ -24,12 +24,12 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
-import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.ProviderDataAccessor;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
+import com.blackduck.integration.alert.common.persistence.model.ProviderProject;
+import com.blackduck.integration.alert.common.persistence.model.ProviderUserModel;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
 import com.blackduck.integration.blackduck.api.core.BlackDuckResponse;
 import com.blackduck.integration.blackduck.api.core.response.UrlMultipleResponses;

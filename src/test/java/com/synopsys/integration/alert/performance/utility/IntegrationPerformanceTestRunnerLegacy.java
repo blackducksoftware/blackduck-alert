@@ -16,8 +16,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.blackduck.integration.alert.common.rest.model.FieldModel;
+import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.log.IntLogger;
 import com.blackduck.integration.log.Slf4jIntLogger;

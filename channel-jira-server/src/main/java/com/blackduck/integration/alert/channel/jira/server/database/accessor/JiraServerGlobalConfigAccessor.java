@@ -30,11 +30,11 @@ import com.blackduck.integration.alert.channel.jira.server.database.configuratio
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.common.util.SortUtil;
+import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
+import com.blackduck.integration.alert.common.security.EncryptionUtility;
+import com.blackduck.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.util.SortUtil;
 
 @Component
 public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<JiraServerGlobalConfigModel> {

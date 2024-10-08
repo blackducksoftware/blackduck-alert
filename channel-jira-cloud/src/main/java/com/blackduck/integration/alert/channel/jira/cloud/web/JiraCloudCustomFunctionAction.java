@@ -26,11 +26,11 @@ import com.blackduck.integration.jira.common.rest.service.PluginManagerService;
 import com.google.api.client.http.HttpStatusCodes;
 import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.action.CustomFunctionAction;
-import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.action.CustomFunctionAction;
+import com.blackduck.integration.alert.common.rest.HttpServletContentWrapper;
+import com.blackduck.integration.alert.common.rest.model.FieldModel;
+import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Component
 public class JiraCloudCustomFunctionAction extends CustomFunctionAction<String> {

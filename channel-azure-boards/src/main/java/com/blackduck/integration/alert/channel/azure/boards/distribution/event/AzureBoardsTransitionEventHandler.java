@@ -38,9 +38,9 @@ import com.blackduck.integration.alert.azure.boards.common.service.comment.Azure
 import com.blackduck.integration.alert.azure.boards.common.service.query.AzureWorkItemQueryService;
 import com.blackduck.integration.alert.azure.boards.common.service.state.AzureWorkItemTypeStateService;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.AzureWorkItemService;
-import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
-import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.common.persistence.accessor.JobDetailsAccessor;
+import com.blackduck.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
+import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 
 @Component
 public class AzureBoardsTransitionEventHandler extends IssueTrackerTransitionEventHandler<AzureBoardsTransitionEvent> {

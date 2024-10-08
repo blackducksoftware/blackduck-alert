@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import com.blackduck.integration.alert.common.enumeration.FrequencyType;
+
 public class FrequencyTypeEnumTest {
 
     @Test

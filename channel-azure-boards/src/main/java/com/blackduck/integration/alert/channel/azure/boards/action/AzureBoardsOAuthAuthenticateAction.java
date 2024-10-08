@@ -25,13 +25,13 @@ import com.blackduck.integration.alert.channel.azure.boards.oauth.OAuthRequestVa
 import com.blackduck.integration.rest.proxy.ProxyInfo;
 import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;
 import com.blackduck.integration.alert.azure.boards.common.oauth.AzureOAuthScopes;
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.rest.AlertWebServerUrlManager;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.rest.AlertWebServerUrlManager;
+import com.blackduck.integration.alert.common.rest.ResponseFactory;
+import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Component
 public class AzureBoardsOAuthAuthenticateAction {

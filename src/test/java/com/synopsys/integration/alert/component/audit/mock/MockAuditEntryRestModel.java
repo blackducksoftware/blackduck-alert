@@ -9,10 +9,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
-import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
-import com.synopsys.integration.alert.common.rest.model.JobAuditModel;
-import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
+import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
+import com.blackduck.integration.alert.common.persistence.model.AuditEntryModel;
+import com.blackduck.integration.alert.common.rest.model.JobAuditModel;
+import com.blackduck.integration.alert.common.rest.model.NotificationConfig;
 import com.synopsys.integration.alert.mock.model.MockRestModelUtil;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 

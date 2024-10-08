@@ -18,14 +18,14 @@ import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
 import com.blackduck.integration.alert.api.provider.lifecycle.ProviderSchedulingManager;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckCacheHttpClientCache;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.common.action.ApiAction;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.blackduck.integration.alert.common.action.ApiAction;
+import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.ProviderDataAccessor;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
+import com.blackduck.integration.alert.common.persistence.model.ProviderProject;
+import com.blackduck.integration.alert.common.rest.model.FieldModel;
+import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
 
 @Component
 public class BlackDuckGlobalApiAction extends ApiAction {

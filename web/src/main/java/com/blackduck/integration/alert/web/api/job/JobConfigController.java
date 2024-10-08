@@ -17,16 +17,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.common.rest.api.BaseJobResourceController;
-import com.synopsys.integration.alert.common.rest.api.ReadPageController;
-import com.synopsys.integration.alert.common.rest.api.TestController;
-import com.synopsys.integration.alert.common.rest.api.ValidateController;
-import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
-import com.synopsys.integration.alert.common.rest.model.JobFieldStatuses;
-import com.synopsys.integration.alert.common.rest.model.JobIdsRequestModel;
-import com.synopsys.integration.alert.common.rest.model.JobPagedModel;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.rest.ResponseFactory;
+import com.blackduck.integration.alert.common.rest.api.BaseJobResourceController;
+import com.blackduck.integration.alert.common.rest.api.ReadPageController;
+import com.blackduck.integration.alert.common.rest.api.TestController;
+import com.blackduck.integration.alert.common.rest.api.ValidateController;
+import com.blackduck.integration.alert.common.rest.model.JobFieldModel;
+import com.blackduck.integration.alert.common.rest.model.JobFieldStatuses;
+import com.blackduck.integration.alert.common.rest.model.JobIdsRequestModel;
+import com.blackduck.integration.alert.common.rest.model.JobPagedModel;
 
 @RestController
 @RequestMapping(JobConfigController.JOB_CONFIGURATION_PATH)

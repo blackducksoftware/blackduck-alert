@@ -12,10 +12,10 @@ import com.blackduck.integration.alert.authentication.ldap.action.LDAPTestAction
 import com.blackduck.integration.alert.authentication.ldap.action.LDAPValidationAction;
 import com.blackduck.integration.alert.authentication.ldap.model.LDAPConfigModel;
 import com.blackduck.integration.alert.authentication.ldap.model.LDAPConfigTestModel;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.common.rest.api.StaticUniqueConfigResourceController;
-import com.synopsys.integration.alert.common.rest.api.ValidateController;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.rest.ResponseFactory;
+import com.blackduck.integration.alert.common.rest.api.StaticUniqueConfigResourceController;
+import com.blackduck.integration.alert.common.rest.api.ValidateController;
 
 @RestController
 @RequestMapping(AlertRestConstants.LDAP_PATH)

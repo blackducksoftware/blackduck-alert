@@ -14,9 +14,9 @@ import org.apache.commons.collections4.ListUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
-import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
+import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 
 public class MockProcessingNotificationAccessor implements NotificationAccessor {
     ArrayList<AlertNotificationModel> alertNotificationModels;

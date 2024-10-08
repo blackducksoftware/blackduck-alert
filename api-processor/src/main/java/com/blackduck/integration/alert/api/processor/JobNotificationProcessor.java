@@ -19,8 +19,8 @@ import com.blackduck.integration.alert.api.processor.distribute.ProcessedNotific
 import com.blackduck.integration.alert.api.processor.distribute.ProviderMessageDistributor;
 import com.blackduck.integration.alert.api.processor.extract.model.ProcessedProviderMessageHolder;
 import com.blackduck.integration.alert.api.processor.filter.NotificationContentWrapper;
-import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.blackduck.integration.alert.common.enumeration.ProcessingType;
+import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 
 @Component
 public class JobNotificationProcessor {

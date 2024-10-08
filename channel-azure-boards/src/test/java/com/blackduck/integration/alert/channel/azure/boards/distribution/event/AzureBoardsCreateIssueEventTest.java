@@ -10,7 +10,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 class AzureBoardsCreateIssueEventTest {
     @Test

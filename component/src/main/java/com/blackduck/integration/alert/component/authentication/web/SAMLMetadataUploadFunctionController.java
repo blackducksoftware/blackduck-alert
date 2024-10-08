@@ -12,8 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
-import com.synopsys.integration.alert.common.action.upload.AbstractUploadAction;
-import com.synopsys.integration.alert.common.rest.api.AbstractUploadFunctionController;
+import com.blackduck.integration.alert.common.action.upload.AbstractUploadAction;
+import com.blackduck.integration.alert.common.rest.api.AbstractUploadFunctionController;
 
 @Controller
 @RequestMapping(SAMLMetadataUploadFunctionController.SAML_UPLOAD_URL)

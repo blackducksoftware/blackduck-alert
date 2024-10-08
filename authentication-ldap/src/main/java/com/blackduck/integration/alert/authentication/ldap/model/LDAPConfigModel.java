@@ -6,8 +6,8 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.blackduck.integration.alert.api.common.model.Obfuscated;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.rest.model.ConfigWithMetadata;
 
 public class LDAPConfigModel extends ConfigWithMetadata implements Obfuscated<LDAPConfigModel> {
     private static final long serialVersionUID = -3340739050525348445L;

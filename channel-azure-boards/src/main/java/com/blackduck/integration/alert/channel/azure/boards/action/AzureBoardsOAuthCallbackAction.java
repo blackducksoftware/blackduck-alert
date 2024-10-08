@@ -28,10 +28,10 @@ import com.blackduck.integration.alert.azure.boards.common.http.HttpServiceExcep
 import com.blackduck.integration.alert.azure.boards.common.model.AzureArrayResponseModel;
 import com.blackduck.integration.alert.azure.boards.common.service.project.AzureProjectService;
 import com.blackduck.integration.alert.azure.boards.common.service.project.TeamProjectReferenceResponseModel;
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 
 import jakarta.servlet.http.HttpServletRequest;
 

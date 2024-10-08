@@ -12,13 +12,13 @@ import com.blackduck.integration.alert.authentication.saml.model.SAMLMetadataMod
 import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
 import com.blackduck.integration.alert.test.common.MockAlertProperties;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
-import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.AlertProperties;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.persistence.model.PermissionKey;
+import com.blackduck.integration.alert.common.persistence.model.PermissionMatrixModel;
+import com.blackduck.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.common.util.DateUtils;
 
 public class SAMLTestHelper {
     public static final String TEST_PRIVATE_KEY = "-----BEGIN PRIVATE KEY-----\n" +

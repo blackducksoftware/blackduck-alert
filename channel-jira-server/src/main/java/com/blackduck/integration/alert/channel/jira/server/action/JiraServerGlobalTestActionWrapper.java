@@ -23,7 +23,7 @@ import com.blackduck.integration.jira.common.server.service.IssueSearchService;
 import com.blackduck.integration.jira.common.server.service.JiraServerServiceFactory;
 import com.blackduck.integration.jira.common.server.service.MyPermissionsService;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
+import com.blackduck.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 
 public class JiraServerGlobalTestActionWrapper {
     private final Logger logger = LoggerFactory.getLogger(getClass());

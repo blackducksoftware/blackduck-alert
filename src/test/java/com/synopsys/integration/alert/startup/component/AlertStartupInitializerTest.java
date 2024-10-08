@@ -12,19 +12,19 @@ import com.blackduck.integration.alert.api.environment.EnvironmentVariableProces
 import com.blackduck.integration.alert.api.environment.EnvironmentVariableUtility;
 import com.blackduck.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
-import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.common.descriptor.Descriptor;
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
-import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
-import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
-import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.blackduck.integration.alert.common.descriptor.ChannelDescriptor;
+import com.blackduck.integration.alert.common.descriptor.Descriptor;
+import com.blackduck.integration.alert.common.descriptor.DescriptorMap;
+import com.blackduck.integration.alert.common.descriptor.DescriptorProcessor;
+import com.blackduck.integration.alert.common.descriptor.accessor.SettingsUtility;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.DescriptorAccessor;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
+import com.blackduck.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
+import com.blackduck.integration.alert.common.rest.FieldModelProcessor;
+import com.blackduck.integration.alert.common.security.EncryptionUtility;
 
 public class AlertStartupInitializerTest {
     private static final SettingsDescriptorKey SETTINGS_DESCRIPTOR_KEY = new SettingsDescriptorKey();

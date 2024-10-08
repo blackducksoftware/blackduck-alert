@@ -45,8 +45,8 @@ import com.blackduck.integration.alert.api.processor.extract.model.project.BomCo
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentPolicy;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.enumeration.ItemOperation;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 class RuleViolationNotificationMessageExtractorTest {
     private static String PROJECT = "ProjectName";

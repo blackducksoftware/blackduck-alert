@@ -14,10 +14,10 @@ import com.blackduck.integration.alert.api.provider.lifecycle.ProviderProperties
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.common.AlertProperties;
+import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.FieldUtility;
+import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 
 @Component
 public class BlackDuckPropertiesFactory extends ProviderPropertiesFactory<BlackDuckProperties> {

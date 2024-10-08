@@ -18,9 +18,9 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
-import com.synopsys.integration.alert.common.persistence.model.UserModel;
-import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
+import com.blackduck.integration.alert.common.enumeration.AuthenticationType;
+import com.blackduck.integration.alert.common.persistence.model.UserModel;
+import com.blackduck.integration.alert.common.persistence.model.UserRoleModel;
 
 @Component
 public class AuthenticationEventManager {

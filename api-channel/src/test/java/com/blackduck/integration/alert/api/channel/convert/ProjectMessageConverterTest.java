@@ -16,8 +16,8 @@ import com.blackduck.integration.alert.api.processor.extract.model.project.Compo
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectOperation;
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.enumeration.ItemOperation;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 public class ProjectMessageConverterTest {
     private static final ProviderDetails PROVIDER_DETAILS = new ProviderDetails(0L, new LinkableItem("Provider", "The provider"));

@@ -16,12 +16,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.enumeration.AccessOperation;
-import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
-import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
-import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
-import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
-import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
+import com.blackduck.integration.alert.common.enumeration.AccessOperation;
+import com.blackduck.integration.alert.common.enumeration.DefaultUserRole;
+import com.blackduck.integration.alert.common.exception.AlertForbiddenOperationException;
+import com.blackduck.integration.alert.common.persistence.model.PermissionKey;
+import com.blackduck.integration.alert.common.persistence.model.PermissionMatrixModel;
+import com.blackduck.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.database.authorization.PermissionMatrixRelation;
 import com.synopsys.integration.alert.database.authorization.PermissionMatrixRepository;
 import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;

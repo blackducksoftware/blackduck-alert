@@ -10,8 +10,8 @@ package com.blackduck.integration.alert.provider.blackduck.task.accumulator;
 import java.util.List;
 import java.util.function.Predicate;
 
-import com.synopsys.integration.alert.common.message.model.DateRange;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
+import com.blackduck.integration.alert.common.message.model.DateRange;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedDetails;
 import com.blackduck.integration.alert.api.processor.filter.PageRetriever;
 import com.blackduck.integration.alert.api.processor.filter.StatefulAlertPage;
 import com.blackduck.integration.blackduck.api.core.response.UrlMultipleResponses;

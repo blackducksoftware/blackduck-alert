@@ -19,12 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.message.model.DateRange;
-import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusAccessor;
-import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.message.model.DateRange;
+import com.blackduck.integration.alert.common.persistence.accessor.SystemMessageAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.SystemStatusAccessor;
+import com.blackduck.integration.alert.common.persistence.model.SystemMessageModel;
+import com.blackduck.integration.alert.common.util.DateUtils;
 
 @Component
 public class SystemActions {

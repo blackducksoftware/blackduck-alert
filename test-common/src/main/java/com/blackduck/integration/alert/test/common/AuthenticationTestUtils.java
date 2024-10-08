@@ -22,13 +22,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
-import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
-import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
-import com.synopsys.integration.alert.common.persistence.model.UserModel;
-import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
-import com.synopsys.integration.alert.common.security.UserPrincipal;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.common.descriptor.accessor.RoleAccessor;
+import com.blackduck.integration.alert.common.enumeration.AuthenticationType;
+import com.blackduck.integration.alert.common.persistence.model.PermissionMatrixModel;
+import com.blackduck.integration.alert.common.persistence.model.UserModel;
+import com.blackduck.integration.alert.common.persistence.model.UserRoleModel;
+import com.blackduck.integration.alert.common.security.UserPrincipal;
+import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 
 /**
  * This class maintains an internal RoleAccessor to store roles and permissions.

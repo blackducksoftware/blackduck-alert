@@ -19,8 +19,8 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.search.ExistingI
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.enumeration.IssueCategory;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.enumeration.IssueStatus;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
+import com.blackduck.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.blackduck.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
 
 public class IssueTrackerIssueTransitionerTest {
     private static final IssueMissingTransitionException TEST_EXCEPTION = new IssueMissingTransitionException("key", "missing transition", List.of("valid transition"));

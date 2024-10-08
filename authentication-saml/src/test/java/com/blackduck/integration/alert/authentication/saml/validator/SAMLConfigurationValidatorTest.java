@@ -17,7 +17,7 @@ import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.authentication.saml.SAMLTestHelper;
 import com.blackduck.integration.alert.authentication.saml.model.SAMLConfigModel;
 import com.blackduck.integration.alert.authentication.saml.model.SAMLMetadataMode;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.blackduck.integration.alert.common.persistence.util.FilePersistenceUtil;
 
 @ExtendWith(SpringExtension.class)
 class SAMLConfigurationValidatorTest {

@@ -16,10 +16,10 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.blackduck.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.rest.model.FieldModel;
+import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
 
 public class GlobalConfigurationValidatorAsserter {
     private final String descriptorKey;

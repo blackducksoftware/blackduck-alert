@@ -15,15 +15,15 @@ import org.mockito.Mockito;
 
 import com.blackduck.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.descriptor.Descriptor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
-import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
-import com.synopsys.integration.alert.common.enumeration.AccessOperation;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.descriptor.Descriptor;
+import com.blackduck.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
+import com.blackduck.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
+import com.blackduck.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
+import com.blackduck.integration.alert.common.enumeration.AccessOperation;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.enumeration.DescriptorType;
+import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 
 public class DescriptorMetadataActionsTest {
     private final Set<Descriptor> descriptors = createComprehensiveSetOfDescriptors();

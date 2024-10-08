@@ -22,8 +22,8 @@ import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobMa
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobStage;
 import com.blackduck.integration.alert.api.distribution.execution.JobStage;
 import com.blackduck.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
+import com.blackduck.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.blackduck.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
 
 class JiraServerTransitionEventListenerTest {
     private final Gson gson = BlackDuckServicesFactory.createDefaultGson();

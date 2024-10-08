@@ -14,7 +14,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 public class MessageContentGroup extends AlertSerializableModel {
     private final List<ProviderMessageContent> subContent;

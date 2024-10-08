@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackduck.integration.alert.channel.email.descriptor.EmailDescriptor;
-import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
+import com.blackduck.integration.alert.common.rest.api.AbstractFunctionController;
 
 /**
  * TODO: This class needs to be updated to follow the new model/request paradigm for retrieving additional email addresses

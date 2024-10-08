@@ -20,9 +20,9 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIss
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.enumeration.IssueCategory;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.enumeration.IssueStatus;
-import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.blackduck.integration.alert.common.enumeration.ItemOperation;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.blackduck.integration.alert.api.processor.extract.model.project.AbstractBomComponentDetails;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;

@@ -20,9 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.blackduck.integration.alert.database.job.JobToNotificationRelation;
 import com.blackduck.integration.alert.database.job.JobToNotificationRelationRepository;
-import com.synopsys.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.JobToNotificationMappingModel;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.blackduck.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
+import com.blackduck.integration.alert.common.persistence.model.job.JobToNotificationMappingModel;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 
 @Component
 public class DefaultJobNotificationMappingAccessor implements JobNotificationMappingAccessor {

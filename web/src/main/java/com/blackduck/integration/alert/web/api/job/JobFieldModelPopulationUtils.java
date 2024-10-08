@@ -26,20 +26,20 @@ import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDe
 import com.blackduck.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.blackduck.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
 import com.blackduck.integration.alert.channel.slack.descriptor.SlackDescriptor;
-import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
-import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldModel;
+import com.blackduck.integration.alert.common.descriptor.ChannelDescriptor;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
+import com.blackduck.integration.alert.common.rest.model.FieldModel;
+import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
+import com.blackduck.integration.alert.common.rest.model.JobFieldModel;
+import com.blackduck.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 
 public final class JobFieldModelPopulationUtils {
     private static final String DEFAULT_PROVIDER_NAME = new BlackDuckProviderKey().getUniversalKey();

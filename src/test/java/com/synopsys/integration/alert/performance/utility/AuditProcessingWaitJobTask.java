@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
+import com.blackduck.integration.alert.common.persistence.model.AuditEntryPageModel;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.log.IntLogger;

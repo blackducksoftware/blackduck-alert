@@ -11,11 +11,11 @@ import org.junit.jupiter.api.Test;
 import com.blackduck.integration.alert.api.channel.DistributionChannel;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.blackduck.integration.alert.common.enumeration.FrequencyType;
+import com.blackduck.integration.alert.common.enumeration.ProcessingType;
+import com.blackduck.integration.alert.common.message.model.MessageResult;
+import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 
 class DistributionChannelMessageFieldModelTestActionTest {
     private static final String CLASS_NAME = DistributionChannelMessageFieldModelTestActionTest.class.getSimpleName();

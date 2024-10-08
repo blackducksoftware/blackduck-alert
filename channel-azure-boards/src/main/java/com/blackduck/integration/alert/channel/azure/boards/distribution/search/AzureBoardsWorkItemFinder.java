@@ -17,7 +17,7 @@ import com.blackduck.integration.alert.azure.boards.common.service.query.fluent.
 import com.blackduck.integration.alert.azure.boards.common.service.query.fluent.WorkItemQueryWhereOperator;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseFields;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 public class AzureBoardsWorkItemFinder {
     private final AzureBoardsIssueTrackerQueryManager queryManager;

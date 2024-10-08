@@ -14,7 +14,7 @@ import com.blackduck.integration.jira.common.model.components.StatusDetailsCompo
 import com.blackduck.integration.jira.common.model.request.IssueRequestModel;
 import com.blackduck.integration.jira.common.model.response.TransitionsResponseModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueResponseCreator;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 
 public class JiraCloudIssueTransitioner extends JiraIssueTransitioner {
     private final IssueService issueService;

@@ -3,7 +3,7 @@ package com.synopsys.integration.alert.database.certificates;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.database.BaseEntity;
 
 import jakarta.persistence.Column;

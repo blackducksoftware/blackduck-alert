@@ -17,10 +17,10 @@ import com.blackduck.integration.alert.authentication.saml.action.SAMLCrudAction
 import com.blackduck.integration.alert.authentication.saml.action.SAMLFileUploadActions;
 import com.blackduck.integration.alert.authentication.saml.action.SAMLValidationAction;
 import com.blackduck.integration.alert.authentication.saml.model.SAMLConfigModel;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.common.rest.api.StaticUniqueConfigResourceController;
-import com.synopsys.integration.alert.common.rest.api.ValidateController;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.rest.ResponseFactory;
+import com.blackduck.integration.alert.common.rest.api.StaticUniqueConfigResourceController;
+import com.blackduck.integration.alert.common.rest.api.ValidateController;
 
 @RestController
 @RequestMapping(AlertRestConstants.SAML_PATH)

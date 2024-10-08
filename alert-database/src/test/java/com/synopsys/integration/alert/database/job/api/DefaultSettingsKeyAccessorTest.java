@@ -9,7 +9,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.persistence.model.SettingsKeyModel;
+import com.blackduck.integration.alert.common.persistence.model.SettingsKeyModel;
 import com.synopsys.integration.alert.database.job.api.mock.MockSettingsKeyRepository;
 import com.synopsys.integration.alert.database.settings.SettingsKeyEntity;
 import com.synopsys.integration.alert.database.settings.SettingsKeyRepository;

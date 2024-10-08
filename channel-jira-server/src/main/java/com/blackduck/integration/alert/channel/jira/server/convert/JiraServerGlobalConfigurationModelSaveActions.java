@@ -15,9 +15,9 @@ import org.springframework.stereotype.Component;
 import com.blackduck.integration.alert.channel.jira.server.action.JiraServerGlobalCrudActions;
 import com.blackduck.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
-import com.synopsys.integration.alert.common.action.api.GlobalConfigurationModelToConcreteSaveActions;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.action.api.GlobalConfigurationModelToConcreteSaveActions;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 

@@ -25,8 +25,8 @@ import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGloba
 import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.blackduck.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
 import com.blackduck.integration.alert.test.common.EnvironmentVariableMockingUtil;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @AlertIntegrationTest

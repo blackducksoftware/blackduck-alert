@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
 import com.synopsys.integration.alert.database.provider.task.ProviderTaskPropertiesEntity;
 import com.synopsys.integration.alert.database.provider.task.ProviderTaskPropertiesRepository;
 

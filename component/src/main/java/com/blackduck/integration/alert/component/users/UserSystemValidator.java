@@ -15,12 +15,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
-import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
-import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
-import com.synopsys.integration.alert.common.persistence.model.UserModel;
-import com.synopsys.integration.alert.common.system.BaseSystemValidator;
+import com.blackduck.integration.alert.common.enumeration.SystemMessageSeverity;
+import com.blackduck.integration.alert.common.enumeration.SystemMessageType;
+import com.blackduck.integration.alert.common.persistence.accessor.SystemMessageAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.UserAccessor;
+import com.blackduck.integration.alert.common.persistence.model.UserModel;
+import com.blackduck.integration.alert.common.system.BaseSystemValidator;
 
 @Component
 public class UserSystemValidator extends BaseSystemValidator {

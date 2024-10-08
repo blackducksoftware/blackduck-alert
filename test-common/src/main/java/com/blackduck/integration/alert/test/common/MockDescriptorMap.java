@@ -11,12 +11,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.synopsys.integration.alert.common.descriptor.Descriptor;
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import com.blackduck.integration.alert.common.descriptor.Descriptor;
+import com.blackduck.integration.alert.common.descriptor.DescriptorMap;
+import com.blackduck.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
+import com.blackduck.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.enumeration.DescriptorType;
 import com.blackduck.integration.alert.api.descriptor.AzureBoardsChannelKey;
 import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.api.descriptor.EmailChannelKey;

@@ -23,9 +23,9 @@ import com.blackduck.integration.log.IntLogger;
 import com.blackduck.integration.log.Slf4jIntLogger;
 import com.blackduck.integration.rest.HttpUrl;
 import com.blackduck.integration.rest.response.Response;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldModel;
+import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
+import com.blackduck.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 
 @Component
 public class BlackDuckProjectExistencePopulator implements ProviderProjectExistencePopulator {

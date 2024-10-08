@@ -27,13 +27,13 @@ import com.blackduck.integration.util.IntegrationEscapeUtil;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.action.ValidationActionResponse;
-import com.synopsys.integration.alert.common.action.api.AbstractResourceActions;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
-import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.action.ValidationActionResponse;
+import com.blackduck.integration.alert.common.action.api.AbstractResourceActions;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
+import com.blackduck.integration.alert.common.persistence.model.CustomCertificateModel;
+import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Component
 public class CertificateActions extends AbstractResourceActions<CertificateModel, CustomCertificateModel, MultiCertificateModel> {

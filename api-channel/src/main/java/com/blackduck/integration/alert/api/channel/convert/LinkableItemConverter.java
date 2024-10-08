@@ -9,7 +9,7 @@ package com.blackduck.integration.alert.api.channel.convert;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 public class LinkableItemConverter {
     private final ChannelMessageFormatter formatter;

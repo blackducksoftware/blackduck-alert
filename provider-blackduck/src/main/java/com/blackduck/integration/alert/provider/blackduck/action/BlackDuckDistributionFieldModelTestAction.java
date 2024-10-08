@@ -34,15 +34,15 @@ import com.blackduck.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckApiTokenValidator;
 import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
 import com.blackduck.integration.exception.IntegrationException;
-import com.synopsys.integration.alert.common.action.FieldModelTestAction;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.blackduck.integration.alert.common.action.FieldModelTestAction;
+import com.blackduck.integration.alert.common.message.model.MessageResult;
+import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.FieldUtility;
+import com.blackduck.integration.alert.common.persistence.accessor.ProviderDataAccessor;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
+import com.blackduck.integration.alert.common.persistence.model.ProviderProject;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
+import com.blackduck.integration.alert.common.rest.model.FieldModel;
 
 @Component
 public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAction {

@@ -19,7 +19,7 @@ import org.springframework.core.io.Resource;
 import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.authentication.saml.SAMLTestHelper;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.blackduck.integration.alert.common.persistence.util.FilePersistenceUtil;
 
 class SAMLFileUploadValidatorTest {
     private SAMLFileUploadValidator samlFileUploadValidator;

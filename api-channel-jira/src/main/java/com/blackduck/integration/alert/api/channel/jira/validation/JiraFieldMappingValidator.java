@@ -20,8 +20,8 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
+import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
 
 @Component
 public class JiraFieldMappingValidator {

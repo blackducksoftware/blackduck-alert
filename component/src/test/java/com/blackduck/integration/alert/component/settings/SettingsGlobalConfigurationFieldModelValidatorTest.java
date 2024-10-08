@@ -10,8 +10,8 @@ import com.blackduck.integration.alert.component.settings.descriptor.SettingsDes
 import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.blackduck.integration.alert.component.settings.validator.SettingsGlobalConfigurationFieldModelValidator;
 import com.blackduck.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
+import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 
 public class SettingsGlobalConfigurationFieldModelValidatorTest {
 

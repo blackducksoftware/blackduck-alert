@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
+import com.blackduck.integration.alert.common.persistence.model.ClientCertificateModel;
 import com.synopsys.integration.alert.database.job.api.ClientCertificateAccessor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 

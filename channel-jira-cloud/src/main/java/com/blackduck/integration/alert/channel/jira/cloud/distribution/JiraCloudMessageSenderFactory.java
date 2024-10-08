@@ -47,7 +47,7 @@ import com.blackduck.integration.alert.api.common.model.exception.AlertException
 import com.blackduck.integration.alert.api.descriptor.JiraCloudChannelKey;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 
 @Component
 public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderFactory<JiraCloudJobDetailsModel, String> {

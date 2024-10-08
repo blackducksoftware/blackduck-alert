@@ -15,11 +15,11 @@ import org.springframework.stereotype.Component;
 import com.blackduck.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
 import com.blackduck.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.rest.api.ConfigurationCrudHelper;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
+import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 
 @Component

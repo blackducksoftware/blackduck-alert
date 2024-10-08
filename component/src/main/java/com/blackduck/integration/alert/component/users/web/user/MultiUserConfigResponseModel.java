@@ -9,7 +9,7 @@ package com.blackduck.integration.alert.component.users.web.user;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.rest.model.MultiResponseModel;
+import com.blackduck.integration.alert.common.rest.model.MultiResponseModel;
 
 public class MultiUserConfigResponseModel extends MultiResponseModel<UserConfig> {
     public MultiUserConfigResponseModel(final List<UserConfig> models) {

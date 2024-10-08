@@ -12,10 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
-import com.synopsys.integration.alert.common.persistence.model.UserModel;
-import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.blackduck.integration.alert.common.persistence.accessor.SystemStatusAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.UserAccessor;
+import com.blackduck.integration.alert.common.persistence.model.UserModel;
+import com.blackduck.integration.alert.common.security.EncryptionUtility;
 
 @Component
 @Order(20)

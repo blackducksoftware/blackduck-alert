@@ -13,7 +13,7 @@ import com.blackduck.integration.alert.api.authentication.descriptor.Authenticat
 import com.blackduck.integration.alert.authentication.ldap.LDAPTestHelper;
 import com.blackduck.integration.alert.authentication.ldap.model.LDAPConfigModel;
 import com.blackduck.integration.alert.authentication.ldap.validator.LDAPConfigurationValidator;
-import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.action.ActionResponse;
 
 class LDAPCrudActionsTest {
     private LDAPCrudActions ldapCrudActions;

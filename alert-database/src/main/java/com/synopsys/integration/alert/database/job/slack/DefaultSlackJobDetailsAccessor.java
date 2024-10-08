@@ -7,8 +7,8 @@
  */
 package com.synopsys.integration.alert.database.job.slack;
 
-import com.synopsys.integration.alert.common.persistence.accessor.SlackJobDetailsAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.accessor.SlackJobDetailsAccessor;
+import com.blackduck.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;

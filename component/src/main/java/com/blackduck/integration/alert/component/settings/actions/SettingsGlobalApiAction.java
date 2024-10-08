@@ -19,10 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.action.ApiAction;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.blackduck.integration.alert.common.action.ApiAction;
+import com.blackduck.integration.alert.common.rest.model.FieldModel;
+import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
+import com.blackduck.integration.alert.common.security.EncryptionUtility;
 import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.blackduck.integration.alert.component.settings.validator.SettingsSystemValidator;
 

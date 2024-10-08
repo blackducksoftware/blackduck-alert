@@ -14,7 +14,7 @@ import com.blackduck.integration.alert.api.distribution.mock.MockJobCompletionSt
 import com.blackduck.integration.alert.api.distribution.mock.MockJobCompletionStatusRepository;
 import com.blackduck.integration.alert.database.job.api.DefaultJobCompletionStatusModelAccessor;
 import com.blackduck.integration.alert.database.job.execution.JobCompletionRepository;
-import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
 
 class JobStageEndedHandlerTest {
 

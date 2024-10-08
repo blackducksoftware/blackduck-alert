@@ -13,9 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
-import com.synopsys.integration.alert.common.persistence.accessor.AuthenticationTypeAccessor;
-import com.synopsys.integration.alert.common.persistence.model.AuthenticationTypeDetails;
+import com.blackduck.integration.alert.common.enumeration.AuthenticationType;
+import com.blackduck.integration.alert.common.persistence.accessor.AuthenticationTypeAccessor;
+import com.blackduck.integration.alert.common.persistence.model.AuthenticationTypeDetails;
 import com.synopsys.integration.alert.database.user.AuthenticationTypeEntity;
 import com.synopsys.integration.alert.database.user.AuthenticationTypeRepository;
 

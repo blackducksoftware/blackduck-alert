@@ -19,7 +19,7 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssuePolic
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueVulnerabilityDetails;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueVulnerabilityModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.blackduck.integration.alert.common.enumeration.ItemOperation;
 import com.blackduck.integration.alert.api.processor.extract.model.project.BomComponentDetails;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcern;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernType;

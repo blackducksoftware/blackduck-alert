@@ -22,11 +22,11 @@ import org.springframework.stereotype.Component;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatusMessages;
-import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
-import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
-import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
-import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.common.system.BaseSystemValidator;
+import com.blackduck.integration.alert.common.enumeration.SystemMessageSeverity;
+import com.blackduck.integration.alert.common.enumeration.SystemMessageType;
+import com.blackduck.integration.alert.common.persistence.accessor.SystemMessageAccessor;
+import com.blackduck.integration.alert.common.security.EncryptionUtility;
+import com.blackduck.integration.alert.common.system.BaseSystemValidator;
 import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.blackduck.integration.alert.component.settings.encryption.model.SettingsEncryptionModel;
 

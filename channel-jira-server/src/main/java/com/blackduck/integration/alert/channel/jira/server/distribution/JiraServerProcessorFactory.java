@@ -37,8 +37,8 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueCate
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueTrackerSearcher;
 import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerAsyncMessageSender;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
+import com.blackduck.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
+import com.blackduck.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 
 @Component
 public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<JiraServerJobDetailsModel, String> {

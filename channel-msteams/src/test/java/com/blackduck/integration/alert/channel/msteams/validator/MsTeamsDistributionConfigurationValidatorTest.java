@@ -14,9 +14,9 @@ import com.blackduck.integration.alert.channel.msteams.descriptor.MsTeamsDescrip
 import com.blackduck.integration.alert.test.common.FieldModelUtils;
 import com.blackduck.integration.alert.test.common.ValidationConstants;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
+import com.blackduck.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
+import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
+import com.blackduck.integration.alert.common.rest.model.JobFieldModel;
 
 public class MsTeamsDistributionConfigurationValidatorTest {
     public static final String EXPECTED_VALID_WEBHOOK_URL = "https://www.example.com/webhook";

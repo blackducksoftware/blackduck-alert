@@ -12,8 +12,8 @@ import org.springframework.boot.ssl.pem.PemSslStoreDetails;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.persistence.model.ClientCertificateModel;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 
 @Component
 public class AlertClientCertificateManager {

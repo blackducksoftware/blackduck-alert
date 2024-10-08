@@ -15,10 +15,10 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.blackduck.integration.alert.api.descriptor.EmailChannelKey;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobDetailsExtractor;
-import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.processor.DistributionJobDetailsExtractor;
+import com.blackduck.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
 
 @Component
 public class EmailJobDetailsExtractor extends DistributionJobDetailsExtractor {

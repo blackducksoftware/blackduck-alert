@@ -20,12 +20,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.blackduck.integration.alert.database.job.DistributionJobEntity;
 import com.blackduck.integration.alert.database.job.DistributionJobRepository;
-import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
-import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.blackduck.integration.alert.common.enumeration.ProcessingType;
+import com.blackduck.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
+import com.blackduck.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
+import com.blackduck.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
 

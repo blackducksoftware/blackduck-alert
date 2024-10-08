@@ -17,11 +17,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
-import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
-import com.synopsys.integration.alert.common.message.model.DateRange;
-import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.enumeration.SystemMessageSeverity;
+import com.blackduck.integration.alert.common.enumeration.SystemMessageType;
+import com.blackduck.integration.alert.common.message.model.DateRange;
+import com.blackduck.integration.alert.common.persistence.model.SystemMessageModel;
+import com.blackduck.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @Transactional

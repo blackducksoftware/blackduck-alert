@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.blackduck.integration.alert.api.event.AlertEvent;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.util.DateUtils;
 
 public class AuditEvent extends AlertEvent {
     private static final long serialVersionUID = 8821840075948290969L;

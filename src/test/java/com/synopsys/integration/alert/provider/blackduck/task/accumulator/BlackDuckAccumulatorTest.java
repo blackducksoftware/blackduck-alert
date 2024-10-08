@@ -18,9 +18,9 @@ import com.blackduck.integration.alert.provider.blackduck.task.accumulator.Black
 import com.blackduck.integration.alert.provider.blackduck.task.accumulator.BlackDuckNotificationRetrieverFactory;
 import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.api.event.NotificationReceivedEvent;
-import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
+import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedDetails;
 import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.api.processor.filter.PageRetriever;
 import com.blackduck.integration.alert.api.processor.filter.StatefulAlertPage;

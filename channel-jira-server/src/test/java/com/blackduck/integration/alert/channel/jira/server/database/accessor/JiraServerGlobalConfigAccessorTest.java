@@ -25,12 +25,12 @@ import com.blackduck.integration.alert.channel.jira.server.model.enumeration.Jir
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.AlertProperties;
+import com.blackduck.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
+import com.blackduck.integration.alert.common.security.EncryptionUtility;
+import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.test.common.MockAlertProperties;
 
 class JiraServerGlobalConfigAccessorTest {

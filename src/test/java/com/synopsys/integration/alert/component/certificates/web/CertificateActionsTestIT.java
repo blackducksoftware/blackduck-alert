@@ -23,13 +23,13 @@ import com.blackduck.integration.alert.component.certificates.web.CertificateMod
 import com.blackduck.integration.alert.component.certificates.web.MultiCertificateModel;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
-import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.AlertProperties;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
+import com.blackduck.integration.alert.common.persistence.model.CustomCertificateModel;
+import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.certificates.CustomCertificateRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 

@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.authentication.validator.AuthenticationConfigurationFieldModelValidator;
-import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
+import com.blackduck.integration.alert.common.descriptor.ComponentDescriptor;
+import com.blackduck.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 
 @Component
 public class AuthenticationDescriptor extends ComponentDescriptor {

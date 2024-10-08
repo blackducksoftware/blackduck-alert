@@ -18,12 +18,12 @@ import com.blackduck.integration.alert.api.channel.CommonChannelDistributionVali
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
 import com.blackduck.integration.alert.channel.email.descriptor.EmailDescriptor;
-import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
+import com.blackduck.integration.alert.common.descriptor.ChannelDescriptor;
+import com.blackduck.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
+import com.blackduck.integration.alert.common.enumeration.FrequencyType;
+import com.blackduck.integration.alert.common.rest.model.FieldModel;
+import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
+import com.blackduck.integration.alert.common.rest.model.JobFieldModel;
 
 class EmailDistributionConfigurationValidatorTest {
     static final FieldValueModel DEFAULT_FIELD_VALUE_MODEL = new FieldValueModel(Set.of("true"), true);

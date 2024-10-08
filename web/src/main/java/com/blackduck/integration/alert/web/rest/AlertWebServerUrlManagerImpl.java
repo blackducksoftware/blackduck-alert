@@ -17,8 +17,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.rest.AlertWebServerUrlManager;
+import com.blackduck.integration.alert.common.AlertProperties;
+import com.blackduck.integration.alert.common.rest.AlertWebServerUrlManager;
 
 @Component
 public class AlertWebServerUrlManagerImpl implements AlertWebServerUrlManager {

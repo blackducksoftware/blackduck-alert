@@ -18,12 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
-import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
-import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.accessor.JobAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.ProviderDataAccessor;
+import com.blackduck.integration.alert.common.persistence.model.ProviderProject;
+import com.blackduck.integration.alert.common.persistence.model.ProviderUserModel;
+import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 
 @Component
 public class EmailAddressGatherer {

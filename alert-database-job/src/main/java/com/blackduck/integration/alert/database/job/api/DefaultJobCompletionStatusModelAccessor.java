@@ -18,12 +18,12 @@ import com.blackduck.integration.alert.database.job.execution.JobCompletionDurat
 import com.blackduck.integration.alert.database.job.execution.JobCompletionRepository;
 import com.blackduck.integration.alert.database.job.execution.JobCompletionStatusDurationsEntity;
 import com.blackduck.integration.alert.database.job.execution.JobCompletionStatusEntity;
-import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
-import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.executions.JobCompletionStatusDurations;
-import com.synopsys.integration.alert.common.persistence.model.job.executions.JobCompletionStatusModel;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedQueryDetails;
+import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
+import com.blackduck.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
+import com.blackduck.integration.alert.common.persistence.model.job.executions.JobCompletionStatusDurations;
+import com.blackduck.integration.alert.common.persistence.model.job.executions.JobCompletionStatusModel;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedQueryDetails;
 
 @Component
 public class DefaultJobCompletionStatusModelAccessor implements JobCompletionStatusModelAccessor {

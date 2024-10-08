@@ -18,8 +18,8 @@ import org.junit.jupiter.api.Test;
 
 import com.blackduck.integration.datastructure.SetMap;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.enumeration.ItemOperation;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 class ProviderMessageContentTest {
     private static final String PROVIDER_NAME = "test-providerName";

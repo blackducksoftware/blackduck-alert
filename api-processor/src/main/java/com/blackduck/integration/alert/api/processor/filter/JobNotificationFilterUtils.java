@@ -14,9 +14,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.blackduck.integration.alert.api.processor.detail.DetailedNotificationContent;
-import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
-import com.synopsys.integration.alert.common.persistence.model.job.SimpleFilteredDistributionJobResponseModel;
+import com.blackduck.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
+import com.blackduck.integration.alert.common.persistence.model.job.SimpleFilteredDistributionJobResponseModel;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public class JobNotificationFilterUtils {

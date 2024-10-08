@@ -10,7 +10,7 @@ package com.blackduck.integration.alert.api.processor.filter;
 import java.util.List;
 import java.util.UUID;
 
-import com.synopsys.integration.alert.common.enumeration.ProcessingType;
+import com.blackduck.integration.alert.common.enumeration.ProcessingType;
 import com.blackduck.integration.util.Stringable;
 
 // NotificationContentWrapper is not serializable, so this class cannot be serializable (and doesn't need to be)

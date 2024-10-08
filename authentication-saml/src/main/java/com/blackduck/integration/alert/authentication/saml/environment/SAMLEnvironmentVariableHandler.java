@@ -15,7 +15,7 @@ import com.blackduck.integration.alert.api.environment.EnvironmentVariableUtilit
 import com.blackduck.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
 import com.blackduck.integration.alert.authentication.saml.model.SAMLConfigModel;
 import com.blackduck.integration.alert.authentication.saml.validator.SAMLConfigurationValidator;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.util.DateUtils;
 
 @Component
 public class SAMLEnvironmentVariableHandler extends EnvironmentVariableHandler<SAMLConfigModel> {

@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 public class ComponentUpgradeGuidanceTest {
     private final LinkableItem shortTermGuidance = new LinkableItem("Short Term Guidance", "1.1.0");

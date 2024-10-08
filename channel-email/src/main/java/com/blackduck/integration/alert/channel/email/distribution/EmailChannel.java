@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import com.blackduck.integration.alert.api.channel.MessageBoardChannel;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 
 @Component
 public class EmailChannel extends MessageBoardChannel<EmailJobDetailsModel, EmailChannelMessageModel> {

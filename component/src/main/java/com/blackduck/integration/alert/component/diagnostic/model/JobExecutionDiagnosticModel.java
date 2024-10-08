@@ -2,7 +2,7 @@ package com.blackduck.integration.alert.component.diagnostic.model;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
+import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
 
 public class JobExecutionDiagnosticModel {
     private final String jobName;

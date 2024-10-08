@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.persistence.accessor.SettingsKeyAccessor;
-import com.synopsys.integration.alert.common.persistence.model.SettingsKeyModel;
+import com.blackduck.integration.alert.common.persistence.accessor.SettingsKeyAccessor;
+import com.blackduck.integration.alert.common.persistence.model.SettingsKeyModel;
 import com.synopsys.integration.alert.database.settings.SettingsKeyEntity;
 import com.synopsys.integration.alert.database.settings.SettingsKeyRepository;
 

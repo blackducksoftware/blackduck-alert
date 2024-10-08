@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.action.ActionResponse;
 
 @Component
 public class AboutActions {

@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 import com.blackduck.integration.alert.api.processor.extract.model.CombinableModel;
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.blackduck.integration.alert.common.enumeration.ItemOperation;
 
 public class ComponentConcern extends AlertSerializableModel implements CombinableModel<ComponentConcern>, Comparable<ComponentConcern> {
     private final ComponentConcernType type;

@@ -7,10 +7,10 @@ import com.blackduck.integration.alert.api.authentication.descriptor.Authenticat
 import com.blackduck.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
 import com.blackduck.integration.alert.authentication.ldap.model.LDAPConfigModel;
 import com.blackduck.integration.alert.authentication.ldap.validator.LDAPConfigurationValidator;
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.rest.api.ConfigurationCrudHelper;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.rest.api.ConfigurationCrudHelper;
+import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Component
 public class LDAPCrudActions {

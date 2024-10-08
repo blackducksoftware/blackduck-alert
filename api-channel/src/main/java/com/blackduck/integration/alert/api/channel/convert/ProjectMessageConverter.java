@@ -14,8 +14,8 @@ import java.util.Optional;
 import com.blackduck.integration.alert.api.processor.extract.model.project.BomComponentDetails;
 import com.blackduck.integration.alert.api.processor.extract.model.project.MessageReason;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
-import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilder;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.channel.message.ChunkedStringBuilder;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 public class ProjectMessageConverter implements ProviderMessageConverter<ProjectMessage> {
     private final ChannelMessageFormatter messageFormatter;

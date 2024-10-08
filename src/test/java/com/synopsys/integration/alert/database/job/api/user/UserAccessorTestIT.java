@@ -22,12 +22,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
-import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
-import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
-import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
-import com.synopsys.integration.alert.common.persistence.model.UserModel;
-import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
+import com.blackduck.integration.alert.common.enumeration.AuthenticationType;
+import com.blackduck.integration.alert.common.enumeration.DefaultUserRole;
+import com.blackduck.integration.alert.common.exception.AlertForbiddenOperationException;
+import com.blackduck.integration.alert.common.persistence.accessor.UserAccessor;
+import com.blackduck.integration.alert.common.persistence.model.UserModel;
+import com.blackduck.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.database.job.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;

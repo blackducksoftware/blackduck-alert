@@ -16,8 +16,8 @@ import com.google.gson.GsonBuilder;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrackerResponse;
 import com.blackduck.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
+import com.blackduck.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.blackduck.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
 
 class ProviderCallbackIssueTrackerResponsePostProcessorTest {
     private static final Gson GSON = new GsonBuilder().create();

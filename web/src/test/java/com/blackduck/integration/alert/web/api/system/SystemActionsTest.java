@@ -17,8 +17,8 @@ import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 
 import com.blackduck.integration.rest.RestConstants;
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.database.job.api.DefaultSystemStatusAccessor;
 import com.synopsys.integration.alert.database.system.DefaultSystemMessageAccessor;
 

@@ -22,10 +22,10 @@ import com.blackduck.integration.blackduck.service.request.BlackDuckRequest;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.rest.HttpUrl;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
-import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.blackduck.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
+import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 
 public class BlackDuckSSOConfigRetrieverTest {
     @Test

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import com.blackduck.integration.alert.api.channel.DistributionEventReceiver;
 import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 
 @Component
 public class JiraServerDistributionEventReceiver extends DistributionEventReceiver<JiraServerJobDetailsModel> {

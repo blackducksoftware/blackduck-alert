@@ -8,7 +8,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.api.processor.detail.DetailedNotificationContent;
 import com.blackduck.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
 import com.blackduck.integration.blackduck.api.manual.view.LicenseLimitNotificationView;

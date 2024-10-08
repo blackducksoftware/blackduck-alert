@@ -9,10 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.JobAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.blackduck.integration.alert.api.processor.JobNotificationContentProcessor;
 import com.blackduck.integration.alert.api.processor.NotificationProcessingLifecycleCache;
 import com.blackduck.integration.alert.api.processor.detail.NotificationDetailExtractionDelegator;

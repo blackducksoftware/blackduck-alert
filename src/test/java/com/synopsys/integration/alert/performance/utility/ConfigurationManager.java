@@ -21,14 +21,14 @@ import com.blackduck.integration.log.IntLogger;
 import com.blackduck.integration.log.Slf4jIntLogger;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
-import com.synopsys.integration.alert.common.rest.model.JobPagedModel;
-import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldModel;
+import com.blackduck.integration.alert.common.descriptor.ChannelDescriptor;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.enumeration.ProcessingType;
+import com.blackduck.integration.alert.common.rest.model.FieldModel;
+import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
+import com.blackduck.integration.alert.common.rest.model.JobFieldModel;
+import com.blackduck.integration.alert.common.rest.model.JobPagedModel;
+import com.blackduck.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 
 public class ConfigurationManager {
     private final IntLogger intLogger = new Slf4jIntLogger(LoggerFactory.getLogger(getClass()));

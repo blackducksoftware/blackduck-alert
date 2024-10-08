@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.blackduck.integration.alert.web.api.about.AboutModel;
-import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
+import com.blackduck.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 
  class AboutModelTest {
      @Test

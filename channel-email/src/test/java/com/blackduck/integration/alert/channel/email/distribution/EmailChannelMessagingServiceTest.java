@@ -28,7 +28,7 @@ import com.blackduck.integration.alert.service.email.template.FreemarkerTemplati
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
+import com.blackduck.integration.alert.common.message.model.MessageResult;
 import com.blackduck.integration.alert.test.common.MockAlertProperties;
 
 @ExtendWith(SpringExtension.class)

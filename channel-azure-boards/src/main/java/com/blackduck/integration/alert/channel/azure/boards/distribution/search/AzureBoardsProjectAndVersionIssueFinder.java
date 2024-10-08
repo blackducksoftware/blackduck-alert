@@ -28,7 +28,7 @@ import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetai
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemFieldsWrapper;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
 import com.blackduck.integration.alert.azure.boards.common.util.AzureFieldDefinition;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 public class AzureBoardsProjectAndVersionIssueFinder implements ProjectIssueFinder<Integer>, ProjectVersionIssueFinder<Integer> {
     private final Gson gson;

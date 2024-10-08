@@ -26,11 +26,11 @@ import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKe
 import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
 import com.blackduck.integration.alert.service.email.template.FreemarkerTemplatingService;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.persistence.accessor.SettingsKeyAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
-import com.synopsys.integration.alert.common.persistence.model.SettingsKeyModel;
-import com.synopsys.integration.alert.common.persistence.model.UserModel;
+import com.blackduck.integration.alert.common.AlertProperties;
+import com.blackduck.integration.alert.common.persistence.accessor.SettingsKeyAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.UserAccessor;
+import com.blackduck.integration.alert.common.persistence.model.SettingsKeyModel;
+import com.blackduck.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.update.model.UpdateModel;
 
 @Component

@@ -8,7 +8,7 @@
 package com.blackduck.integration.alert.web.api.metadata.model;
 
 import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import com.blackduck.integration.alert.common.enumeration.DescriptorType;
 
 public class DescriptorTypesResponseModel extends AlertSerializableModel {
     // This is not a component or singleton because it is stateless. It should always be treated as static.

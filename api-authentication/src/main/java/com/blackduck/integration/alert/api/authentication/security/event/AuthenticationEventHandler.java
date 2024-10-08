@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.api.event.AlertEventHandler;
-import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
-import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
-import com.synopsys.integration.alert.common.persistence.model.UserModel;
+import com.blackduck.integration.alert.common.exception.AlertForbiddenOperationException;
+import com.blackduck.integration.alert.common.persistence.accessor.UserAccessor;
+import com.blackduck.integration.alert.common.persistence.model.UserModel;
 
 @Component
 public class AuthenticationEventHandler implements AlertEventHandler<AlertAuthenticationEvent> {

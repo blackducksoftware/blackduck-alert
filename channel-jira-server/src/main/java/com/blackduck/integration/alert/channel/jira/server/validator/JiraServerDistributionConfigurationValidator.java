@@ -18,10 +18,10 @@ import com.blackduck.integration.alert.api.channel.jira.validation.JiraFieldMapp
 import com.blackduck.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
-import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
-import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
-import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
+import com.blackduck.integration.alert.common.descriptor.ChannelDescriptor;
+import com.blackduck.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
+import com.blackduck.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
+import com.blackduck.integration.alert.common.rest.model.JobFieldModel;
 
 @Component
 public class JiraServerDistributionConfigurationValidator implements DistributionConfigurationValidator {

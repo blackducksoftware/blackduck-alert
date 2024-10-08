@@ -23,11 +23,11 @@ import org.springframework.stereotype.Component;
 import com.blackduck.integration.alert.api.authentication.security.AuthenticationPerformer;
 import com.blackduck.integration.alert.api.authentication.security.event.AuthenticationEventManager;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
-import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
-import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
-import com.synopsys.integration.alert.common.persistence.model.UserModel;
+import com.blackduck.integration.alert.common.AlertProperties;
+import com.blackduck.integration.alert.common.descriptor.accessor.RoleAccessor;
+import com.blackduck.integration.alert.common.enumeration.AuthenticationType;
+import com.blackduck.integration.alert.common.persistence.accessor.UserAccessor;
+import com.blackduck.integration.alert.common.persistence.model.UserModel;
 
 @Component
 public class AlertDatabaseAuthenticationPerformer extends AuthenticationPerformer {

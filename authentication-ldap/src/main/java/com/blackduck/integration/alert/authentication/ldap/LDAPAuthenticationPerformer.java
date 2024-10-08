@@ -14,8 +14,8 @@ import com.blackduck.integration.alert.api.authentication.security.Authenticatio
 import com.blackduck.integration.alert.api.authentication.security.event.AuthenticationEventManager;
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.authentication.ldap.action.LDAPManager;
-import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
-import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
+import com.blackduck.integration.alert.common.descriptor.accessor.RoleAccessor;
+import com.blackduck.integration.alert.common.enumeration.AuthenticationType;
 
 @Component
 public class LDAPAuthenticationPerformer extends AuthenticationPerformer {

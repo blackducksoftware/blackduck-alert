@@ -24,14 +24,14 @@ import com.blackduck.integration.alert.azure.boards.common.http.AzureApiVersionA
 import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;
 import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpService;
 import com.blackduck.integration.alert.azure.boards.common.service.project.AzureProjectService;
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.action.ValidationActionResponse;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.message.model.ConfigurationTestResult;
-import com.synopsys.integration.alert.common.rest.api.ConfigurationTestHelper;
-import com.synopsys.integration.alert.common.rest.api.ConfigurationValidationHelper;
-import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.action.ValidationActionResponse;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.message.model.ConfigurationTestResult;
+import com.blackduck.integration.alert.common.rest.api.ConfigurationTestHelper;
+import com.blackduck.integration.alert.common.rest.api.ConfigurationValidationHelper;
+import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Component
 public class AzureBoardsGlobalTestAction {

@@ -18,8 +18,8 @@ import com.blackduck.integration.alert.channel.jira.server.database.job.custom_f
 import com.blackduck.integration.alert.channel.jira.server.database.job.custom_field.JiraServerJobCustomFieldRepository;
 import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 
 class JiraServerJobDetailsAccessorTest {
     private final JiraServerChannelKey channelKey = ChannelKeys.JIRA_SERVER;

@@ -15,9 +15,9 @@ import org.springframework.stereotype.Component;
 import com.blackduck.integration.alert.api.channel.CommonChannelDistributionValidator;
 import com.blackduck.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
-import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
-import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
+import com.blackduck.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
+import com.blackduck.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
+import com.blackduck.integration.alert.common.rest.model.JobFieldModel;
 
 @Component
 public class MsTeamsDistributionConfigurationValidator implements DistributionConfigurationValidator {

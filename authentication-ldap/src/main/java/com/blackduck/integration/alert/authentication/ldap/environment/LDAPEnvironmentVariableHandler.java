@@ -17,7 +17,7 @@ import com.blackduck.integration.alert.api.environment.EnvironmentVariableUtilit
 import com.blackduck.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
 import com.blackduck.integration.alert.authentication.ldap.model.LDAPConfigModel;
 import com.blackduck.integration.alert.authentication.ldap.validator.LDAPConfigurationValidator;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.util.DateUtils;
 
 @Component
 public class LDAPEnvironmentVariableHandler extends EnvironmentVariableHandler<LDAPConfigModel> {

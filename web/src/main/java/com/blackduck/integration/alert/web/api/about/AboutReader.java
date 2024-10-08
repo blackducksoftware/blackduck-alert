@@ -22,12 +22,12 @@ import com.blackduck.integration.alert.web.api.metadata.model.DescriptorsRespons
 import com.blackduck.integration.alert.web.documentation.SwaggerConfiguration;
 import com.blackduck.integration.util.ResourceUtil;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusAccessor;
-import com.synopsys.integration.alert.common.rest.AlertWebServerUrlManager;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
+import com.blackduck.integration.alert.common.enumeration.DescriptorType;
+import com.blackduck.integration.alert.common.persistence.accessor.SystemStatusAccessor;
+import com.blackduck.integration.alert.common.rest.AlertWebServerUrlManager;
+import com.blackduck.integration.alert.common.util.DateUtils;
 
 @Component
 public class AboutReader {

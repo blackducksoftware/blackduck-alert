@@ -7,7 +7,7 @@ import java.util.LinkedHashSet;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 class MessageContentKeyTest {
     private static final String TOPIC_NAME = "test-topicName";

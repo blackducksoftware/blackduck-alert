@@ -11,10 +11,10 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.blackduck.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
 
 public class JiraJobDetailsExtractorTest {
     private static final String CLASS_NAME = JiraJobDetailsExtractorTest.class.getSimpleName();

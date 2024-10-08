@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.search.Actionabl
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueTrackerSearcher;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.blackduck.integration.alert.common.enumeration.ItemOperation;
 import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 

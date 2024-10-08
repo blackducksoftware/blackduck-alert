@@ -10,7 +10,7 @@ package com.blackduck.integration.alert.channel.jira.cloud.action;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.ConfigurationAction;
+import com.blackduck.integration.alert.common.action.ConfigurationAction;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 
 @Component

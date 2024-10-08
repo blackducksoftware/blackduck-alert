@@ -14,7 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import com.blackduck.integration.alert.api.processor.filter.NotificationContentWrapper;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.blackduck.api.manual.component.NotificationContentComponent;
 import com.blackduck.integration.util.Stringable;
 

@@ -29,11 +29,11 @@ import com.blackduck.integration.alert.api.processor.distribute.DistributionEven
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderMessageHolder;
 import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.persistence.accessor.SlackJobDetailsAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
-import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
-import com.synopsys.integration.alert.common.util.MarkupEncoderUtil;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.persistence.accessor.SlackJobDetailsAccessor;
+import com.blackduck.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
+import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.common.util.MarkupEncoderUtil;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;

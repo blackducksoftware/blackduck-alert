@@ -40,9 +40,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.blackduck.integration.alert.authentication.saml.security.SAMLGroupConverter;
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
-import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
+import com.blackduck.integration.alert.common.AlertProperties;
+import com.blackduck.integration.alert.common.descriptor.accessor.RoleAccessor;
+import com.blackduck.integration.alert.common.persistence.model.UserRoleModel;
 
 @EnableWebSecurity
 @Configuration

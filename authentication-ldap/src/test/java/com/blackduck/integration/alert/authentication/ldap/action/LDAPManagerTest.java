@@ -21,7 +21,7 @@ import com.blackduck.integration.alert.authentication.ldap.LDAPConfig;
 import com.blackduck.integration.alert.authentication.ldap.LDAPTestHelper;
 import com.blackduck.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
 import com.blackduck.integration.alert.authentication.ldap.model.LDAPConfigModel;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 
 public class LDAPManagerTest {
     private LDAPConfigAccessor ldapConfigAccessor;

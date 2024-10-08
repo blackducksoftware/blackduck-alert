@@ -27,13 +27,13 @@ import com.blackduck.integration.blackduck.api.manual.view.RuleViolationNotifica
 import com.blackduck.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.blackduck.integration.alert.common.enumeration.FrequencyType;
+import com.blackduck.integration.alert.common.enumeration.ProcessingType;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
+import com.blackduck.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
+import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 
 public class NotificationProcessorTest {
     private static final Gson GSON = new GsonBuilder().create();

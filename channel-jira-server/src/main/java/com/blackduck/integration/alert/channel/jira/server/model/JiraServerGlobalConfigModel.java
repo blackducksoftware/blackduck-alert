@@ -13,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.blackduck.integration.alert.api.common.model.Obfuscated;
 import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
-import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
+import com.blackduck.integration.alert.common.rest.model.ConfigWithMetadata;
 
 public class JiraServerGlobalConfigModel extends ConfigWithMetadata implements Obfuscated<JiraServerGlobalConfigModel> {
     private String url;

@@ -14,8 +14,8 @@ import com.blackduck.integration.alert.api.processor.extract.model.ProviderMessa
 import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectOperation;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 
 public class AbstractChannelMessageConverterTest {
     private static final String CLASS_NAME = AbstractChannelMessageConverterTest.class.getSimpleName();

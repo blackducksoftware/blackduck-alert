@@ -12,7 +12,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerCallbackEventListener;
+import com.blackduck.integration.alert.common.channel.issuetracker.IssueTrackerCallbackEventListener;
 
 @Component
 public class BlackDuckIssueTrackerCallbackEventListener extends IssueTrackerCallbackEventListener {

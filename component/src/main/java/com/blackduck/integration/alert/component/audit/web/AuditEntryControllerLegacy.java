@@ -19,15 +19,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
-import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
-import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.common.rest.api.BaseController;
-import com.synopsys.integration.alert.common.rest.model.AuditJobStatusesModel;
-import com.synopsys.integration.alert.common.rest.model.JobIdsRequestModel;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.persistence.model.AuditEntryModel;
+import com.blackduck.integration.alert.common.persistence.model.AuditEntryPageModel;
+import com.blackduck.integration.alert.common.persistence.model.AuditJobStatusModel;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.rest.ResponseFactory;
+import com.blackduck.integration.alert.common.rest.api.BaseController;
+import com.blackduck.integration.alert.common.rest.model.AuditJobStatusesModel;
+import com.blackduck.integration.alert.common.rest.model.JobIdsRequestModel;
 
 /**
  * @deprecated Replaced by AuditEntryController. To be removed in 8.0.0.

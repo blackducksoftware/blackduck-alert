@@ -27,20 +27,20 @@ import com.blackduck.integration.alert.web.api.config.GlobalConfigurationModelTo
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
-import com.synopsys.integration.alert.common.action.api.GlobalConfigurationModelToConcreteSaveActions;
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
-import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
-import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
-import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
-import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.common.action.api.GlobalConfigurationModelToConcreteSaveActions;
+import com.blackduck.integration.alert.common.descriptor.DescriptorMap;
+import com.blackduck.integration.alert.common.descriptor.DescriptorProcessor;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.DescriptorAccessor;
+import com.blackduck.integration.alert.common.persistence.model.PermissionKey;
+import com.blackduck.integration.alert.common.persistence.model.PermissionMatrixModel;
+import com.blackduck.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
+import com.blackduck.integration.alert.common.rest.FieldModelProcessor;
+import com.blackduck.integration.alert.common.rest.model.FieldModel;
+import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
+import com.blackduck.integration.alert.common.security.EncryptionUtility;
+import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @AlertIntegrationTest

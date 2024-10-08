@@ -22,9 +22,9 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIss
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerMessageSender;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
+import com.blackduck.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.blackduck.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
+import com.blackduck.integration.alert.common.message.model.MessageResult;
 
 public final class IssueTrackerTransitionTestAction<T extends Serializable> {
     private final Logger logger = LoggerFactory.getLogger(getClass());

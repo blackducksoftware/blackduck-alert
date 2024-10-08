@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 import com.blackduck.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.blackduck.integration.alert.channel.azure.boards.web.AzureOAuthCallbackController;
 import com.blackduck.integration.alert.api.common.model.exception.AlertRuntimeException;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.rest.AlertWebServerUrlManager;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.rest.AlertWebServerUrlManager;
 
 @Component
 public class AzureRedirectUrlCreator {

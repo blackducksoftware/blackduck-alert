@@ -28,21 +28,21 @@ import com.blackduck.integration.blackduck.api.generated.enumeration.Vulnerabili
 import com.blackduck.integration.blackduck.api.manual.component.AffectedProjectVersion;
 import com.blackduck.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
-import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
-import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
-import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.enumeration.FrequencyType;
+import com.blackduck.integration.alert.common.enumeration.ProcessingType;
+import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.JobAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.blackduck.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
+import com.blackduck.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
+import com.blackduck.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
+import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedDetails;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @AlertIntegrationTest

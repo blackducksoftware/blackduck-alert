@@ -10,8 +10,8 @@ package com.blackduck.integration.alert.api.channel.convert;
 import java.util.List;
 
 import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage;
-import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilder;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.channel.message.ChunkedStringBuilder;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 public class SimpleMessageConverter implements ProviderMessageConverter<SimpleMessage> {
     private final ChannelMessageFormatter messageFormatter;

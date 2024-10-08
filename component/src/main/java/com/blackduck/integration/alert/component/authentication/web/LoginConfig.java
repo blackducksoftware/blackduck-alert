@@ -10,7 +10,7 @@ package com.blackduck.integration.alert.component.authentication.web;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import com.synopsys.integration.alert.common.rest.model.Config;
+import com.blackduck.integration.alert.common.rest.model.Config;
 
 public class LoginConfig extends Config {
     private String alertUsername;

@@ -12,10 +12,10 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
-import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
-import com.synopsys.integration.alert.common.persistence.model.UserModel;
-import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
+import com.blackduck.integration.alert.common.enumeration.AuthenticationType;
+import com.blackduck.integration.alert.common.enumeration.DefaultUserRole;
+import com.blackduck.integration.alert.common.persistence.model.UserModel;
+import com.blackduck.integration.alert.common.persistence.model.UserRoleModel;
 
 class UserModelTest {
 

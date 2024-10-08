@@ -12,7 +12,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.component.diagnostic.model.AlertQueueInformation;
 import com.blackduck.integration.alert.component.diagnostic.model.CompletedJobDiagnosticModel;
 import com.blackduck.integration.alert.component.diagnostic.model.CompletedJobDurationDiagnosticModel;

@@ -17,8 +17,8 @@ import org.springframework.stereotype.Component;
 import com.blackduck.integration.alert.api.channel.convert.AbstractChannelMessageConverter;
 import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 
 @Component
 public class EmailChannelMessageConverter extends AbstractChannelMessageConverter<EmailJobDetailsModel, EmailChannelMessageModel> {

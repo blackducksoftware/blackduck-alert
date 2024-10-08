@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 public class ComponentVulnerabilities extends AlertSerializableModel {
     private final List<LinkableItem> critical;

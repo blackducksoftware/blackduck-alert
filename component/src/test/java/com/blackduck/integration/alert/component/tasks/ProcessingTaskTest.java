@@ -30,13 +30,13 @@ import com.blackduck.integration.alert.api.processor.NotificationMappingProcesso
 import com.blackduck.integration.alert.api.processor.detail.NotificationDetailExtractionDelegator;
 import com.blackduck.integration.alert.api.processor.filter.JobNotificationMapper;
 import com.blackduck.integration.alert.api.task.TaskManager;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.message.model.DateRange;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.enumeration.FrequencyType;
+import com.blackduck.integration.alert.common.message.model.DateRange;
+import com.blackduck.integration.alert.common.persistence.accessor.JobAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
+import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
+import com.blackduck.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.job.api.DefaultNotificationAccessor;
 
 class ProcessingTaskTest {

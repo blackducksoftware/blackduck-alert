@@ -20,10 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.blackduck.integration.alert.database.job.DistributionJobRepository;
 import com.blackduck.integration.alert.database.job.FilteredDistributionJob;
-import com.synopsys.integration.alert.common.persistence.accessor.ProcessingJobAccessor2;
-import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
-import com.synopsys.integration.alert.common.persistence.model.job.SimpleFilteredDistributionJobResponseModel;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.blackduck.integration.alert.common.persistence.accessor.ProcessingJobAccessor2;
+import com.blackduck.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
+import com.blackduck.integration.alert.common.persistence.model.job.SimpleFilteredDistributionJobResponseModel;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 
 @Component
 public class DefaultProcessingJobAccessor2 implements ProcessingJobAccessor2 {

@@ -9,8 +9,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
-import com.synopsys.integration.alert.common.persistence.model.AuthenticationTypeDetails;
+import com.blackduck.integration.alert.common.enumeration.AuthenticationType;
+import com.blackduck.integration.alert.common.persistence.model.AuthenticationTypeDetails;
 import com.synopsys.integration.alert.database.user.AuthenticationTypeEntity;
 import com.synopsys.integration.alert.database.user.AuthenticationTypeRepository;
 

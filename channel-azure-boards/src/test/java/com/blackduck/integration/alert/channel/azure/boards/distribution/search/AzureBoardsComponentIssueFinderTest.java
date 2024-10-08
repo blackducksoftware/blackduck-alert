@@ -31,8 +31,8 @@ import com.blackduck.integration.alert.api.processor.extract.model.project.Compo
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseFields;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.enumeration.ItemOperation;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 class AzureBoardsComponentIssueFinderTest {
     private static final ProviderDetails PROVIDER_DETAILS = new ProviderDetails(15L, new LinkableItem("Provider", "A provider", "https://provider-url"));

@@ -1,7 +1,7 @@
 package com.synopsys.integration.alert.database.job.api;
 
-import static com.synopsys.integration.alert.common.rest.AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS;
-import static com.synopsys.integration.alert.common.rest.AlertRestConstants.DEFAULT_CONFIGURATION_NAME;
+import static com.blackduck.integration.alert.common.rest.AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS;
+import static com.blackduck.integration.alert.common.rest.AlertRestConstants.DEFAULT_CONFIGURATION_NAME;
 
 import java.time.OffsetDateTime;
 import java.util.Optional;
@@ -11,10 +11,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.persistence.accessor.UniqueConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
-import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.persistence.accessor.UniqueConfigurationAccessor;
+import com.blackduck.integration.alert.common.persistence.model.ClientCertificateModel;
+import com.blackduck.integration.alert.common.security.EncryptionUtility;
+import com.blackduck.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.certificates.ClientCertificateEntity;
 import com.synopsys.integration.alert.database.certificates.ClientCertificateKeyEntity;
 import com.synopsys.integration.alert.database.certificates.ClientCertificateKeyRepository;

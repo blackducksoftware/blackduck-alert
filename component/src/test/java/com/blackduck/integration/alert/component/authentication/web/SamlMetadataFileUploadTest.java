@@ -20,11 +20,11 @@ import org.springframework.http.HttpStatus;
 
 import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.common.rest.model.ExistenceModel;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.blackduck.integration.alert.common.rest.model.ExistenceModel;
+import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 
 class SamlMetadataFileUploadTest {
     private final AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);

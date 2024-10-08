@@ -30,11 +30,11 @@ import com.blackduck.integration.rest.HttpUrl;
 import com.blackduck.integration.rest.RestConstants;
 import com.blackduck.integration.rest.client.ConnectionResult;
 import com.blackduck.integration.rest.exception.IntegrationRestException;
-import com.synopsys.integration.alert.common.action.FieldModelTestAction;
-import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.blackduck.integration.alert.common.action.FieldModelTestAction;
+import com.blackduck.integration.alert.common.exception.AlertFieldException;
+import com.blackduck.integration.alert.common.message.model.MessageResult;
+import com.blackduck.integration.alert.common.persistence.accessor.FieldUtility;
+import com.blackduck.integration.alert.common.rest.model.FieldModel;
 
 @Component
 public class BlackDuckGlobalFieldModelTestAction extends FieldModelTestAction {

@@ -13,10 +13,10 @@ import org.mockito.Mockito;
 import com.blackduck.integration.alert.web.api.metadata.DescriptorMetadataActions;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
-import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusAccessor;
-import com.synopsys.integration.alert.common.rest.AlertWebServerUrlManager;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
+import com.blackduck.integration.alert.common.persistence.accessor.SystemStatusAccessor;
+import com.blackduck.integration.alert.common.rest.AlertWebServerUrlManager;
 
 public class AboutActionsTest {
 

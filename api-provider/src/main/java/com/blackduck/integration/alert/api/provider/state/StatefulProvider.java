@@ -14,8 +14,8 @@ import java.util.Optional;
 import com.blackduck.integration.alert.api.descriptor.model.ProviderKey;
 import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
 import com.blackduck.integration.alert.api.provider.lifecycle.ProviderTask;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
 
 public class StatefulProvider {
     private final ProviderKey key;

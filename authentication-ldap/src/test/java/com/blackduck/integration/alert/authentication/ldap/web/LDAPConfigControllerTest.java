@@ -33,7 +33,7 @@ import com.blackduck.integration.alert.authentication.ldap.database.accessor.LDA
 import com.blackduck.integration.alert.authentication.ldap.model.LDAPConfigModel;
 import com.blackduck.integration.alert.authentication.ldap.model.LDAPConfigTestModel;
 import com.blackduck.integration.alert.authentication.ldap.validator.LDAPConfigurationValidator;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 
 class LDAPConfigControllerTest {
     private static final AuthenticationDescriptorKey authenticationDescriptorKey = new AuthenticationDescriptorKey();

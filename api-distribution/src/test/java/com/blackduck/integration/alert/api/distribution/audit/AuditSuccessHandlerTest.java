@@ -17,10 +17,10 @@ import com.blackduck.integration.alert.database.job.execution.JobCompletionDurat
 import com.blackduck.integration.alert.database.job.execution.JobCompletionRepository;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJob;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
-import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
-import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.executions.JobCompletionStatusModel;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedQueryDetails;
+import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
+import com.blackduck.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
+import com.blackduck.integration.alert.common.persistence.model.job.executions.JobCompletionStatusModel;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedQueryDetails;
 
 class AuditSuccessHandlerTest {
     private ExecutingJobManager executingJobManager;

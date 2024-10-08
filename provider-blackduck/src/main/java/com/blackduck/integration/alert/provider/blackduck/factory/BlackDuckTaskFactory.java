@@ -22,9 +22,9 @@ import com.blackduck.integration.alert.provider.blackduck.task.BlackDuckDataSync
 import com.blackduck.integration.alert.provider.blackduck.task.accumulator.BlackDuckAccumulator;
 import com.blackduck.integration.alert.provider.blackduck.task.accumulator.BlackDuckNotificationRetrieverFactory;
 import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
-import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.ProviderDataAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
 
 @Component
 public class BlackDuckTaskFactory implements ProviderTaskFactory {

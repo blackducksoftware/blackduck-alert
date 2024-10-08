@@ -37,12 +37,12 @@ import com.blackduck.integration.blackduck.api.manual.view.NotificationUserView;
 import com.blackduck.integration.blackduck.api.manual.view.NotificationView;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.alert.api.task.ScheduledTask;
-import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
-import com.synopsys.integration.alert.common.message.model.DateRange;
-import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.logging.AlertLoggerFactory;
+import com.blackduck.integration.alert.common.message.model.DateRange;
+import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
+import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
+import com.blackduck.integration.alert.common.util.DateUtils;
 
 public class BlackDuckAccumulator extends ProviderTask {
     private static final List<String> SUPPORTED_NOTIFICATION_TYPES = Stream.of(NotificationType.values())

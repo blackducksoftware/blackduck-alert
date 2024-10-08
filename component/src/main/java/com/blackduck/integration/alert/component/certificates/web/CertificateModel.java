@@ -7,7 +7,7 @@
  */
 package com.blackduck.integration.alert.component.certificates.web;
 
-import com.synopsys.integration.alert.common.rest.model.Config;
+import com.blackduck.integration.alert.common.rest.model.Config;
 
 public class CertificateModel extends Config {
     private static final long serialVersionUID = 5148208006398190462L;

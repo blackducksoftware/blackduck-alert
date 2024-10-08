@@ -10,10 +10,10 @@ package com.blackduck.integration.alert.api.provider;
 import java.util.Set;
 
 import com.blackduck.integration.alert.api.descriptor.model.ProviderKey;
-import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.common.descriptor.Descriptor;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import com.blackduck.integration.alert.common.descriptor.ChannelDescriptor;
+import com.blackduck.integration.alert.common.descriptor.Descriptor;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.enumeration.DescriptorType;
 
 public abstract class ProviderDescriptor extends Descriptor {
     // Global

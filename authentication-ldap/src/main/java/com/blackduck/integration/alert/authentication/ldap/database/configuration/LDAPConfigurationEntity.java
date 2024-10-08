@@ -3,7 +3,7 @@ package com.blackduck.integration.alert.authentication.ldap.database.configurati
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.database.BaseEntity;
 
 import jakarta.persistence.Column;

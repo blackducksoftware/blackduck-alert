@@ -23,7 +23,7 @@ import com.blackduck.integration.alert.channel.email.environment.EmailEnvironmen
 import com.blackduck.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
 import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
 import com.blackduck.integration.alert.test.common.EnvironmentVariableMockingUtil;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @AlertIntegrationTest

@@ -7,7 +7,7 @@
  */
 package com.blackduck.integration.alert.api.processor.filter;
 
-import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedDetails;
 
 public interface PageRetriever<T, E extends Exception> {
 

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.channel.issue.tracker.action.IssueTrackerTestAction;
 import com.blackduck.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
 
 @Component

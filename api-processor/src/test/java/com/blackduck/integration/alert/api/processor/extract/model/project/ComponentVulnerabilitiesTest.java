@@ -9,7 +9,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 public class ComponentVulnerabilitiesTest {
     private static final LinkableItem CRITICAL = new LinkableItem("Vulnerability", ComponentConcernSeverity.CRITICAL.getVulnerabilityLabel());

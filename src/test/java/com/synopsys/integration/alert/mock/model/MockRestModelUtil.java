@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.rest.model.Config;
+import com.blackduck.integration.alert.common.rest.model.Config;
 import com.synopsys.integration.alert.mock.MockUtils;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 

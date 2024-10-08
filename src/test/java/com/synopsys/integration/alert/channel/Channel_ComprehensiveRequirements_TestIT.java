@@ -16,7 +16,7 @@ import com.blackduck.integration.alert.api.channel.DistributionEventReceiver;
 import com.synopsys.integration.alert.api.channel.issue.tracker.action.IssueTrackerTestAction;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
 import com.blackduck.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
-import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
+import com.blackduck.integration.alert.common.channel.DistributionChannelTestAction;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 /*

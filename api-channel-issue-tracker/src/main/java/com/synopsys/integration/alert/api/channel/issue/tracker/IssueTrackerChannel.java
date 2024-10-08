@@ -15,8 +15,8 @@ import com.blackduck.integration.alert.api.channel.DistributionChannel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrackerResponse;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderMessageHolder;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.blackduck.integration.alert.common.message.model.MessageResult;
+import com.blackduck.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 
 /**
  * @param <D> The type of job details relevant to this channel.

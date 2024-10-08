@@ -11,11 +11,10 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.component.settings.convert.ProxyConfigurationModelConverter;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
+import com.blackduck.integration.alert.common.rest.model.SettingsProxyModel;
 import com.blackduck.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
 
 class ProxyConfigurationModelConverterTest {

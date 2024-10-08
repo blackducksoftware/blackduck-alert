@@ -21,11 +21,11 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.common.AlertProperties;
+import com.blackduck.integration.alert.common.descriptor.accessor.RoleAccessor;
+import com.blackduck.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.blackduck.integration.alert.common.security.EncryptionUtility;
+import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Configuration
 @AutoConfigureOrder(1)

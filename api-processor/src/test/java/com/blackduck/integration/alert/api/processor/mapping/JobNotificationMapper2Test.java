@@ -21,14 +21,14 @@ import org.junit.jupiter.api.Test;
 import com.blackduck.integration.alert.api.processor.detail.DetailedNotificationContent;
 import com.blackduck.integration.blackduck.api.manual.component.ProjectVersionNotificationContent;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ProcessingJobAccessor2;
-import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
-import com.synopsys.integration.alert.common.persistence.model.job.JobToNotificationMappingModel;
-import com.synopsys.integration.alert.common.persistence.model.job.SimpleFilteredDistributionJobResponseModel;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.blackduck.integration.alert.common.enumeration.FrequencyType;
+import com.blackduck.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.ProcessingJobAccessor2;
+import com.blackduck.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
+import com.blackduck.integration.alert.common.persistence.model.job.JobToNotificationMappingModel;
+import com.blackduck.integration.alert.common.persistence.model.job.SimpleFilteredDistributionJobResponseModel;
+import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 
 class JobNotificationMapper2Test {
     private AtomicLong notificationId = new AtomicLong(1);

@@ -22,8 +22,8 @@ import com.blackduck.integration.alert.channel.email.attachment.compatibility.Co
 import com.blackduck.integration.alert.channel.email.attachment.compatibility.MessageContentGroup;
 import com.blackduck.integration.alert.channel.email.attachment.compatibility.ProviderMessageContent;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.enumeration.ItemOperation;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 @Component
 public class MessageContentGroupCsvCreator {

@@ -17,11 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.processor.detail.DetailedNotificationContent;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
-import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
+import com.blackduck.integration.alert.common.enumeration.FrequencyType;
+import com.blackduck.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
+import com.blackduck.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
+import com.blackduck.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedDetails;
 import com.blackduck.integration.util.Stringable;
 
 @Component

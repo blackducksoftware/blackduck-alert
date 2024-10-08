@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.channel.issue.tracker.IssueTrackerChannel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 
 @Component
 public class AzureBoardsChannel extends IssueTrackerChannel<AzureBoardsJobDetailsModel, Integer> {

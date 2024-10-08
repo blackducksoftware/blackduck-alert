@@ -26,14 +26,14 @@ import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigMode
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.action.ValidationActionResponse;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.message.model.ConfigurationTestResult;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.rest.api.ConfigurationTestHelper;
-import com.synopsys.integration.alert.common.rest.api.ConfigurationValidationHelper;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.action.ValidationActionResponse;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.message.model.ConfigurationTestResult;
+import com.blackduck.integration.alert.common.message.model.MessageResult;
+import com.blackduck.integration.alert.common.rest.api.ConfigurationTestHelper;
+import com.blackduck.integration.alert.common.rest.api.ConfigurationValidationHelper;
+import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 
 import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;

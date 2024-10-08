@@ -26,7 +26,7 @@ import com.blackduck.integration.jira.common.model.response.MultiPermissionRespo
 import com.blackduck.integration.jira.common.model.response.PermissionModel;
 import com.blackduck.integration.jira.common.rest.service.PluginManagerService;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.blackduck.integration.alert.common.persistence.accessor.FieldUtility;
 
 @Component
 public class JiraCloudGlobalFieldModelTestAction extends JiraGlobalFieldModelTestAction {

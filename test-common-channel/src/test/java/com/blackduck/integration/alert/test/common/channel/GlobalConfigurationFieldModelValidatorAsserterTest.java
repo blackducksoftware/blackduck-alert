@@ -8,7 +8,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
+import com.blackduck.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 
 public class GlobalConfigurationFieldModelValidatorAsserterTest {
     private static final String CLASS_NAME = GlobalConfigurationFieldModelValidatorAsserterTest.class.getSimpleName();

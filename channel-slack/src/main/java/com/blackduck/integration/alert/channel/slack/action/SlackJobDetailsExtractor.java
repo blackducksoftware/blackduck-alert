@@ -15,11 +15,11 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.blackduck.integration.alert.api.descriptor.SlackChannelKey;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobDetailsExtractor;
-import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.processor.DistributionJobDetailsExtractor;
+import com.blackduck.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
 
 @Component
 public class SlackJobDetailsExtractor extends DistributionJobDetailsExtractor {

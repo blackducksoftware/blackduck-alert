@@ -32,9 +32,9 @@ import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpRequestCreator;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
-import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
+import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.database.job.azure.boards.DefaultAzureBoardsJobDetailsAccessor;
 
 class AzureBoardsCreateIssueEventHandlerTest {

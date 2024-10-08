@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.persistence.accessor.AzureBoardsJobDetailsAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.accessor.AzureBoardsJobDetailsAccessor;
+import com.blackduck.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 
 @Component
 public class DefaultAzureBoardsJobDetailsAccessor implements AzureBoardsJobDetailsAccessor {

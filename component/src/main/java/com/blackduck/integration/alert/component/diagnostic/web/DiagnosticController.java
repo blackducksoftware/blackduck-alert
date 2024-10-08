@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.blackduck.integration.alert.component.diagnostic.action.DiagnosticCrudActions;
 import com.blackduck.integration.alert.component.diagnostic.model.DiagnosticModel;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.rest.ResponseFactory;
 
 @RestController
 @RequestMapping(AlertRestConstants.DIAGNOSTIC_PATH)

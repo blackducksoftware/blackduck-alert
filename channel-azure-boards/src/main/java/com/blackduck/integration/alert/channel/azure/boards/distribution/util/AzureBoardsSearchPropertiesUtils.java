@@ -10,7 +10,7 @@ package com.blackduck.integration.alert.channel.azure.boards.distribution.util;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 public final class AzureBoardsSearchPropertiesUtils {
     public static final String URL_DELIMITER = "|";

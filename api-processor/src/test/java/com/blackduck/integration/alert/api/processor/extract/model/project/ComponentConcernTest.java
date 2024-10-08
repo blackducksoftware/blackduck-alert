@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.blackduck.integration.alert.common.enumeration.ItemOperation;
 
 public class ComponentConcernTest {
     private static final String POLICY_NAME = "PolicyName";

@@ -16,7 +16,7 @@ import java.util.TreeSet;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcern;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernType;
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.blackduck.integration.alert.common.enumeration.ItemOperation;
 
 public class ComponentConcernConverter {
     private static final String TRIPLE_STRING_REPLACEMENT = "%s%s%s";

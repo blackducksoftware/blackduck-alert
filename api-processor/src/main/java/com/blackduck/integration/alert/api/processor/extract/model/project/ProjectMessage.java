@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.blackduck.integration.alert.api.processor.extract.model.CombinableModel;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderMessage;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 public class ProjectMessage extends ProviderMessage<ProjectMessage> {
     private final MessageReason messageReason;

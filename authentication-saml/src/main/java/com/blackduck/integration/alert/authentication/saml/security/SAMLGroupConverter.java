@@ -17,8 +17,8 @@ import org.springframework.security.saml2.provider.service.authentication.Saml2A
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.authentication.security.event.AuthenticationEventManager;
-import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
-import com.synopsys.integration.alert.common.persistence.model.UserModel;
+import com.blackduck.integration.alert.common.enumeration.AuthenticationType;
+import com.blackduck.integration.alert.common.persistence.model.UserModel;
 
 @Component
 public class SAMLGroupConverter {

@@ -11,10 +11,10 @@ import org.mockito.Mockito;
 import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
 import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.blackduck.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.UserAccessor;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
 
 class UserManagementAuthoritiesPopulatorTest {
     private final AuthenticationDescriptorKey descriptorKey = new AuthenticationDescriptorKey();

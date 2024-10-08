@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJob;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.event.AlertEventHandler;
-import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
+import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
 
 @Component
 public class AuditSuccessHandler implements AlertEventHandler<AuditSuccessEvent> {

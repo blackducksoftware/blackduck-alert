@@ -16,13 +16,13 @@ import com.blackduck.integration.alert.authentication.ldap.database.accessor.LDA
 import com.blackduck.integration.alert.authentication.ldap.model.LDAPConfigModel;
 import com.blackduck.integration.alert.authentication.ldap.model.LDAPConfigTestModel;
 import com.blackduck.integration.alert.authentication.ldap.validator.LDAPConfigurationValidator;
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.action.ValidationActionResponse;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.message.model.ConfigurationTestResult;
-import com.synopsys.integration.alert.common.rest.api.ConfigurationTestHelper;
-import com.synopsys.integration.alert.common.rest.api.ConfigurationValidationHelper;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.action.ValidationActionResponse;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.message.model.ConfigurationTestResult;
+import com.blackduck.integration.alert.common.rest.api.ConfigurationTestHelper;
+import com.blackduck.integration.alert.common.rest.api.ConfigurationValidationHelper;
+import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Component
 public class LDAPTestAction {

@@ -9,7 +9,7 @@ package com.blackduck.integration.alert.component.users.web.user;
 
 import java.util.Set;
 
-import com.synopsys.integration.alert.common.rest.model.Config;
+import com.blackduck.integration.alert.common.rest.model.Config;
 
 public class UserConfig extends Config {
     private String username;

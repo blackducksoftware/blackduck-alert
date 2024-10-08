@@ -8,7 +8,7 @@ import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 
 public class MockProcessingAuditAccessor implements ProcessingAuditAccessor {
     private Map<UUID, Set<Long>> auditEntries = new HashMap<>();

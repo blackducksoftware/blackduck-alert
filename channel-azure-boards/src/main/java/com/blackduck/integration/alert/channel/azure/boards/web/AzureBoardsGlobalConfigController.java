@@ -14,13 +14,13 @@ import com.blackduck.integration.alert.channel.azure.boards.action.AzureBoardsGl
 import com.blackduck.integration.alert.channel.azure.boards.action.AzureBoardsOAuthAuthenticateAction;
 import com.blackduck.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.common.rest.api.ReadPageController;
-import com.synopsys.integration.alert.common.rest.api.StaticConfigResourceController;
-import com.synopsys.integration.alert.common.rest.api.ValidateController;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.blackduck.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.rest.ResponseFactory;
+import com.blackduck.integration.alert.common.rest.api.ReadPageController;
+import com.blackduck.integration.alert.common.rest.api.StaticConfigResourceController;
+import com.blackduck.integration.alert.common.rest.api.ValidateController;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 
 @RestController
 @RequestMapping(AlertRestConstants.AZURE_BOARDS_CONFIGURATION_PATH)

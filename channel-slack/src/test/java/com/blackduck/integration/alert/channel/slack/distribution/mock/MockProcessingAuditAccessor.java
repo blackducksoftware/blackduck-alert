@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 
 public class MockProcessingAuditAccessor implements ProcessingAuditAccessor {
     //A Set<Long> is used because an event success or failure will mark all notifications in the event as a success or failure.

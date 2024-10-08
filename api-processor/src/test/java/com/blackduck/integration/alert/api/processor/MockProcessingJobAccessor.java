@@ -6,10 +6,10 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
 
-import com.synopsys.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
-import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.blackduck.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
+import com.blackduck.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
+import com.blackduck.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 
 public class MockProcessingJobAccessor implements ProcessingJobAccessor {
     private final List<FilteredDistributionJobResponseModel> storedJobs;

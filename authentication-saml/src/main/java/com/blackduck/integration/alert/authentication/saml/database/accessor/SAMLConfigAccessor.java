@@ -13,9 +13,9 @@ import com.blackduck.integration.alert.api.common.model.exception.AlertConfigura
 import com.blackduck.integration.alert.authentication.saml.database.configuration.SAMLConfigurationEntity;
 import com.blackduck.integration.alert.authentication.saml.database.configuration.SAMLConfigurationRepository;
 import com.blackduck.integration.alert.authentication.saml.model.SAMLConfigModel;
-import com.synopsys.integration.alert.common.persistence.accessor.UniqueConfigurationAccessor;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.persistence.accessor.UniqueConfigurationAccessor;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.util.DateUtils;
 
 @Component
 public class SAMLConfigAccessor implements UniqueConfigurationAccessor<SAMLConfigModel> {

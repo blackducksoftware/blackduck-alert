@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
+import com.blackduck.integration.alert.common.persistence.model.SystemMessageModel;
 
 public class SystemMessageModelTest {
 

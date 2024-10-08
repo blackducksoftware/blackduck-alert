@@ -17,7 +17,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.Application;
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.configuration.ApplicationConfiguration;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;

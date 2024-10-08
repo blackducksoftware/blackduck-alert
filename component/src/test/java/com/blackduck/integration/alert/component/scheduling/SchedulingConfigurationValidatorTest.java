@@ -12,7 +12,7 @@ import com.blackduck.integration.alert.component.scheduling.descriptor.Schedulin
 import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 import com.blackduck.integration.alert.component.scheduling.validator.SchedulingConfigurationFieldModelValidator;
 import com.blackduck.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
 class SchedulingConfigurationValidatorTest {
 
     /*

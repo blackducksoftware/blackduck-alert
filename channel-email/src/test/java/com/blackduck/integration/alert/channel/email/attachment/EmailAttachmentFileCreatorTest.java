@@ -16,7 +16,7 @@ import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectOperation;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 import com.blackduck.integration.alert.test.common.MockAlertProperties;
 
 class EmailAttachmentFileCreatorTest {

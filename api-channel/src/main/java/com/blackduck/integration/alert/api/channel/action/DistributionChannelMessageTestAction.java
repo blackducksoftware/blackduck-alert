@@ -20,11 +20,11 @@ import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderMessageHolder;
 import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage;
-import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.blackduck.integration.alert.common.channel.DistributionChannelTestAction;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.message.model.MessageResult;
+import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 
 public abstract class DistributionChannelMessageTestAction<D extends DistributionJobDetailsModel> extends DistributionChannelTestAction {
     public static final String DEFAULT_TOPIC = "Alert Test Topic";

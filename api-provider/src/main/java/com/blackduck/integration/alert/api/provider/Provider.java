@@ -10,7 +10,7 @@ package com.blackduck.integration.alert.api.provider;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.descriptor.model.ProviderKey;
 import com.blackduck.integration.alert.api.provider.state.StatefulProvider;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
 
 public abstract class Provider {
     private final ProviderKey key;

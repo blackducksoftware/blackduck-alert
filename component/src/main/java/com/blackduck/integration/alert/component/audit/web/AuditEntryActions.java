@@ -10,16 +10,16 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.component.audit.AuditDescriptorKey;
 import com.blackduck.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ProcessingFailedAccessor;
-import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
-import com.synopsys.integration.alert.common.persistence.model.job.JobToNotificationMappingModel;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.enumeration.FrequencyType;
+import com.blackduck.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.ProcessingFailedAccessor;
+import com.blackduck.integration.alert.common.persistence.model.AuditEntryPageModel;
+import com.blackduck.integration.alert.common.persistence.model.job.JobToNotificationMappingModel;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
+import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 import com.blackduck.integration.alert.api.processor.NotificationMappingProcessor;
 import com.blackduck.integration.alert.api.processor.event.JobNotificationMappedEvent;
 

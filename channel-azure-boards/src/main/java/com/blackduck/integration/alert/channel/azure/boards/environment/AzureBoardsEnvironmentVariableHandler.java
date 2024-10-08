@@ -18,8 +18,8 @@ import com.blackduck.integration.alert.api.environment.EnvironmentVariableUtilit
 import com.blackduck.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.blackduck.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
 import com.blackduck.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationValidator;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.util.DateUtils;
 
 @Component
 public class AzureBoardsEnvironmentVariableHandler extends EnvironmentVariableHandler<AzureBoardsGlobalConfigModel>  {

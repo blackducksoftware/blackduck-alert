@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackduck.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
-import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
+import com.blackduck.integration.alert.common.rest.api.AbstractFunctionController;
 
 /**
  * @deprecated This class is unused and part of the old Jira Server REST API. It is set for removal in 8.0.0.

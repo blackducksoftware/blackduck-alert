@@ -16,9 +16,9 @@ import com.blackduck.integration.alert.component.scheduling.descriptor.Schedulin
 import com.blackduck.integration.alert.api.distribution.audit.FailedAuditPurgeTask;
 import com.blackduck.integration.alert.api.task.ScheduledTask;
 import com.blackduck.integration.alert.api.task.TaskManager;
-import com.synopsys.integration.alert.common.action.ApiAction;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.blackduck.integration.alert.common.action.ApiAction;
+import com.blackduck.integration.alert.common.rest.model.FieldModel;
+import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
 import com.blackduck.integration.alert.component.scheduling.workflow.DailyTask;
 import com.blackduck.integration.alert.component.scheduling.workflow.PurgeTask;
 

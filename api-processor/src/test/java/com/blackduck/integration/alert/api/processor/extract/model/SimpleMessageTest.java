@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectOperation;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 public class SimpleMessageTest {
     private static final String SUMMARY = "Message Summary";

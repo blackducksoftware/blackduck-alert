@@ -24,11 +24,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.blackduck.integration.alert.database.job.distribution.DistributionRepository;
 import com.blackduck.integration.alert.database.job.distribution.DistributionRepository.DistributionDBResponse;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.persistence.accessor.DistributionAccessor;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.common.rest.model.DistributionWithAuditInfo;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.enumeration.FrequencyType;
+import com.blackduck.integration.alert.common.persistence.accessor.DistributionAccessor;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
+import com.blackduck.integration.alert.common.rest.model.DistributionWithAuditInfo;
+import com.blackduck.integration.alert.common.util.DateUtils;
 
 @Component
 public class DefaultDistributionAccessor implements DistributionAccessor {

@@ -16,8 +16,8 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.callback.IssueTr
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
-import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
+import com.blackduck.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.blackduck.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
 
 public class IssueTrackerIssueResponseCreator {
     private final IssueTrackerCallbackInfoCreator callbackInfoCreator;

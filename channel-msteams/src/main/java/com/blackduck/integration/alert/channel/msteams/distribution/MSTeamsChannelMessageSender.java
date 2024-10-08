@@ -24,8 +24,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.descriptor.MsTeamsKey;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
+import com.blackduck.integration.alert.common.message.model.MessageResult;
+import com.blackduck.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 
 @Component
 public class MSTeamsChannelMessageSender implements ChannelMessageSender<MSTeamsJobDetailsModel, MSTeamsChannelMessageModel, MessageResult> {

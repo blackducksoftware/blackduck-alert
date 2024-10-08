@@ -12,7 +12,7 @@ import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.model.request.IssueCommentRequestModel;
 import com.blackduck.integration.jira.common.server.service.IssueService;
 import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueResponseCreator;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 
 public class JiraServerIssueCommenter extends JiraIssueCommenter {
     private final IssueService issueService;

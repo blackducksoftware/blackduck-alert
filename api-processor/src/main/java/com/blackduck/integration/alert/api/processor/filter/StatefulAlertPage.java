@@ -10,7 +10,7 @@ package com.blackduck.integration.alert.api.processor.filter;
 import java.util.List;
 import java.util.function.Predicate;
 
-import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedDetails;
 
 public class StatefulAlertPage<T, E extends Exception> {
     private final AlertPagedDetails<T> alertPagedDetails;

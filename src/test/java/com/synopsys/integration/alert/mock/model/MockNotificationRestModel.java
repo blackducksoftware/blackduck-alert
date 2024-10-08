@@ -3,7 +3,7 @@ package com.synopsys.integration.alert.mock.model;
 import java.util.Date;
 
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
+import com.blackduck.integration.alert.common.rest.model.NotificationConfig;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public class MockNotificationRestModel extends MockRestModelUtil<NotificationConfig> {

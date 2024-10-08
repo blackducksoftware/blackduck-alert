@@ -24,7 +24,7 @@ import com.blackduck.integration.rest.exception.IntegrationRestException;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.api.common.model.errors.FieldStatusSeverity;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.blackduck.integration.alert.common.exception.AlertFieldException;
 
 class JiraErrorMessageUtilityTest {
 

@@ -20,7 +20,7 @@ import com.blackduck.integration.alert.azure.boards.common.service.query.fluent.
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.AzureWorkItemService;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.WorkItemReferenceModel;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 
 public class AzureBoardsIssueTrackerQueryManager {
     private final String organizationName;

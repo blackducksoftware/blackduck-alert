@@ -9,8 +9,8 @@ package com.blackduck.integration.alert.component.authentication.actions;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.ApiAction;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.blackduck.integration.alert.common.action.ApiAction;
+import com.blackduck.integration.alert.common.rest.model.FieldModel;
 
 /**
  * @deprecated This class will be removed in 8.0.0.

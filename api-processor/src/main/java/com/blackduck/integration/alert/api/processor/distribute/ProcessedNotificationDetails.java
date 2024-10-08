@@ -10,7 +10,7 @@ package com.blackduck.integration.alert.api.processor.distribute;
 import java.util.UUID;
 
 import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobModel;
 
 public final class ProcessedNotificationDetails extends AlertSerializableModel {
     private final UUID jobId;

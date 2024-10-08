@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.blackduck.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
-import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
+import com.blackduck.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 
 @Component
 public class JiraServerTestActionFactory {

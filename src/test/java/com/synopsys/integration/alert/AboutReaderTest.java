@@ -21,11 +21,11 @@ import com.blackduck.integration.alert.web.api.metadata.DescriptorMetadataAction
 import com.blackduck.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.rest.RestConstants;
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
-import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
-import com.synopsys.integration.alert.common.rest.AlertWebServerUrlManager;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
+import com.blackduck.integration.alert.common.persistence.model.SystemMessageModel;
+import com.blackduck.integration.alert.common.rest.AlertWebServerUrlManager;
+import com.blackduck.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.job.api.DefaultSystemStatusAccessor;
 import com.synopsys.integration.alert.database.system.DefaultSystemMessageAccessor;
 

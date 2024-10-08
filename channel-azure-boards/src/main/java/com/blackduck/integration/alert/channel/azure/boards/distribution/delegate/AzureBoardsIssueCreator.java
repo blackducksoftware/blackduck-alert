@@ -42,7 +42,7 @@ import com.blackduck.integration.alert.azure.boards.common.service.workitem.resp
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseFields;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
 import com.blackduck.integration.alert.azure.boards.common.util.AzureFieldDefinition;
-import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 
 public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
     private final Logger logger = LoggerFactory.getLogger(getClass());

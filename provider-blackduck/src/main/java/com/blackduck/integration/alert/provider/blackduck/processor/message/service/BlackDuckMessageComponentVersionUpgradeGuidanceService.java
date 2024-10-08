@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blackduck.integration.alert.provider.blackduck.processor.message.BlackDuckMessageLabels;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
 import com.blackduck.integration.blackduck.api.core.ResourceLink;
 import com.blackduck.integration.blackduck.api.core.ResourceMetadata;

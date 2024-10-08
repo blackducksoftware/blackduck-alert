@@ -23,9 +23,9 @@ import com.blackduck.integration.alert.channel.email.database.job.additional.Ema
 import com.blackduck.integration.alert.channel.email.database.job.additional.EmailJobAdditionalEmailAddressRepository;
 import com.blackduck.integration.alert.api.descriptor.EmailChannelKey;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
-import com.synopsys.integration.alert.common.persistence.accessor.EmailJobDetailsAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.accessor.EmailJobDetailsAccessor;
+import com.blackduck.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 
 @Component
 public class DefaultEmailJobDetailsAccessor implements EmailJobDetailsAccessor {

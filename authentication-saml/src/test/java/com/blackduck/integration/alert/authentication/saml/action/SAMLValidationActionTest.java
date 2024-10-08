@@ -16,7 +16,7 @@ import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.authentication.saml.SAMLTestHelper;
 import com.blackduck.integration.alert.authentication.saml.model.SAMLConfigModel;
 import com.blackduck.integration.alert.authentication.saml.validator.SAMLConfigurationValidator;
-import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.action.ActionResponse;
 
 class SAMLValidationActionTest {
     private SAMLValidationAction samlValidationAction;

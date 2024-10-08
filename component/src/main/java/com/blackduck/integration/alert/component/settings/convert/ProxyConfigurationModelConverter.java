@@ -16,11 +16,11 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.common.action.api.GlobalConfigurationModelToConcreteConverter;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
+import com.blackduck.integration.alert.common.action.api.GlobalConfigurationModelToConcreteConverter;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.rest.model.SettingsProxyModel;
 
 /**
  * @deprecated This class is required for converting an old ConfigurationModel into the new GlobalConfigModel classes. This is a temporary class that should be removed once we

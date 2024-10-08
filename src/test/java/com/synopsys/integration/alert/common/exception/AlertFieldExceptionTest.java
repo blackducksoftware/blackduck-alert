@@ -21,6 +21,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.blackduck.integration.alert.common.exception.AlertFieldException;
 
 public class AlertFieldExceptionTest {
 

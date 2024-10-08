@@ -9,11 +9,11 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
-import com.synopsys.integration.alert.common.action.api.GlobalConfigurationModelToConcreteSaveActions;
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.action.api.GlobalConfigurationModelToConcreteSaveActions;
+import com.blackduck.integration.alert.common.descriptor.DescriptorMap;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
+import com.blackduck.integration.alert.common.util.DateUtils;
 
 class GlobalConfigurationModelToConcreteConversionServiceTest {
     private static final String TEST_DESCRIPTOR_KEY = "test_descriptor_key";

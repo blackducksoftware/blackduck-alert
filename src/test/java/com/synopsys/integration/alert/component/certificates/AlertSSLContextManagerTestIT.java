@@ -18,10 +18,10 @@ import com.blackduck.integration.alert.api.certificates.AlertSSLContextManager;
 import com.blackduck.integration.alert.api.certificates.AlertTrustStoreManager;
 import com.blackduck.integration.alert.test.common.MockAlertProperties;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
-import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.AlertProperties;
+import com.blackduck.integration.alert.common.persistence.model.ClientCertificateModel;
+import com.blackduck.integration.alert.common.persistence.model.CustomCertificateModel;
+import com.blackduck.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.component.certificates.web.CertificateTestUtil;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 

@@ -33,9 +33,9 @@ import com.blackduck.integration.alert.azure.boards.common.service.workitem.requ
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemFieldsWrapper;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseFields;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
-import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
-import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
+import com.blackduck.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.blackduck.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
+import com.blackduck.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 
 public class AzureBoardsIssueTransitioner extends IssueTrackerIssueTransitioner<Integer> {
     public static final String WORK_ITEM_STATE_CATEGORY_PROPOSED = "Proposed";

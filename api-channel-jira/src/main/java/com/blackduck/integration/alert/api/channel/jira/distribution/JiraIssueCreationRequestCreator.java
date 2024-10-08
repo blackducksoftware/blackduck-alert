@@ -17,7 +17,7 @@ import com.blackduck.integration.alert.api.channel.jira.distribution.custom.Jira
 import com.blackduck.integration.alert.api.channel.jira.distribution.custom.MessageReplacementValues;
 import com.blackduck.integration.alert.api.channel.jira.distribution.custom.MessageValueReplacementResolver;
 import com.blackduck.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
 
 public class JiraIssueCreationRequestCreator {
     private final JiraCustomFieldResolver jiraCustomFieldResolver;

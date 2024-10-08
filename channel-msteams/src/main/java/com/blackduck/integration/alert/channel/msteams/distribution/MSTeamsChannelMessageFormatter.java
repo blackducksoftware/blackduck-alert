@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.channel.convert.ChannelMessageFormatter;
-import com.synopsys.integration.alert.common.util.MarkupEncoderUtil;
+import com.blackduck.integration.alert.common.util.MarkupEncoderUtil;
 
 @Component
 public class MSTeamsChannelMessageFormatter extends ChannelMessageFormatter {

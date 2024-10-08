@@ -14,8 +14,8 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIss
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.enumeration.IssueCategory;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.enumeration.IssueStatus;
-import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
+import com.blackduck.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.blackduck.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
 
 public class IssueTrackerIssueResponseCreatorTest {
     private static final ExistingIssueDetails<String> EXISTING_ISSUE_DETAILS = new ExistingIssueDetails<>("id", "key", "summary", "https://ui-link", IssueStatus.UNKNOWN, IssueCategory.BOM);

@@ -11,7 +11,7 @@ import com.blackduck.integration.alert.api.certificates.AlertClientCertificateMa
 import com.blackduck.integration.alert.component.certificates.CertificatesDescriptor;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
+import com.blackduck.integration.alert.common.persistence.model.ClientCertificateModel;
 
 @Component
 public class ClientCertificateConfigurationValidator {

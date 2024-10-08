@@ -18,10 +18,10 @@ import com.blackduck.integration.alert.provider.blackduck.factory.BlackDuckPrope
 import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.event.AlertEventHandler;
-import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerCallbackEvent;
-import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
+import com.blackduck.integration.alert.common.channel.issuetracker.IssueTrackerCallbackEvent;
+import com.blackduck.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.blackduck.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
+import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.blackduck.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.blackduck.integration.blackduck.service.BlackDuckApiClient;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;

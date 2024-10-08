@@ -16,7 +16,7 @@ import com.blackduck.integration.rest.credentials.CredentialsBuilder;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
 import com.blackduck.integration.rest.proxy.ProxyInfoBuilder;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 
 class ChannelRestConnectionFactoryTest {
     private final Gson gson = BlackDuckServicesFactory.createDefaultGson();

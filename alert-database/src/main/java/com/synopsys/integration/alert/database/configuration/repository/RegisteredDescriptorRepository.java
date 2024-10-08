@@ -14,7 +14,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
+import com.blackduck.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.database.configuration.RegisteredDescriptorEntity;
 
 @Component

@@ -11,11 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.rest.api.ConfigurationValidationHelper;
-import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
-import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.rest.api.ConfigurationValidationHelper;
+import com.blackduck.integration.alert.common.rest.model.SettingsProxyModel;
+import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.blackduck.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
 

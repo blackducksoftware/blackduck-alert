@@ -7,7 +7,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
+import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
 
 public class ExecutingJob {
     private final UUID executionId;

@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.blackduck.integration.alert.common.enumeration.ItemOperation;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcern;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
 import com.blackduck.integration.blackduck.api.manual.component.PolicyInfo;

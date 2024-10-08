@@ -18,8 +18,8 @@ import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetai
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcern;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.enumeration.ItemOperation;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 class AzureBoardsAlertIssuePropertiesManagerTest {
 

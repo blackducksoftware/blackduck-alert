@@ -17,7 +17,7 @@ import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetai
 import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectOperation;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 class ProviderMessageDistributorTest {
      private final UUID uuid = UUID.randomUUID();

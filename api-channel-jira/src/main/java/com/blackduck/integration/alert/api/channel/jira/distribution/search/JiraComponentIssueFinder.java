@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectVe
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.blackduck.integration.alert.api.processor.extract.model.project.BomComponentDetails;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 public class JiraComponentIssueFinder implements ProjectVersionComponentIssueFinder<String> {
     private final String jiraProjectKey;

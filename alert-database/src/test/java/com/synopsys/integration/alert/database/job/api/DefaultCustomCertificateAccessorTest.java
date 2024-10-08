@@ -13,8 +13,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.common.persistence.model.CustomCertificateModel;
+import com.blackduck.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.certificates.CustomCertificateRepository;
 import com.synopsys.integration.alert.database.job.api.mock.MockCustomCertificateRepository;
 

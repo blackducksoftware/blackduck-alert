@@ -12,8 +12,8 @@ import com.blackduck.integration.alert.api.distribution.execution.JobStage;
 import com.blackduck.integration.alert.api.event.AlertEventHandler;
 import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.api.event.distribution.JobSubTaskEvent;
-import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
-import com.synopsys.integration.alert.common.persistence.util.AuditStackTraceUtil;
+import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
+import com.blackduck.integration.alert.common.persistence.util.AuditStackTraceUtil;
 
 public abstract class JobSubTaskEventHandler<T extends JobSubTaskEvent> implements AlertEventHandler<T> {
     private final EventManager eventManager;

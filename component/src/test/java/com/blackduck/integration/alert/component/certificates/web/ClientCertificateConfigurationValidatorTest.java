@@ -16,7 +16,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.blackduck.integration.alert.api.certificates.AlertClientCertificateManager;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
+import com.blackduck.integration.alert.common.persistence.model.ClientCertificateModel;
 
 @ExtendWith(SpringExtension.class)
 class ClientCertificateConfigurationValidatorTest {

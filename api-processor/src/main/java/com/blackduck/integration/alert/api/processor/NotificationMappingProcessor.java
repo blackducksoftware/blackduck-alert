@@ -20,10 +20,10 @@ import org.springframework.stereotype.Component;
 import com.blackduck.integration.alert.api.processor.detail.DetailedNotificationContent;
 import com.blackduck.integration.alert.api.processor.detail.NotificationDetailExtractionDelegator;
 import com.blackduck.integration.alert.api.processor.mapping.JobNotificationMapper2;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
-import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.blackduck.integration.alert.common.enumeration.FrequencyType;
+import com.blackduck.integration.alert.common.logging.AlertLoggerFactory;
+import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
+import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 
 @Component
 public class NotificationMappingProcessor {

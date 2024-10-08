@@ -7,8 +7,8 @@
  */
 package com.synopsys.integration.alert.update;
 
-import static com.synopsys.integration.alert.common.util.DateUtils.DOCKER_DATE_FORMAT;
-import static com.synopsys.integration.alert.common.util.DateUtils.parseDate;
+import static com.blackduck.integration.alert.common.util.DateUtils.DOCKER_DATE_FORMAT;
+import static com.blackduck.integration.alert.common.util.DateUtils.parseDate;
 
 import java.text.ParseException;
 import java.time.OffsetDateTime;
@@ -31,8 +31,8 @@ import com.blackduck.integration.log.Slf4jIntLogger;
 import com.blackduck.integration.rest.client.IntHttpClient;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.common.AlertProperties;
+import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.update.model.DockerTagModel;
 import com.synopsys.integration.alert.update.model.DockerTagsResponseModel;
 import com.synopsys.integration.alert.update.model.UpdateModel;

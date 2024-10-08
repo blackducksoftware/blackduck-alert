@@ -4,7 +4,7 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import com.blackduck.integration.alert.authentication.saml.model.SAMLMetadataMode;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.database.BaseEntity;
 
 import jakarta.persistence.Column;

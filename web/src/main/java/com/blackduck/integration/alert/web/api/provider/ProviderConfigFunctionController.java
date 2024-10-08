@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
-import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
+import com.blackduck.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
+import com.blackduck.integration.alert.common.rest.api.AbstractFunctionController;
 
 @RestController
 @RequestMapping(ProviderConfigFunctionController.PROVIDER_CONFIG_NAME_FUNCTION_URL)

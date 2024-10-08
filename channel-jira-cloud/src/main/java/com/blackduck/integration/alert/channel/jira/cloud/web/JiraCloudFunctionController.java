@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
-import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
+import com.blackduck.integration.alert.common.rest.api.AbstractFunctionController;
 
 @RestController
 @RequestMapping(JiraCloudFunctionController.JIRA_CLOUD_FUNCTION_URL)

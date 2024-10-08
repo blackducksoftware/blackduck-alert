@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
+import com.blackduck.integration.alert.common.rest.api.AbstractFunctionController;
 
 @RestController
 @RequestMapping(PolicyFilterFunctionController.POLICY_FILTER_FUNCTION_URL)

@@ -25,10 +25,10 @@ import com.blackduck.integration.alert.api.processor.extract.model.ProcessedProv
 import com.blackduck.integration.alert.api.processor.filter.FilteredJobNotificationWrapper;
 import com.blackduck.integration.alert.api.processor.filter.JobNotificationMapper;
 import com.blackduck.integration.alert.api.processor.filter.NotificationContentWrapper;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
-import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.blackduck.integration.alert.common.enumeration.FrequencyType;
+import com.blackduck.integration.alert.common.logging.AlertLoggerFactory;
+import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
+import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 
 @Component
 // TODO rename to WorkflowNotificationProcessor

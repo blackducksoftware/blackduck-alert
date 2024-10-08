@@ -12,7 +12,7 @@ import com.blackduck.integration.alert.api.common.model.exception.AlertConfigura
 import com.blackduck.integration.alert.api.oauth.database.AlertOAuthModel;
 import com.blackduck.integration.alert.api.oauth.database.configuration.AlertOAuthConfigurationEntity;
 import com.blackduck.integration.alert.api.oauth.database.configuration.AlertOAuthConfigurationRepository;
-import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.blackduck.integration.alert.common.security.EncryptionUtility;
 
 @Component
 public class AlertOAuthConfigurationAccessor {

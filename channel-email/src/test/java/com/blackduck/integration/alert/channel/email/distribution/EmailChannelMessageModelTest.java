@@ -8,7 +8,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 public class EmailChannelMessageModelTest {
     static String SUBJECT_LINE = "test-subjectLine";

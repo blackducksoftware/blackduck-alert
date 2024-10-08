@@ -14,10 +14,10 @@ import java.util.stream.Collectors;
 import com.blackduck.integration.datastructure.SetMap;
 import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
-import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.blackduck.integration.alert.common.persistence.accessor.ProviderDataAccessor;
+import com.blackduck.integration.alert.common.persistence.model.ProviderProject;
+import com.blackduck.integration.alert.common.persistence.model.ProviderUserModel;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 
 public final class MockProviderDataAccessor implements ProviderDataAccessor {
     private final Map<Long, String> providerConfigs;

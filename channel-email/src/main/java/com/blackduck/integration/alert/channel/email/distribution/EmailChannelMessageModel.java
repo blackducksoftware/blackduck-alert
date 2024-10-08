@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 public class EmailChannelMessageModel extends AlertSerializableModel {
     public static final String FORMAT_SUMMARY = "Summary Format";

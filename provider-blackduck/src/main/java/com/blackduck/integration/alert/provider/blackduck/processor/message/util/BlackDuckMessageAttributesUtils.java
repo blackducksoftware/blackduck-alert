@@ -11,7 +11,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.blackduck.integration.alert.provider.blackduck.processor.message.BlackDuckMessageLabels;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 import com.blackduck.integration.blackduck.api.generated.enumeration.UsageType;
 import com.blackduck.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
 import com.blackduck.integration.rest.HttpUrl;

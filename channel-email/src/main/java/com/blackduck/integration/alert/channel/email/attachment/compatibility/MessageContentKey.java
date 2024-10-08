@@ -10,7 +10,7 @@ package com.blackduck.integration.alert.channel.email.attachment.compatibility;
 import java.util.Set;
 
 import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 public final class MessageContentKey extends AlertSerializableModel {
     private static final String SEPARATOR = "_";

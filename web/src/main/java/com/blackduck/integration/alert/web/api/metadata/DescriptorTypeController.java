@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackduck.integration.alert.web.api.metadata.model.DescriptorTypesResponseModel;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
+import com.blackduck.integration.alert.common.rest.ResponseFactory;
 
 @RestController
 @RequestMapping(DescriptorTypeController.TYPES_PATH)

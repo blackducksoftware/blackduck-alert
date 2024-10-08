@@ -36,7 +36,7 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCreat
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.descriptor.JiraCloudChannelKey;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 
 public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequestModel> {
     private Logger logger = LoggerFactory.getLogger(getClass());

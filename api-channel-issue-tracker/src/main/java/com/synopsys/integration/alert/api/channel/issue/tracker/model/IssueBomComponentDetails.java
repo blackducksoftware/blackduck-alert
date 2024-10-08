@@ -11,7 +11,7 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 import com.blackduck.integration.alert.api.processor.extract.model.project.AbstractBomComponentDetails;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentPolicy;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;

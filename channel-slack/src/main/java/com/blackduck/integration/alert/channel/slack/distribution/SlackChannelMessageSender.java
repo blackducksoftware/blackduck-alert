@@ -24,8 +24,8 @@ import com.blackduck.integration.rest.request.Request;
 import com.google.gson.JsonObject;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.descriptor.SlackChannelKey;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
+import com.blackduck.integration.alert.common.message.model.MessageResult;
+import com.blackduck.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 
 @Component
 public class SlackChannelMessageSender implements ChannelMessageSender<SlackJobDetailsModel, SlackChannelMessageModel, MessageResult> {

@@ -18,7 +18,7 @@ import com.blackduck.integration.alert.api.processor.extract.model.ProviderMessa
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderMessageHolder;
 import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
-import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.blackduck.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 
 public abstract class AbstractChannelMessageConverter<D extends DistributionJobDetailsModel, T> implements ChannelMessageConverter<D, T> {
     private final SimpleMessageConverter simpleMessageConverter;

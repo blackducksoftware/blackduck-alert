@@ -19,10 +19,10 @@ import com.blackduck.integration.alert.channel.email.action.EmailGlobalTestActio
 import com.blackduck.integration.alert.channel.email.action.EmailGlobalValidationAction;
 import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
-import com.synopsys.integration.alert.common.rest.api.StaticUniqueConfigResourceController;
-import com.synopsys.integration.alert.common.rest.api.ValidateController;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.rest.ResponseFactory;
+import com.blackduck.integration.alert.common.rest.api.StaticUniqueConfigResourceController;
+import com.blackduck.integration.alert.common.rest.api.ValidateController;
 
 @RestController
 @RequestMapping(AlertRestConstants.EMAIL_CONFIGURATION_PATH)

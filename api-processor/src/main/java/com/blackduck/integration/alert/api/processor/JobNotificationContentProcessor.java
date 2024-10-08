@@ -23,14 +23,14 @@ import com.blackduck.integration.alert.api.processor.extract.model.project.Proje
 import com.blackduck.integration.alert.api.processor.filter.NotificationContentWrapper;
 import com.blackduck.integration.alert.api.processor.summarize.ProjectMessageSummarizer;
 import com.blackduck.integration.alert.api.processor.event.JobProcessingEvent;
-import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
-import com.synopsys.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
-import com.synopsys.integration.alert.common.persistence.model.job.JobToNotificationMappingModel;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.blackduck.integration.alert.common.enumeration.ProcessingType;
+import com.blackduck.integration.alert.common.logging.AlertLoggerFactory;
+import com.blackduck.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
+import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.blackduck.integration.alert.common.persistence.model.job.JobToNotificationMappingModel;
+import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 
 @Component
 public class JobNotificationContentProcessor {

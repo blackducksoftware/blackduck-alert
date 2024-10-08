@@ -14,9 +14,9 @@ import org.slf4j.Logger;
 
 import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.blackduck.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
+import com.blackduck.integration.alert.common.persistence.accessor.FieldUtility;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
 import com.blackduck.integration.jira.common.cloud.configuration.JiraCloudRestConfig;
 import com.blackduck.integration.jira.common.cloud.configuration.JiraCloudRestConfigBuilder;
 import com.blackduck.integration.jira.common.cloud.service.JiraCloudServiceFactory;
