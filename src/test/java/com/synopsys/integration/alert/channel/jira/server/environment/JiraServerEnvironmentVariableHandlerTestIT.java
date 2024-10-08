@@ -1,13 +1,14 @@
 package com.synopsys.integration.alert.channel.jira.server.environment;
 
+import com.blackduck.integration.alert.channel.jira.server.environment.JiraServerEnvironmentVariableHandler;
 import com.synopsys.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.environment.EnvironmentProcessingResult;
 import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
-import com.synopsys.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
-import com.synopsys.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
-import com.synopsys.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
-import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
+import com.blackduck.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
+import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
+import com.blackduck.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;

@@ -19,8 +19,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.Application;
-import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
-import com.synopsys.integration.alert.channel.jira.cloud.web.JiraCloudCustomFunctionAction;
+import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
+import com.blackduck.integration.alert.channel.jira.cloud.web.JiraCloudCustomFunctionAction;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
