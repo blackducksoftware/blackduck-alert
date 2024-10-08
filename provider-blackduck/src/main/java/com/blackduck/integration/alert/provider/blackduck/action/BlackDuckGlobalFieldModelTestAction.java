@@ -14,17 +14,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.provider.state.ProviderProperties;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.blackduck.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
 import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckApiTokenValidator;
-import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.provider.state.ProviderProperties;
-import com.synopsys.integration.alert.common.action.FieldModelTestAction;
-import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.blackduck.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.blackduck.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
 import com.blackduck.integration.builder.BuilderStatus;
@@ -35,6 +30,11 @@ import com.blackduck.integration.rest.HttpUrl;
 import com.blackduck.integration.rest.RestConstants;
 import com.blackduck.integration.rest.client.ConnectionResult;
 import com.blackduck.integration.rest.exception.IntegrationRestException;
+import com.synopsys.integration.alert.common.action.FieldModelTestAction;
+import com.synopsys.integration.alert.common.exception.AlertFieldException;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 @Component
 public class BlackDuckGlobalFieldModelTestAction extends FieldModelTestAction {

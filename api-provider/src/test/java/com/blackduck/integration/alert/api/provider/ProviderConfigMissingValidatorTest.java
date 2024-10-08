@@ -1,10 +1,11 @@
-package com.synopsys.integration.alert.api.provider;
+package com.blackduck.integration.alert.api.provider;
 
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.blackduck.integration.alert.api.descriptor.model.ProviderKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
@@ -12,7 +13,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationM
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.blackduck.integration.alert.api.descriptor.model.ProviderKey;
 
 public class ProviderConfigMissingValidatorTest {
     @Test

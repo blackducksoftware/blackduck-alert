@@ -43,10 +43,10 @@ import com.google.api.client.http.apache.v2.ApacheHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.Base64;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestCreator;
-import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;
-import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpService;
-import com.synopsys.integration.alert.azure.boards.common.oauth.AzureAuthorizationCodeFlow;
+import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpRequestCreator;
+import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;
+import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpService;
+import com.blackduck.integration.alert.azure.boards.common.oauth.AzureAuthorizationCodeFlow;
 
 public class AzureBoardsProperties {
     private final Logger logger = LoggerFactory.getLogger(getClass());

@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.task.StartupScheduledTask;
-import com.synopsys.integration.alert.api.task.TaskManager;
+import com.blackduck.integration.alert.api.task.StartupScheduledTask;
+import com.blackduck.integration.alert.api.task.TaskManager;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;

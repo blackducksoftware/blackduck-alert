@@ -25,14 +25,14 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
 import com.blackduck.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.blackduck.integration.alert.test.common.TestProperties;
 import com.blackduck.integration.alert.web.api.job.JobConfigController;
 import com.google.gson.Gson;
-import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;

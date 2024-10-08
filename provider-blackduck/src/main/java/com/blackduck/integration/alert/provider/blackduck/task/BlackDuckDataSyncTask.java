@@ -19,14 +19,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
 
-import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.alert.api.common.model.exception.AlertRuntimeException;
-import com.synopsys.integration.alert.api.provider.lifecycle.ProviderTask;
-import com.synopsys.integration.alert.api.provider.state.ProviderProperties;
-import com.synopsys.integration.alert.api.task.ScheduledTask;
-import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
+import com.blackduck.integration.alert.api.provider.lifecycle.ProviderTask;
+import com.blackduck.integration.alert.api.provider.state.ProviderProperties;
+import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.blackduck.integration.blackduck.api.generated.view.UserView;
 import com.blackduck.integration.blackduck.api.manual.view.ProjectView;
@@ -37,6 +34,9 @@ import com.blackduck.integration.blackduck.service.dataservice.ProjectUsersServi
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.log.Slf4jIntLogger;
 import com.blackduck.integration.rest.HttpUrl;
+import com.blackduck.integration.alert.api.task.ScheduledTask;
+import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 
 public class BlackDuckDataSyncTask extends ProviderTask {
     private final Logger logger = LoggerFactory.getLogger(BlackDuckDataSyncTask.class);

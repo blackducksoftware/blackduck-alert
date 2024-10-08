@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
-import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
+import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;

@@ -5,17 +5,17 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.api.provider.lifecycle;
+package com.blackduck.integration.alert.api.provider.lifecycle;
 
 import java.util.List;
 
 import org.springframework.scheduling.TaskScheduler;
 
-import com.synopsys.integration.alert.api.provider.state.ProviderProperties;
-import com.synopsys.integration.alert.api.task.ScheduledTask;
-import com.synopsys.integration.alert.api.task.TaskMetaData;
-import com.synopsys.integration.alert.api.task.TaskMetaDataProperty;
 import com.blackduck.integration.alert.api.descriptor.model.ProviderKey;
+import com.blackduck.integration.alert.api.provider.state.ProviderProperties;
+import com.blackduck.integration.alert.api.task.ScheduledTask;
+import com.blackduck.integration.alert.api.task.TaskMetaData;
+import com.blackduck.integration.alert.api.task.TaskMetaDataProperty;
 
 public abstract class ProviderTask extends ScheduledTask {
     private final ProviderProperties providerProperties;

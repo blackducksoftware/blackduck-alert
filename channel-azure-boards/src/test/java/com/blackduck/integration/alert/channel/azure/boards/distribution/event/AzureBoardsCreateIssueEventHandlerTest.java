@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueCate
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestCreator;
+import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpRequestCreator;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;

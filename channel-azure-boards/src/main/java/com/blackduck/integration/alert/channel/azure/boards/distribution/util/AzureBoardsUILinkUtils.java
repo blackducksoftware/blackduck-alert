@@ -10,9 +10,9 @@ package com.blackduck.integration.alert.channel.azure.boards.distribution.util;
 import java.util.Optional;
 
 import com.google.api.client.http.GenericUrl;
-import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;
-import com.synopsys.integration.alert.azure.boards.common.model.ReferenceLinkModel;
-import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
+import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;
+import com.blackduck.integration.alert.azure.boards.common.model.ReferenceLinkModel;
+import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
 
 public final class AzureBoardsUILinkUtils {
     public static String extractUILink(String organizationName, WorkItemResponseModel workItem) {

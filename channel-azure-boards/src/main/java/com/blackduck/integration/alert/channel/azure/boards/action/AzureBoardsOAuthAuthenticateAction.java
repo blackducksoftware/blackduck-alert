@@ -23,8 +23,8 @@ import com.blackduck.integration.alert.channel.azure.boards.database.accessor.Az
 import com.blackduck.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
 import com.blackduck.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
-import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;
-import com.synopsys.integration.alert.azure.boards.common.oauth.AzureOAuthScopes;
+import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;
+import com.blackduck.integration.alert.azure.boards.common.oauth.AzureOAuthScopes;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;

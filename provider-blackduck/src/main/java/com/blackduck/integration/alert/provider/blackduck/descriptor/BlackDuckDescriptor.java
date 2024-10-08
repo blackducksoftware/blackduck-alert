@@ -12,12 +12,12 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
+import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
 import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckDistributionConfigurationValidator;
 import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckGlobalConfigurationFieldModelValidator;
-import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
-import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 
 @Component
 public class BlackDuckDescriptor extends ProviderDescriptor {

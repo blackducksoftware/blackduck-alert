@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
 import com.blackduck.integration.alert.api.distribution.audit.FailedAuditPurgeTask;
-import com.synopsys.integration.alert.api.task.ScheduledTask;
-import com.synopsys.integration.alert.api.task.TaskManager;
+import com.blackduck.integration.alert.api.task.ScheduledTask;
+import com.blackduck.integration.alert.api.task.TaskManager;
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;

@@ -5,12 +5,12 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.api.provider;
+package com.blackduck.integration.alert.api.provider;
 
-import static com.synopsys.integration.alert.api.provider.ProviderDescriptor.KEY_CONFIGURED_PROJECT;
-import static com.synopsys.integration.alert.api.provider.ProviderDescriptor.KEY_FILTER_BY_PROJECT;
-import static com.synopsys.integration.alert.api.provider.ProviderDescriptor.KEY_PROJECT_NAME_PATTERN;
-import static com.synopsys.integration.alert.api.provider.ProviderDescriptor.KEY_PROJECT_VERSION_NAME_PATTERN;
+import static com.blackduck.integration.alert.api.provider.ProviderDescriptor.KEY_CONFIGURED_PROJECT;
+import static com.blackduck.integration.alert.api.provider.ProviderDescriptor.KEY_FILTER_BY_PROJECT;
+import static com.blackduck.integration.alert.api.provider.ProviderDescriptor.KEY_PROJECT_NAME_PATTERN;
+import static com.blackduck.integration.alert.api.provider.ProviderDescriptor.KEY_PROJECT_VERSION_NAME_PATTERN;
 
 import java.util.Collection;
 import java.util.Collections;

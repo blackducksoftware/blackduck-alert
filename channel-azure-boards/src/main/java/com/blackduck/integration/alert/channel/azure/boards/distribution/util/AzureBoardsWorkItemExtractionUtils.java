@@ -11,8 +11,8 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemFieldsWrapper;
-import com.synopsys.integration.alert.azure.boards.common.util.AzureFieldDefinition;
+import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemFieldsWrapper;
+import com.blackduck.integration.alert.azure.boards.common.util.AzureFieldDefinition;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public final class AzureBoardsWorkItemExtractionUtils {

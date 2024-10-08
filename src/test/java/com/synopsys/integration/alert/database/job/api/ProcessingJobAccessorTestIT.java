@@ -17,6 +17,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.processor.detail.DetailedNotificationContent;
+import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
 import com.blackduck.integration.alert.database.job.DistributionJobRepository;
 import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.blackduck.integration.alert.provider.blackduck.processor.model.VulnerabilityUniqueProjectNotificationContent;
@@ -24,10 +28,6 @@ import com.blackduck.integration.blackduck.api.generated.enumeration.Vulnerabili
 import com.blackduck.integration.blackduck.api.manual.component.AffectedProjectVersion;
 import com.blackduck.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.blackduck.integration.alert.api.processor.detail.DetailedNotificationContent;
-import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;

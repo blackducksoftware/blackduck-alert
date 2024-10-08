@@ -27,7 +27,7 @@ import com.blackduck.integration.alert.api.common.model.exception.AlertRuntimeEx
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.blackduck.integration.alert.api.processor.extract.model.project.AbstractBomComponentDetails;
 import com.blackduck.integration.alert.api.processor.extract.model.project.BomComponentDetails;
-import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
+import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public class AzureBoardsComponentIssueFinder implements ProjectVersionComponentIssueFinder<Integer>, ExactIssueFinder<Integer> {

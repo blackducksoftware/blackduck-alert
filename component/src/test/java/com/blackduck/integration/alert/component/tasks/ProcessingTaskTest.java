@@ -29,7 +29,7 @@ import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.api.processor.NotificationMappingProcessor;
 import com.blackduck.integration.alert.api.processor.detail.NotificationDetailExtractionDelegator;
 import com.blackduck.integration.alert.api.processor.filter.JobNotificationMapper;
-import com.synopsys.integration.alert.api.task.TaskManager;
+import com.blackduck.integration.alert.api.task.TaskManager;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;

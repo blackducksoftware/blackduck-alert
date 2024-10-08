@@ -10,14 +10,14 @@ package com.blackduck.integration.alert.provider.blackduck.factory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackduck.integration.alert.api.provider.lifecycle.ProviderPropertiesFactory;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.provider.lifecycle.ProviderPropertiesFactory;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 @Component
 public class BlackDuckPropertiesFactory extends ProviderPropertiesFactory<BlackDuckProperties> {

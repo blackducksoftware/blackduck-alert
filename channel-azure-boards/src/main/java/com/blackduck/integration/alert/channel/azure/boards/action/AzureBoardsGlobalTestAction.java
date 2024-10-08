@@ -20,10 +20,10 @@ import com.blackduck.integration.alert.channel.azure.boards.validator.AzureBoard
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.azure.boards.common.http.AzureApiVersionAppender;
-import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;
-import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpService;
-import com.synopsys.integration.alert.azure.boards.common.service.project.AzureProjectService;
+import com.blackduck.integration.alert.azure.boards.common.http.AzureApiVersionAppender;
+import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;
+import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpService;
+import com.blackduck.integration.alert.azure.boards.common.service.project.AzureProjectService;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;

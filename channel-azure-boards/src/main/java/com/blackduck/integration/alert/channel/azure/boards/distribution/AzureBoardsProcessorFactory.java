@@ -35,16 +35,16 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueCate
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueTrackerSearcher;
 import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerAsyncMessageSender;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.azure.boards.common.http.AzureApiVersionAppender;
-import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestCreator;
-import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;
-import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpService;
-import com.synopsys.integration.alert.azure.boards.common.http.HttpServiceException;
-import com.synopsys.integration.alert.azure.boards.common.service.process.AzureProcessService;
-import com.synopsys.integration.alert.azure.boards.common.service.project.AzureProjectService;
-import com.synopsys.integration.alert.azure.boards.common.service.project.TeamProjectResponseModel;
-import com.synopsys.integration.alert.azure.boards.common.service.query.AzureWorkItemQueryService;
-import com.synopsys.integration.alert.azure.boards.common.service.workitem.AzureWorkItemService;
+import com.blackduck.integration.alert.azure.boards.common.http.AzureApiVersionAppender;
+import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpRequestCreator;
+import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;
+import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpService;
+import com.blackduck.integration.alert.azure.boards.common.http.HttpServiceException;
+import com.blackduck.integration.alert.azure.boards.common.service.process.AzureProcessService;
+import com.blackduck.integration.alert.azure.boards.common.service.project.AzureProjectService;
+import com.blackduck.integration.alert.azure.boards.common.service.project.TeamProjectResponseModel;
+import com.blackduck.integration.alert.azure.boards.common.service.query.AzureWorkItemQueryService;
+import com.blackduck.integration.alert.azure.boards.common.service.workitem.AzureWorkItemService;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 

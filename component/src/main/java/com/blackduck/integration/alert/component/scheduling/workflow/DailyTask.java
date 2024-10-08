@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
 import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 import com.blackduck.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.api.task.TaskManager;
+import com.blackduck.integration.alert.api.task.TaskManager;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;

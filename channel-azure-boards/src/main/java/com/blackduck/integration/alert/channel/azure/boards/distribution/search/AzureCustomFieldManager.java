@@ -21,18 +21,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.azure.boards.common.http.HttpServiceException;
-import com.synopsys.integration.alert.azure.boards.common.model.AzureArrayResponseModel;
-import com.synopsys.integration.alert.azure.boards.common.service.process.AzureProcessService;
-import com.synopsys.integration.alert.azure.boards.common.service.process.ProcessFieldRequestModel;
-import com.synopsys.integration.alert.azure.boards.common.service.process.ProcessFieldResponseModel;
-import com.synopsys.integration.alert.azure.boards.common.service.process.ProcessWorkItemTypeFieldResponseModel;
-import com.synopsys.integration.alert.azure.boards.common.service.process.ProcessWorkItemTypeRequestModel;
-import com.synopsys.integration.alert.azure.boards.common.service.process.ProcessWorkItemTypesResponseModel;
-import com.synopsys.integration.alert.azure.boards.common.service.project.AzureProjectService;
-import com.synopsys.integration.alert.azure.boards.common.service.project.ProjectPropertyResponseModel;
-import com.synopsys.integration.alert.azure.boards.common.service.project.ProjectWorkItemFieldModel;
-import com.synopsys.integration.alert.azure.boards.common.service.project.TeamProjectReferenceResponseModel;
+import com.blackduck.integration.alert.azure.boards.common.http.HttpServiceException;
+import com.blackduck.integration.alert.azure.boards.common.model.AzureArrayResponseModel;
+import com.blackduck.integration.alert.azure.boards.common.service.process.AzureProcessService;
+import com.blackduck.integration.alert.azure.boards.common.service.process.ProcessFieldRequestModel;
+import com.blackduck.integration.alert.azure.boards.common.service.process.ProcessFieldResponseModel;
+import com.blackduck.integration.alert.azure.boards.common.service.process.ProcessWorkItemTypeFieldResponseModel;
+import com.blackduck.integration.alert.azure.boards.common.service.process.ProcessWorkItemTypeRequestModel;
+import com.blackduck.integration.alert.azure.boards.common.service.process.ProcessWorkItemTypesResponseModel;
+import com.blackduck.integration.alert.azure.boards.common.service.project.AzureProjectService;
+import com.blackduck.integration.alert.azure.boards.common.service.project.ProjectPropertyResponseModel;
+import com.blackduck.integration.alert.azure.boards.common.service.project.ProjectWorkItemFieldModel;
+import com.blackduck.integration.alert.azure.boards.common.service.project.TeamProjectReferenceResponseModel;
 
 public class AzureCustomFieldManager {
     public static final String ALERT_PROVIDER_KEY_FIELD_NAME = "Alert Provider Key";

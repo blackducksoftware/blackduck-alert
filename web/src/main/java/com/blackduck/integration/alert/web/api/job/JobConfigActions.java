@@ -30,14 +30,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
-import com.blackduck.integration.exception.IntegrationException;
-import com.blackduck.integration.rest.exception.IntegrationRestException;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
-import com.synopsys.integration.alert.api.provider.ProviderProjectExistencePopulator;
+import com.blackduck.integration.alert.api.provider.ProviderProjectExistencePopulator;
+import com.blackduck.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.rest.exception.IntegrationRestException;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;

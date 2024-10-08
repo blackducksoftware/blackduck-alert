@@ -23,6 +23,11 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.event.EventManager;
+import com.blackduck.integration.alert.api.event.NotificationReceivedEvent;
+import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
 import com.blackduck.integration.alert.database.job.api.StaticJobAccessor;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
@@ -36,11 +41,6 @@ import com.blackduck.integration.blackduck.api.manual.view.ProjectNotificationVi
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.Application;
-import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.blackduck.integration.alert.api.event.EventManager;
-import com.blackduck.integration.alert.api.event.NotificationReceivedEvent;
-import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;

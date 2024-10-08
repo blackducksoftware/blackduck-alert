@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
+import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;

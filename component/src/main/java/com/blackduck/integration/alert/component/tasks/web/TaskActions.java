@@ -17,9 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.component.tasks.TaskManagementDescriptorKey;
-import com.synopsys.integration.alert.api.task.ScheduledTask;
-import com.synopsys.integration.alert.api.task.TaskManager;
-import com.synopsys.integration.alert.api.task.TaskMetaData;
+import com.blackduck.integration.alert.api.task.ScheduledTask;
+import com.blackduck.integration.alert.api.task.TaskManager;
+import com.blackduck.integration.alert.api.task.TaskMetaData;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;

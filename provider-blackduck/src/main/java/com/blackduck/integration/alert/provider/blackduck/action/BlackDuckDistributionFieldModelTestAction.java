@@ -24,15 +24,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
+import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.blackduck.integration.alert.api.common.model.errors.FieldStatusSeverity;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
+import com.blackduck.integration.alert.api.provider.state.StatefulProvider;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckApiTokenValidator;
 import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
-import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
-import com.blackduck.integration.alert.api.common.model.errors.FieldStatusSeverity;
-import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
-import com.synopsys.integration.alert.api.provider.state.StatefulProvider;
+import com.blackduck.integration.exception.IntegrationException;
 import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
@@ -42,7 +43,6 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.blackduck.integration.exception.IntegrationException;
 
 @Component
 public class BlackDuckDistributionFieldModelTestAction extends FieldModelTestAction {

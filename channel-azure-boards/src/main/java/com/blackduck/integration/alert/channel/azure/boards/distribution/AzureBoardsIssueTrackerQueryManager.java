@@ -12,14 +12,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.azure.boards.common.http.HttpServiceException;
-import com.synopsys.integration.alert.azure.boards.common.model.AzureArrayResponseModel;
-import com.synopsys.integration.alert.azure.boards.common.service.query.AzureWorkItemQueryService;
-import com.synopsys.integration.alert.azure.boards.common.service.query.WorkItemQueryResultResponseModel;
-import com.synopsys.integration.alert.azure.boards.common.service.query.fluent.WorkItemQuery;
-import com.synopsys.integration.alert.azure.boards.common.service.workitem.AzureWorkItemService;
-import com.synopsys.integration.alert.azure.boards.common.service.workitem.WorkItemReferenceModel;
-import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
+import com.blackduck.integration.alert.azure.boards.common.http.HttpServiceException;
+import com.blackduck.integration.alert.azure.boards.common.model.AzureArrayResponseModel;
+import com.blackduck.integration.alert.azure.boards.common.service.query.AzureWorkItemQueryService;
+import com.blackduck.integration.alert.azure.boards.common.service.query.WorkItemQueryResultResponseModel;
+import com.blackduck.integration.alert.azure.boards.common.service.query.fluent.WorkItemQuery;
+import com.blackduck.integration.alert.azure.boards.common.service.workitem.AzureWorkItemService;
+import com.blackduck.integration.alert.azure.boards.common.service.workitem.WorkItemReferenceModel;
+import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 
 public class AzureBoardsIssueTrackerQueryManager {

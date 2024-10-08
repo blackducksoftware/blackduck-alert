@@ -17,9 +17,10 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
+import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
+import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -28,7 +29,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationM
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 
 @Component
 public class BlackDuckGlobalConfigurationFieldModelValidator implements GlobalConfigurationFieldModelValidator {

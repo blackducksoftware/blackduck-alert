@@ -31,7 +31,7 @@ import com.blackduck.integration.alert.test.common.database.MockRepositorySorter
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.exception.IntegrationException;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.azure.boards.common.service.project.AzureProjectService;
+import com.blackduck.integration.alert.azure.boards.common.service.project.AzureProjectService;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;

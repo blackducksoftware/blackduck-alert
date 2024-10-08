@@ -14,8 +14,8 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.search.ExistingI
 import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueCommenter;
 import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueResponseCreator;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.azure.boards.common.http.HttpServiceException;
-import com.synopsys.integration.alert.azure.boards.common.service.comment.AzureWorkItemCommentService;
+import com.blackduck.integration.alert.azure.boards.common.http.HttpServiceException;
+import com.blackduck.integration.alert.azure.boards.common.service.comment.AzureWorkItemCommentService;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 
 public class AzureBoardsIssueCommenter extends IssueTrackerIssueCommenter<Integer> {

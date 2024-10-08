@@ -10,7 +10,7 @@ package com.blackduck.integration.alert.web.api.provider.processing;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
+import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
 import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController;
 

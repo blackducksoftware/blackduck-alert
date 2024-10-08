@@ -9,18 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
-import com.synopsys.integration.alert.api.provider.lifecycle.ProviderSchedulingManager;
-import com.synopsys.integration.alert.api.provider.state.StatefulProvider;
-import com.synopsys.integration.alert.api.task.TaskManager;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
+import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
+import com.blackduck.integration.alert.api.provider.lifecycle.ProviderSchedulingManager;
+import com.blackduck.integration.alert.api.provider.state.StatefulProvider;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckCacheHttpClientCache;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProvider;
@@ -28,6 +20,14 @@ import com.blackduck.integration.alert.provider.blackduck.factory.BlackDuckPrope
 import com.blackduck.integration.alert.provider.blackduck.task.BlackDuckDataSyncTask;
 import com.blackduck.integration.alert.provider.blackduck.task.accumulator.BlackDuckAccumulator;
 import com.blackduck.integration.function.ThrowingBiFunction;
+import com.blackduck.integration.alert.api.task.TaskManager;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 class BlackDuckGlobalApiActionTest {
     @Test

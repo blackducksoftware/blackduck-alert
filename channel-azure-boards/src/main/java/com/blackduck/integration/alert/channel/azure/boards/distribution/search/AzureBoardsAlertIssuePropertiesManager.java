@@ -14,7 +14,7 @@ import com.blackduck.integration.alert.channel.azure.boards.distribution.util.Az
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
-import com.synopsys.integration.alert.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
+import com.blackduck.integration.alert.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public class AzureBoardsAlertIssuePropertiesManager {

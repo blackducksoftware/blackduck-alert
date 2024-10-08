@@ -13,15 +13,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.api.provider.state.StatefulProvider;
-import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
-import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
-import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.api.provider.state.StatefulProvider;
 import com.blackduck.integration.alert.component.settings.validator.SettingsSystemValidator;
 import com.blackduck.integration.alert.component.users.UserSystemValidator;
-import com.synopsys.integration.alert.database.system.DefaultSystemMessageAccessor;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckApiTokenValidator;
@@ -35,6 +29,12 @@ import com.blackduck.integration.rest.credentials.CredentialsBuilder;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
 import com.blackduck.integration.rest.proxy.ProxyInfoBuilder;
 import com.blackduck.integration.rest.response.Response;
+import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
+import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
+import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
+import com.synopsys.integration.alert.database.system.DefaultSystemMessageAccessor;
 
 class SystemValidatorTest {
     private static final String DEFAULT_CONFIG_NAME = "Default";

@@ -5,15 +5,15 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.api.provider;
+package com.blackduck.integration.alert.api.provider;
 
 import java.util.Set;
 
+import com.blackduck.integration.alert.api.descriptor.model.ProviderKey;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.blackduck.integration.alert.api.descriptor.model.ProviderKey;
 
 public abstract class ProviderDescriptor extends Descriptor {
     // Global

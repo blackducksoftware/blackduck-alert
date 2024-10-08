@@ -13,14 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.provider.Provider;
-import com.synopsys.integration.alert.api.provider.lifecycle.ProviderTask;
-import com.synopsys.integration.alert.api.provider.state.StatefulProvider;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
+import com.blackduck.integration.alert.api.provider.Provider;
+import com.blackduck.integration.alert.api.provider.lifecycle.ProviderTask;
+import com.blackduck.integration.alert.api.provider.state.StatefulProvider;
 import com.blackduck.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
 import com.blackduck.integration.alert.provider.blackduck.factory.BlackDuckTaskFactory;
 import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 
 @Component
 public class BlackDuckProvider extends Provider {

@@ -31,17 +31,17 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTracke
 import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueCreator;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.descriptor.AzureBoardsChannelKey;
-import com.synopsys.integration.alert.azure.boards.common.http.HttpServiceException;
-import com.synopsys.integration.alert.azure.boards.common.service.query.AzureWorkItemQueryService;
-import com.synopsys.integration.alert.azure.boards.common.service.workitem.AzureWorkItemService;
-import com.synopsys.integration.alert.azure.boards.common.service.workitem.WorkItemReferenceModel;
-import com.synopsys.integration.alert.azure.boards.common.service.workitem.request.WorkItemElementOperation;
-import com.synopsys.integration.alert.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
-import com.synopsys.integration.alert.azure.boards.common.service.workitem.request.WorkItemRequest;
-import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemFieldsWrapper;
-import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseFields;
-import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
-import com.synopsys.integration.alert.azure.boards.common.util.AzureFieldDefinition;
+import com.blackduck.integration.alert.azure.boards.common.http.HttpServiceException;
+import com.blackduck.integration.alert.azure.boards.common.service.query.AzureWorkItemQueryService;
+import com.blackduck.integration.alert.azure.boards.common.service.workitem.AzureWorkItemService;
+import com.blackduck.integration.alert.azure.boards.common.service.workitem.WorkItemReferenceModel;
+import com.blackduck.integration.alert.azure.boards.common.service.workitem.request.WorkItemElementOperation;
+import com.blackduck.integration.alert.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
+import com.blackduck.integration.alert.azure.boards.common.service.workitem.request.WorkItemRequest;
+import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemFieldsWrapper;
+import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseFields;
+import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
+import com.blackduck.integration.alert.azure.boards.common.util.AzureFieldDefinition;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 
 public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {

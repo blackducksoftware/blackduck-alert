@@ -16,16 +16,16 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
 import com.blackduck.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.blackduck.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.blackduck.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.blackduck.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
 import com.blackduck.integration.alert.channel.slack.descriptor.SlackDescriptor;
-import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
-import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;

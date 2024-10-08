@@ -20,8 +20,8 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
 import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
-import com.synopsys.integration.alert.api.task.StartupScheduledTask;
-import com.synopsys.integration.alert.api.task.TaskManager;
+import com.blackduck.integration.alert.api.task.StartupScheduledTask;
+import com.blackduck.integration.alert.api.task.TaskManager;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;

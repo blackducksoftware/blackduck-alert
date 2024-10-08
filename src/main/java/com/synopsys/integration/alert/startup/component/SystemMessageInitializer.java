@@ -15,14 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.provider.Provider;
+import com.blackduck.integration.alert.api.provider.Provider;
+import com.blackduck.integration.alert.component.settings.validator.SettingsSystemValidator;
+import com.blackduck.integration.alert.component.users.UserSystemValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
-import com.blackduck.integration.alert.component.settings.validator.SettingsSystemValidator;
-import com.blackduck.integration.alert.component.users.UserSystemValidator;
 
 @Component
 @Order(30)

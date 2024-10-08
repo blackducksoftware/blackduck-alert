@@ -16,15 +16,9 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
-import com.synopsys.integration.alert.api.provider.state.ProviderProperties;
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
+import com.blackduck.integration.alert.api.provider.state.ProviderProperties;
 import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.blackduck.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.blackduck.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
@@ -36,6 +30,12 @@ import com.blackduck.integration.log.Slf4jIntLogger;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
 import com.blackduck.integration.util.IntEnvironmentVariables;
 import com.blackduck.integration.util.NoThreadExecutorService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 
 public class BlackDuckProperties extends ProviderProperties {
     public static final int DEFAULT_TIMEOUT = 300;

@@ -15,9 +15,9 @@ import org.springframework.scheduling.TaskScheduler;
 
 import com.blackduck.integration.alert.component.tasks.web.MultiTaskMetaDataModel;
 import com.blackduck.integration.alert.component.tasks.web.TaskActions;
-import com.synopsys.integration.alert.api.task.ScheduledTask;
-import com.synopsys.integration.alert.api.task.TaskManager;
-import com.synopsys.integration.alert.api.task.TaskMetaData;
+import com.blackduck.integration.alert.api.task.ScheduledTask;
+import com.blackduck.integration.alert.api.task.TaskManager;
+import com.blackduck.integration.alert.api.task.TaskMetaData;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;

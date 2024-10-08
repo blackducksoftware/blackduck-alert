@@ -1,10 +1,10 @@
-package com.synopsys.integration.alert.api.provider;
+package com.blackduck.integration.alert.api.provider;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.api.provider.state.ProviderProperties;
+import com.blackduck.integration.alert.api.provider.state.ProviderProperties;
 
 public class ProviderPropertiesTest {
     @Test

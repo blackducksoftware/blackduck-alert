@@ -23,7 +23,11 @@ import com.blackduck.integration.alert.api.event.NotificationReceivedEvent;
 import com.blackduck.integration.alert.api.processor.NotificationMappingProcessor;
 import com.blackduck.integration.alert.api.processor.detail.NotificationDetailExtractionDelegator;
 import com.blackduck.integration.alert.api.processor.mapping.JobNotificationMapper2;
-import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
+import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
+import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.blackduck.integration.alert.test.common.TestProperties;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -33,11 +37,7 @@ import com.synopsys.integration.alert.database.job.api.DefaultConfigurationModel
 import com.synopsys.integration.alert.database.job.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
-import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.blackduck.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 //TODO: This class depends on AlertIntegrationTest which cannot be moved into test-common yet due to it's dependencies.
 //  Move this class into the workflow subproject once the dependencies are resolved

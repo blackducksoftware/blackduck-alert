@@ -5,17 +5,17 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.api.provider.state;
+package com.blackduck.integration.alert.api.provider.state;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
-import com.synopsys.integration.alert.api.provider.lifecycle.ProviderTask;
+import com.blackduck.integration.alert.api.descriptor.model.ProviderKey;
+import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
+import com.blackduck.integration.alert.api.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.blackduck.integration.alert.api.descriptor.model.ProviderKey;
 
 public class StatefulProvider {
     private final ProviderKey key;

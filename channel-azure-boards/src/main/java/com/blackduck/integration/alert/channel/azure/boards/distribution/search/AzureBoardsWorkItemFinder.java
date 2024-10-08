@@ -12,11 +12,11 @@ import java.util.List;
 import com.blackduck.integration.alert.channel.azure.boards.distribution.AzureBoardsIssueTrackerQueryManager;
 import com.blackduck.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.azure.boards.common.service.query.fluent.WorkItemQuery;
-import com.synopsys.integration.alert.azure.boards.common.service.query.fluent.WorkItemQueryWhere;
-import com.synopsys.integration.alert.azure.boards.common.service.query.fluent.WorkItemQueryWhereOperator;
-import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseFields;
-import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
+import com.blackduck.integration.alert.azure.boards.common.service.query.fluent.WorkItemQuery;
+import com.blackduck.integration.alert.azure.boards.common.service.query.fluent.WorkItemQueryWhere;
+import com.blackduck.integration.alert.azure.boards.common.service.query.fluent.WorkItemQueryWhereOperator;
+import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseFields;
+import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public class AzureBoardsWorkItemFinder {

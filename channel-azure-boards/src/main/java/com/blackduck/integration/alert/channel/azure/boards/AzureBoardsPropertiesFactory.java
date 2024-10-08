@@ -11,7 +11,7 @@ import com.blackduck.integration.alert.api.common.model.exception.AlertConfigura
 import com.blackduck.integration.alert.api.oauth.AlertOAuthCredentialDataStoreFactory;
 import com.blackduck.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.blackduck.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
-import com.synopsys.integration.alert.azure.boards.common.oauth.AzureOAuthScopes;
+import com.blackduck.integration.alert.azure.boards.common.oauth.AzureOAuthScopes;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;

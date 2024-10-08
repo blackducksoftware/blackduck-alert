@@ -5,11 +5,11 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.api.provider.lifecycle;
+package com.blackduck.integration.alert.api.provider.lifecycle;
 
 import java.util.Optional;
 
-import com.synopsys.integration.alert.api.provider.state.ProviderProperties;
+import com.blackduck.integration.alert.api.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;

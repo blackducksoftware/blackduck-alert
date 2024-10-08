@@ -15,9 +15,9 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.search.ExistingI
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.enumeration.IssueCategory;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.enumeration.IssueStatus;
-import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemFieldsWrapper;
-import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseFields;
-import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
+import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemFieldsWrapper;
+import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseFields;
+import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
 
 public class AzureBoardsExistingIssueDetailsCreator {
     private final String organizationName;

@@ -13,11 +13,11 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
+import com.blackduck.integration.alert.api.provider.lifecycle.ProviderSchedulingManager;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckCacheHttpClientCache;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
-import com.synopsys.integration.alert.api.provider.lifecycle.ProviderSchedulingManager;
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;

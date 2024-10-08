@@ -38,14 +38,14 @@ import com.blackduck.integration.alert.api.common.model.exception.AlertException
 import com.blackduck.integration.alert.api.descriptor.AzureBoardsChannelKey;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.azure.boards.common.http.AzureApiVersionAppender;
-import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestCreator;
-import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;
-import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpService;
-import com.synopsys.integration.alert.azure.boards.common.service.comment.AzureWorkItemCommentService;
-import com.synopsys.integration.alert.azure.boards.common.service.query.AzureWorkItemQueryService;
-import com.synopsys.integration.alert.azure.boards.common.service.state.AzureWorkItemTypeStateService;
-import com.synopsys.integration.alert.azure.boards.common.service.workitem.AzureWorkItemService;
+import com.blackduck.integration.alert.azure.boards.common.http.AzureApiVersionAppender;
+import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpRequestCreator;
+import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;
+import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpService;
+import com.blackduck.integration.alert.azure.boards.common.service.comment.AzureWorkItemCommentService;
+import com.blackduck.integration.alert.azure.boards.common.service.query.AzureWorkItemQueryService;
+import com.blackduck.integration.alert.azure.boards.common.service.state.AzureWorkItemTypeStateService;
+import com.blackduck.integration.alert.azure.boards.common.service.workitem.AzureWorkItemService;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 

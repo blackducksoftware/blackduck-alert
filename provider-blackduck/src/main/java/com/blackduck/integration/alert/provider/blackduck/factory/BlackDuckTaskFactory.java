@@ -13,18 +13,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.provider.blackduck.task.accumulator.BlackDuckAccumulator;
-import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
+import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.api.provider.lifecycle.ProviderTask;
-import com.synopsys.integration.alert.api.provider.lifecycle.ProviderTaskFactory;
-import com.synopsys.integration.alert.api.provider.state.ProviderProperties;
+import com.blackduck.integration.alert.api.provider.lifecycle.ProviderTask;
+import com.blackduck.integration.alert.api.provider.lifecycle.ProviderTaskFactory;
+import com.blackduck.integration.alert.api.provider.state.ProviderProperties;
+import com.blackduck.integration.alert.provider.blackduck.task.BlackDuckDataSyncTask;
+import com.blackduck.integration.alert.provider.blackduck.task.accumulator.BlackDuckAccumulator;
+import com.blackduck.integration.alert.provider.blackduck.task.accumulator.BlackDuckNotificationRetrieverFactory;
+import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
-import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
-import com.blackduck.integration.alert.provider.blackduck.task.BlackDuckDataSyncTask;
-import com.blackduck.integration.alert.provider.blackduck.task.accumulator.BlackDuckNotificationRetrieverFactory;
 
 @Component
 public class BlackDuckTaskFactory implements ProviderTaskFactory {
