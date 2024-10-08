@@ -19,7 +19,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface AuditEntryRepository extends JpaRepository<AuditEntryEntity, Long> {
     @Query(
-        "SELECT new com.synopsys.integration.alert.database.audit.AuditEntryNotificationView(audit.id, audit.commonConfigId, auditNotification.notificationId, audit.timeCreated, audit.timeLastSent, audit.status, audit.errorMessage, audit.errorStackTrace)"
+        "SELECT new com.blackduck.integration.alert.database.audit.AuditEntryNotificationView(audit.id, audit.commonConfigId, auditNotification.notificationId, audit.timeCreated, audit.timeLastSent, audit.status, audit.errorMessage, audit.errorStackTrace)"
             + " FROM AuditEntryEntity audit"
             + " LEFT JOIN audit.auditNotificationRelations auditNotification"
             + " WHERE audit.commonConfigId = :jobId"
@@ -38,7 +38,7 @@ public interface AuditEntryRepository extends JpaRepository<AuditEntryEntity, Lo
     Optional<AuditEntryEntity> findMatchingAudit(Long notificationId, UUID commonConfigId);
 
     @Query("DELETE FROM AuditEntryEntity audit"
-        + " WHERE audit.id NOT IN (SELECT relation.auditEntryId FROM com.synopsys.integration.alert.database.audit.AuditNotificationRelation relation)"
+        + " WHERE audit.id NOT IN (SELECT relation.auditEntryId FROM com.blackduck.integration.alert.database.audit.AuditNotificationRelation relation)"
     )
     @Modifying
     void bulkDeleteOrphanedEntries();

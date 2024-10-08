@@ -63,7 +63,10 @@ public class LastSearchDataMigration extends StartupComponent {
                 if (configurationModels.size() == 1) {
                     logger.info("Configuration found. Creating property data.");
                     Long configId = configurationModels.get(0).getConfigurationId();
-                    String taskName = String.format("Task::Class[com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator]::Provider[provider_blackduck]::Configuration[id:%s]", configId);
+                    String taskName = String.format(
+                        "Task::Class[com.blackduck.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator]::Provider[provider_blackduck]::Configuration[id:%s]",
+                        configId
+                    );
                     String propertyValue = filePersistenceUtil.readFromFile(LAST_SEARCH_FILE);
                     Optional<String> currentPropertyValue = providerTaskPropertiesAccessor.getTaskProperty(taskName, BlackDuckAccumulatorSearchDateManager.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE);
                     if (currentPropertyValue.isEmpty()) {

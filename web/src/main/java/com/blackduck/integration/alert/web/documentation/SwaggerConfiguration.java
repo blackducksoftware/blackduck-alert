@@ -25,7 +25,7 @@ public class SwaggerConfiguration {
     @Bean
     public GroupedOpenApi api() {
         return GroupedOpenApi.builder()
-            .packagesToScan("com.synopsys.integration.alert")
+            .packagesToScan("com.blackduck.integration.alert")
             .pathsToMatch("/api/**")
             .group("production")
             .build();
@@ -34,7 +34,7 @@ public class SwaggerConfiguration {
     @Bean
     public OpenAPI springShopOpenAPI() {
         return new OpenAPI()
-            .info(new Info().title("Synopsys Alert - REST API")
+            .info(new Info().title("Black Duck Alert - REST API")
                 .description(SWAGGER_DESCRIPTION)
                 .version("preview"));
     }

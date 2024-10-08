@@ -9,7 +9,7 @@ This application provides the ability to send notifications from a provider to v
 <!--Not currently operational or new url(s) required-->
 <!--
 [![Black Duck Security Risk](https://copilot.blackducksoftware.com/github/repos/blackducksoftware/blackduck-alert/branches/master/badge-risk.svg)](https://copilot.blackducksoftware.com/github/repos/blackducksoftware/blackduck-alert/branches/master)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=com.synopsys.integration%3Ablackduck-alert&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.synopsys.integration%3Ablackduck-alert)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=com.blackduck.integration%3Ablackduck-alert&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.blackduck.integration%3Ablackduck-alert)
 -->
 ### Build Steps ###
 #### Requirements ####

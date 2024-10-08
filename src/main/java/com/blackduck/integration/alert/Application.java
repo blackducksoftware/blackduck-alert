@@ -23,7 +23,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.blackduck.integration.alert.component.authentication.security.database.UserDatabaseService;
 
-@EnableJpaRepositories(basePackages = { "com.synopsys.integration.alert.database", "com.synopsys.integration.alert.channel", "com.synopsys.integration.alert.api.oauth", "com.synopsys.integration.alert.authentication" })
+@EnableJpaRepositories(basePackages = { "com.blackduck.integration.alert.database", "com.blackduck.integration.alert.channel", "com.blackduck.integration.alert.api.oauth",
+    "com.blackduck.integration.alert.authentication" })
 @EnableTransactionManagement
 @EnableBatchProcessing
 @EnableScheduling
