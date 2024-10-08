@@ -1,4 +1,4 @@
-ext.moduleName = 'com.synopsys.integration.alert.database.job'
+ext.moduleName = 'com.blackduck.integration.alert.database.job'
 
 dependencies {
     implementation platform(project(':alert-platform'))

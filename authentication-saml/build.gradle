@@ -1,4 +1,4 @@
-ext.moduleName = 'com.synopsys.integration.alert.authentication.saml'
+ext.moduleName = 'com.blackduck.integration.alert.authentication.saml'
 
 dependencies {
     implementation platform(project(':alert-platform'))

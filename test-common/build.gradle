@@ -1,4 +1,4 @@
-ext.moduleName = 'com.synopsys.integration.alert.test.common'
+ext.moduleName = 'com.blackduck.integration.alert.test.common'
 
 dependencies {
     api project(':api-common-model')

@@ -30,7 +30,7 @@ ext {
     javaSourceCompatibility = JavaVersion.VERSION_17
     javaTargetCompatibility = JavaVersion.VERSION_17
 
-    moduleName = 'com.synopsys.integration.alert.main'
+    moduleName = 'com.blackduck.integration.alert.main'
 
     // This version is also in src/test/resources/spring-test.properties for the test jdbc connection
     postgresContainerVersionMigration = '14.10'
