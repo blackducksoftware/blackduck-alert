@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.job.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.database.job.api.StaticJobAccessor;
-import com.synopsys.integration.alert.test.common.TestResourceUtils;
+import com.blackduck.integration.alert.test.common.TestResourceUtils;
 import com.blackduck.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 

@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelationPK;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
-import com.synopsys.integration.alert.test.common.database.MockRepositoryContainer;
+import com.blackduck.integration.alert.test.common.database.MockRepositoryContainer;
 
 public class MockAuditNotificationRepository extends MockRepositoryContainer<AuditNotificationRelationPK, AuditNotificationRelation> implements AuditNotificationRepository {
 

@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.SlackJobDetail
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.common.util.MarkupEncoderUtil;
-import com.synopsys.integration.alert.test.common.MockAlertProperties;
+import com.blackduck.integration.alert.test.common.MockAlertProperties;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;

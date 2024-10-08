@@ -15,8 +15,8 @@ import org.springframework.data.domain.Sort;
 
 import com.blackduck.integration.alert.channel.azure.boards.database.configuration.AzureBoardsConfigurationEntity;
 import com.blackduck.integration.alert.channel.azure.boards.database.configuration.AzureBoardsConfigurationRepository;
-import com.synopsys.integration.alert.test.common.database.MockRepositoryContainer;
-import com.synopsys.integration.alert.test.common.database.MockRepositorySorter;
+import com.blackduck.integration.alert.test.common.database.MockRepositoryContainer;
+import com.blackduck.integration.alert.test.common.database.MockRepositorySorter;
 
 public class MockAzureBoardsConfigurationRepository extends MockRepositoryContainer<UUID, AzureBoardsConfigurationEntity> implements AzureBoardsConfigurationRepository {
     public MockAzureBoardsConfigurationRepository(MockRepositorySorter<AzureBoardsConfigurationEntity> mockRepositorySorter) {

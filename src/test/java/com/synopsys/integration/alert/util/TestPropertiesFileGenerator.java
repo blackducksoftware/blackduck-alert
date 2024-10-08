@@ -9,8 +9,8 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.test.common.TestPropertyKey;
-import com.synopsys.integration.alert.test.common.TestResourceUtils;
+import com.blackduck.integration.alert.test.common.TestPropertyKey;
+import com.blackduck.integration.alert.test.common.TestResourceUtils;
 
 public class TestPropertiesFileGenerator {
     @Test

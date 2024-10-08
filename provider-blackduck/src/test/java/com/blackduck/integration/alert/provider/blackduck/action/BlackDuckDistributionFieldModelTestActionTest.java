@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.blackduck.integration.alert.provider.blackduck.action.BlackDuckDistributionFieldModelTestAction;
 import com.synopsys.integration.alert.api.common.model.errors.FieldStatusSeverity;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.api.provider.state.StatefulProvider;
@@ -30,7 +29,7 @@ import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
-import com.synopsys.integration.alert.test.common.TestTags;
+import com.blackduck.integration.alert.test.common.TestTags;
 import com.blackduck.integration.blackduck.http.client.ApiTokenBlackDuckHttpClient;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.rest.response.DefaultResponse;

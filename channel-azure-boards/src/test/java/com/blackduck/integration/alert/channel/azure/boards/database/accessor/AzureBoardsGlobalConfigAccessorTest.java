@@ -26,8 +26,8 @@ import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUti
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.test.common.MockAlertProperties;
-import com.synopsys.integration.alert.test.common.database.MockRepositorySorter;
+import com.blackduck.integration.alert.test.common.MockAlertProperties;
+import com.blackduck.integration.alert.test.common.database.MockRepositorySorter;
 
 class AzureBoardsGlobalConfigAccessorTest {
     private static final String TEST_ORG_NAME = "organizationName";

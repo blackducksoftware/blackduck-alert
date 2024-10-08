@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.synopsys.integration.alert.database.certificates.ClientCertificateEntity;
 import com.synopsys.integration.alert.database.certificates.ClientCertificateRepository;
-import com.synopsys.integration.alert.test.common.database.MockRepositoryContainer;
+import com.blackduck.integration.alert.test.common.database.MockRepositoryContainer;
 
 public class MockClientCertificateRepository extends MockRepositoryContainer<UUID, ClientCertificateEntity> implements ClientCertificateRepository {
     public MockClientCertificateRepository() {

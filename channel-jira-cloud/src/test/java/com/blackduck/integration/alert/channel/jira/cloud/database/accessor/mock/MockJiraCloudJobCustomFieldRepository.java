@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import com.synopsys.integration.alert.database.job.jira.cloud.custom_field.JiraCloudJobCustomFieldEntity;
 import com.synopsys.integration.alert.database.job.jira.cloud.custom_field.JiraCloudJobCustomFieldPK;
 import com.synopsys.integration.alert.database.job.jira.cloud.custom_field.JiraCloudJobCustomFieldRepository;
-import com.synopsys.integration.alert.test.common.database.MockRepositoryContainer;
+import com.blackduck.integration.alert.test.common.database.MockRepositoryContainer;
 
 public class MockJiraCloudJobCustomFieldRepository extends MockRepositoryContainer<JiraCloudJobCustomFieldPK, JiraCloudJobCustomFieldEntity>
     implements JiraCloudJobCustomFieldRepository {

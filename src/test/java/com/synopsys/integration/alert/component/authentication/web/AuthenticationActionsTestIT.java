@@ -54,9 +54,9 @@ import com.blackduck.integration.alert.component.authentication.security.AlertAu
 import com.blackduck.integration.alert.component.authentication.security.database.AlertDatabaseAuthenticationPerformer;
 import com.synopsys.integration.alert.database.job.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
-import com.synopsys.integration.alert.test.common.TestProperties;
-import com.synopsys.integration.alert.test.common.TestPropertyKey;
-import com.synopsys.integration.alert.test.common.TestTags;
+import com.blackduck.integration.alert.test.common.TestProperties;
+import com.blackduck.integration.alert.test.common.TestPropertyKey;
+import com.blackduck.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 

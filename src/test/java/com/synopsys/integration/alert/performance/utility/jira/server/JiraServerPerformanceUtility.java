@@ -28,8 +28,8 @@ import com.synopsys.integration.alert.api.descriptor.JiraServerChannelKey;
 import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.ConfigurationManager;
 import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunner;
-import com.synopsys.integration.alert.test.common.TestProperties;
-import com.synopsys.integration.alert.test.common.TestPropertyKey;
+import com.blackduck.integration.alert.test.common.TestProperties;
+import com.blackduck.integration.alert.test.common.TestPropertyKey;
 import com.blackduck.integration.exception.IntegrationException;
 
 public class JiraServerPerformanceUtility {

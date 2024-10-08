@@ -19,7 +19,7 @@ import com.synopsys.integration.alert.api.oauth.database.accessor.MockAlertOAuth
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.test.common.MockAlertProperties;
+import com.blackduck.integration.alert.test.common.MockAlertProperties;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 class AlertOAuthCredentialDataStoreTest {

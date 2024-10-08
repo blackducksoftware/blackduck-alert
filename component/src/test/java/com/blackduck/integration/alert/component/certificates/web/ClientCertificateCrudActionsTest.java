@@ -27,8 +27,8 @@ import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.blackduck.integration.alert.component.certificates.CertificatesDescriptorKey;
 import com.synopsys.integration.alert.database.job.api.ClientCertificateAccessor;
-import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
-import com.synopsys.integration.alert.test.common.MockAlertProperties;
+import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
+import com.blackduck.integration.alert.test.common.MockAlertProperties;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 @ExtendWith(SpringExtension.class)

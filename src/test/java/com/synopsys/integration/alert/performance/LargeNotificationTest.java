@@ -35,9 +35,9 @@ import com.synopsys.integration.alert.performance.utility.BlackDuckProviderServi
 import com.synopsys.integration.alert.performance.utility.ConfigurationManager;
 import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunner;
 import com.synopsys.integration.alert.performance.utility.jira.server.JiraServerPerformanceUtility;
-import com.synopsys.integration.alert.test.common.TestProperties;
-import com.synopsys.integration.alert.test.common.TestPropertyKey;
-import com.synopsys.integration.alert.test.common.TestTags;
+import com.blackduck.integration.alert.test.common.TestProperties;
+import com.blackduck.integration.alert.test.common.TestPropertyKey;
+import com.blackduck.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.DescriptorMocker;
 import com.blackduck.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.blackduck.integration.blackduck.api.generated.view.ProjectVersionView;

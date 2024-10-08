@@ -11,12 +11,11 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.provider.blackduck.processor.detail.ComponentUnknownVersionNotificationDetailExtractor;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.api.processor.detail.DetailedNotificationContent;
 import com.blackduck.integration.alert.provider.blackduck.processor.model.ComponentUnknownVersionWithStatusNotificationContent;
-import com.synopsys.integration.alert.test.common.TestResourceUtils;
+import com.blackduck.integration.alert.test.common.TestResourceUtils;
 import com.blackduck.integration.blackduck.api.manual.component.ComponentUnknownVersionNotificationContent;
 import com.blackduck.integration.blackduck.api.manual.view.ComponentUnknownVersionNotificationView;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;

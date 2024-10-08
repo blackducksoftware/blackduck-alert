@@ -15,8 +15,8 @@ import org.springframework.data.domain.Sort;
 
 import com.blackduck.integration.alert.channel.jira.server.database.configuration.JiraServerConfigurationEntity;
 import com.blackduck.integration.alert.channel.jira.server.database.configuration.JiraServerConfigurationRepository;
-import com.synopsys.integration.alert.test.common.database.MockRepositoryContainer;
-import com.synopsys.integration.alert.test.common.database.MockRepositorySorter;
+import com.blackduck.integration.alert.test.common.database.MockRepositoryContainer;
+import com.blackduck.integration.alert.test.common.database.MockRepositorySorter;
 
 public class MockJiraServerConfigurationRepository extends MockRepositoryContainer<UUID, JiraServerConfigurationEntity> implements JiraServerConfigurationRepository {
     public MockJiraServerConfigurationRepository(MockRepositorySorter<JiraServerConfigurationEntity> mockRepositorySorter) {

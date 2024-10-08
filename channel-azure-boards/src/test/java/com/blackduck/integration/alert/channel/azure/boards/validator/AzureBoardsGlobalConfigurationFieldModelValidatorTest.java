@@ -13,12 +13,12 @@ import org.junit.jupiter.api.Test;
 
 import com.blackduck.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.blackduck.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
+import com.blackduck.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.api.descriptor.AzureBoardsChannelKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
 
 class AzureBoardsGlobalConfigurationFieldModelValidatorTest {
 

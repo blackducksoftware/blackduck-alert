@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
+import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
 
 class JiraServerCustomFunctionActionTest {
     private final Gson gson = BlackDuckServicesFactory.createDefaultGson();

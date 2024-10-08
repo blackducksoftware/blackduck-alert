@@ -11,12 +11,11 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.provider.blackduck.processor.detail.RuleViolationClearedNotificationDetailExtractor;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.api.processor.detail.DetailedNotificationContent;
 import com.blackduck.integration.alert.provider.blackduck.processor.model.RuleViolationClearedUniquePolicyNotificationContent;
-import com.synopsys.integration.alert.test.common.TestResourceUtils;
+import com.blackduck.integration.alert.test.common.TestResourceUtils;
 import com.blackduck.integration.blackduck.api.manual.component.PolicyInfo;
 import com.blackduck.integration.blackduck.api.manual.component.RuleViolationClearedNotificationContent;
 import com.blackduck.integration.blackduck.api.manual.view.RuleViolationClearedNotificationView;

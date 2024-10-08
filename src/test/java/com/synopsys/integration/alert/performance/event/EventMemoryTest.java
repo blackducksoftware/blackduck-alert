@@ -22,7 +22,7 @@ import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.configuration.ApplicationConfiguration;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
-import com.synopsys.integration.alert.test.common.TestTags;
+import com.blackduck.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.DescriptorMocker;
 
 @Tag(TestTags.DEFAULT_PERFORMANCE)

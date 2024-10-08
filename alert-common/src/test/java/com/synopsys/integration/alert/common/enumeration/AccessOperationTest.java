@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.util.BitwiseUtil;
-import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
+import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
 
 public class AccessOperationTest {
 

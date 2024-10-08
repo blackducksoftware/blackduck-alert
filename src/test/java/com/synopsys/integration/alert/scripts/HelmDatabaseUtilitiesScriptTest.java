@@ -23,9 +23,9 @@ import org.junit.platform.commons.logging.Logger;
 import org.junit.platform.commons.logging.LoggerFactory;
 import org.junit.platform.commons.util.StringUtils;
 
-import com.synopsys.integration.alert.test.common.TestResourceUtils;
-import com.synopsys.integration.alert.test.common.TestTags;
-import com.synopsys.integration.alert.test.common.junit.kubernetes.EnableIfKubeAndHelmPresent;
+import com.blackduck.integration.alert.test.common.TestResourceUtils;
+import com.blackduck.integration.alert.test.common.TestTags;
+import com.blackduck.integration.alert.test.common.junit.kubernetes.EnableIfKubeAndHelmPresent;
 import com.blackduck.integration.executable.Executable;
 import com.blackduck.integration.executable.ExecutableOutput;
 import com.blackduck.integration.executable.ExecutableRunnerException;

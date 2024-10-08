@@ -33,8 +33,8 @@ import com.synopsys.integration.alert.database.settings.proxy.NonProxyHostsConfi
 import com.synopsys.integration.alert.database.settings.proxy.SettingsProxyConfigurationEntity;
 import com.synopsys.integration.alert.database.settings.proxy.SettingsProxyConfigurationRepository;
 import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
-import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
-import com.synopsys.integration.alert.test.common.MockAlertProperties;
+import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
+import com.blackduck.integration.alert.test.common.MockAlertProperties;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 class SettingsProxyCrudActionsTest {

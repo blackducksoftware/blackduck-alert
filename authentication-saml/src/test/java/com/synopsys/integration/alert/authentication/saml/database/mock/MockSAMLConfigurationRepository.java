@@ -2,7 +2,7 @@ package com.synopsys.integration.alert.authentication.saml.database.mock;
 
 import com.synopsys.integration.alert.authentication.saml.database.configuration.SAMLConfigurationEntity;
 import com.synopsys.integration.alert.authentication.saml.database.configuration.SAMLConfigurationRepository;
-import com.synopsys.integration.alert.test.common.database.MockRepositoryContainer;
+import com.blackduck.integration.alert.test.common.database.MockRepositoryContainer;
 
 import java.util.Optional;
 import java.util.UUID;

@@ -4,7 +4,7 @@ import java.util.function.Function;
 
 import com.synopsys.integration.alert.database.audit.AuditFailedNotificationEntity;
 import com.synopsys.integration.alert.database.audit.AuditFailedNotificationRepository;
-import com.synopsys.integration.alert.test.common.database.MockRepositoryContainer;
+import com.blackduck.integration.alert.test.common.database.MockRepositoryContainer;
 
 public class MockAuditFailedNotificationRepository extends MockRepositoryContainer<Long, AuditFailedNotificationEntity> implements AuditFailedNotificationRepository {
 

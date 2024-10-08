@@ -12,11 +12,10 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.provider.blackduck.processor.detail.PolicyOverrideNotificationDetailExtractor;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.api.processor.detail.DetailedNotificationContent;
-import com.synopsys.integration.alert.test.common.TestResourceUtils;
+import com.blackduck.integration.alert.test.common.TestResourceUtils;
 import com.blackduck.integration.blackduck.api.manual.component.PolicyInfo;
 import com.blackduck.integration.blackduck.api.manual.component.PolicyOverrideNotificationContent;
 import com.blackduck.integration.blackduck.api.manual.view.PolicyOverrideNotificationView;

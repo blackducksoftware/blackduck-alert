@@ -14,7 +14,7 @@ import com.synopsys.integration.alert.database.audit.AuditEntryNotificationView;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
-import com.synopsys.integration.alert.test.common.database.MockRepositoryContainer;
+import com.blackduck.integration.alert.test.common.database.MockRepositoryContainer;
 
 public class MockAuditEntryRepository extends MockRepositoryContainer<Long, AuditEntryEntity> implements AuditEntryRepository {
     private final AuditNotificationRepository auditNotificationRepository;

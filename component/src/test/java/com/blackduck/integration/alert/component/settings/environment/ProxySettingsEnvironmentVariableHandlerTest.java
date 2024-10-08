@@ -1,12 +1,11 @@
 package com.blackduck.integration.alert.component.settings.environment;
 
-import com.blackduck.integration.alert.component.settings.environment.ProxySettingsEnvironmentVariableHandler;
 import com.synopsys.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.alert.api.environment.EnvironmentProcessingResult;
 import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
 import com.blackduck.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;
 import com.blackduck.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
-import com.synopsys.integration.alert.test.common.EnvironmentVariableMockingUtil;
+import com.blackduck.integration.alert.test.common.EnvironmentVariableMockingUtil;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;

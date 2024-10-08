@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.api.descriptor.JiraCloudChannelKey;
 import com.synopsys.integration.alert.api.descriptor.MsTeamsKey;
 import com.synopsys.integration.alert.api.descriptor.SlackChannelKey;
 import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
-import com.synopsys.integration.alert.test.common.MockDescriptorMap;
+import com.blackduck.integration.alert.test.common.MockDescriptorMap;
 
 public class DistributionActionsTest {
     private final String slackKey = new SlackChannelKey().getUniversalKey();

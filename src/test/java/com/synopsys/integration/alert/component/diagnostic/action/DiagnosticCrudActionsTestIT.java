@@ -19,7 +19,7 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.blackduck.integration.alert.component.diagnostic.database.DefaultDiagnosticAccessor;
 import com.blackduck.integration.alert.component.diagnostic.model.DiagnosticModel;
 import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
-import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
+import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @AlertIntegrationTest

@@ -48,9 +48,9 @@ import com.synopsys.integration.alert.database.job.api.DefaultNotificationAccess
 import com.synopsys.integration.alert.database.job.api.StaticJobAccessor;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.synopsys.integration.alert.test.common.TestProperties;
-import com.synopsys.integration.alert.test.common.TestPropertyKey;
-import com.synopsys.integration.alert.test.common.TestTags;
+import com.blackduck.integration.alert.test.common.TestProperties;
+import com.blackduck.integration.alert.test.common.TestPropertyKey;
+import com.blackduck.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.DescriptorMocker;
 import com.blackduck.integration.blackduck.api.manual.component.ProjectNotificationContent;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;

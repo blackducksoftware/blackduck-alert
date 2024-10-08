@@ -3,7 +3,7 @@ package com.synopsys.integration.alert.authentication.ldap.database.configuratio
 import java.util.Optional;
 import java.util.UUID;
 
-import com.synopsys.integration.alert.test.common.database.MockRepositoryContainer;
+import com.blackduck.integration.alert.test.common.database.MockRepositoryContainer;
 
 public class MockLDAPConfigurationRepository extends MockRepositoryContainer<UUID, LDAPConfigurationEntity> implements LDAPConfigurationRepository {
     public MockLDAPConfigurationRepository() {

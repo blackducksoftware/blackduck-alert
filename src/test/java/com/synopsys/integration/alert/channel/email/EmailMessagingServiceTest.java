@@ -8,7 +8,7 @@ import org.mockito.Mockito;
 import com.blackduck.integration.alert.service.email.EmailMessagingService;
 import com.blackduck.integration.alert.service.email.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.test.common.TestProperties;
+import com.blackduck.integration.alert.test.common.TestProperties;
 
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;

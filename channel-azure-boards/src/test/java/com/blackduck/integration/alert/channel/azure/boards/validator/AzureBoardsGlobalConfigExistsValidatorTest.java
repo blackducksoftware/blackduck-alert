@@ -18,8 +18,8 @@ import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.test.common.MockAlertProperties;
-import com.synopsys.integration.alert.test.common.database.MockRepositorySorter;
+import com.blackduck.integration.alert.test.common.MockAlertProperties;
+import com.blackduck.integration.alert.test.common.database.MockRepositorySorter;
 
 class AzureBoardsGlobalConfigExistsValidatorTest {
     private final Gson gson = BlackDuckServicesFactory.createDefaultGson();

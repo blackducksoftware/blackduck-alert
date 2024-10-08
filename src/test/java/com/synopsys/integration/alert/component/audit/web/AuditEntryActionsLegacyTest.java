@@ -46,7 +46,7 @@ import com.synopsys.integration.alert.database.job.api.DefaultRestApiAuditAccess
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
-import com.synopsys.integration.alert.test.common.OutputLogger;
+import com.blackduck.integration.alert.test.common.OutputLogger;
 
 public class AuditEntryActionsLegacyTest {
     private OutputLogger outputLogger;

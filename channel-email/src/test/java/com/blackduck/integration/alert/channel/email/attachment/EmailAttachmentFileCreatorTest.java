@@ -17,7 +17,7 @@ import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetail
 import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.test.common.MockAlertProperties;
+import com.blackduck.integration.alert.test.common.MockAlertProperties;
 
 class EmailAttachmentFileCreatorTest {
     private static MockAlertProperties alertProperties;

@@ -22,7 +22,7 @@ import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.test.common.AuthenticationTestUtils;
+import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
 
 class EmailGlobalConfigurationActionTest {
     @Test

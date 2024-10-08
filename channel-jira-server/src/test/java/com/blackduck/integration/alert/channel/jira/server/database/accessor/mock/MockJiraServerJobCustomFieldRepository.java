@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import com.blackduck.integration.alert.channel.jira.server.database.job.custom_field.JiraServerJobCustomFieldEntity;
 import com.blackduck.integration.alert.channel.jira.server.database.job.custom_field.JiraServerJobCustomFieldPK;
 import com.blackduck.integration.alert.channel.jira.server.database.job.custom_field.JiraServerJobCustomFieldRepository;
-import com.synopsys.integration.alert.test.common.database.MockRepositoryContainer;
+import com.blackduck.integration.alert.test.common.database.MockRepositoryContainer;
 
 public class MockJiraServerJobCustomFieldRepository
     extends MockRepositoryContainer<JiraServerJobCustomFieldPK, JiraServerJobCustomFieldEntity>

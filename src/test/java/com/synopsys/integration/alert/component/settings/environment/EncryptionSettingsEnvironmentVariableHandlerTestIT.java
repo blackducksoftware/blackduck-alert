@@ -4,7 +4,7 @@ import com.blackduck.integration.alert.component.settings.environment.Encryption
 import com.synopsys.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.alert.api.environment.EnvironmentProcessingResult;
 import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
-import com.synopsys.integration.alert.test.common.EnvironmentVariableMockingUtil;
+import com.blackduck.integration.alert.test.common.EnvironmentVariableMockingUtil;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
