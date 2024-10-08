@@ -19,7 +19,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.Application;
-import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
+import com.blackduck.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;

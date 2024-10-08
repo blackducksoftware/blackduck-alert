@@ -18,12 +18,20 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
+import com.blackduck.integration.alert.channel.slack.descriptor.SlackDescriptor;
+import com.blackduck.integration.log.IntLogger;
+import com.blackduck.integration.log.Slf4jIntLogger;
+import com.blackduck.integration.rest.client.IntHttpClient;
+import com.blackduck.integration.rest.proxy.ProxyInfo;
+import com.blackduck.integration.wait.ResilientJobConfig;
+import com.blackduck.integration.wait.WaitJob;
+import com.blackduck.integration.wait.tracker.WaitIntervalTracker;
+import com.blackduck.integration.wait.tracker.WaitIntervalTrackerFactory;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
 import com.synopsys.integration.alert.performance.utility.ConfigurationManagerLegacy;
@@ -33,14 +41,6 @@ import com.synopsys.integration.alert.performance.utility.NotificationWaitJobTas
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
-import com.blackduck.integration.log.IntLogger;
-import com.blackduck.integration.log.Slf4jIntLogger;
-import com.blackduck.integration.rest.client.IntHttpClient;
-import com.blackduck.integration.rest.proxy.ProxyInfo;
-import com.blackduck.integration.wait.ResilientJobConfig;
-import com.blackduck.integration.wait.WaitJob;
-import com.blackduck.integration.wait.tracker.WaitIntervalTracker;
-import com.blackduck.integration.wait.tracker.WaitIntervalTrackerFactory;
 
 @Tag(TestTags.DEFAULT_PERFORMANCE)
 public class ScalingPerformanceTest {

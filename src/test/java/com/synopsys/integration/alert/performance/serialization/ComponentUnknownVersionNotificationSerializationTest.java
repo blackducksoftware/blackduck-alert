@@ -2,7 +2,7 @@ package com.synopsys.integration.alert.performance.serialization;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.Application;
-import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
+import com.blackduck.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;

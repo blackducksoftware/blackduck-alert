@@ -1,22 +1,10 @@
 package com.synopsys.integration.alert.performance;
 
-import com.google.gson.Gson;
-import com.synopsys.integration.alert.Application;
-import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
-import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.configuration.ApplicationConfiguration;
-import com.synopsys.integration.alert.database.DatabaseDataSource;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
-import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
-import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
-import com.synopsys.integration.alert.performance.utility.ConfigurationManagerLegacy;
-import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerLegacy;
-import com.synopsys.integration.alert.test.common.TestProperties;
-import com.synopsys.integration.alert.test.common.TestPropertyKey;
-import com.synopsys.integration.alert.test.common.TestTags;
-import com.synopsys.integration.alert.util.DescriptorMocker;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -29,10 +17,23 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.blackduck.integration.alert.channel.slack.descriptor.SlackDescriptor;
+import com.google.gson.Gson;
+import com.synopsys.integration.alert.Application;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.configuration.ApplicationConfiguration;
+import com.synopsys.integration.alert.database.DatabaseDataSource;
+import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
+import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
+import com.synopsys.integration.alert.performance.utility.ConfigurationManagerLegacy;
+import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunnerLegacy;
+import com.synopsys.integration.alert.test.common.TestProperties;
+import com.synopsys.integration.alert.test.common.TestPropertyKey;
+import com.synopsys.integration.alert.test.common.TestTags;
+import com.synopsys.integration.alert.util.DescriptorMocker;
 
 @Tag(TestTags.DEFAULT_PERFORMANCE)
 @SpringBootTest
