@@ -1,19 +1,12 @@
 package com.synopsys.integration.alert.channel.jira.server.environment;
 
-import com.blackduck.integration.alert.channel.jira.server.environment.JiraServerEnvironmentVariableHandler;
-import com.blackduck.integration.alert.api.common.model.AlertConstants;
-import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.api.environment.EnvironmentProcessingResult;
-import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
-import com.blackduck.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
-import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
-import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
-import com.blackduck.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.util.DateUtils;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.blackduck.integration.alert.test.common.EnvironmentVariableMockingUtil;
-import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.UUID;
+import java.util.function.Predicate;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,12 +14,20 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
-import java.util.UUID;
-import java.util.function.Predicate;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.blackduck.integration.alert.api.common.model.AlertConstants;
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.environment.EnvironmentProcessingResult;
+import com.blackduck.integration.alert.api.environment.EnvironmentVariableUtility;
+import com.blackduck.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
+import com.blackduck.integration.alert.channel.jira.server.environment.JiraServerEnvironmentVariableHandler;
+import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
+import com.blackduck.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
+import com.blackduck.integration.alert.test.common.EnvironmentVariableMockingUtil;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import com.synopsys.integration.alert.common.util.DateUtils;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @AlertIntegrationTest
 class JiraServerEnvironmentVariableHandlerTestIT {

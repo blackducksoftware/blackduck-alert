@@ -26,9 +26,9 @@ import com.blackduck.integration.alert.component.diagnostic.model.SystemDiagnost
 import com.blackduck.integration.alert.component.diagnostic.utility.RabbitMQDiagnosticUtility;
 import com.blackduck.integration.alert.database.job.api.StaticJobAccessor;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.synopsys.integration.alert.api.distribution.execution.ExecutingJob;
-import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
-import com.synopsys.integration.alert.api.distribution.execution.JobStage;
+import com.blackduck.integration.alert.api.distribution.execution.ExecutingJob;
+import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
+import com.blackduck.integration.alert.api.distribution.execution.JobStage;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;

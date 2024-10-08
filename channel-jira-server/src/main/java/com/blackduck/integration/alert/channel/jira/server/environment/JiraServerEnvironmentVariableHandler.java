@@ -7,26 +7,27 @@
  */
 package com.blackduck.integration.alert.channel.jira.server.environment;
 
-import com.blackduck.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
-import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
-import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
-import com.blackduck.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
-import com.blackduck.integration.alert.api.common.model.AlertConstants;
-import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
-import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.api.environment.EnvironmentProcessingResult;
-import com.synopsys.integration.alert.api.environment.EnvironmentVariableHandler;
-import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.common.util.DateUtils;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
+import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Set;
+import com.blackduck.integration.alert.api.common.model.AlertConstants;
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.environment.EnvironmentProcessingResult;
+import com.blackduck.integration.alert.api.environment.EnvironmentVariableHandler;
+import com.blackduck.integration.alert.api.environment.EnvironmentVariableUtility;
+import com.blackduck.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
+import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
+import com.blackduck.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import com.synopsys.integration.alert.common.util.DateUtils;
 
 @Component
 public class JiraServerEnvironmentVariableHandler extends EnvironmentVariableHandler<JiraServerGlobalConfigModel> {

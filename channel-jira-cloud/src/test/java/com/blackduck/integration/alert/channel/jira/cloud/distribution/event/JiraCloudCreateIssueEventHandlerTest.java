@@ -23,7 +23,7 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueBomCo
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
-import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
+import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudPropertiesFactory;

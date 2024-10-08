@@ -1,20 +1,5 @@
 package com.synopsys.integration.alert.authentication.ldap.environment;
 
-import com.blackduck.integration.alert.api.common.model.AlertConstants;
-import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.api.environment.EnvironmentProcessingResult;
-import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
-import com.synopsys.integration.alert.authentication.ldap.LDAPTestHelper;
-import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
-import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
-import com.synopsys.integration.alert.authentication.ldap.validator.LDAPConfigurationValidator;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.opentest4j.AssertionFailedError;
-import org.springframework.mock.env.MockEnvironment;
-
-import java.util.Set;
-
 import static com.synopsys.integration.alert.authentication.ldap.environment.LDAPEnvironmentVariableHandler.LDAP_CONFIGURATION_KEY_SET;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,6 +8,22 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Set;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
+import org.springframework.mock.env.MockEnvironment;
+
+import com.blackduck.integration.alert.api.common.model.AlertConstants;
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.api.environment.EnvironmentProcessingResult;
+import com.blackduck.integration.alert.api.environment.EnvironmentVariableUtility;
+import com.synopsys.integration.alert.authentication.ldap.LDAPTestHelper;
+import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
+import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
+import com.synopsys.integration.alert.authentication.ldap.validator.LDAPConfigurationValidator;
 
 class LDAPEnvironmentVariableHandlerTest {
     private LDAPConfigModel validLDAPConfigModel;

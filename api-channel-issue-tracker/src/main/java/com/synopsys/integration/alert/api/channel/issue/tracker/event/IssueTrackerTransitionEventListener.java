@@ -10,7 +10,7 @@ package com.synopsys.integration.alert.api.channel.issue.tracker.event;
 import org.springframework.core.task.TaskExecutor;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.distribution.JobSubTaskMessageListener;
+import com.blackduck.integration.alert.api.distribution.JobSubTaskMessageListener;
 import com.synopsys.integration.alert.api.event.distribution.JobSubTaskEvent;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
 

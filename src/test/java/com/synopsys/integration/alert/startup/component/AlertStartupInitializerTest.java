@@ -1,8 +1,17 @@
 package com.synopsys.integration.alert.startup.component;
 
-import com.synopsys.integration.alert.api.environment.EnvironmentVariableProcessor;
-import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
+
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
+import com.blackduck.integration.alert.api.environment.EnvironmentVariableProcessor;
+import com.blackduck.integration.alert.api.environment.EnvironmentVariableUtility;
 import com.blackduck.integration.alert.channel.email.descriptor.EmailDescriptor;
+import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
@@ -16,14 +25,6 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
-import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.core.env.Environment;
-
-import java.util.List;
-import java.util.Optional;
 
 public class AlertStartupInitializerTest {
     private static final SettingsDescriptorKey SETTINGS_DESCRIPTOR_KEY = new SettingsDescriptorKey();

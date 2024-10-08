@@ -14,10 +14,10 @@ import java.util.UUID;
 import org.slf4j.Logger;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.distribution.audit.AuditFailedEvent;
-import com.synopsys.integration.alert.api.distribution.execution.JobStage;
-import com.synopsys.integration.alert.api.distribution.execution.JobStageEndedEvent;
-import com.synopsys.integration.alert.api.distribution.execution.JobStageStartedEvent;
+import com.blackduck.integration.alert.api.distribution.audit.AuditFailedEvent;
+import com.blackduck.integration.alert.api.distribution.execution.JobStage;
+import com.blackduck.integration.alert.api.distribution.execution.JobStageEndedEvent;
+import com.blackduck.integration.alert.api.distribution.execution.JobStageStartedEvent;
 import com.synopsys.integration.alert.api.event.AlertEventHandler;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.processor.distribute.DistributionEvent;

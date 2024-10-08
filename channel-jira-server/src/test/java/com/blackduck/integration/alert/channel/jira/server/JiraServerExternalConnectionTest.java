@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrack
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
-import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
+import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessageHolder;

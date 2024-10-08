@@ -14,10 +14,10 @@ import org.springframework.amqp.core.Message;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
-import com.synopsys.integration.alert.api.distribution.execution.ExecutingJob;
-import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
-import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobStage;
-import com.synopsys.integration.alert.api.distribution.execution.JobStage;
+import com.blackduck.integration.alert.api.distribution.execution.ExecutingJob;
+import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
+import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobStage;
+import com.blackduck.integration.alert.api.distribution.execution.JobStage;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;

@@ -20,16 +20,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
-import com.blackduck.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
-import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
 import com.blackduck.integration.alert.api.common.model.AlertConstants;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.synopsys.integration.alert.api.environment.EnvironmentProcessingResult;
-import com.synopsys.integration.alert.api.environment.EnvironmentVariableHandler;
-import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
+import com.blackduck.integration.alert.api.environment.EnvironmentProcessingResult;
+import com.blackduck.integration.alert.api.environment.EnvironmentVariableHandler;
+import com.blackduck.integration.alert.api.environment.EnvironmentVariableUtility;
+import com.blackduck.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
+import com.blackduck.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
+import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.util.DateUtils;
 

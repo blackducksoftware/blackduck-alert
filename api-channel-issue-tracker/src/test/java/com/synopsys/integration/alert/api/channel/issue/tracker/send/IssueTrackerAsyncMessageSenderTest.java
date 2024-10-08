@@ -17,7 +17,7 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueComme
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTransitionModel;
-import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
+import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;

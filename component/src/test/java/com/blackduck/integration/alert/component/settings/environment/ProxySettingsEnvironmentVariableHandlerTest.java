@@ -1,22 +1,23 @@
 package com.blackduck.integration.alert.component.settings.environment;
 
-import com.blackduck.integration.alert.api.common.model.AlertConstants;
-import com.synopsys.integration.alert.api.environment.EnvironmentProcessingResult;
-import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
-import com.blackduck.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;
-import com.blackduck.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
-import com.blackduck.integration.alert.test.common.EnvironmentVariableMockingUtil;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.core.env.Environment;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
+
+import com.blackduck.integration.alert.api.common.model.AlertConstants;
+import com.blackduck.integration.alert.api.environment.EnvironmentProcessingResult;
+import com.blackduck.integration.alert.api.environment.EnvironmentVariableUtility;
+import com.blackduck.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;
+import com.blackduck.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
+import com.blackduck.integration.alert.test.common.EnvironmentVariableMockingUtil;
 
 class ProxySettingsEnvironmentVariableHandlerTest {
     private final SettingsProxyValidator validator = new SettingsProxyValidator();

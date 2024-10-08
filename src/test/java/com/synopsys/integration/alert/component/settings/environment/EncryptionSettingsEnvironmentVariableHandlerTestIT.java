@@ -1,20 +1,21 @@
 package com.synopsys.integration.alert.component.settings.environment;
 
-import com.blackduck.integration.alert.component.settings.environment.EncryptionSettingsEnvironmentVariableHandler;
-import com.blackduck.integration.alert.api.common.model.AlertConstants;
-import com.synopsys.integration.alert.api.environment.EnvironmentProcessingResult;
-import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
-import com.blackduck.integration.alert.test.common.EnvironmentVariableMockingUtil;
-import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.core.env.Environment;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Set;
 import java.util.function.Predicate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
+
+import com.blackduck.integration.alert.api.common.model.AlertConstants;
+import com.blackduck.integration.alert.api.environment.EnvironmentProcessingResult;
+import com.blackduck.integration.alert.api.environment.EnvironmentVariableUtility;
+import com.blackduck.integration.alert.component.settings.environment.EncryptionSettingsEnvironmentVariableHandler;
+import com.blackduck.integration.alert.test.common.EnvironmentVariableMockingUtil;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @AlertIntegrationTest
 class EncryptionSettingsEnvironmentVariableHandlerTestIT {

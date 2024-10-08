@@ -7,18 +7,18 @@
  */
 package com.blackduck.integration.alert.component.settings.environment;
 
-import com.blackduck.integration.alert.component.settings.encryption.model.SettingsEncryptionModel;
-import com.blackduck.integration.alert.api.common.model.AlertConstants;
-import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.api.environment.EnvironmentProcessingResult;
-import com.synopsys.integration.alert.api.environment.EnvironmentVariableHandler;
-import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
+import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-import java.util.Set;
+import com.blackduck.integration.alert.api.common.model.AlertConstants;
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.api.environment.EnvironmentProcessingResult;
+import com.blackduck.integration.alert.api.environment.EnvironmentVariableHandler;
+import com.blackduck.integration.alert.api.environment.EnvironmentVariableUtility;
+import com.blackduck.integration.alert.component.settings.encryption.model.SettingsEncryptionModel;
 
 @Component
 public class EncryptionSettingsEnvironmentVariableHandler extends EnvironmentVariableHandler<SettingsEncryptionModel> {

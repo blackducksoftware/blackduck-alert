@@ -1,6 +1,6 @@
 package com.blackduck.integration.alert.component.diagnostic.model;
 
-import com.synopsys.integration.alert.api.distribution.execution.JobStage;
+import com.blackduck.integration.alert.api.distribution.execution.JobStage;
 
 public class JobStageDiagnosticModel {
     public final JobStage stage;

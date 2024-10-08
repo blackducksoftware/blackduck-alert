@@ -1,22 +1,23 @@
 package com.synopsys.integration.alert.authentication.ldap.environment;
 
-import com.blackduck.integration.alert.api.common.model.AlertConstants;
-import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
-import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.api.environment.EnvironmentProcessingResult;
-import com.synopsys.integration.alert.api.environment.EnvironmentVariableHandler;
-import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
-import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
-import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
-import com.synopsys.integration.alert.authentication.ldap.validator.LDAPConfigurationValidator;
-import com.synopsys.integration.alert.common.util.DateUtils;
+import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Set;
+import com.blackduck.integration.alert.api.common.model.AlertConstants;
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.api.environment.EnvironmentProcessingResult;
+import com.blackduck.integration.alert.api.environment.EnvironmentVariableHandler;
+import com.blackduck.integration.alert.api.environment.EnvironmentVariableUtility;
+import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
+import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
+import com.synopsys.integration.alert.authentication.ldap.validator.LDAPConfigurationValidator;
+import com.synopsys.integration.alert.common.util.DateUtils;
 
 @Component
 public class LDAPEnvironmentVariableHandler extends EnvironmentVariableHandler<LDAPConfigModel> {

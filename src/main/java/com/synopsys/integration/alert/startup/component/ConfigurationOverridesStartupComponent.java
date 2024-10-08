@@ -20,9 +20,9 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
 import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
-import com.blackduck.integration.alert.component.authentication.actions.AuthenticationApiAction;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
+import com.blackduck.integration.alert.api.environment.EnvironmentVariableUtility;
+import com.blackduck.integration.alert.component.authentication.actions.AuthenticationApiAction;
 import com.synopsys.integration.alert.common.descriptor.accessor.DefaultDescriptorGlobalConfigUtility;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;

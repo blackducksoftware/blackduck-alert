@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
-import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
-import com.synopsys.integration.alert.api.distribution.execution.JobStage;
-import com.synopsys.integration.alert.api.distribution.execution.JobStageStartedEvent;
+import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
+import com.blackduck.integration.alert.api.distribution.execution.JobStage;
+import com.blackduck.integration.alert.api.distribution.execution.JobStageStartedEvent;
 import com.synopsys.integration.alert.api.event.AlertEvent;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
