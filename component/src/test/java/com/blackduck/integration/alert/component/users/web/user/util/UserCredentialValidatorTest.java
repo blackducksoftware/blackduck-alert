@@ -8,9 +8,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.component.users.web.user.util.UserCredentialValidator;
-import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.api.common.model.errors.FieldStatusSeverity;
+import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.blackduck.integration.alert.api.common.model.errors.FieldStatusSeverity;
 import com.blackduck.integration.alert.component.users.web.user.UserActions;
 
 class UserCredentialValidatorTest {

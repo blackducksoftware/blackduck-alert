@@ -17,7 +17,7 @@ import org.mockito.Mockito;
 
 import com.blackduck.integration.alert.channel.azure.boards.distribution.AzureBoardsIssueTrackerQueryManager;
 import com.blackduck.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.azure.boards.common.service.query.fluent.WorkItemQuery;
 import com.synopsys.integration.alert.azure.boards.common.service.query.fluent.WorkItemQueryWhereJunctionType;
 import com.synopsys.integration.alert.azure.boards.common.service.query.fluent.WorkItemQueryWhereOperator;

@@ -28,8 +28,8 @@ import com.blackduck.integration.jira.common.server.service.JiraServerServiceFac
 import com.blackduck.integration.rest.RestConstants;
 import com.blackduck.integration.rest.exception.IntegrationRestException;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;

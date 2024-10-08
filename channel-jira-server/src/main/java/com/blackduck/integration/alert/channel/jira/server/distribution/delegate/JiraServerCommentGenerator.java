@@ -14,7 +14,7 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.event.IssueTrack
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerCommentEventGenerator;
 import com.blackduck.integration.alert.channel.jira.server.distribution.event.JiraServerCommentEvent;
-import com.synopsys.integration.alert.api.descriptor.JiraServerChannelKey;
+import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
 
 public class JiraServerCommentGenerator implements IssueTrackerCommentEventGenerator<String> {
     private final JiraServerChannelKey channelKey;

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.blackduck.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.oauth.AlertOAuthCredentialDataStoreFactory;
 import com.synopsys.integration.alert.azure.boards.common.oauth.AzureOAuthScopes;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;

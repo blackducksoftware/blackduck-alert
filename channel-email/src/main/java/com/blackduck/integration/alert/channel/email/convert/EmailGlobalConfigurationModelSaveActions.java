@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component;
 import com.blackduck.integration.alert.channel.email.action.EmailGlobalCrudActions;
 import com.blackduck.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
-import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.synopsys.integration.alert.common.action.api.GlobalConfigurationModelToConcreteSaveActions;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 

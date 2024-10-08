@@ -40,7 +40,7 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.search.ExistingI
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.enumeration.IssueCategory;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.enumeration.IssueStatus;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;

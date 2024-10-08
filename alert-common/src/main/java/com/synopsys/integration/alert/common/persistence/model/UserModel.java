@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 
 public class UserModel extends AlertSerializableModel {

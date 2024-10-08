@@ -1,8 +1,8 @@
 package com.synopsys.integration.alert.component.settings.environment;
 
 import com.blackduck.integration.alert.component.settings.environment.ProxySettingsEnvironmentVariableHandler;
-import com.synopsys.integration.alert.api.common.model.AlertConstants;
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.api.common.model.AlertConstants;
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.environment.EnvironmentProcessingResult;
 import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;

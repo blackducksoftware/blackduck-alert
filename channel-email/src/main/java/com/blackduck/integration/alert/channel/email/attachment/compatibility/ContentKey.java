@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 
 public class ContentKey extends AlertSerializableModel {

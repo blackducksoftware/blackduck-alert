@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 
-import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;

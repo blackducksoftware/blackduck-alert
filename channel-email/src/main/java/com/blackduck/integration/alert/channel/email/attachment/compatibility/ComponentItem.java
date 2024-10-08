@@ -18,9 +18,9 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.blackduck.integration.builder.Buildable;
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.descriptor.model.ProviderKey;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.descriptor.model.ProviderKey;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 

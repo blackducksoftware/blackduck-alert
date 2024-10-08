@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.blackduck.integration.alert.component.users.web.user.UserActions;
 

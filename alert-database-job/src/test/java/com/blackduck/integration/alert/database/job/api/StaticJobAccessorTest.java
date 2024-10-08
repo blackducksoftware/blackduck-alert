@@ -22,9 +22,9 @@ import com.blackduck.integration.alert.channel.jira.server.database.job.JiraServ
 import com.blackduck.integration.alert.database.job.DistributionJobEntity;
 import com.blackduck.integration.alert.database.job.DistributionJobRepository;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
-import com.synopsys.integration.alert.api.descriptor.model.ProviderKey;
+import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.model.ProviderKey;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;

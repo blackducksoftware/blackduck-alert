@@ -9,8 +9,8 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 import com.blackduck.integration.alert.api.channel.DistributionChannel;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKey;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.message.model.MessageResult;

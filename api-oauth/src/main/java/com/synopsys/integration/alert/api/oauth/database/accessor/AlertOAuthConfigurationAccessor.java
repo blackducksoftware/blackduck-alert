@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.oauth.database.AlertOAuthModel;
 import com.synopsys.integration.alert.api.oauth.database.configuration.AlertOAuthConfigurationEntity;
 import com.synopsys.integration.alert.api.oauth.database.configuration.AlertOAuthConfigurationRepository;

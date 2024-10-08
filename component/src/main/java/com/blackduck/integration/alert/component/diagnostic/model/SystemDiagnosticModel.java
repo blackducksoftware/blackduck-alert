@@ -7,7 +7,7 @@
  */
 package com.blackduck.integration.alert.component.diagnostic.model;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 
 public class SystemDiagnosticModel extends AlertSerializableModel {
     private static final long serialVersionUID = 1442481609300011906L;

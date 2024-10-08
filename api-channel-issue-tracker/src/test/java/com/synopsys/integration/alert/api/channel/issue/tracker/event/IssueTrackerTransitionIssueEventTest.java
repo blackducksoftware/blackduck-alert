@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTransitionModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.api.descriptor.JiraServerChannelKey;
+import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
 
 class IssueTrackerTransitionIssueEventTest {
 

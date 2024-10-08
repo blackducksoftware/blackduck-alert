@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueComme
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 
 public abstract class IssueTrackerIssueCommenter<T extends Serializable> {

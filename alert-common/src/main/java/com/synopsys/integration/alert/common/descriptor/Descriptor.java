@@ -14,7 +14,7 @@ import com.synopsys.integration.alert.common.descriptor.validator.DistributionCo
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.util.Stringable;
 
 /**

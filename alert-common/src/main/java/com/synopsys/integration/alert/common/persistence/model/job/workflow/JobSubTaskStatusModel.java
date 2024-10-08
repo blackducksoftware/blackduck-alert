@@ -2,7 +2,7 @@ package com.synopsys.integration.alert.common.persistence.model.job.workflow;
 
 import java.util.UUID;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 
 public class JobSubTaskStatusModel extends AlertSerializableModel {
     private static final long serialVersionUID = -9192758155312295976L;

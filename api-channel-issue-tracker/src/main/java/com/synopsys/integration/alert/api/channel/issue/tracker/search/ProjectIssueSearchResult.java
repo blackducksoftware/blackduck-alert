@@ -10,7 +10,7 @@ package com.synopsys.integration.alert.api.channel.issue.tracker.search;
 import java.io.Serializable;
 
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 
 public class ProjectIssueSearchResult<T extends Serializable> extends AlertSerializableModel {
     private final ExistingIssueDetails<T> existingIssueDetails;

@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.UploadValidationFunction;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 
 public class UploadTarget {
     private final String fieldKey;

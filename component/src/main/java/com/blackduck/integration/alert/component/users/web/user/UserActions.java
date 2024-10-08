@@ -22,9 +22,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.component.users.web.user.util.UserCredentialValidator;
-import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.action.api.AbstractResourceActions;

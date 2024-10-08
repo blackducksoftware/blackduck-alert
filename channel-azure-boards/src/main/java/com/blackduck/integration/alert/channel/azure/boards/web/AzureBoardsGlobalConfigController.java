@@ -13,7 +13,7 @@ import com.blackduck.integration.alert.channel.azure.boards.action.AzureBoardsGl
 import com.blackduck.integration.alert.channel.azure.boards.action.AzureBoardsGlobalValidationAction;
 import com.blackduck.integration.alert.channel.azure.boards.action.AzureBoardsOAuthAuthenticateAction;
 import com.blackduck.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
-import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;

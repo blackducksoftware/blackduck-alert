@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.api.client.auth.oauth2.StoredCredential;
 import com.google.api.client.util.store.AbstractDataStore;
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.oauth.database.AlertOAuthModel;
 import com.synopsys.integration.alert.api.oauth.database.accessor.AlertOAuthConfigurationAccessor;
 

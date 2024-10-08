@@ -17,14 +17,14 @@ import com.synopsys.integration.alert.common.descriptor.validator.DistributionCo
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.api.descriptor.AzureBoardsChannelKey;
-import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
-import com.synopsys.integration.alert.api.descriptor.EmailChannelKey;
-import com.synopsys.integration.alert.api.descriptor.JiraCloudChannelKey;
-import com.synopsys.integration.alert.api.descriptor.JiraServerChannelKey;
-import com.synopsys.integration.alert.api.descriptor.MsTeamsKey;
-import com.synopsys.integration.alert.api.descriptor.SlackChannelKey;
-import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
+import com.blackduck.integration.alert.api.descriptor.AzureBoardsChannelKey;
+import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
+import com.blackduck.integration.alert.api.descriptor.EmailChannelKey;
+import com.blackduck.integration.alert.api.descriptor.JiraCloudChannelKey;
+import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
+import com.blackduck.integration.alert.api.descriptor.MsTeamsKey;
+import com.blackduck.integration.alert.api.descriptor.SlackChannelKey;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 
 public class MockDescriptorMap extends DescriptorMap {
     static List<DescriptorKey> descriptorKeys;

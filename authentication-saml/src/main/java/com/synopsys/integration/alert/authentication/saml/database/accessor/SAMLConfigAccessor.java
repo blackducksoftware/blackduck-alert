@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.authentication.saml.database.configuration.SAMLConfigurationEntity;
 import com.synopsys.integration.alert.authentication.saml.database.configuration.SAMLConfigurationRepository;
 import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;

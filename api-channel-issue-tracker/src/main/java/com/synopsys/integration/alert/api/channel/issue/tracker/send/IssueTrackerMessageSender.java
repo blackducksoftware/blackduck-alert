@@ -17,7 +17,7 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCreat
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTransitionModel;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.function.ThrowingFunction;
 
 public class IssueTrackerMessageSender<T extends Serializable> {

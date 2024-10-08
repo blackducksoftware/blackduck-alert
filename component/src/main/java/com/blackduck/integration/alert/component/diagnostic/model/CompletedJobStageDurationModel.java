@@ -1,6 +1,6 @@
 package com.blackduck.integration.alert.component.diagnostic.model;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 
 public class CompletedJobStageDurationModel extends AlertSerializableModel {
 

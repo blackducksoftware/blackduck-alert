@@ -10,8 +10,8 @@ package com.synopsys.integration.alert.common.persistence.accessor;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
 public interface ConfigurationAccessor<T extends AlertSerializableModel> {

@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 
 public class DescriptorMapTest {
     private static final String MISSING_EXPECTED_DESCRIPTOR = "Missing expected descriptor";

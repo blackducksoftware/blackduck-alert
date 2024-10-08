@@ -1,6 +1,6 @@
 package com.synopsys.integration.alert.authentication.saml.database.accessor;
 
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.authentication.saml.SAMLTestHelper;
 import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
 import org.junit.jupiter.api.BeforeEach;

@@ -26,7 +26,7 @@ import com.blackduck.integration.alert.component.certificates.CertificatesDescri
 import com.blackduck.integration.alert.component.certificates.web.CertificateActions;
 import com.blackduck.integration.alert.component.certificates.web.CertificateModel;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;

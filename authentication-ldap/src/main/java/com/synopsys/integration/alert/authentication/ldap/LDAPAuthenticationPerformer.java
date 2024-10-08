@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.authentication.security.AuthenticationPerformer;
 import com.blackduck.integration.alert.api.authentication.security.event.AuthenticationEventManager;
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.authentication.ldap.action.LDAPManager;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;

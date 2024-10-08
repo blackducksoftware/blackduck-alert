@@ -9,8 +9,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
-import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.alert.common.util.DateUtils;

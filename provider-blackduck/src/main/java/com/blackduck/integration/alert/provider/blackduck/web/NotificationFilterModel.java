@@ -7,7 +7,7 @@
  */
 package com.blackduck.integration.alert.provider.blackduck.web;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 
 public class NotificationFilterModel extends AlertSerializableModel {
     private String name;

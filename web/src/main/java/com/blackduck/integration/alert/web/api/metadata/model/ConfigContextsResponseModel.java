@@ -7,7 +7,7 @@
  */
 package com.blackduck.integration.alert.web.api.metadata.model;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 
 public class ConfigContextsResponseModel extends AlertSerializableModel {

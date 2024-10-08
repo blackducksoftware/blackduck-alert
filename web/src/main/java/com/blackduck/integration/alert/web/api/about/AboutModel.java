@@ -9,7 +9,7 @@ package com.blackduck.integration.alert.web.api.about;
 
 import java.util.Set;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 
 public class AboutModel extends AlertSerializableModel {

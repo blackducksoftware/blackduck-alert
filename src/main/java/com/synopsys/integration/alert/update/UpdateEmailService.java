@@ -25,7 +25,7 @@ import com.blackduck.integration.alert.service.email.JavamailPropertiesFactory;
 import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
 import com.blackduck.integration.alert.service.email.template.FreemarkerTemplatingService;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.accessor.SettingsKeyAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;

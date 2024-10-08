@@ -8,8 +8,8 @@
 package com.blackduck.integration.alert.component.settings.environment;
 
 import com.blackduck.integration.alert.component.settings.encryption.model.SettingsEncryptionModel;
-import com.synopsys.integration.alert.api.common.model.AlertConstants;
-import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.api.common.model.AlertConstants;
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.environment.EnvironmentProcessingResult;
 import com.synopsys.integration.alert.api.environment.EnvironmentVariableHandler;
 import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;

@@ -21,7 +21,7 @@ import com.blackduck.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.Application;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;

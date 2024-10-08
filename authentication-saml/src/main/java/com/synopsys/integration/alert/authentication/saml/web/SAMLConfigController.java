@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
-import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.authentication.saml.action.SAMLCrudActions;
 import com.synopsys.integration.alert.authentication.saml.action.SAMLFileUploadActions;
 import com.synopsys.integration.alert.authentication.saml.action.SAMLValidationAction;

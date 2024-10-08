@@ -9,11 +9,11 @@ package com.synopsys.integration.alert.common.channel;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.descriptor.action.DescriptorAction;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
-import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 
 public abstract class DistributionChannelTestAction extends DescriptorAction {
     protected DistributionChannelTestAction(DescriptorKey descriptorKey) {

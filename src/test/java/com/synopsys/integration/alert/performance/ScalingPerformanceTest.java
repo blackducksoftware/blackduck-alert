@@ -28,7 +28,7 @@ import com.blackduck.integration.wait.WaitJob;
 import com.blackduck.integration.wait.tracker.WaitIntervalTracker;
 import com.blackduck.integration.wait.tracker.WaitIntervalTrackerFactory;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;

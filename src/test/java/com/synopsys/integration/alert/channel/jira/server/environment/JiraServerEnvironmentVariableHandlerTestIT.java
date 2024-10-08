@@ -1,8 +1,8 @@
 package com.synopsys.integration.alert.channel.jira.server.environment;
 
 import com.blackduck.integration.alert.channel.jira.server.environment.JiraServerEnvironmentVariableHandler;
-import com.synopsys.integration.alert.api.common.model.AlertConstants;
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.api.common.model.AlertConstants;
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.environment.EnvironmentProcessingResult;
 import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
 import com.blackduck.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
@@ -11,7 +11,7 @@ import com.blackduck.integration.alert.channel.jira.server.model.enumeration.Jir
 import com.blackduck.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.test.common.EnvironmentVariableMockingUtil;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import org.junit.jupiter.api.AfterEach;

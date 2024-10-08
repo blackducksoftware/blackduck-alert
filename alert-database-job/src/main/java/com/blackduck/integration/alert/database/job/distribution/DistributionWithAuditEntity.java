@@ -10,7 +10,7 @@ package com.blackduck.integration.alert.database.job.distribution;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

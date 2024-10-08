@@ -15,7 +15,7 @@ import java.util.Set;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 
 public class FieldUtility extends AlertSerializableModel {

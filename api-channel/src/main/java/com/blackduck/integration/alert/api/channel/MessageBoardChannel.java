@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.blackduck.integration.alert.api.channel.convert.AbstractChannelMessageConverter;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.distribution.audit.AuditSuccessEvent;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.event.EventManager;

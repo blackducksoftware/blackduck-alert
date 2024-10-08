@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 
 public class ProcessedProviderMessage<T extends ProviderMessage<T>> extends AlertSerializableModel implements CombinableModel<ProcessedProviderMessage<T>> {
     private static final String[] EXCLUDED_COMPARISON_FIELDS = { "notificationIds" };

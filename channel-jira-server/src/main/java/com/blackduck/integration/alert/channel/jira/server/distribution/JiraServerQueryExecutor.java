@@ -16,7 +16,7 @@ import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.server.model.IssueSearchIssueComponent;
 import com.blackduck.integration.jira.common.server.model.IssueSearchResponseModel;
 import com.blackduck.integration.jira.common.server.service.IssueSearchService;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 
 public class JiraServerQueryExecutor implements JqlQueryExecutor {
     private final IssueSearchService issueSearchService;

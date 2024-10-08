@@ -16,7 +16,7 @@ import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.api.common.model.AlertConstants;
+import com.blackduck.integration.alert.api.common.model.AlertConstants;
 
 import jakarta.activation.DataHandler;
 import jakarta.activation.DataSource;

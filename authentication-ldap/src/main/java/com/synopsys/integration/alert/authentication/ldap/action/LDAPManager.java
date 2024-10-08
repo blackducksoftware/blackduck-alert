@@ -20,7 +20,7 @@ import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.authentication.ldap.MappingLDAPAuthoritiesPopulator;
 import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;

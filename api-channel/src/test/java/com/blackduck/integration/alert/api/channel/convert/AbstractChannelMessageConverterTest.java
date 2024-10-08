@@ -8,7 +8,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 import com.blackduck.integration.alert.api.channel.convert.mock.MockChannelMessageFormatter;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKey;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
 import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.api.processor.extract.model.SimpleMessage;

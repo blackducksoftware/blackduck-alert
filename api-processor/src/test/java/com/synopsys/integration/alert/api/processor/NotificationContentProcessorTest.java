@@ -31,7 +31,7 @@ import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.rest.HttpUrl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
+import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.synopsys.integration.alert.api.processor.digest.ProjectMessageDigester;
 import com.synopsys.integration.alert.api.processor.extract.ProviderMessageExtractionDelegator;
 import com.synopsys.integration.alert.api.processor.extract.model.ProcessedProviderMessage;

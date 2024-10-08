@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.BooleanUtils;
 
-import com.synopsys.integration.alert.api.common.model.Obfuscated;
+import com.blackduck.integration.alert.api.common.model.Obfuscated;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
 

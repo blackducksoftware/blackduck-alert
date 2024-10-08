@@ -7,8 +7,8 @@
  */
 package com.blackduck.integration.alert.component.diagnostic.model;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.alert.api.common.model.Obfuscated;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.Obfuscated;
 
 public class DiagnosticModel extends AlertSerializableModel implements Obfuscated<DiagnosticModel> {
     private static final long serialVersionUID = 6714869824373312126L;

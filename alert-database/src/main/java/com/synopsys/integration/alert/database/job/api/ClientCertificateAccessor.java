@@ -10,7 +10,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.accessor.UniqueConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;

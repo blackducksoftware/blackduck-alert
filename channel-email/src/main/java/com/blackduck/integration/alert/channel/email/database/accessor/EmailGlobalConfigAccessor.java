@@ -27,7 +27,7 @@ import com.blackduck.integration.alert.channel.email.database.configuration.Emai
 import com.blackduck.integration.alert.channel.email.database.configuration.properties.EmailConfigurationPropertiesRepository;
 import com.blackduck.integration.alert.channel.email.database.configuration.properties.EmailConfigurationsPropertyEntity;
 import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.accessor.UniqueConfigurationAccessor;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;

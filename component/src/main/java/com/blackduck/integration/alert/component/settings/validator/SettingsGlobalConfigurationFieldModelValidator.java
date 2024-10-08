@@ -14,7 +14,7 @@ import java.util.Set;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptor;
-import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;

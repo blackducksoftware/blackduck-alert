@@ -16,8 +16,8 @@ import com.blackduck.integration.alert.channel.jira.server.database.job.JiraServ
 import com.blackduck.integration.alert.channel.jira.server.database.job.JiraServerJobDetailsRepository;
 import com.blackduck.integration.alert.channel.jira.server.database.job.custom_field.JiraServerJobCustomFieldEntity;
 import com.blackduck.integration.alert.channel.jira.server.database.job.custom_field.JiraServerJobCustomFieldRepository;
-import com.synopsys.integration.alert.api.descriptor.JiraServerChannelKey;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 

@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.api.processor.extract.model.ProcessedProviderMessage;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;

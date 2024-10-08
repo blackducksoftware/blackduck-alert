@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import com.blackduck.integration.alert.api.channel.jira.action.JiraJobDetailsExtractor;
 import com.blackduck.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.descriptor.JiraServerChannelKey;
+import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;

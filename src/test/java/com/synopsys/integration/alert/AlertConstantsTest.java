@@ -8,7 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.api.common.model.AlertConstants;
+import com.blackduck.integration.alert.api.common.model.AlertConstants;
 
 import javassist.Modifier;
 

@@ -15,7 +15,7 @@ import com.blackduck.integration.alert.provider.blackduck.processor.message.serv
 import com.blackduck.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckPolicyComponentConcernCreator;
 import com.blackduck.integration.alert.provider.blackduck.processor.model.RuleViolationClearedUniquePolicyNotificationContent;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
+import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.provider.blackduck.processor.message.service.BomComponent404Handler;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 

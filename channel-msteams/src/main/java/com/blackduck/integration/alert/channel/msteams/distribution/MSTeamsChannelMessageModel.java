@@ -9,7 +9,7 @@ package com.blackduck.integration.alert.channel.msteams.distribution;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 
 public class MSTeamsChannelMessageModel extends AlertSerializableModel {
     private final String messageTitle;

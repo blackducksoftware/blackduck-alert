@@ -17,7 +17,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 
 import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
-import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.authentication.saml.SAMLTestHelper;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 

@@ -17,7 +17,7 @@ import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckGlo
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
-import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
+import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 
 @Component
 public class BlackDuckDescriptor extends ProviderDescriptor {

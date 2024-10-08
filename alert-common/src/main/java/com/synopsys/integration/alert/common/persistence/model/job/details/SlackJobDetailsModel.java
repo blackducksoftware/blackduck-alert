@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.common.persistence.model.job.details;
 
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.UUID;

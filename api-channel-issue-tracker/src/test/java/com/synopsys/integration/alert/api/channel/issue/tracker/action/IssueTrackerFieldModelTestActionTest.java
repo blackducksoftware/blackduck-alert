@@ -17,14 +17,14 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrans
 import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerAsyncMessageSender;
 import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerMessageSenderFactory;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
-import com.synopsys.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
+import com.blackduck.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
 
 class IssueTrackerFieldModelTestActionTest {
     private static final String CLASS_NAME = IssueTrackerFieldModelTestActionTest.class.getSimpleName();

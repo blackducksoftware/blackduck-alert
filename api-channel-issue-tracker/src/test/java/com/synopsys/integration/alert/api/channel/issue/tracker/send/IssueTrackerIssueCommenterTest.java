@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIss
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.enumeration.IssueCategory;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.enumeration.IssueStatus;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 
 class IssueTrackerIssueCommenterTest {
     private static final AlertException TEST_EXCEPTION = new AlertException("Test exception");

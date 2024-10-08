@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.api.client.auth.oauth2.StoredCredential;
 import com.google.api.client.util.store.AbstractDataStoreFactory;
-import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.api.oauth.database.accessor.AlertOAuthConfigurationAccessor;
 
 @Component

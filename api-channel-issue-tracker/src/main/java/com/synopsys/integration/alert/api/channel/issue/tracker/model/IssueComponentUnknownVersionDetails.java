@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.api.channel.issue.tracker.model;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 
 public class IssueComponentUnknownVersionDetails extends AlertSerializableModel {

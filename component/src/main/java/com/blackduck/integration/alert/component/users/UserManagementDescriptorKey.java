@@ -9,7 +9,7 @@ package com.blackduck.integration.alert.component.users;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 
 @Component
 public class UserManagementDescriptorKey extends DescriptorKey {

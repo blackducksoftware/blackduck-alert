@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.model;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 
 public class ProviderProjectSelectOption extends AlertSerializableModel {
     private final String name;

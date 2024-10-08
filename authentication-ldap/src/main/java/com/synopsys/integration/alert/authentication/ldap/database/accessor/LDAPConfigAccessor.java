@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.authentication.ldap.database.configuration.LDAPConfigurationEntity;
 import com.synopsys.integration.alert.authentication.ldap.database.configuration.LDAPConfigurationRepository;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;

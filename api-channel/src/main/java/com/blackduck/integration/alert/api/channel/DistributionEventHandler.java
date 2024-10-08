@@ -13,7 +13,7 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.distribution.audit.AuditFailedEvent;
 import com.synopsys.integration.alert.api.distribution.execution.JobStage;
 import com.synopsys.integration.alert.api.distribution.execution.JobStageEndedEvent;

@@ -25,7 +25,7 @@ import com.blackduck.integration.jira.common.cloud.service.JiraCloudServiceFacto
 import com.blackduck.integration.jira.common.rest.service.PluginManagerService;
 import com.google.api.client.http.HttpStatusCodes;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.blackduck.integration.alert.component.settings.encryption.action.SettingsEncryptionCrudActions;
 import com.blackduck.integration.alert.component.settings.encryption.action.SettingsEncryptionValidationAction;
-import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;

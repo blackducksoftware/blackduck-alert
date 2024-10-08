@@ -7,7 +7,7 @@
  */
 package com.blackduck.integration.alert.provider.blackduck.processor.message.service;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 import com.blackduck.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceLongTermView;
 import com.blackduck.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceShortTermView;
 

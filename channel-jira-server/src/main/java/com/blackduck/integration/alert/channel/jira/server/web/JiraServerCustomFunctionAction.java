@@ -31,7 +31,7 @@ import com.blackduck.integration.jira.common.server.service.JiraServerServiceFac
 import com.blackduck.integration.rest.RestConstants;
 import com.blackduck.integration.rest.exception.IntegrationRestException;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;

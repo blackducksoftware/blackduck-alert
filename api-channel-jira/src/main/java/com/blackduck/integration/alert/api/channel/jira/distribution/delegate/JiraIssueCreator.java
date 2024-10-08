@@ -38,9 +38,9 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.search.enumerati
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueCommenter;
 import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueCreator;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
-import com.synopsys.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertRuntimeException;
+import com.blackduck.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernType;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentPolicy;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;

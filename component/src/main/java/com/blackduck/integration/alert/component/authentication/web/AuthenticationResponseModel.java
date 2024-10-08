@@ -2,7 +2,7 @@ package com.blackduck.integration.alert.component.authentication.web;
 
 import java.io.Serial;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 
 public class AuthenticationResponseModel extends AlertSerializableModel {
 

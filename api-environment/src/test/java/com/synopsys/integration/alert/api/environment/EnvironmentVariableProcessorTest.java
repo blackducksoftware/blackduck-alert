@@ -1,7 +1,7 @@
 package com.synopsys.integration.alert.api.environment;
 
-import com.synopsys.integration.alert.api.common.model.Obfuscated;
-import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.api.common.model.Obfuscated;
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

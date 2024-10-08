@@ -2,8 +2,8 @@ package com.synopsys.integration.alert.common.persistence.model;
 
 import java.io.Serial;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.alert.api.common.model.Obfuscated;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.Obfuscated;
 
 public class ClientCertificateModel extends AlertSerializableModel implements Obfuscated<ClientCertificateModel> {
     @Serial

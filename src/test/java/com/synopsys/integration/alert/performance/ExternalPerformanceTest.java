@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.api.descriptor.JiraServerChannelKey;
+import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
 import com.synopsys.integration.alert.performance.model.PerformanceExecutionStatusModel;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
 import com.synopsys.integration.alert.performance.utility.ConfigurationManager;

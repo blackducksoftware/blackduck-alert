@@ -9,7 +9,7 @@ package com.blackduck.integration.alert.api.channel.jira.action;
 
 import com.blackduck.integration.alert.api.channel.jira.JiraConstants;
 import com.blackduck.integration.exception.IntegrationException;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;

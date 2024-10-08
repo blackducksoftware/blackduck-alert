@@ -12,8 +12,8 @@ import org.mockito.Mockito;
 import com.blackduck.integration.alert.channel.jira.server.distribution.event.JiraServerCreateIssueEvent;
 import com.synopsys.integration.alert.api.channel.issue.tracker.event.IssueTrackerCreateIssueEvent;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
-import com.synopsys.integration.alert.api.descriptor.JiraServerChannelKey;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 
 class JiraServerCreateEventGeneratorTest {
     @Test

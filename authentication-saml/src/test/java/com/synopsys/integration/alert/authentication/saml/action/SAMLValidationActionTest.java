@@ -12,7 +12,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.http.HttpStatus;
 
 import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
-import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.authentication.saml.SAMLTestHelper;
 import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
 import com.synopsys.integration.alert.authentication.saml.validator.SAMLConfigurationValidator;

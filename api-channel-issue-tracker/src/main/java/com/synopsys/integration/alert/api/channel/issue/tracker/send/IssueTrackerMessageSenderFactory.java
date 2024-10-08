@@ -13,7 +13,7 @@ import java.util.UUID;
 
 import org.springframework.lang.Nullable;
 
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 
 public interface IssueTrackerMessageSenderFactory<D extends DistributionJobDetailsModel, T extends Serializable> {

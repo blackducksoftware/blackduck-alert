@@ -16,7 +16,7 @@ import org.springframework.core.task.SyncTaskExecutor;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJob;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobStage;

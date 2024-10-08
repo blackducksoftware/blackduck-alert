@@ -22,8 +22,8 @@ import com.blackduck.integration.rest.body.StringBodyContent;
 import com.blackduck.integration.rest.client.IntHttpClient;
 import com.blackduck.integration.rest.request.Request;
 import com.blackduck.integration.rest.response.Response;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertRuntimeException;
 
 public class RestChannelUtilityTest {
     private static final String CLASS_NAME = RestChannelUtilityTest.class.getSimpleName();

@@ -14,7 +14,7 @@ import com.blackduck.integration.alert.channel.azure.boards.distribution.event.A
 import com.synopsys.integration.alert.api.channel.issue.tracker.event.IssueTrackerCommentEvent;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerCommentEventGenerator;
-import com.synopsys.integration.alert.api.descriptor.AzureBoardsChannelKey;
+import com.blackduck.integration.alert.api.descriptor.AzureBoardsChannelKey;
 
 public class AzureBoardsCommentGenerator implements IssueTrackerCommentEventGenerator<Integer> {
 

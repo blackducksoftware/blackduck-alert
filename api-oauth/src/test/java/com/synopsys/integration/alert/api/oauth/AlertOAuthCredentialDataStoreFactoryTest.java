@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import com.google.api.client.auth.oauth2.StoredCredential;
 import com.google.api.client.util.store.DataStore;
-import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.api.oauth.database.accessor.AlertOAuthConfigurationAccessor;
 import com.synopsys.integration.alert.api.oauth.database.accessor.MockAlertOAuthConfigurationRepository;
 import com.synopsys.integration.alert.common.AlertProperties;

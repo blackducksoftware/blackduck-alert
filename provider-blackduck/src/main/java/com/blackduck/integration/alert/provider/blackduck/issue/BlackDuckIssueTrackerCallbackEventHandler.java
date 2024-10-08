@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.event.AlertEventHandler;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerCallbackEvent;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;

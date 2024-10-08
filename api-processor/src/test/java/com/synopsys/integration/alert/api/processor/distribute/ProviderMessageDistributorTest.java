@@ -17,7 +17,7 @@ import com.synopsys.integration.alert.api.processor.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.api.descriptor.SlackChannelKey;
+import com.blackduck.integration.alert.api.descriptor.SlackChannelKey;
 
 class ProviderMessageDistributorTest {
      private final UUID uuid = UUID.randomUUID();

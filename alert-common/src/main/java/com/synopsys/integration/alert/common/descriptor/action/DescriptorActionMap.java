@@ -13,8 +13,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
-import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
+import com.blackduck.integration.alert.api.common.model.exception.AlertRuntimeException;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 
 public final class DescriptorActionMap<T extends DescriptorAction> {
     private final Map<String, T> universalKeyToAction;

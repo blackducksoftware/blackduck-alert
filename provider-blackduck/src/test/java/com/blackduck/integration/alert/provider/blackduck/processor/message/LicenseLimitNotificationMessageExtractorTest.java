@@ -6,10 +6,9 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.provider.blackduck.processor.message.LicenseLimitNotificationMessageExtractor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
+import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.api.processor.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.api.processor.filter.NotificationContentWrapper;

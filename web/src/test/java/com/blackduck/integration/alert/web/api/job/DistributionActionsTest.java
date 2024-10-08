@@ -14,10 +14,10 @@ import org.mockito.Mockito;
 import org.springframework.data.domain.Sort;
 
 import com.blackduck.integration.alert.test.common.MockDescriptorMap;
-import com.synopsys.integration.alert.api.descriptor.JiraCloudChannelKey;
-import com.synopsys.integration.alert.api.descriptor.MsTeamsKey;
-import com.synopsys.integration.alert.api.descriptor.SlackChannelKey;
-import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
+import com.blackduck.integration.alert.api.descriptor.JiraCloudChannelKey;
+import com.blackduck.integration.alert.api.descriptor.MsTeamsKey;
+import com.blackduck.integration.alert.api.descriptor.SlackChannelKey;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;

@@ -19,7 +19,7 @@ import com.blackduck.integration.alert.database.job.FilteredDistributionJob;
 import com.blackduck.integration.alert.database.job.api.StaticJobAccessor;
 import com.blackduck.integration.blackduck.api.generated.enumeration.VulnerabilitySeverityType;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;

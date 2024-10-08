@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.channel.action.DistributionChannelMessageTestAction;
 import com.blackduck.integration.alert.channel.msteams.distribution.MSTeamsChannel;
-import com.synopsys.integration.alert.api.descriptor.MsTeamsKey;
+import com.blackduck.integration.alert.api.descriptor.MsTeamsKey;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 
 @Component

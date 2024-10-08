@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.database.configuration.RegisteredDescripto
 import com.synopsys.integration.alert.database.configuration.repository.ConfigContextRepository;
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
-import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
+import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;

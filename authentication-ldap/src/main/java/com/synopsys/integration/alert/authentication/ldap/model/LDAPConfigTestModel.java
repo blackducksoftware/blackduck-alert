@@ -1,7 +1,7 @@
 package com.synopsys.integration.alert.authentication.ldap.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 
 public class LDAPConfigTestModel extends AlertSerializableModel {
     private static final long serialVersionUID = 6421872579523951087L;

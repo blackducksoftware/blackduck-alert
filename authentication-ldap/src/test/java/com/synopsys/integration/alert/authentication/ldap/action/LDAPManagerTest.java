@@ -16,7 +16,7 @@ import org.opentest4j.AssertionFailedError;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 
 import com.blackduck.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.authentication.ldap.LDAPConfig;
 import com.synopsys.integration.alert.authentication.ldap.LDAPTestHelper;
 import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;

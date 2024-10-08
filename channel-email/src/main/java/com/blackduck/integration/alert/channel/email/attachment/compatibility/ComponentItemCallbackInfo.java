@@ -7,8 +7,8 @@
  */
 package com.blackduck.integration.alert.channel.email.attachment.compatibility;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.alert.api.descriptor.model.ProviderKey;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.descriptor.model.ProviderKey;
 
 public class ComponentItemCallbackInfo extends AlertSerializableModel {
     private final String callbackUrl;

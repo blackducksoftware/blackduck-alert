@@ -13,7 +13,7 @@ import com.blackduck.integration.alert.api.channel.CommonChannelDistributionVali
 import com.blackduck.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.blackduck.integration.alert.test.common.FieldModelUtils;
 import com.blackduck.integration.alert.test.common.ValidationConstants;
-import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;

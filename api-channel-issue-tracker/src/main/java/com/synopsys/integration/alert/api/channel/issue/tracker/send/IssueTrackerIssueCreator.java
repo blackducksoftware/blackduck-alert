@@ -21,10 +21,10 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCreat
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
-import com.synopsys.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
+import com.blackduck.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
 
 public abstract class IssueTrackerIssueCreator<T extends Serializable> {
     private final Logger logger = LoggerFactory.getLogger(getClass());

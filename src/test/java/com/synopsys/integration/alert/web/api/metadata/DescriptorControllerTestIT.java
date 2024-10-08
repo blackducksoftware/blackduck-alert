@@ -25,7 +25,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.blackduck.integration.alert.web.api.metadata.DescriptorController;
 import com.blackduck.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;

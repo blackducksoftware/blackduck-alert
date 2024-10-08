@@ -10,9 +10,9 @@ package com.synopsys.integration.alert.common.message.model;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.api.common.model.errors.FieldStatusSeverity;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.blackduck.integration.alert.api.common.model.errors.FieldStatusSeverity;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 
 public class MessageResult extends AlertSerializableModel {

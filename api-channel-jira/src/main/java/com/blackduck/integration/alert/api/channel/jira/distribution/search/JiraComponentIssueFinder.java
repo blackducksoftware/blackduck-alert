@@ -15,7 +15,7 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIss
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueTrackerSearchResult;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectIssueSearchResult;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectVersionComponentIssueFinder;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.api.processor.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;

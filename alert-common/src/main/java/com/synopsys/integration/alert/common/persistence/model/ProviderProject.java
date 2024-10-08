@@ -10,7 +10,7 @@ package com.synopsys.integration.alert.common.persistence.model;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 
 public class ProviderProject extends AlertSerializableModel {
     private static final String[] HASH_CODE_EQUALS_EXCLUDED_FIELDS = { "description" };

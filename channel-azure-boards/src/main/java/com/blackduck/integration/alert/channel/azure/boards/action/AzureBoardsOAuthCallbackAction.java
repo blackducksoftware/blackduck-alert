@@ -18,8 +18,8 @@ import com.blackduck.integration.alert.channel.azure.boards.model.AzureBoardsGlo
 import com.blackduck.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.api.oauth.AlertOAuthCredentialDataStoreFactory;
 import com.synopsys.integration.alert.azure.boards.common.http.AzureApiVersionAppender;
 import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;

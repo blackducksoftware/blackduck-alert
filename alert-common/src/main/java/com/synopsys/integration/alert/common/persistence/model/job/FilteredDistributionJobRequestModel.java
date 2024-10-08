@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 
 public class FilteredDistributionJobRequestModel extends AlertSerializableModel {

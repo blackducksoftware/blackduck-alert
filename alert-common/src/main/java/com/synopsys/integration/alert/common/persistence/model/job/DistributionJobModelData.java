@@ -13,7 +13,7 @@ import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;

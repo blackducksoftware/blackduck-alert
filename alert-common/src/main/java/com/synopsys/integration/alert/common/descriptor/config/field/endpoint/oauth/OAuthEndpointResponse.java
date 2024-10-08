@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 
 public class OAuthEndpointResponse extends AlertSerializableModel {
     private final boolean authenticated;

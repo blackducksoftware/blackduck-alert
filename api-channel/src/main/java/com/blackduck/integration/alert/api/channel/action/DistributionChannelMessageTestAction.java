@@ -15,8 +15,8 @@ import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
 
 import com.blackduck.integration.alert.api.channel.DistributionChannel;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKey;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
 import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.api.processor.extract.model.SimpleMessage;

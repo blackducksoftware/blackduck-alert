@@ -21,8 +21,8 @@ import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.processor.extract.model.ProcessedProviderMessageHolder;
 import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKey;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 
 @Component
 public class ProviderMessageDistributor {

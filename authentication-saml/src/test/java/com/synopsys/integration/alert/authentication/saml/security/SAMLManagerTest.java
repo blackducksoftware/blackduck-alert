@@ -20,7 +20,7 @@ import org.springframework.security.saml2.provider.service.web.authentication.Op
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.authentication.saml.SAMLTestHelper;
 import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
 import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;

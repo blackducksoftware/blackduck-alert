@@ -10,7 +10,7 @@ package com.synopsys.integration.alert.common.rest;
 import java.util.List;
 
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 
 public class ResponseBodyBuilder {
     private static final String PROPERTY_KEY_ID = "id";

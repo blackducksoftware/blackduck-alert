@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.convert.ProjectM
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueTrackerSearcher;
 import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerAsyncMessageSender;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.azure.boards.common.http.AzureApiVersionAppender;
 import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestCreator;
 import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;

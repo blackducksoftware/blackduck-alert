@@ -22,9 +22,9 @@ import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDe
 import com.blackduck.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.blackduck.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
 import com.blackduck.integration.alert.channel.slack.descriptor.SlackDescriptor;
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;

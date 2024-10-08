@@ -7,9 +7,9 @@
  */
 package com.synopsys.integration.alert.api.environment;
 
-import com.synopsys.integration.alert.api.common.model.Obfuscated;
-import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.blackduck.integration.alert.api.common.model.Obfuscated;
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

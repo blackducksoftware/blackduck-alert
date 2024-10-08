@@ -23,7 +23,7 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueTrac
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectIssueFinder;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectIssueSearchResult;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectVersionIssueFinder;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemFieldsWrapper;
 import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;

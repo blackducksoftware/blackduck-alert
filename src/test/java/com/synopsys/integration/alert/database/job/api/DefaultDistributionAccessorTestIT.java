@@ -24,9 +24,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort.Direction;
 
-import com.synopsys.integration.alert.api.descriptor.MsTeamsKey;
-import com.synopsys.integration.alert.api.descriptor.SlackChannelKey;
-import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
+import com.blackduck.integration.alert.api.descriptor.MsTeamsKey;
+import com.blackduck.integration.alert.api.descriptor.SlackChannelKey;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJob;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;

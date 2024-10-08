@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.api.processor.distribute;
 
 import java.util.UUID;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 
 public final class ProcessedNotificationDetails extends AlertSerializableModel {

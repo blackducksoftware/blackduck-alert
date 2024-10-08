@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.collections4.ListUtils;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
 
 public class ProcessedProviderMessageHolder extends AlertSerializableModel {

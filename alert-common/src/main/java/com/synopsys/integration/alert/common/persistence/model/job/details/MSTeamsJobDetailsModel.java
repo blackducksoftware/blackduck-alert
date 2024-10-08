@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.common.persistence.model.job.details;
 
 import java.util.UUID;
 
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 
 public class MSTeamsJobDetailsModel extends DistributionJobDetailsModel {
     private final String webhook;

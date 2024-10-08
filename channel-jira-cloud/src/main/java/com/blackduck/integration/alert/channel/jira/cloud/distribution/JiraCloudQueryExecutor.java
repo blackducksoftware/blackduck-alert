@@ -18,7 +18,7 @@ import com.blackduck.integration.jira.common.cloud.model.IssueSearchResponseMode
 import com.blackduck.integration.jira.common.cloud.service.IssueSearchService;
 import com.blackduck.integration.jira.common.model.components.IssueFieldsComponent;
 import com.blackduck.integration.jira.common.model.response.IssueResponseModel;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 
 public class JiraCloudQueryExecutor implements JqlQueryExecutor {
     private final IssueSearchService issueSearchService;

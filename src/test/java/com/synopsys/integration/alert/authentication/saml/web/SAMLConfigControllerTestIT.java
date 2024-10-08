@@ -24,7 +24,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
 import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;

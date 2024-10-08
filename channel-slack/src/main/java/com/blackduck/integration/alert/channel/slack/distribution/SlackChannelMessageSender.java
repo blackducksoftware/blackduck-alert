@@ -22,8 +22,8 @@ import com.blackduck.integration.alert.api.channel.rest.RestChannelUtility;
 import com.blackduck.integration.rest.client.IntHttpClient;
 import com.blackduck.integration.rest.request.Request;
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.descriptor.SlackChannelKey;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.descriptor.SlackChannelKey;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 

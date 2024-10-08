@@ -1,6 +1,6 @@
 package com.synopsys.integration.alert.common.persistence.model.job.executions;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 
 public class JobCompletionStatusDurations extends AlertSerializableModel {
     private static final long serialVersionUID = -5127766336418643920L;

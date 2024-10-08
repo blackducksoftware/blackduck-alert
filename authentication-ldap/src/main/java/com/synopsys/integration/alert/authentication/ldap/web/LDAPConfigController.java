@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.authentication.ldap.action.LDAPCrudActions;
 import com.synopsys.integration.alert.authentication.ldap.action.LDAPTestAction;
 import com.synopsys.integration.alert.authentication.ldap.action.LDAPValidationAction;

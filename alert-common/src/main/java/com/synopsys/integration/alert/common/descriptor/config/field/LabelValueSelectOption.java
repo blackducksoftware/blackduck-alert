@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 
 public class LabelValueSelectOption extends AlertSerializableModel implements Comparable<LabelValueSelectOption> {
     private final String label;

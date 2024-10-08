@@ -36,8 +36,8 @@ import com.blackduck.integration.blackduck.api.manual.view.ProjectNotificationVi
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.Application;
-import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;

@@ -25,7 +25,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
-import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.ValidationResult;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 

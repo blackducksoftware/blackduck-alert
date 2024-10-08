@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.tracker.event.IssueTrackerCommentEventListener;
-import com.synopsys.integration.alert.api.descriptor.AzureBoardsChannelKey;
+import com.blackduck.integration.alert.api.descriptor.AzureBoardsChannelKey;
 
 @Component
 public class AzureBoardsCommentEventListener extends IssueTrackerCommentEventListener<AzureBoardsCommentEvent> {

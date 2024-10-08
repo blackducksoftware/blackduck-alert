@@ -1,6 +1,6 @@
 package com.blackduck.integration.alert.component.settings.environment;
 
-import com.synopsys.integration.alert.api.common.model.AlertConstants;
+import com.blackduck.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.alert.api.environment.EnvironmentProcessingResult;
 import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
 import com.blackduck.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;

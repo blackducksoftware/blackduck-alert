@@ -12,7 +12,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.api.common.model.Obfuscated;
+import com.blackduck.integration.alert.api.common.model.Obfuscated;
 
 public class SettingsProxyModel extends ConfigWithMetadata implements Obfuscated<SettingsProxyModel> {
     private String proxyHost;

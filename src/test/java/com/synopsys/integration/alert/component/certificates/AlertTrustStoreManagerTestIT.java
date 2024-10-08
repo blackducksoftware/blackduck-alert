@@ -17,8 +17,8 @@ import org.springframework.test.context.TestPropertySource;
 
 import com.blackduck.integration.alert.api.certificates.AlertTrustStoreManager;
 import com.blackduck.integration.alert.test.common.MockAlertProperties;
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 import com.synopsys.integration.alert.common.util.DateUtils;

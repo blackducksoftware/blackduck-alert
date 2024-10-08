@@ -10,7 +10,7 @@ package com.synopsys.integration.alert.common.persistence.model.job.details;
 import java.util.List;
 import java.util.UUID;
 
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 
 public class JiraServerJobDetailsModel extends DistributionJobDetailsModel {
     private final boolean addComments;

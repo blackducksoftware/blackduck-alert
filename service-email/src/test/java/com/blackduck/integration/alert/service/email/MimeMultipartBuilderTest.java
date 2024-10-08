@@ -18,7 +18,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.api.common.model.AlertConstants;
+import com.blackduck.integration.alert.api.common.model.AlertConstants;
 import com.blackduck.integration.alert.test.common.TestResourceUtils;
 
 import jakarta.mail.MessagingException;

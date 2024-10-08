@@ -24,8 +24,8 @@ import com.blackduck.integration.blackduck.api.generated.enumeration.Vulnerabili
 import com.blackduck.integration.blackduck.api.manual.component.AffectedProjectVersion;
 import com.blackduck.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.api.processor.detail.DetailedNotificationContent;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;

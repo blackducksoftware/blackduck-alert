@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.api.common.model.errors.FieldStatusSeverity;
+import com.blackduck.integration.alert.api.common.model.errors.FieldStatusSeverity;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.api.provider.state.StatefulProvider;
 import com.synopsys.integration.alert.common.message.model.MessageResult;

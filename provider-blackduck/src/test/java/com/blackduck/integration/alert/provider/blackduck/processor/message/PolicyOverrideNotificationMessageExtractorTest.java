@@ -11,10 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 
-import com.blackduck.integration.alert.provider.blackduck.processor.message.BlackDuckMessageLabels;
-import com.blackduck.integration.alert.provider.blackduck.processor.message.PolicyOverrideNotificationMessageExtractor;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
+import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.synopsys.integration.alert.api.processor.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentPolicy;

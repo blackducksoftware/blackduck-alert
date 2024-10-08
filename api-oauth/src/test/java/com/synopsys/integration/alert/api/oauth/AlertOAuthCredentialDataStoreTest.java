@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import com.google.api.client.auth.oauth2.StoredCredential;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.oauth.database.AlertOAuthModel;
 import com.synopsys.integration.alert.api.oauth.database.accessor.AlertOAuthConfigurationAccessor;
 import com.synopsys.integration.alert.api.oauth.database.accessor.MockAlertOAuthConfigurationRepository;

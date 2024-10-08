@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.api.channel.issue.tracker.action;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 
 public class IssueTrackerTestActionFieldStatusCreator {
     private static final String FIELD_PLACEHOLDER = "none";

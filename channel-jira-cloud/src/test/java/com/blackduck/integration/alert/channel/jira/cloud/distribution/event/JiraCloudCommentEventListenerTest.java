@@ -13,9 +13,6 @@ import org.mockito.Mockito;
 import org.springframework.amqp.core.Message;
 import org.springframework.core.task.SyncTaskExecutor;
 
-import com.blackduck.integration.alert.channel.jira.cloud.distribution.event.JiraCloudCommentEvent;
-import com.blackduck.integration.alert.channel.jira.cloud.distribution.event.JiraCloudCommentEventHandler;
-import com.blackduck.integration.alert.channel.jira.cloud.distribution.event.JiraCloudCommentEventListener;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJob;
@@ -24,7 +21,7 @@ import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobSta
 import com.synopsys.integration.alert.api.distribution.execution.JobStage;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 class JiraCloudCommentEventListenerTest {

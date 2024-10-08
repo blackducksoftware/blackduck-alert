@@ -13,7 +13,7 @@ import java.util.UUID;
 
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTransitionModel;
 import com.synopsys.integration.alert.api.event.distribution.JobSubTaskEvent;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKey;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
 
 public class IssueTrackerTransitionIssueEvent<T extends Serializable> extends JobSubTaskEvent {
     private static final long serialVersionUID = 2225961487898754563L;

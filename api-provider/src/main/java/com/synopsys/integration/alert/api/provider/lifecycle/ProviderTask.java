@@ -15,7 +15,7 @@ import com.synopsys.integration.alert.api.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.api.task.ScheduledTask;
 import com.synopsys.integration.alert.api.task.TaskMetaData;
 import com.synopsys.integration.alert.api.task.TaskMetaDataProperty;
-import com.synopsys.integration.alert.api.descriptor.model.ProviderKey;
+import com.blackduck.integration.alert.api.descriptor.model.ProviderKey;
 
 public abstract class ProviderTask extends ScheduledTask {
     private final ProviderProperties providerProperties;

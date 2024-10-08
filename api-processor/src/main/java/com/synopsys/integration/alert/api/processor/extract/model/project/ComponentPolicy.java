@@ -12,7 +12,7 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.api.processor.extract.model.CombinableModel;
 
 public class ComponentPolicy extends AlertSerializableModel implements CombinableModel<ComponentPolicy> {

@@ -10,7 +10,7 @@ package com.synopsys.integration.alert.common.persistence.model;
 import java.util.Collection;
 import java.util.Collections;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 
 public class DefinedFieldModel extends AlertSerializableModel {

@@ -14,7 +14,7 @@ import com.blackduck.integration.function.ThrowingFunction;
 import com.blackduck.integration.jira.common.model.components.TransitionComponent;
 import com.blackduck.integration.jira.common.model.response.TransitionsResponseModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.enumeration.IssueStatus;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 
 public class JiraIssueStatusCreator {
     private final String resolveTransition;

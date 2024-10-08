@@ -11,7 +11,7 @@ import java.util.Set;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKey;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
 
 public abstract class ChannelDescriptor extends Descriptor {
     public static final String KEY_COMMON_CHANNEL_PREFIX = "channel.common.";

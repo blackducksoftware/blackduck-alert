@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.certificates.AlertClientCertificateManager;
 import com.blackduck.integration.alert.component.certificates.CertificatesDescriptor;
-import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
 
 @Component

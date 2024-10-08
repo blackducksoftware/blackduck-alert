@@ -16,7 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.blackduck.integration.alert.channel.email.attachment.compatibility.ComponentItem;
 import com.blackduck.integration.alert.channel.email.attachment.compatibility.MessageContentGroup;
 import com.blackduck.integration.alert.channel.email.attachment.compatibility.ProviderMessageContent;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.processor.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcern;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernType;

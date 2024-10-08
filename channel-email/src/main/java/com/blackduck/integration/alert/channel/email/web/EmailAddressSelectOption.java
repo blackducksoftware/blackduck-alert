@@ -7,7 +7,7 @@
  */
 package com.blackduck.integration.alert.channel.email.web;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 
 public class EmailAddressSelectOption extends AlertSerializableModel {
     private final String emailAddress;

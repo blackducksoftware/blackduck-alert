@@ -16,7 +16,7 @@ import com.blackduck.integration.alert.component.settings.proxy.database.accesso
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
-import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 
 @Component
 public class DefaultSettingsUtility implements SettingsUtility {

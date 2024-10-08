@@ -12,7 +12,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationM
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.api.descriptor.model.ProviderKey;
+import com.blackduck.integration.alert.api.descriptor.model.ProviderKey;
 
 public class ProviderConfigMissingValidatorTest {
     @Test

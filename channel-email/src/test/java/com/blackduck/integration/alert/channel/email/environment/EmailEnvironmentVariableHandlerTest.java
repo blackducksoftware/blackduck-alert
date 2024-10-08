@@ -19,8 +19,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.blackduck.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.blackduck.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
-import com.synopsys.integration.alert.api.common.model.AlertConstants;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.common.model.AlertConstants;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.api.environment.EnvironmentProcessingResult;
 import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
 import com.blackduck.integration.alert.test.common.EnvironmentVariableMockingUtil;

@@ -7,7 +7,7 @@
  */
 package com.blackduck.integration.alert.provider.blackduck.saml;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 
 public class BlackDuckSSOConfigResponseModel extends AlertSerializableModel {
     private Boolean ssoEnabled;

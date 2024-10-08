@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.tracker.event.IssueTrackerCreateIssueEventListener;
-import com.synopsys.integration.alert.api.descriptor.JiraServerChannelKey;
+import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
 
 @Component
 public class JiraServerCreateIssueEventListener extends IssueTrackerCreateIssueEventListener {

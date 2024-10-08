@@ -7,10 +7,10 @@
  */
 package com.synopsys.integration.alert.api.provider;
 
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.provider.state.StatefulProvider;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.api.descriptor.model.ProviderKey;
+import com.blackduck.integration.alert.api.descriptor.model.ProviderKey;
 
 public abstract class Provider {
     private final ProviderKey key;

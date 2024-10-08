@@ -11,7 +11,7 @@ import com.blackduck.integration.alert.component.scheduling.descriptor.Schedulin
 import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 import com.blackduck.integration.alert.component.scheduling.workflow.DailyTask;
 import com.blackduck.integration.alert.database.job.api.StaticJobAccessor;
-import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.task.ScheduledTask;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;

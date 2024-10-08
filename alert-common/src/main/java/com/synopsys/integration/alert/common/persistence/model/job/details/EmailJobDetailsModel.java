@@ -14,7 +14,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 
 public class EmailJobDetailsModel extends DistributionJobDetailsModel {
     private final @Nullable String subjectLine;

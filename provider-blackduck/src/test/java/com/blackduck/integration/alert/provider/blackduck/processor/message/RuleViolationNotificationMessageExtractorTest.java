@@ -40,7 +40,7 @@ import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.rest.HttpMethod;
 import com.blackduck.integration.rest.HttpUrl;
 import com.blackduck.integration.rest.exception.IntegrationRestException;
-import com.synopsys.integration.alert.api.descriptor.BlackDuckProviderKey;
+import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.synopsys.integration.alert.api.processor.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentPolicy;

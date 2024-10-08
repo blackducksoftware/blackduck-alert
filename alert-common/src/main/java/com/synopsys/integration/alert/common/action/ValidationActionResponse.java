@@ -12,7 +12,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 
-import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.rest.exception.IntegrationRestException;
 
 public class ValidationActionResponse extends ActionResponse<ValidationResponseModel> {

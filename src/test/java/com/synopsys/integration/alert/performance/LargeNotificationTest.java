@@ -28,7 +28,7 @@ import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGloba
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.configuration.ApplicationConfiguration;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
-import com.synopsys.integration.alert.api.descriptor.JiraServerChannelKey;
+import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
 import com.synopsys.integration.alert.performance.model.PerformanceExecutionStatusModel;
 import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;

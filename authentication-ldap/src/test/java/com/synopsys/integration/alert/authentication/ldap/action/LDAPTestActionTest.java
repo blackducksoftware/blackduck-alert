@@ -20,7 +20,7 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 
 import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.blackduck.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
-import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.authentication.ldap.LDAPConfig;
 import com.synopsys.integration.alert.authentication.ldap.LDAPTestHelper;
 import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;

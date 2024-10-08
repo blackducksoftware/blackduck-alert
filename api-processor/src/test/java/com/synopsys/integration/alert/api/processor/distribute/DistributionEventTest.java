@@ -8,7 +8,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.api.descriptor.SlackChannelKey;
+import com.blackduck.integration.alert.api.descriptor.SlackChannelKey;
 import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessageHolder;
 
 class DistributionEventTest {

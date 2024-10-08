@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.common.rest.model;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 
 public abstract class Config extends AlertSerializableModel {
     private String id;

@@ -2,7 +2,7 @@ package com.blackduck.integration.alert.component.diagnostic.model;
 
 import java.util.UUID;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 
 public class CompletedJobDiagnosticModel extends AlertSerializableModel {
     private static final long serialVersionUID = -4662389084967372263L;

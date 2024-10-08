@@ -12,9 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.amqp.core.Message;
 
-import com.blackduck.integration.alert.channel.jira.cloud.distribution.event.JiraCloudCreateIssueEvent;
-import com.blackduck.integration.alert.channel.jira.cloud.distribution.event.JiraCloudCreateIssueEventHandler;
-import com.blackduck.integration.alert.channel.jira.cloud.distribution.event.JiraCloudCreateIssueEventListener;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJob;
@@ -24,7 +21,7 @@ import com.synopsys.integration.alert.api.distribution.execution.JobStage;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 class JiraCloudCreateIssueEventListenerTest {

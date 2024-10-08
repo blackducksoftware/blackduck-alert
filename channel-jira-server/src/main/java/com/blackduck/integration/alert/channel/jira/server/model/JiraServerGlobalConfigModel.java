@@ -11,7 +11,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.api.common.model.Obfuscated;
+import com.blackduck.integration.alert.api.common.model.Obfuscated;
 import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.synopsys.integration.alert.common.rest.model.ConfigWithMetadata;
 

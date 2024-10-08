@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.common.channel.issuetracker.exception;
 
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 
 public class IssueTrackerException extends AlertException {
     private static final long serialVersionUID = -156290045811635478L;

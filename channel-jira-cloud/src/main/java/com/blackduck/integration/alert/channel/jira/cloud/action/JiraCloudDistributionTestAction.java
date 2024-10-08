@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import com.blackduck.integration.alert.channel.jira.cloud.distribution.JiraCloudMessageSenderFactory;
 import com.synopsys.integration.alert.api.channel.issue.tracker.action.IssueTrackerTestAction;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
-import com.synopsys.integration.alert.api.descriptor.JiraCloudChannelKey;
+import com.blackduck.integration.alert.api.descriptor.JiraCloudChannelKey;
 
 @Component
 public class JiraCloudDistributionTestAction extends IssueTrackerTestAction<JiraCloudJobDetailsModel, String> {

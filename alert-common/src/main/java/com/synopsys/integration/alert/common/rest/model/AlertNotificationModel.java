@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.common.rest.model;
 
 import java.time.OffsetDateTime;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 
 public class AlertNotificationModel extends AlertSerializableModel {
     private Long id;

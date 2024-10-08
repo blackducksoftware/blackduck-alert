@@ -10,8 +10,8 @@ package com.synopsys.integration.alert.common.exception;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 
 public class AlertFieldException extends AlertException {
     private static final long serialVersionUID = 7993564907680483145L;

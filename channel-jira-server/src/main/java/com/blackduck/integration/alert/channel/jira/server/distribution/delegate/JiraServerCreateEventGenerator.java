@@ -14,7 +14,7 @@ import com.blackduck.integration.alert.channel.jira.server.distribution.event.Ji
 import com.synopsys.integration.alert.api.channel.issue.tracker.event.IssueTrackerCreateIssueEvent;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerCreationEventGenerator;
-import com.synopsys.integration.alert.api.descriptor.JiraServerChannelKey;
+import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
 
 public class JiraServerCreateEventGenerator implements IssueTrackerCreationEventGenerator {
     private final JiraServerChannelKey channelKey;

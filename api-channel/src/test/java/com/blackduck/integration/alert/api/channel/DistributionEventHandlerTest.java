@@ -10,8 +10,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKey;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.processor.distribute.DistributionEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
