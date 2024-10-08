@@ -7,8 +7,8 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.blackduck.integration.alert.web.api.about.AboutModel;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
-import com.synopsys.integration.alert.web.api.about.AboutModel;
 
  class AboutModelTest {
      @Test

@@ -22,14 +22,15 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.blackduck.integration.alert.web.api.metadata.DescriptorController;
+import com.blackduck.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
-import com.synopsys.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 @Transactional
 @AlertIntegrationTest

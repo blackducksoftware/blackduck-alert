@@ -24,18 +24,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackduck.integration.alert.web.api.about.AboutModel;
+import com.blackduck.integration.alert.web.api.about.AboutReader;
+import com.blackduck.integration.log.IntLogger;
+import com.blackduck.integration.log.Slf4jIntLogger;
+import com.blackduck.integration.rest.client.IntHttpClient;
+import com.blackduck.integration.rest.proxy.ProxyInfo;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.update.model.DockerTagModel;
 import com.synopsys.integration.alert.update.model.DockerTagsResponseModel;
 import com.synopsys.integration.alert.update.model.UpdateModel;
-import com.synopsys.integration.alert.web.api.about.AboutModel;
-import com.synopsys.integration.alert.web.api.about.AboutReader;
-import com.blackduck.integration.log.IntLogger;
-import com.blackduck.integration.log.Slf4jIntLogger;
-import com.blackduck.integration.rest.client.IntHttpClient;
-import com.blackduck.integration.rest.proxy.ProxyInfo;
 
 @Component
 public class UpdateChecker {
