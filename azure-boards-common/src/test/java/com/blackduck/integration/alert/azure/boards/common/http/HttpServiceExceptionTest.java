@@ -1,6 +1,7 @@
 package com.blackduck.integration.alert.azure.boards.common.http;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 

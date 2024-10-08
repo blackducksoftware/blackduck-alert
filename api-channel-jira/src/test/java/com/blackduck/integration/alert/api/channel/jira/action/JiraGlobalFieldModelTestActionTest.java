@@ -1,14 +1,15 @@
 package com.blackduck.integration.alert.api.channel.jira.action;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.alert.common.message.model.MessageResult;
+import com.blackduck.integration.exception.IntegrationException;
 
 public class JiraGlobalFieldModelTestActionTest {
     private static final String EXPECTED_EXCEPTION = "Expected an exception to be thrown";
