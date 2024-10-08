@@ -14,8 +14,8 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrack
 import com.blackduck.integration.alert.api.distribution.JobSubTaskEventHandler;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.distribution.execution.JobStage;
-import com.synopsys.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.api.event.distribution.JobSubTaskEvent;
+import com.blackduck.integration.alert.api.event.EventManager;
+import com.blackduck.integration.alert.api.event.distribution.JobSubTaskEvent;
 
 public abstract class IssueTrackerTransitionEventHandler<T extends JobSubTaskEvent> extends JobSubTaskEventHandler<T> {
 

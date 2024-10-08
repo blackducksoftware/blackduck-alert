@@ -24,7 +24,7 @@ import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.distribution.audit.AuditFailedEvent;
 import com.blackduck.integration.alert.api.distribution.audit.AuditSuccessEvent;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
-import com.synopsys.integration.alert.api.event.EventManager;
+import com.blackduck.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.processor.distribute.DistributionEvent;
 import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessageHolder;

@@ -8,6 +8,9 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.oauth.AlertOAuthCredentialDataStoreFactory;
 import com.blackduck.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.blackduck.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
 import com.blackduck.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
@@ -17,9 +20,6 @@ import com.blackduck.integration.alert.channel.azure.boards.validator.AzureBoard
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
 import com.google.gson.Gson;
-import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.synopsys.integration.alert.api.oauth.AlertOAuthCredentialDataStoreFactory;
 import com.synopsys.integration.alert.azure.boards.common.http.AzureApiVersionAppender;
 import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;
 import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpService;

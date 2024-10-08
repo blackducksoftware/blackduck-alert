@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.api.processor.event;
 
 import java.util.UUID;
 
-import com.synopsys.integration.alert.api.event.AlertEvent;
+import com.blackduck.integration.alert.api.event.AlertEvent;
 
 public class JobNotificationMappedEvent extends AlertEvent {
     private static final long serialVersionUID = 98931335736424452L;

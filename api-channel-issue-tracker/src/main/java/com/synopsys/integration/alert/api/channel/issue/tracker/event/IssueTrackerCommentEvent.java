@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
-import com.synopsys.integration.alert.api.event.distribution.JobSubTaskEvent;
+import com.blackduck.integration.alert.api.event.distribution.JobSubTaskEvent;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
 
 public class IssueTrackerCommentEvent<T extends Serializable> extends JobSubTaskEvent {

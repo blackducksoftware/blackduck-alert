@@ -10,7 +10,7 @@ package com.synopsys.integration.alert.api.processor.distribute;
 import java.util.Set;
 import java.util.UUID;
 
-import com.synopsys.integration.alert.api.event.AlertEvent;
+import com.blackduck.integration.alert.api.event.AlertEvent;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
 import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessageHolder;
 

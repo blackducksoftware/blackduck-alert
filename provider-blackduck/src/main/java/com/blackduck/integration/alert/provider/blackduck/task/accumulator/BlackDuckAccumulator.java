@@ -25,8 +25,8 @@ import org.springframework.scheduling.TaskScheduler;
 
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckApiTokenValidator;
-import com.synopsys.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.api.event.NotificationReceivedEvent;
+import com.blackduck.integration.alert.api.event.EventManager;
+import com.blackduck.integration.alert.api.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.api.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.api.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.api.task.ScheduledTask;

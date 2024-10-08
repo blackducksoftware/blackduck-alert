@@ -11,7 +11,7 @@ import org.springframework.core.task.TaskExecutor;
 
 import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.distribution.JobSubTaskMessageListener;
-import com.synopsys.integration.alert.api.event.distribution.JobSubTaskEvent;
+import com.blackduck.integration.alert.api.event.distribution.JobSubTaskEvent;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
 
 public abstract class IssueTrackerCommentEventListener<T extends JobSubTaskEvent> extends JobSubTaskMessageListener<T> {

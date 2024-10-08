@@ -32,7 +32,7 @@ import com.google.gson.GsonBuilder;
 import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
-import com.synopsys.integration.alert.api.event.EventManager;
+import com.blackduck.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.processor.detail.NotificationDetailExtractionDelegator;
 import com.synopsys.integration.alert.api.processor.digest.ProjectMessageDigester;
 import com.synopsys.integration.alert.api.processor.distribute.ProcessedNotificationDetails;

@@ -18,8 +18,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
-import com.synopsys.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.api.event.NotificationReceivedEvent;
+import com.blackduck.integration.alert.api.event.EventManager;
+import com.blackduck.integration.alert.api.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.api.processor.NotificationMappingProcessor;
 import com.synopsys.integration.alert.api.processor.detail.NotificationDetailExtractionDelegator;
 import com.synopsys.integration.alert.api.processor.mapping.JobNotificationMapper2;

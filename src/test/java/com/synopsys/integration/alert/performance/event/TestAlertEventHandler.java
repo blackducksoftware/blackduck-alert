@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.api.event.AlertEventHandler;
+import com.blackduck.integration.alert.api.event.AlertEventHandler;
 
 public class TestAlertEventHandler implements AlertEventHandler<TestAlertEvent> {
     public static final int LOGGING_COUNT_THRESHOLD = 100000;

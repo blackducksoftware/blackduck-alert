@@ -33,8 +33,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.retry.support.RetryTemplate;
 
 import com.blackduck.integration.alert.api.channel.DistributionEventReceiver;
-import com.synopsys.integration.alert.api.event.AlertMessageListener;
-import com.synopsys.integration.alert.api.event.DeadLetterListener;
+import com.blackduck.integration.alert.api.event.AlertMessageListener;
+import com.blackduck.integration.alert.api.event.DeadLetterListener;
 import com.synopsys.integration.alert.api.processor.event.NotificationProcessingReceiver;
 
 @Configuration

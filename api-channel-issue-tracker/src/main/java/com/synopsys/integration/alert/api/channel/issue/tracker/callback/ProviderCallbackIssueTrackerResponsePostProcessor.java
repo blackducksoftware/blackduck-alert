@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.channel.issue.tracker.IssueTrackerResponsePostProcessor;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrackerResponse;
-import com.synopsys.integration.alert.api.event.EventManager;
+import com.blackduck.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerCallbackEvent;
 
 @Component

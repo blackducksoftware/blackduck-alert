@@ -9,9 +9,9 @@ import com.blackduck.integration.alert.api.distribution.audit.AuditFailedEvent;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJob;
 import com.blackduck.integration.alert.api.distribution.execution.JobStage;
-import com.synopsys.integration.alert.api.event.AlertEventHandler;
-import com.synopsys.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.api.event.distribution.JobSubTaskEvent;
+import com.blackduck.integration.alert.api.event.AlertEventHandler;
+import com.blackduck.integration.alert.api.event.EventManager;
+import com.blackduck.integration.alert.api.event.distribution.JobSubTaskEvent;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.persistence.util.AuditStackTraceUtil;
 

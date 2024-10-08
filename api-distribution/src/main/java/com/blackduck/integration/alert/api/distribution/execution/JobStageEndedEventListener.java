@@ -5,7 +5,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.event.AlertMessageListener;
+import com.blackduck.integration.alert.api.event.AlertMessageListener;
 
 @Component
 public class JobStageEndedEventListener extends AlertMessageListener<JobStageEndedEvent> {

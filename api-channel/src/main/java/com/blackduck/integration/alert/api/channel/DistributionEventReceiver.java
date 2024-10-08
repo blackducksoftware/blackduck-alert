@@ -11,7 +11,7 @@ import org.springframework.core.task.TaskExecutor;
 
 import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
-import com.synopsys.integration.alert.api.event.AlertMessageListener;
+import com.blackduck.integration.alert.api.event.AlertMessageListener;
 import com.synopsys.integration.alert.api.processor.distribute.DistributionEvent;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 

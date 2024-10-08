@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.event.AlertEventHandler;
+import com.blackduck.integration.alert.api.event.AlertEventHandler;
 
 @Component
 public class JobStageEndedHandler implements AlertEventHandler<JobStageEndedEvent> {

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.channel.MessageBoardChannel;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
-import com.synopsys.integration.alert.api.event.EventManager;
+import com.blackduck.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 
 @Component

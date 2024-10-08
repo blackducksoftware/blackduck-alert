@@ -12,8 +12,8 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.event.AlertMessageListener;
-import com.synopsys.integration.alert.api.event.NotificationReceivedEvent;
+import com.blackduck.integration.alert.api.event.AlertMessageListener;
+import com.blackduck.integration.alert.api.event.NotificationReceivedEvent;
 
 @Component(value = NotificationReceiver.COMPONENT_NAME)
 public class NotificationReceiver extends AlertMessageListener<NotificationReceivedEvent> {

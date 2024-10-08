@@ -1,6 +1,6 @@
 package com.blackduck.integration.alert.api.authentication.security.event;
 
-import com.synopsys.integration.alert.api.event.AlertEvent;
+import com.blackduck.integration.alert.api.event.AlertEvent;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 
 public class AlertAuthenticationEvent extends AlertEvent {

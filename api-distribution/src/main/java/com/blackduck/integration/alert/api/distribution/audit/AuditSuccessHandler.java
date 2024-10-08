@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJob;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
-import com.synopsys.integration.alert.api.event.AlertEventHandler;
+import com.blackduck.integration.alert.api.event.AlertEventHandler;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 
 @Component

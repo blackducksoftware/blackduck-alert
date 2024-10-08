@@ -2,7 +2,7 @@ package com.blackduck.integration.alert.api.distribution.execution;
 
 import java.util.UUID;
 
-import com.synopsys.integration.alert.api.event.AlertEvent;
+import com.blackduck.integration.alert.api.event.AlertEvent;
 
 public class JobStageEvent extends AlertEvent {
     private static final long serialVersionUID = 7484019815048606767L;

@@ -1,6 +1,6 @@
 package com.synopsys.integration.alert.performance.event;
 
-import com.synopsys.integration.alert.api.event.AlertEvent;
+import com.blackduck.integration.alert.api.event.AlertEvent;
 
 public class TestAlertEvent extends AlertEvent {
     private String content;

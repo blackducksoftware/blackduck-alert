@@ -25,7 +25,7 @@ import com.blackduck.integration.alert.database.job.api.StaticJobAccessor;
 import com.blackduck.integration.alert.test.common.TestResourceUtils;
 import com.blackduck.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.alert.api.event.EventManager;
+import com.blackduck.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.processor.NotificationMappingProcessor;
 import com.synopsys.integration.alert.api.processor.detail.NotificationDetailExtractionDelegator;
 import com.synopsys.integration.alert.api.processor.filter.JobNotificationMapper;

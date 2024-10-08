@@ -3,7 +3,7 @@ package com.synopsys.integration.alert.performance.event;
 import org.springframework.core.task.TaskExecutor;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.event.AlertMessageListener;
+import com.blackduck.integration.alert.api.event.AlertMessageListener;
 
 public class TestAlertEventListener extends AlertMessageListener<TestAlertEvent> {
     private final TestAlertEventHandler handler;

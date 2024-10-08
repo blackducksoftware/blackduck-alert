@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
-import com.synopsys.integration.alert.api.event.AlertEvent;
+import com.blackduck.integration.alert.api.event.AlertEvent;
 import com.synopsys.integration.alert.common.util.DateUtils;
 
 public class AuditEvent extends AlertEvent {

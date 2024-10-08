@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.provider.blackduck.task.accumulator.BlackDuckAccumulator;
 import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
-import com.synopsys.integration.alert.api.event.EventManager;
+import com.blackduck.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.api.provider.lifecycle.ProviderTaskFactory;
 import com.synopsys.integration.alert.api.provider.state.ProviderProperties;

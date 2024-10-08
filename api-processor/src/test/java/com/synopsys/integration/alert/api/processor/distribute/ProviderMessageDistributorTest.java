@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
-import com.synopsys.integration.alert.api.event.EventManager;
+import com.blackduck.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.processor.MockProcessingAuditAccessor;
 import com.synopsys.integration.alert.api.processor.extract.model.ProcessedProviderMessage;
 import com.synopsys.integration.alert.api.processor.extract.model.ProcessedProviderMessageHolder;

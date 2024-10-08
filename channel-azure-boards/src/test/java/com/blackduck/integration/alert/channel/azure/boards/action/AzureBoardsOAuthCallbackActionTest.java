@@ -18,6 +18,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
+import com.blackduck.integration.alert.api.oauth.AlertOAuthCredentialDataStoreFactory;
+import com.blackduck.integration.alert.api.oauth.database.accessor.AlertOAuthConfigurationAccessor;
 import com.blackduck.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.blackduck.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
 import com.blackduck.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
@@ -27,12 +31,11 @@ import com.blackduck.integration.alert.channel.azure.boards.database.mock.MockAl
 import com.blackduck.integration.alert.channel.azure.boards.database.mock.MockAzureBoardsConfigurationRepository;
 import com.blackduck.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
 import com.blackduck.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
+import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
+import com.blackduck.integration.alert.test.common.MockAlertProperties;
+import com.blackduck.integration.alert.test.common.database.MockRepositorySorter;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.google.gson.Gson;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
-import com.synopsys.integration.alert.api.oauth.AlertOAuthCredentialDataStoreFactory;
-import com.synopsys.integration.alert.api.oauth.database.accessor.AlertOAuthConfigurationAccessor;
 import com.synopsys.integration.alert.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.alert.azure.boards.common.model.AzureArrayResponseModel;
 import com.synopsys.integration.alert.azure.boards.common.service.project.TeamProjectReferenceResponseModel;
@@ -48,9 +51,6 @@ import com.synopsys.integration.alert.common.rest.model.SettingsProxyModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
-import com.blackduck.integration.alert.test.common.MockAlertProperties;
-import com.blackduck.integration.alert.test.common.database.MockRepositorySorter;
 
 import jakarta.servlet.http.HttpServletRequest;
 

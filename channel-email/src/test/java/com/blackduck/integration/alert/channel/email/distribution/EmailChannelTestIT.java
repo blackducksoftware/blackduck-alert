@@ -26,7 +26,7 @@ import com.blackduck.integration.alert.service.email.template.FreemarkerTemplati
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
-import com.synopsys.integration.alert.api.event.EventManager;
+import com.blackduck.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.test.common.MockAlertProperties;

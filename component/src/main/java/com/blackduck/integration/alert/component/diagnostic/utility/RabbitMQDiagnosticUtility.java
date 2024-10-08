@@ -16,7 +16,7 @@ import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.event.AlertMessageListener;
+import com.blackduck.integration.alert.api.event.AlertMessageListener;
 import com.blackduck.integration.alert.component.diagnostic.model.AlertQueueInformation;
 import com.blackduck.integration.alert.component.diagnostic.model.RabbitMQDiagnosticModel;
 

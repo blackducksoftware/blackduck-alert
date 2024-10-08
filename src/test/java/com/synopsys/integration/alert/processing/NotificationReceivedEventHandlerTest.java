@@ -12,8 +12,8 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.core.task.SyncTaskExecutor;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.api.event.NotificationReceivedEvent;
+import com.blackduck.integration.alert.api.event.EventManager;
+import com.blackduck.integration.alert.api.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;

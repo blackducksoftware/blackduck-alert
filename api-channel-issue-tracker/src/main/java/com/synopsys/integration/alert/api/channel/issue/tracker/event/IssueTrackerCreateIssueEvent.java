@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
-import com.synopsys.integration.alert.api.event.distribution.JobSubTaskEvent;
+import com.blackduck.integration.alert.api.event.distribution.JobSubTaskEvent;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
 
 public class IssueTrackerCreateIssueEvent extends JobSubTaskEvent {

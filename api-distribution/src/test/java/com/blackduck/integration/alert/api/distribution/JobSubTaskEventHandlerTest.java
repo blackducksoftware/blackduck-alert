@@ -20,8 +20,8 @@ import com.blackduck.integration.alert.api.distribution.execution.ExecutingJob;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.distribution.execution.JobStage;
 import com.blackduck.integration.alert.api.distribution.mock.MockJobCompletionStatusRepository;
-import com.synopsys.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.api.event.distribution.JobSubTaskEvent;
+import com.blackduck.integration.alert.api.event.EventManager;
+import com.blackduck.integration.alert.api.event.distribution.JobSubTaskEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
 
 class JobSubTaskEventHandlerTest {
