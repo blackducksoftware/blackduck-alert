@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.build;
+package com.blackduck.integration.alert.build;
 
 import java.io.File;
 import java.util.ArrayList;
