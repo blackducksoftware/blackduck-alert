@@ -13,14 +13,14 @@ import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
-import com.synopsys.integration.alert.api.processor.JobNotificationContentProcessor;
-import com.synopsys.integration.alert.api.processor.NotificationProcessingLifecycleCache;
-import com.synopsys.integration.alert.api.processor.detail.NotificationDetailExtractionDelegator;
-import com.synopsys.integration.alert.api.processor.digest.ProjectMessageDigester;
-import com.synopsys.integration.alert.api.processor.distribute.ProviderMessageDistributor;
-import com.synopsys.integration.alert.api.processor.event.JobProcessingEvent;
-import com.synopsys.integration.alert.api.processor.extract.ProviderMessageExtractionDelegator;
-import com.synopsys.integration.alert.api.processor.summarize.ProjectMessageSummarizer;
+import com.blackduck.integration.alert.api.processor.JobNotificationContentProcessor;
+import com.blackduck.integration.alert.api.processor.NotificationProcessingLifecycleCache;
+import com.blackduck.integration.alert.api.processor.detail.NotificationDetailExtractionDelegator;
+import com.blackduck.integration.alert.api.processor.digest.ProjectMessageDigester;
+import com.blackduck.integration.alert.api.processor.distribute.ProviderMessageDistributor;
+import com.blackduck.integration.alert.api.processor.event.JobProcessingEvent;
+import com.blackduck.integration.alert.api.processor.extract.ProviderMessageExtractionDelegator;
+import com.blackduck.integration.alert.api.processor.summarize.ProjectMessageSummarizer;
 
 class ProcessingJobEventHandlerTest {
     @Test

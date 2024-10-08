@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernType;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernType;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 class JqlStringCreatorTest {

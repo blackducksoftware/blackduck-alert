@@ -17,11 +17,11 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
-import com.synopsys.integration.alert.api.processor.extract.ProviderMessageExtractor;
-import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
-import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessageHolder;
-import com.synopsys.integration.alert.api.processor.extract.model.SimpleMessage;
-import com.synopsys.integration.alert.api.processor.filter.NotificationContentWrapper;
+import com.blackduck.integration.alert.api.processor.extract.ProviderMessageExtractor;
+import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
+import com.blackduck.integration.alert.api.processor.extract.model.ProviderMessageHolder;
+import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage;
+import com.blackduck.integration.alert.api.processor.filter.NotificationContentWrapper;
 import com.blackduck.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 

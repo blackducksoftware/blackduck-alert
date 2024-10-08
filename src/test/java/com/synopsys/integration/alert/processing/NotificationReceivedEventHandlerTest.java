@@ -17,7 +17,7 @@ import com.blackduck.integration.alert.api.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.api.processor.NotificationMappingProcessor;
+import com.blackduck.integration.alert.api.processor.NotificationMappingProcessor;
 import com.blackduck.integration.alert.test.common.TestResourceUtils;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 

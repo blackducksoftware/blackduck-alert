@@ -16,8 +16,8 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueTrac
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectIssueSearchResult;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectVersionComponentIssueFinder;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
-import com.synopsys.integration.alert.api.processor.extract.model.project.BomComponentDetails;
+import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
+import com.blackduck.integration.alert.api.processor.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public class JiraComponentIssueFinder implements ProjectVersionComponentIssueFinder<String> {

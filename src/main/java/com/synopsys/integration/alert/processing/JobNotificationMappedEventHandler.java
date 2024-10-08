@@ -18,8 +18,8 @@ import com.blackduck.integration.alert.api.event.AlertEventHandler;
 import com.blackduck.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
-import com.synopsys.integration.alert.api.processor.event.JobNotificationMappedEvent;
-import com.synopsys.integration.alert.api.processor.event.JobProcessingEvent;
+import com.blackduck.integration.alert.api.processor.event.JobNotificationMappedEvent;
+import com.blackduck.integration.alert.api.processor.event.JobProcessingEvent;
 
 @Component
 public class JobNotificationMappedEventHandler implements AlertEventHandler<JobNotificationMappedEvent> {

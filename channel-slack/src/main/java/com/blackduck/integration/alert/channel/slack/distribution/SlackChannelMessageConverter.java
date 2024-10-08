@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.channel.convert.AbstractChannelMessageConverter;
-import com.synopsys.integration.alert.api.processor.extract.model.SimpleMessage;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
+import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 
 @Component

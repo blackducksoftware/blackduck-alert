@@ -34,9 +34,9 @@ import com.blackduck.integration.alert.api.common.model.exception.AlertException
 import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
-import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessageHolder;
-import com.synopsys.integration.alert.api.processor.extract.model.SimpleMessage;
+import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
+import com.blackduck.integration.alert.api.processor.extract.model.ProviderMessageHolder;
+import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;

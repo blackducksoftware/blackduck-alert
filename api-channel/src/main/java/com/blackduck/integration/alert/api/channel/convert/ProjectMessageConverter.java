@@ -11,9 +11,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import com.synopsys.integration.alert.api.processor.extract.model.project.BomComponentDetails;
-import com.synopsys.integration.alert.api.processor.extract.model.project.MessageReason;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
+import com.blackduck.integration.alert.api.processor.extract.model.project.BomComponentDetails;
+import com.blackduck.integration.alert.api.processor.extract.model.project.MessageReason;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilder;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 

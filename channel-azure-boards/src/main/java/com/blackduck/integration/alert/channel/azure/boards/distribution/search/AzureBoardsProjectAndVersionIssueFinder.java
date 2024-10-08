@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectIs
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectIssueSearchResult;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectVersionIssueFinder;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
+import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemFieldsWrapper;
 import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
 import com.synopsys.integration.alert.azure.boards.common.util.AzureFieldDefinition;

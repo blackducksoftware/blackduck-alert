@@ -12,10 +12,10 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueBomCo
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
-import com.synopsys.integration.alert.api.processor.extract.model.project.AbstractBomComponentDetails;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
+import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
+import com.blackduck.integration.alert.api.processor.extract.model.project.AbstractBomComponentDetails;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
 
 public class IssueTrackerCallbackInfoCreatorTest {
     private static final LinkableItem TEST_ITEM = new LinkableItem("Test Label", "Test Value");

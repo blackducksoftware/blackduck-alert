@@ -22,8 +22,8 @@ import com.synopsys.integration.alert.common.persistence.accessor.NotificationAc
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
 import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
-import com.synopsys.integration.alert.api.processor.filter.PageRetriever;
-import com.synopsys.integration.alert.api.processor.filter.StatefulAlertPage;
+import com.blackduck.integration.alert.api.processor.filter.PageRetriever;
+import com.blackduck.integration.alert.api.processor.filter.StatefulAlertPage;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckApiTokenValidator;
 import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;

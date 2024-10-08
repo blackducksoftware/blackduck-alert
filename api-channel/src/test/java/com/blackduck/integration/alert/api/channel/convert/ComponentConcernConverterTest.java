@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.blackduck.integration.alert.api.channel.convert.mock.MockChannelMessageFormatter;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcern;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcern;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 
 public class ComponentConcernConverterTest {

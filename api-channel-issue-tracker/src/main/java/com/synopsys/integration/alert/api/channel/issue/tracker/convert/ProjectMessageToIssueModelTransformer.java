@@ -20,11 +20,11 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueVulne
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueVulnerabilityModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.api.processor.extract.model.project.BomComponentDetails;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcern;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernType;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
+import com.blackduck.integration.alert.api.processor.extract.model.project.BomComponentDetails;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcern;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernType;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 
 @Component
 public class ProjectMessageToIssueModelTransformer {

@@ -13,8 +13,8 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrack
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerAsyncMessageSender;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessageHolder;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
+import com.blackduck.integration.alert.api.processor.extract.model.ProviderMessageHolder;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 
 class IssueTrackerProcessorTest {
     @Test

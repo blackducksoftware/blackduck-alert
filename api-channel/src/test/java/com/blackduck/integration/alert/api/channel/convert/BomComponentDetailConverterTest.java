@@ -7,11 +7,11 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.blackduck.integration.alert.api.channel.convert.mock.MockChannelMessageFormatter;
-import com.synopsys.integration.alert.api.processor.extract.model.project.AbstractBomComponentDetails;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentPolicy;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
+import com.blackduck.integration.alert.api.processor.extract.model.project.AbstractBomComponentDetails;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentPolicy;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public class BomComponentDetailConverterTest {

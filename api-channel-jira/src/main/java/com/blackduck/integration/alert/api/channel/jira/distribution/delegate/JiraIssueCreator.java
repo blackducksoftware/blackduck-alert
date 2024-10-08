@@ -41,9 +41,9 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTracke
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.blackduck.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernType;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentPolicy;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernType;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentPolicy;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<String> {

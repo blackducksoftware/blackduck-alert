@@ -24,9 +24,9 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectIs
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectVersionComponentIssueFinder;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.common.model.exception.AlertRuntimeException;
-import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
-import com.synopsys.integration.alert.api.processor.extract.model.project.AbstractBomComponentDetails;
-import com.synopsys.integration.alert.api.processor.extract.model.project.BomComponentDetails;
+import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
+import com.blackduck.integration.alert.api.processor.extract.model.project.AbstractBomComponentDetails;
+import com.blackduck.integration.alert.api.processor.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 

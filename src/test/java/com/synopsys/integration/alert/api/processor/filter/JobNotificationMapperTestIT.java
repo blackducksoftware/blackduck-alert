@@ -17,7 +17,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.api.processor.detail.DetailedNotificationContent;
+import com.blackduck.integration.alert.api.processor.detail.DetailedNotificationContent;
+import com.blackduck.integration.alert.api.processor.filter.FilteredJobNotificationWrapper;
+import com.blackduck.integration.alert.api.processor.filter.JobNotificationMapper;
+import com.blackduck.integration.alert.api.processor.filter.NotificationContentWrapper;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;

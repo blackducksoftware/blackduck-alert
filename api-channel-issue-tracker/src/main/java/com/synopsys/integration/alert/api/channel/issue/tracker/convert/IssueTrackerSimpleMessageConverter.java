@@ -13,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.blackduck.integration.alert.api.channel.convert.SimpleMessageConverter;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
-import com.synopsys.integration.alert.api.processor.extract.model.SimpleMessage;
+import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilderRechunker;
 import com.synopsys.integration.alert.common.channel.message.RechunkedModel;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;

@@ -13,7 +13,7 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.convert.mock.Moc
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueComponentUnknownVersionDetails;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueEstimatedRiskModel;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
 
 public class IssueComponentUnknownDetailsConverterTest {
 

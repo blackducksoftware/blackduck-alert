@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.blackduck.integration.alert.api.channel.convert.mock.MockChannelMessageFormatter;
-import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
-import com.synopsys.integration.alert.api.processor.extract.model.SimpleMessage;
+import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
+import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public class SimpleMessageConverterTest {

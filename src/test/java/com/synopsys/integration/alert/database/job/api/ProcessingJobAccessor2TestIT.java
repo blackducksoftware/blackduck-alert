@@ -29,7 +29,7 @@ import com.blackduck.integration.blackduck.api.generated.enumeration.Vulnerabili
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.synopsys.integration.alert.api.processor.mapping.JobNotificationMapper2;
+import com.blackduck.integration.alert.api.processor.mapping.JobNotificationMapper2;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;

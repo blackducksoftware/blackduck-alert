@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentPolicy;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentPolicy;
 import com.blackduck.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckComponentPolicyDetailsCreator;
 import com.blackduck.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckPolicySeverityConverter;
 import com.blackduck.integration.blackduck.api.core.ResourceMetadata;

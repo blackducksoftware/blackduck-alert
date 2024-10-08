@@ -9,7 +9,7 @@ package com.blackduck.integration.alert.api.channel.convert;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessageHolder;
+import com.blackduck.integration.alert.api.processor.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 
 public interface ChannelMessageConverter<D extends DistributionJobDetailsModel, T> {

@@ -24,7 +24,7 @@ import com.blackduck.integration.alert.channel.email.distribution.ProjectMessage
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.util.DateUtils;
 

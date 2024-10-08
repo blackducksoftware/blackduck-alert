@@ -26,9 +26,9 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrans
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueVulnerabilityDetails;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernType;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernType;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilder;
 import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilderRechunker;

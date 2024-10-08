@@ -13,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import com.blackduck.integration.alert.api.channel.jira.JiraConstants;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernType;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernType;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public final class JqlStringCreator {

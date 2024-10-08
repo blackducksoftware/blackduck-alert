@@ -22,7 +22,7 @@ import com.blackduck.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessageHolder;
+import com.blackduck.integration.alert.api.processor.extract.model.ProviderMessageHolder;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 class IssueTrackerChannelTest {

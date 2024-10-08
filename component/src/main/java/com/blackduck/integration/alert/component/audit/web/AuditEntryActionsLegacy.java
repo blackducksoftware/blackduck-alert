@@ -36,9 +36,9 @@ import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.AuditJobStatusesModel;
 import com.synopsys.integration.alert.common.rest.model.JobIdsRequestModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.api.processor.JobNotificationProcessor;
-import com.synopsys.integration.alert.api.processor.NotificationMappingProcessor;
-import com.synopsys.integration.alert.api.processor.distribute.ProcessedNotificationDetails;
+import com.blackduck.integration.alert.api.processor.JobNotificationProcessor;
+import com.blackduck.integration.alert.api.processor.NotificationMappingProcessor;
+import com.blackduck.integration.alert.api.processor.distribute.ProcessedNotificationDetails;
 
 /**
  * @deprecated Replaced by AuditEntryActions. To be removed in 8.0.0.

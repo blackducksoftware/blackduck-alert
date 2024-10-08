@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
+import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
 
 public interface ProjectVersionIssueFinder<T extends Serializable> {
     IssueTrackerSearchResult<T> findProjectVersionIssues(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion) throws AlertException;

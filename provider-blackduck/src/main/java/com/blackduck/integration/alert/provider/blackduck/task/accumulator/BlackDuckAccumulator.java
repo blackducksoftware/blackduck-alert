@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPr
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
-import com.synopsys.integration.alert.api.processor.filter.StatefulAlertPage;
+import com.blackduck.integration.alert.api.processor.filter.StatefulAlertPage;
 import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.blackduck.integration.blackduck.api.manual.view.NotificationUserView;

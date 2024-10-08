@@ -9,7 +9,7 @@ package com.blackduck.integration.alert.api.channel.convert;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.api.processor.extract.model.SimpleMessage;
+import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilder;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 

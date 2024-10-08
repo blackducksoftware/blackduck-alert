@@ -9,11 +9,11 @@ import org.junit.jupiter.api.Test;
 
 import com.blackduck.integration.alert.api.channel.convert.mock.MockChannelMessageFormatter;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
-import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
-import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessageHolder;
-import com.synopsys.integration.alert.api.processor.extract.model.SimpleMessage;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectOperation;
+import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
+import com.blackduck.integration.alert.api.processor.extract.model.ProviderMessageHolder;
+import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 

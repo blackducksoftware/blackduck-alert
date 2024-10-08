@@ -14,9 +14,9 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssuePolic
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueVulnerabilityDetails;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueVulnerabilityModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
-import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcern;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
+import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcern;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
 import com.synopsys.integration.alert.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;

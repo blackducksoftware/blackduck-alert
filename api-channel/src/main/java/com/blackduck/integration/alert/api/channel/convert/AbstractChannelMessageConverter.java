@@ -14,10 +14,10 @@ import java.util.function.Function;
 
 import org.apache.commons.collections4.ListUtils;
 
-import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessage;
-import com.synopsys.integration.alert.api.processor.extract.model.ProviderMessageHolder;
-import com.synopsys.integration.alert.api.processor.extract.model.SimpleMessage;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
+import com.blackduck.integration.alert.api.processor.extract.model.ProviderMessage;
+import com.blackduck.integration.alert.api.processor.extract.model.ProviderMessageHolder;
+import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 
 public abstract class AbstractChannelMessageConverter<D extends DistributionJobDetailsModel, T> implements ChannelMessageConverter<D, T> {

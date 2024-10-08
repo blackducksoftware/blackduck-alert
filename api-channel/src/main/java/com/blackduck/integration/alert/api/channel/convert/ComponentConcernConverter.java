@@ -13,9 +13,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcern;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernType;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcern;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernType;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 
 public class ComponentConcernConverter {

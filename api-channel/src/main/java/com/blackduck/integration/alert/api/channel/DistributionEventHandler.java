@@ -20,7 +20,7 @@ import com.blackduck.integration.alert.api.distribution.execution.JobStageEndedE
 import com.blackduck.integration.alert.api.distribution.execution.JobStageStartedEvent;
 import com.blackduck.integration.alert.api.event.AlertEventHandler;
 import com.blackduck.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.api.processor.distribute.DistributionEvent;
+import com.blackduck.integration.alert.api.processor.distribute.DistributionEvent;
 import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;

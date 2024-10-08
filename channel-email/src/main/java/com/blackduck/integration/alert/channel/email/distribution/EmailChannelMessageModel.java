@@ -12,7 +12,7 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public class EmailChannelMessageModel extends AlertSerializableModel {

@@ -25,7 +25,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.NotificationAc
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.component.tasks.ProcessingTask;
-import com.synopsys.integration.alert.api.processor.NotificationMappingProcessor;
+import com.blackduck.integration.alert.api.processor.NotificationMappingProcessor;
 
 @Component
 public class DailyTask extends ProcessingTask {

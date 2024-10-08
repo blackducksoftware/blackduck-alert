@@ -13,12 +13,12 @@ import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
-import com.synopsys.integration.alert.api.processor.extract.model.ProviderDetails;
-import com.synopsys.integration.alert.api.processor.extract.model.project.BomComponentDetails;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
-import com.synopsys.integration.alert.api.processor.extract.model.project.MessageReason;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
+import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
+import com.blackduck.integration.alert.api.processor.extract.model.project.BomComponentDetails;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
+import com.blackduck.integration.alert.api.processor.extract.model.project.MessageReason;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.blackduck.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
 import com.blackduck.integration.alert.provider.blackduck.processor.message.service.BlackDuckComponentVulnerabilityDetailsCreator;
 import com.blackduck.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageBomComponentDetailsCreatorFactory;

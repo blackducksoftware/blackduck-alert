@@ -11,8 +11,8 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.processor.event.JobNotificationMappedEvent;
-import com.synopsys.integration.alert.api.processor.event.NotificationProcessingReceiver;
+import com.blackduck.integration.alert.api.processor.event.JobNotificationMappedEvent;
+import com.blackduck.integration.alert.api.processor.event.NotificationProcessingReceiver;
 
 @Component(value = JobNotificationsMappedReceiver.COMPONENT_NAME)
 public class JobNotificationsMappedReceiver extends NotificationProcessingReceiver<JobNotificationMappedEvent> {

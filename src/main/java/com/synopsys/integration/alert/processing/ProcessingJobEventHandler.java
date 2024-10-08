@@ -22,12 +22,12 @@ import com.blackduck.integration.alert.api.event.AlertEventHandler;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
-import com.synopsys.integration.alert.api.processor.JobNotificationContentProcessor;
-import com.synopsys.integration.alert.api.processor.NotificationProcessingLifecycleCache;
-import com.synopsys.integration.alert.api.processor.distribute.ProcessedNotificationDetails;
-import com.synopsys.integration.alert.api.processor.distribute.ProviderMessageDistributor;
-import com.synopsys.integration.alert.api.processor.event.JobProcessingEvent;
-import com.synopsys.integration.alert.api.processor.extract.model.ProcessedProviderMessageHolder;
+import com.blackduck.integration.alert.api.processor.JobNotificationContentProcessor;
+import com.blackduck.integration.alert.api.processor.NotificationProcessingLifecycleCache;
+import com.blackduck.integration.alert.api.processor.distribute.ProcessedNotificationDetails;
+import com.blackduck.integration.alert.api.processor.distribute.ProviderMessageDistributor;
+import com.blackduck.integration.alert.api.processor.event.JobProcessingEvent;
+import com.blackduck.integration.alert.api.processor.extract.model.ProcessedProviderMessageHolder;
 
 @Component
 public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessingEvent> {

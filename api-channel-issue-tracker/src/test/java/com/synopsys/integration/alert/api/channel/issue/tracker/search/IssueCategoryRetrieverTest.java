@@ -11,7 +11,7 @@ import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssuePolic
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueVulnerabilityDetails;
 import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.tracker.search.enumeration.IssueCategory;
-import com.synopsys.integration.alert.api.processor.extract.model.project.ComponentConcernType;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernType;
 
 public class IssueCategoryRetrieverTest {
     @Test
