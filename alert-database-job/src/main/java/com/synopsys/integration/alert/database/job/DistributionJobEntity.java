@@ -10,7 +10,7 @@ package com.synopsys.integration.alert.database.job;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-import com.synopsys.integration.alert.channel.email.database.job.EmailJobDetailsEntity;
+import com.blackduck.integration.alert.channel.email.database.job.EmailJobDetailsEntity;
 import com.synopsys.integration.alert.channel.jira.server.database.job.JiraServerJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;

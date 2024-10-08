@@ -48,7 +48,7 @@ import com.synopsys.integration.alert.api.processor.extract.model.project.Projec
 import com.synopsys.integration.alert.api.processor.filter.NotificationContentWrapper;
 import com.synopsys.integration.alert.api.processor.summarize.ProjectMessageSummarizer;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
-import com.synopsys.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
+import com.blackduck.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;

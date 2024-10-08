@@ -2,7 +2,7 @@ package com.synopsys.integration.alert.startup.component;
 
 import com.synopsys.integration.alert.api.environment.EnvironmentVariableProcessor;
 import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
-import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
+import com.blackduck.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
