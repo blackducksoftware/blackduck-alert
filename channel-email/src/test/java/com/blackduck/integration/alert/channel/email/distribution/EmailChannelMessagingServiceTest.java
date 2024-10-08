@@ -20,15 +20,15 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.blackduck.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
 import com.blackduck.integration.alert.channel.email.attachment.EmailAttachmentFormat;
 import com.blackduck.integration.alert.channel.email.attachment.MessageContentGroupCsvCreator;
+import com.blackduck.integration.alert.service.email.EmailMessagingService;
+import com.blackduck.integration.alert.service.email.EmailTarget;
+import com.blackduck.integration.alert.service.email.SmtpConfig;
+import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
+import com.blackduck.integration.alert.service.email.template.FreemarkerTemplatingService;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.service.email.EmailMessagingService;
-import com.synopsys.integration.alert.service.email.EmailTarget;
-import com.synopsys.integration.alert.service.email.SmtpConfig;
-import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
-import com.synopsys.integration.alert.service.email.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 
 @ExtendWith(SpringExtension.class)

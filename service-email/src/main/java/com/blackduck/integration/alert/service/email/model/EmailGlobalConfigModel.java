@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.service.email.model;
+package com.blackduck.integration.alert.service.email.model;
 
 import java.util.Map;
 import java.util.Optional;

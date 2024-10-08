@@ -19,18 +19,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
+import com.blackduck.integration.alert.service.email.EmailMessagingService;
+import com.blackduck.integration.alert.service.email.EmailTarget;
+import com.blackduck.integration.alert.service.email.JavamailPropertiesFactory;
+import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
+import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
+import com.blackduck.integration.alert.service.email.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.accessor.SettingsKeyAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.SettingsKeyModel;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
-import com.synopsys.integration.alert.service.email.EmailMessagingService;
-import com.synopsys.integration.alert.service.email.EmailTarget;
-import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
-import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
-import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
-import com.synopsys.integration.alert.service.email.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.update.model.UpdateModel;
 
 @Component

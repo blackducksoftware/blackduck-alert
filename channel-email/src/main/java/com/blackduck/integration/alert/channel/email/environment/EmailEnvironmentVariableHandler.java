@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.blackduck.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
+import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
 import com.synopsys.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
@@ -31,7 +32,6 @@ import com.synopsys.integration.alert.api.environment.EnvironmentVariableHandler
 import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @Component
 public class EmailEnvironmentVariableHandler extends EnvironmentVariableHandler<EmailGlobalConfigModel> {

@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.service.email;
+package com.blackduck.integration.alert.service.email;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,10 +27,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
-import com.synopsys.integration.alert.service.email.template.FreemarkerTemplatingService;
+import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
+import com.blackduck.integration.alert.service.email.template.FreemarkerTemplatingService;
 import com.blackduck.integration.exception.IntegrationException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;

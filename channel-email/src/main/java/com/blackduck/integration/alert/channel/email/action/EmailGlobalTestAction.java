@@ -18,6 +18,11 @@ import com.blackduck.integration.alert.channel.email.database.accessor.EmailGlob
 import com.blackduck.integration.alert.channel.email.distribution.EmailChannelMessageModel;
 import com.blackduck.integration.alert.channel.email.distribution.EmailChannelMessagingService;
 import com.blackduck.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
+import com.blackduck.integration.alert.service.email.EmailTarget;
+import com.blackduck.integration.alert.service.email.JavamailPropertiesFactory;
+import com.blackduck.integration.alert.service.email.SmtpConfig;
+import com.blackduck.integration.alert.service.email.SmtpConfigBuilder;
+import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
@@ -29,11 +34,6 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationTestHelper;
 import com.synopsys.integration.alert.common.rest.api.ConfigurationValidationHelper;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.service.email.EmailTarget;
-import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
-import com.synopsys.integration.alert.service.email.SmtpConfig;
-import com.synopsys.integration.alert.service.email.SmtpConfigBuilder;
-import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;

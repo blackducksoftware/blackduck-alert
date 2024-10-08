@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.service.email.template;
+package com.blackduck.integration.alert.service.email.template;
 
 import java.io.IOException;
 import java.io.StringWriter;

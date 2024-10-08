@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.service.email;
+package com.blackduck.integration.alert.service.email;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -8,9 +8,9 @@ import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
 
+import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
+import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
-import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
-import com.synopsys.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 class JavamailPropertiesFactoryTest {
     public static final String EXPECTED_FROM_VALUE = "expectedFrom";

@@ -12,12 +12,12 @@ import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
+import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 
 /**
  * @deprecated Global configuration validators will replace old FieldModel validators as Alert switches to a new concrete REST API. This class will be removed in 8.0.0.

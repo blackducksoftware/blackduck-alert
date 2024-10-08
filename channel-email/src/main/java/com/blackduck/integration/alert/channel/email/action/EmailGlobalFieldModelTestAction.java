@@ -13,15 +13,15 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.channel.email.distribution.EmailChannelMessageModel;
 import com.blackduck.integration.alert.channel.email.distribution.EmailChannelMessagingService;
+import com.blackduck.integration.alert.service.email.EmailTarget;
+import com.blackduck.integration.alert.service.email.JavamailPropertiesFactory;
+import com.blackduck.integration.alert.service.email.SmtpConfig;
+import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.action.FieldModelTestAction;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.service.email.EmailTarget;
-import com.synopsys.integration.alert.service.email.JavamailPropertiesFactory;
-import com.synopsys.integration.alert.service.email.SmtpConfig;
-import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 
 import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;

@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.synopsys.integration.alert.service.email;
+package com.blackduck.integration.alert.service.email;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
