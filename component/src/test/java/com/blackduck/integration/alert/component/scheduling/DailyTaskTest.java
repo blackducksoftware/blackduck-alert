@@ -7,6 +7,10 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
+import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
+import com.blackduck.integration.alert.component.scheduling.workflow.DailyTask;
+import com.blackduck.integration.alert.database.job.api.StaticJobAccessor;
 import com.synopsys.integration.alert.api.descriptor.model.DescriptorKey;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.task.ScheduledTask;
@@ -14,10 +18,6 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
-import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
-import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
-import com.blackduck.integration.alert.component.scheduling.workflow.DailyTask;
-import com.synopsys.integration.alert.database.job.api.StaticJobAccessor;
 
 class DailyTaskTest {
     private static final SchedulingDescriptorKey SCHEDULING_DESCRIPTOR_KEY = new SchedulingDescriptorKey();

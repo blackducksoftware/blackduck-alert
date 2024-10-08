@@ -21,6 +21,10 @@ import org.springframework.amqp.core.Message;
 import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 
+import com.blackduck.integration.alert.database.job.api.DefaultJobCompletionStatusModelAccessor;
+import com.blackduck.integration.alert.database.job.execution.JobCompletionDurationsRepository;
+import com.blackduck.integration.alert.database.job.execution.JobCompletionRepository;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJob;
@@ -54,15 +58,11 @@ import com.synopsys.integration.alert.database.audit.AuditFailedNotificationRepo
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelationPK;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
-import com.synopsys.integration.alert.database.job.api.DefaultJobCompletionStatusModelAccessor;
 import com.synopsys.integration.alert.database.job.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.database.job.api.DefaultProcessingAuditAccessor;
 import com.synopsys.integration.alert.database.job.api.DefaultProcessingFailedAccessor;
-import com.synopsys.integration.alert.database.job.execution.JobCompletionDurationsRepository;
-import com.synopsys.integration.alert.database.job.execution.JobCompletionRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 class AuditFailedEventListenerTest {
     public static final String TEST_JOB_NAME = "Test Job";

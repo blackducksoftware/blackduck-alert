@@ -20,7 +20,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.blackduck.integration.alert.component.diagnostic.model.AuditDiagnosticModel;
+import com.blackduck.integration.alert.component.diagnostic.model.CompletedJobDiagnosticModel;
+import com.blackduck.integration.alert.component.diagnostic.model.CompletedJobDurationDiagnosticModel;
+import com.blackduck.integration.alert.component.diagnostic.model.CompletedJobStageDurationModel;
+import com.blackduck.integration.alert.component.diagnostic.model.CompletedJobsDiagnosticModel;
+import com.blackduck.integration.alert.component.diagnostic.model.DiagnosticModel;
+import com.blackduck.integration.alert.component.diagnostic.model.JobExecutionDiagnosticModel;
+import com.blackduck.integration.alert.component.diagnostic.model.JobExecutionsDiagnosticModel;
+import com.blackduck.integration.alert.component.diagnostic.model.JobStageDiagnosticModel;
+import com.blackduck.integration.alert.component.diagnostic.model.NotificationDiagnosticModel;
+import com.blackduck.integration.alert.component.diagnostic.model.NotificationTypeCount;
+import com.blackduck.integration.alert.component.diagnostic.model.ProviderNotificationCounts;
+import com.blackduck.integration.alert.component.diagnostic.model.RabbitMQDiagnosticModel;
+import com.blackduck.integration.alert.component.diagnostic.model.SystemDiagnosticModel;
 import com.blackduck.integration.alert.component.diagnostic.utility.RabbitMQDiagnosticUtility;
+import com.blackduck.integration.alert.database.job.api.StaticJobAccessor;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.alert.api.distribution.execution.AggregatedExecutionResults;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJob;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
@@ -36,24 +52,8 @@ import com.synopsys.integration.alert.common.persistence.model.job.executions.Jo
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedQueryDetails;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.blackduck.integration.alert.component.diagnostic.model.AuditDiagnosticModel;
-import com.blackduck.integration.alert.component.diagnostic.model.CompletedJobDiagnosticModel;
-import com.blackduck.integration.alert.component.diagnostic.model.CompletedJobDurationDiagnosticModel;
-import com.blackduck.integration.alert.component.diagnostic.model.CompletedJobStageDurationModel;
-import com.blackduck.integration.alert.component.diagnostic.model.CompletedJobsDiagnosticModel;
-import com.blackduck.integration.alert.component.diagnostic.model.DiagnosticModel;
-import com.blackduck.integration.alert.component.diagnostic.model.JobExecutionDiagnosticModel;
-import com.blackduck.integration.alert.component.diagnostic.model.JobExecutionsDiagnosticModel;
-import com.blackduck.integration.alert.component.diagnostic.model.JobStageDiagnosticModel;
-import com.blackduck.integration.alert.component.diagnostic.model.NotificationDiagnosticModel;
-import com.blackduck.integration.alert.component.diagnostic.model.NotificationTypeCount;
-import com.blackduck.integration.alert.component.diagnostic.model.ProviderNotificationCounts;
-import com.blackduck.integration.alert.component.diagnostic.model.RabbitMQDiagnosticModel;
-import com.blackduck.integration.alert.component.diagnostic.model.SystemDiagnosticModel;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
-import com.synopsys.integration.alert.database.job.api.StaticJobAccessor;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
-import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component
 public class DefaultDiagnosticAccessor implements DiagnosticAccessor {

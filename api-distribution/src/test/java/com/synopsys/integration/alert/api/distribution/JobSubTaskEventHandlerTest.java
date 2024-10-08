@@ -11,6 +11,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.blackduck.integration.alert.database.job.api.DefaultJobCompletionStatusModelAccessor;
+import com.blackduck.integration.alert.database.job.execution.JobCompletionDurationsRepository;
+import com.blackduck.integration.alert.database.job.execution.JobCompletionRepository;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJob;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
@@ -20,9 +23,6 @@ import com.synopsys.integration.alert.api.distribution.mock.MockJobCompletionSta
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.api.event.distribution.JobSubTaskEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
-import com.synopsys.integration.alert.database.job.api.DefaultJobCompletionStatusModelAccessor;
-import com.synopsys.integration.alert.database.job.execution.JobCompletionDurationsRepository;
-import com.synopsys.integration.alert.database.job.execution.JobCompletionRepository;
 
 class JobSubTaskEventHandlerTest {
     private EventManager eventManager;

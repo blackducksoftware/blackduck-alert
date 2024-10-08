@@ -12,6 +12,10 @@ import org.springframework.amqp.core.Message;
 import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 
+import com.blackduck.integration.alert.database.job.api.DefaultJobCompletionStatusModelAccessor;
+import com.blackduck.integration.alert.database.job.execution.JobCompletionDurationsRepository;
+import com.blackduck.integration.alert.database.job.execution.JobCompletionRepository;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJob;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
@@ -20,10 +24,6 @@ import com.synopsys.integration.alert.api.distribution.mock.MockJobCompletionSta
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.executions.JobCompletionStatusModel;
-import com.synopsys.integration.alert.database.job.api.DefaultJobCompletionStatusModelAccessor;
-import com.synopsys.integration.alert.database.job.execution.JobCompletionDurationsRepository;
-import com.synopsys.integration.alert.database.job.execution.JobCompletionRepository;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 class AuditSuccessEventListenerTest {
     private final Gson gson = BlackDuckServicesFactory.createDefaultGson();

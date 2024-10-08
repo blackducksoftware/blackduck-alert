@@ -10,6 +10,9 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.blackduck.integration.alert.database.job.api.DefaultJobCompletionStatusModelAccessor;
+import com.blackduck.integration.alert.database.job.execution.JobCompletionDurationsRepository;
+import com.blackduck.integration.alert.database.job.execution.JobCompletionRepository;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJob;
 import com.synopsys.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.synopsys.integration.alert.api.distribution.mock.MockJobCompletionStatusDurationsRepository;
@@ -18,9 +21,6 @@ import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.executions.JobCompletionStatusModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedQueryDetails;
-import com.synopsys.integration.alert.database.job.api.DefaultJobCompletionStatusModelAccessor;
-import com.synopsys.integration.alert.database.job.execution.JobCompletionDurationsRepository;
-import com.synopsys.integration.alert.database.job.execution.JobCompletionRepository;
 
 class AuditSuccessHandlerTest {
     private ExecutingJobManager executingJobManager;

@@ -5,9 +5,9 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.synopsys.integration.alert.database.job.execution.JobCompletionDurationsRepository;
-import com.synopsys.integration.alert.database.job.execution.JobCompletionRepository;
-import com.synopsys.integration.alert.database.job.execution.JobCompletionStatusEntity;
+import com.blackduck.integration.alert.database.job.execution.JobCompletionDurationsRepository;
+import com.blackduck.integration.alert.database.job.execution.JobCompletionRepository;
+import com.blackduck.integration.alert.database.job.execution.JobCompletionStatusEntity;
 import com.blackduck.integration.alert.test.common.database.MockRepositoryContainer;
 
 public class MockJobCompletionStatusRepository extends MockRepositoryContainer<UUID, JobCompletionStatusEntity> implements JobCompletionRepository {
