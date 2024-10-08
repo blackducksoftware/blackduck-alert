@@ -15,8 +15,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackduck.integration.alert.api.certificates.AlertSSLContextManager;
+import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudProperties;
+import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.cloud.service.IssueSearchService;
+import com.blackduck.integration.jira.common.cloud.service.IssueService;
+import com.blackduck.integration.jira.common.cloud.service.JiraCloudServiceFactory;
+import com.blackduck.integration.jira.common.rest.service.IssuePropertyService;
+import com.blackduck.integration.jira.common.rest.service.PluginManagerService;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.certificates.AlertSSLContextManager;
 import com.synopsys.integration.alert.api.channel.issue.tracker.IssueTrackerModelExtractor;
 import com.synopsys.integration.alert.api.channel.issue.tracker.IssueTrackerProcessor;
 import com.synopsys.integration.alert.api.channel.issue.tracker.IssueTrackerProcessorFactory;
@@ -31,8 +39,7 @@ import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraI
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcherFactory;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudProperties;
-import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
+import com.synopsys.integration.alert.api.descriptor.JiraCloudChannelKey;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
@@ -40,13 +47,6 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
-import com.synopsys.integration.alert.api.descriptor.JiraCloudChannelKey;
-import com.blackduck.integration.exception.IntegrationException;
-import com.blackduck.integration.jira.common.cloud.service.IssueSearchService;
-import com.blackduck.integration.jira.common.cloud.service.IssueService;
-import com.blackduck.integration.jira.common.cloud.service.JiraCloudServiceFactory;
-import com.blackduck.integration.jira.common.rest.service.IssuePropertyService;
-import com.blackduck.integration.jira.common.rest.service.PluginManagerService;
 
 @Component
 public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<JiraCloudJobDetailsModel, String> {

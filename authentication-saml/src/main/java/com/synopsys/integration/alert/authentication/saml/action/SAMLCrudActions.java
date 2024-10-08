@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
+import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
+import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
 import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
 import com.synopsys.integration.alert.authentication.saml.security.SAMLManager;

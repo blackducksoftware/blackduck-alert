@@ -16,7 +16,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.ldap.SpringSecurityLdapTemplate;
 
-import com.synopsys.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
+import com.blackduck.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
 import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
 
 public class MappingLDAPAuthoritiesPopulatorTest {

@@ -11,12 +11,12 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
+import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
+import com.blackduck.integration.alert.api.authentication.validator.AuthenticationConfigurationFieldModelValidator;
 import com.blackduck.integration.alert.test.common.MockAlertProperties;
 import com.blackduck.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
-import com.synopsys.integration.alert.api.authentication.validator.AuthenticationConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;

@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
+import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
 import com.synopsys.integration.alert.common.action.upload.AbstractUploadAction;
 import com.synopsys.integration.alert.common.rest.api.AbstractUploadFunctionController;
 

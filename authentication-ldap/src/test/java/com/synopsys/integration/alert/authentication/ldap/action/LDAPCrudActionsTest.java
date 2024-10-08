@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 import org.springframework.http.HttpStatus;
 
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
+import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.authentication.ldap.LDAPTestHelper;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
 import com.synopsys.integration.alert.authentication.ldap.validator.LDAPConfigurationValidator;

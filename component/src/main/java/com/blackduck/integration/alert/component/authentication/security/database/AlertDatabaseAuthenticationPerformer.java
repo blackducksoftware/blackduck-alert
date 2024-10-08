@@ -20,8 +20,8 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.authentication.security.AuthenticationPerformer;
-import com.synopsys.integration.alert.api.authentication.security.event.AuthenticationEventManager;
+import com.blackduck.integration.alert.api.authentication.security.AuthenticationPerformer;
+import com.blackduck.integration.alert.api.authentication.security.event.AuthenticationEventManager;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;

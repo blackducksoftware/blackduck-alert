@@ -10,7 +10,10 @@ import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
+import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
+import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
+import com.blackduck.integration.alert.test.common.MockAlertProperties;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
 import com.synopsys.integration.alert.authentication.ldap.database.configuration.MockLDAPConfigurationRepository;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPAuthenticationType;
@@ -23,9 +26,6 @@ import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUti
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
-import com.blackduck.integration.alert.test.common.MockAlertProperties;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class LDAPTestHelper {
     public static final String DEFAULT_CONFIG_ID = UUID.randomUUID().toString();

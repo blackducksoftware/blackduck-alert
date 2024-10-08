@@ -10,7 +10,7 @@ import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
 
-import com.synopsys.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
+import com.blackduck.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
 
 public class MappingLDAPAuthoritiesPopulator extends DefaultLdapAuthoritiesPopulator {
     private final Logger logger = LoggerFactory.getLogger(MappingLDAPAuthoritiesPopulator.class);

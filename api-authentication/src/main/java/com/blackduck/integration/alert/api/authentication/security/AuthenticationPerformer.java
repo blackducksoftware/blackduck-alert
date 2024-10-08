@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.api.authentication.security;
+package com.blackduck.integration.alert.api.authentication.security;
 
 import java.util.Collection;
 import java.util.List;
@@ -11,7 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.synopsys.integration.alert.api.authentication.security.event.AuthenticationEventManager;
+import com.blackduck.integration.alert.api.authentication.security.event.AuthenticationEventManager;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;

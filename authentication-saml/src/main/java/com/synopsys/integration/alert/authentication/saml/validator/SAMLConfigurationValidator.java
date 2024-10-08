@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
+import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;

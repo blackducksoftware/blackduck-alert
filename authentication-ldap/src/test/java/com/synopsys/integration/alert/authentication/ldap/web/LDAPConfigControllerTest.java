@@ -20,8 +20,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
-import com.synopsys.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
+import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
+import com.blackduck.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.authentication.ldap.LDAPConfig;
 import com.synopsys.integration.alert.authentication.ldap.LDAPTestHelper;

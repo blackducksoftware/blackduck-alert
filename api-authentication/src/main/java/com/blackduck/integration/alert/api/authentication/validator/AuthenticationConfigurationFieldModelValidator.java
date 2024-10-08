@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.api.authentication.validator;
+package com.blackduck.integration.alert.api.authentication.validator;
 
 import java.util.List;
 import java.util.Set;
@@ -6,7 +6,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
+import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;

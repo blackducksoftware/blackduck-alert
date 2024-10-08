@@ -8,9 +8,9 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
-import com.synopsys.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
+import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
+import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
+import com.blackduck.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;

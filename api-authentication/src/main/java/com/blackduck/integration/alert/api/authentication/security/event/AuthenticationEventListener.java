@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.api.authentication.security.event;
+package com.blackduck.integration.alert.api.authentication.security.event;
 
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;

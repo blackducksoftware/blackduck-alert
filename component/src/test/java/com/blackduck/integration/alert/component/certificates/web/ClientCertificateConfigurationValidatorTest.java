@@ -13,8 +13,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.blackduck.integration.alert.component.certificates.web.ClientCertificateConfigurationValidator;
-import com.synopsys.integration.alert.api.certificates.AlertClientCertificateManager;
+import com.blackduck.integration.alert.api.certificates.AlertClientCertificateManager;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;

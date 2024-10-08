@@ -16,7 +16,7 @@ import org.springframework.security.saml2.provider.service.authentication.Saml2A
 import org.springframework.security.saml2.provider.service.authentication.Saml2Authentication;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.authentication.security.event.AuthenticationEventManager;
+import com.blackduck.integration.alert.api.authentication.security.event.AuthenticationEventManager;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 

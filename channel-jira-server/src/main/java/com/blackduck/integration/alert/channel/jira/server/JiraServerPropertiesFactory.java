@@ -12,11 +12,11 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
-import com.synopsys.integration.alert.api.certificates.AlertSSLContextManager;
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.api.certificates.AlertSSLContextManager;
 import com.blackduck.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
+import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
+import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;

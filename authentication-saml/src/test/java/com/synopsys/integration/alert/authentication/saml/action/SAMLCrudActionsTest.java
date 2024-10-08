@@ -1,12 +1,9 @@
 package com.synopsys.integration.alert.authentication.saml.action;
 
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
-import com.synopsys.integration.alert.authentication.saml.SAMLTestHelper;
-import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
-import com.synopsys.integration.alert.authentication.saml.security.SAMLManager;
-import com.synopsys.integration.alert.authentication.saml.validator.SAMLConfigurationValidator;
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,9 +12,13 @@ import org.opentest4j.AssertionFailedError;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
+import com.synopsys.integration.alert.authentication.saml.SAMLTestHelper;
+import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
+import com.synopsys.integration.alert.authentication.saml.security.SAMLManager;
+import com.synopsys.integration.alert.authentication.saml.validator.SAMLConfigurationValidator;
+import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 
 @ExtendWith(SpringExtension.class)
 class SAMLCrudActionsTest {

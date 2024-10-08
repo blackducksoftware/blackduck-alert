@@ -21,7 +21,7 @@ import org.springframework.security.saml2.provider.service.web.authentication.Op
 import org.springframework.security.saml2.provider.service.web.authentication.Saml2AuthenticationRequestResolver;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
+import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
 import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
 import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
 import com.synopsys.integration.alert.authentication.saml.model.SAMLMetadataMode;

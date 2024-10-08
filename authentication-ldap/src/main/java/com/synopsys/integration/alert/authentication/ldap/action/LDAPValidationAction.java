@@ -3,7 +3,7 @@ package com.synopsys.integration.alert.authentication.ldap.action;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
+import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
 import com.synopsys.integration.alert.authentication.ldap.validator.LDAPConfigurationValidator;

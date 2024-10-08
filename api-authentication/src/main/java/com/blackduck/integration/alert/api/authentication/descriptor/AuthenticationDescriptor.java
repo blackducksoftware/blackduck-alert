@@ -1,12 +1,13 @@
-package com.synopsys.integration.alert.api.authentication.descriptor;
+package com.blackduck.integration.alert.api.authentication.descriptor;
 
-import com.synopsys.integration.alert.api.authentication.validator.AuthenticationConfigurationFieldModelValidator;
-import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
+import com.blackduck.integration.alert.api.authentication.validator.AuthenticationConfigurationFieldModelValidator;
+import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 
 @Component
 public class AuthenticationDescriptor extends ComponentDescriptor {

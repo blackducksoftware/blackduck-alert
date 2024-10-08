@@ -4,7 +4,10 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.UUID;
 
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
+import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
+import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
+import com.blackduck.integration.alert.test.common.MockAlertProperties;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
 import com.synopsys.integration.alert.authentication.saml.database.mock.MockSAMLConfigurationRepository;
 import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
@@ -16,9 +19,6 @@ import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixM
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
-import com.blackduck.integration.alert.test.common.MockAlertProperties;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class SAMLTestHelper {
     public static final String TEST_PRIVATE_KEY = "-----BEGIN PRIVATE KEY-----\n" +

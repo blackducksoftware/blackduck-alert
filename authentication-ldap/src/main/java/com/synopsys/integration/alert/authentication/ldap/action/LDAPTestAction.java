@@ -10,7 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
+import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.authentication.ldap.database.accessor.LDAPConfigAccessor;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;

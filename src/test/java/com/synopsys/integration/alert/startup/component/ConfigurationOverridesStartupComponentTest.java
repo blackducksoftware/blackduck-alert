@@ -14,7 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
+import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
+import com.blackduck.integration.alert.component.authentication.actions.AuthenticationApiAction;
+import com.blackduck.integration.alert.component.authentication.web.AuthenticationActions;
+import com.blackduck.integration.alert.component.authentication.web.AuthenticationResponseModel;
+import com.blackduck.integration.alert.component.authentication.web.LoginConfig;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.environment.EnvironmentVariableUtility;
 import com.synopsys.integration.alert.common.action.ActionResponse;
@@ -22,10 +26,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationM
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
-import com.blackduck.integration.alert.component.authentication.actions.AuthenticationApiAction;
-import com.blackduck.integration.alert.component.authentication.web.AuthenticationActions;
-import com.blackduck.integration.alert.component.authentication.web.AuthenticationResponseModel;
-import com.blackduck.integration.alert.component.authentication.web.LoginConfig;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 import jakarta.servlet.http.HttpServletRequest;

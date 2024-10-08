@@ -22,7 +22,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
+import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
+import com.blackduck.integration.exception.IntegrationException;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.authentication.ldap.action.LDAPManager;
 import com.synopsys.integration.alert.authentication.ldap.model.LDAPConfigModel;
@@ -32,7 +33,6 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.blackduck.integration.exception.IntegrationException;
 
 /**
  * This class should be removed in 8.0.0.

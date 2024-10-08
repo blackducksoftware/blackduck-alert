@@ -20,7 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.certificates.AlertTrustStoreManager;
+import com.blackduck.integration.alert.api.certificates.AlertTrustStoreManager;
+import com.blackduck.integration.alert.component.certificates.CertificatesDescriptor;
+import com.blackduck.integration.alert.component.certificates.CertificatesDescriptorKey;
+import com.blackduck.integration.util.IntegrationEscapeUtil;
 import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
 import com.synopsys.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
@@ -31,9 +34,6 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.blackduck.integration.alert.component.certificates.CertificatesDescriptor;
-import com.blackduck.integration.alert.component.certificates.CertificatesDescriptorKey;
-import com.blackduck.integration.util.IntegrationEscapeUtil;
 
 @Component
 public class CertificateActions extends AbstractResourceActions<CertificateModel, CustomCertificateModel, MultiCertificateModel> {

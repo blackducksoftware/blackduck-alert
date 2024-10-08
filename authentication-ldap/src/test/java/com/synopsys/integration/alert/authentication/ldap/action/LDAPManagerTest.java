@@ -15,7 +15,7 @@ import org.mockito.Mockito;
 import org.opentest4j.AssertionFailedError;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 
-import com.synopsys.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
+import com.blackduck.integration.alert.api.authentication.security.UserManagementAuthoritiesPopulator;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.authentication.ldap.LDAPConfig;
 import com.synopsys.integration.alert.authentication.ldap.LDAPTestHelper;

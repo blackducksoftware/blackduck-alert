@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.api.authentication.security.event;
+package com.blackduck.integration.alert.api.authentication.security.event;
 
 import java.util.Collection;
 import java.util.Optional;

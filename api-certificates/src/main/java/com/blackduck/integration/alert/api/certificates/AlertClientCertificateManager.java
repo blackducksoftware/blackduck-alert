@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.api.certificates;
+package com.blackduck.integration.alert.api.certificates;
 
 import java.security.KeyStore;
 import java.security.KeyStoreException;

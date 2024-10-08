@@ -1,9 +1,14 @@
 package com.synopsys.integration.alert.authentication.saml.validator;
 
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
-import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.authentication.saml.SAMLTestHelper;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+
+import java.io.IOException;
+import java.nio.file.Path;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -11,14 +16,10 @@ import org.mockito.Mockito;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 
-import java.io.IOException;
-import java.nio.file.Path;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
+import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.synopsys.integration.alert.authentication.saml.SAMLTestHelper;
+import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 
 class SAMLFileUploadValidatorTest {
     private SAMLFileUploadValidator samlFileUploadValidator;

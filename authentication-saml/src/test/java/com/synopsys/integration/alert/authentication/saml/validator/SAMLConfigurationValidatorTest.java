@@ -1,11 +1,9 @@
 package com.synopsys.integration.alert.authentication.saml.validator;
 
-import com.synopsys.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
-import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
-import com.synopsys.integration.alert.authentication.saml.SAMLTestHelper;
-import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
-import com.synopsys.integration.alert.authentication.saml.model.SAMLMetadataMode;
-import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,9 +12,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
+import com.synopsys.integration.alert.api.common.model.ValidationResponseModel;
+import com.synopsys.integration.alert.authentication.saml.SAMLTestHelper;
+import com.synopsys.integration.alert.authentication.saml.model.SAMLConfigModel;
+import com.synopsys.integration.alert.authentication.saml.model.SAMLMetadataMode;
+import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 
 @ExtendWith(SpringExtension.class)
 class SAMLConfigurationValidatorTest {

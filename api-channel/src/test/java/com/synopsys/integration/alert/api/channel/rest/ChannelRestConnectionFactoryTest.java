@@ -1,6 +1,5 @@
 package com.synopsys.integration.alert.api.channel.rest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Optional;
@@ -8,9 +7,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.certificates.AlertSSLContextManager;
-import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.api.certificates.AlertSSLContextManager;
 import com.blackduck.integration.alert.test.common.MockAlertProperties;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.rest.client.IntHttpClient;
@@ -18,6 +15,8 @@ import com.blackduck.integration.rest.credentials.Credentials;
 import com.blackduck.integration.rest.credentials.CredentialsBuilder;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
 import com.blackduck.integration.rest.proxy.ProxyInfoBuilder;
+import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 
 class ChannelRestConnectionFactoryTest {
     private final Gson gson = BlackDuckServicesFactory.createDefaultGson();

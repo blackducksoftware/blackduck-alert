@@ -11,9 +11,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackduck.integration.alert.api.certificates.AlertSSLContextManager;
 import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
-import com.synopsys.integration.alert.api.certificates.AlertSSLContextManager;
+import com.blackduck.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.api.descriptor.JiraCloudChannelKey;
+import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
@@ -22,9 +25,6 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
-import com.synopsys.integration.alert.api.descriptor.JiraCloudChannelKey;
-import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
-import com.blackduck.integration.rest.proxy.ProxyInfo;
 
 @Component
 public class JiraCloudPropertiesFactory {

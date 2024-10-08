@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.api.certificates;
+package com.blackduck.integration.alert.api.certificates;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;

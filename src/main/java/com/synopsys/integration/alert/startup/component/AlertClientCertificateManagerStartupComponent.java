@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.certificates.AlertClientCertificateManager;
+import com.blackduck.integration.alert.api.certificates.AlertClientCertificateManager;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.ClientCertificateModel;
 import com.synopsys.integration.alert.database.job.api.ClientCertificateAccessor;

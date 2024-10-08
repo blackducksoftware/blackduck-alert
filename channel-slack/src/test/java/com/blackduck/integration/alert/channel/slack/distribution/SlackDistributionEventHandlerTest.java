@@ -13,10 +13,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.blackduck.integration.alert.api.certificates.AlertSSLContextManager;
+import com.blackduck.integration.alert.test.common.MockAlertProperties;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.certificates.AlertSSLContextManager;
 import com.synopsys.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.api.descriptor.SlackChannelKey;
 import com.synopsys.integration.alert.api.descriptor.model.ChannelKeys;
@@ -33,7 +34,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.SlackJobDetail
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.common.util.MarkupEncoderUtil;
-import com.blackduck.integration.alert.test.common.MockAlertProperties;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;

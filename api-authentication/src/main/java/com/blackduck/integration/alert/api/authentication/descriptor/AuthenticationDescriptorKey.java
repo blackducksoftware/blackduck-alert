@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.api.authentication.descriptor;
+package com.blackduck.integration.alert.api.authentication.descriptor;
 
 
 import org.springframework.stereotype.Component;
