@@ -18,11 +18,11 @@ import com.blackduck.integration.alert.channel.jira.server.model.enumeration.Jir
 import com.blackduck.integration.rest.proxy.ProxyInfo;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.synopsys.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
-import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
-import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
-import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
-import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerMessageSender;
+import com.blackduck.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
+import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerMessageSender;
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;

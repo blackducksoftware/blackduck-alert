@@ -13,7 +13,7 @@ import org.mockito.Mockito;
 import org.springframework.amqp.core.Message;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJob;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobStage;

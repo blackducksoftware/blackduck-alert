@@ -14,7 +14,7 @@ import org.springframework.amqp.core.Message;
 import org.springframework.core.task.SyncTaskExecutor;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJob;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobStage;

@@ -9,11 +9,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
 import com.blackduck.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
-import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueBomComponentDetails;
-import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssuePolicyDetails;
-import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueVulnerabilityDetails;
-import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueVulnerabilityModel;
-import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueBomComponentDetails;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssuePolicyDetails;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueVulnerabilityDetails;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueVulnerabilityModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcern;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;

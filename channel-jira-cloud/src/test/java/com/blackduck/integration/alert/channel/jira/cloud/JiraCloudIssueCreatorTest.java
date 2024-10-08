@@ -19,9 +19,9 @@ import com.blackduck.integration.jira.common.cloud.model.IssueCreationRequestMod
 import com.blackduck.integration.jira.common.cloud.service.ProjectService;
 import com.blackduck.integration.jira.common.model.components.ProjectComponent;
 import com.blackduck.integration.jira.common.model.response.PageOfProjectsResponseModel;
-import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
-import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
-import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.descriptor.JiraCloudChannelKey;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;

@@ -11,10 +11,10 @@ import org.jetbrains.annotations.Nullable;
 
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.model.request.IssueCommentRequestModel;
-import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
-import com.synopsys.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
-import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueCommenter;
-import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueResponseCreator;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueCommenter;
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueResponseCreator;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 
 public abstract class JiraIssueCommenter extends IssueTrackerIssueCommenter<String> {

@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.channel.jira.cloud.distribution.JiraCloudMessageSenderFactory;
-import com.synopsys.integration.alert.api.channel.issue.tracker.action.IssueTrackerTestAction;
+import com.blackduck.integration.alert.api.channel.issue.tracker.action.IssueTrackerTestAction;
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.blackduck.integration.alert.api.descriptor.JiraCloudChannelKey;
 

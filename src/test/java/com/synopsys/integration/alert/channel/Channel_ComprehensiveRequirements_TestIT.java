@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.blackduck.integration.alert.api.channel.DistributionChannel;
 import com.blackduck.integration.alert.api.channel.DistributionEventReceiver;
-import com.synopsys.integration.alert.api.channel.issue.tracker.action.IssueTrackerTestAction;
+import com.blackduck.integration.alert.api.channel.issue.tracker.action.IssueTrackerTestAction;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
 import com.blackduck.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
 import com.blackduck.integration.alert.common.channel.DistributionChannelTestAction;

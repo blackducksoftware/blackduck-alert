@@ -11,9 +11,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.blackduck.integration.alert.channel.azure.boards.distribution.event.AzureBoardsTransitionEvent;
-import com.synopsys.integration.alert.api.channel.issue.tracker.event.IssueTrackerTransitionIssueEvent;
-import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTransitionModel;
-import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerTransitionEventGenerator;
+import com.blackduck.integration.alert.api.channel.issue.tracker.event.IssueTrackerTransitionIssueEvent;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTransitionModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerTransitionEventGenerator;
 import com.blackduck.integration.alert.api.descriptor.AzureBoardsChannelKey;
 
 public class AzureBoardsTransitionGenerator implements IssueTrackerTransitionEventGenerator<Integer> {

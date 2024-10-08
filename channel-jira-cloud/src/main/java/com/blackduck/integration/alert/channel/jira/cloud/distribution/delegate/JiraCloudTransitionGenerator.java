@@ -11,9 +11,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.blackduck.integration.alert.channel.jira.cloud.distribution.event.JiraCloudTransitionEvent;
-import com.synopsys.integration.alert.api.channel.issue.tracker.event.IssueTrackerTransitionIssueEvent;
-import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTransitionModel;
-import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerTransitionEventGenerator;
+import com.blackduck.integration.alert.api.channel.issue.tracker.event.IssueTrackerTransitionIssueEvent;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTransitionModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerTransitionEventGenerator;
 import com.blackduck.integration.alert.api.descriptor.JiraCloudChannelKey;
 
 public class JiraCloudTransitionGenerator implements IssueTrackerTransitionEventGenerator<String> {

@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.channel.azure.boards.distribution.AzureBoardsMessageSenderFactory;
-import com.synopsys.integration.alert.api.channel.issue.tracker.action.IssueTrackerTestAction;
+import com.blackduck.integration.alert.api.channel.issue.tracker.action.IssueTrackerTestAction;
 import com.blackduck.integration.alert.api.descriptor.AzureBoardsChannelKey;
 import com.blackduck.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 

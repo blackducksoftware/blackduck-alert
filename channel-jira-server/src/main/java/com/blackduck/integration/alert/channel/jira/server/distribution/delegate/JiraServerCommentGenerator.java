@@ -10,9 +10,9 @@ package com.blackduck.integration.alert.channel.jira.server.distribution.delegat
 import java.util.Set;
 import java.util.UUID;
 
-import com.synopsys.integration.alert.api.channel.issue.tracker.event.IssueTrackerCommentEvent;
-import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
-import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerCommentEventGenerator;
+import com.blackduck.integration.alert.api.channel.issue.tracker.event.IssueTrackerCommentEvent;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerCommentEventGenerator;
 import com.blackduck.integration.alert.channel.jira.server.distribution.event.JiraServerCommentEvent;
 import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
 

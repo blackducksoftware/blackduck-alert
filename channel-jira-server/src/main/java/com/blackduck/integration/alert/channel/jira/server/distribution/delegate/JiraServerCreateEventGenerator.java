@@ -11,9 +11,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.blackduck.integration.alert.channel.jira.server.distribution.event.JiraServerCreateIssueEvent;
-import com.synopsys.integration.alert.api.channel.issue.tracker.event.IssueTrackerCreateIssueEvent;
-import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
-import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerCreationEventGenerator;
+import com.blackduck.integration.alert.api.channel.issue.tracker.event.IssueTrackerCreateIssueEvent;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerCreationEventGenerator;
 import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
 
 public class JiraServerCreateEventGenerator implements IssueTrackerCreationEventGenerator {

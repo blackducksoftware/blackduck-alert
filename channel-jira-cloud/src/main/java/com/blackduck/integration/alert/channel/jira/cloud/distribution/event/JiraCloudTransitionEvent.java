@@ -10,8 +10,8 @@ package com.blackduck.integration.alert.channel.jira.cloud.distribution.event;
 import java.util.Set;
 import java.util.UUID;
 
-import com.synopsys.integration.alert.api.channel.issue.tracker.event.IssueTrackerTransitionIssueEvent;
-import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueTransitionModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.event.IssueTrackerTransitionIssueEvent;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTransitionModel;
 
 public class JiraCloudTransitionEvent extends IssueTrackerTransitionIssueEvent<String> {
     private static final long serialVersionUID = -5217352371581221553L;

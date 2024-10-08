@@ -11,9 +11,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.blackduck.integration.alert.channel.azure.boards.distribution.event.AzureBoardsCommentEvent;
-import com.synopsys.integration.alert.api.channel.issue.tracker.event.IssueTrackerCommentEvent;
-import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
-import com.synopsys.integration.alert.api.channel.issue.tracker.send.IssueTrackerCommentEventGenerator;
+import com.blackduck.integration.alert.api.channel.issue.tracker.event.IssueTrackerCommentEvent;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerCommentEventGenerator;
 import com.blackduck.integration.alert.api.descriptor.AzureBoardsChannelKey;
 
 public class AzureBoardsCommentGenerator implements IssueTrackerCommentEventGenerator<Integer> {

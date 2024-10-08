@@ -9,7 +9,7 @@ package com.blackduck.integration.alert.channel.azure.boards.distribution;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.channel.issue.tracker.convert.IssueTrackerMessageFormatter;
+import com.blackduck.integration.alert.api.channel.issue.tracker.convert.IssueTrackerMessageFormatter;
 
 @Component
 public class AzureBoardsMessageFormatter extends IssueTrackerMessageFormatter {

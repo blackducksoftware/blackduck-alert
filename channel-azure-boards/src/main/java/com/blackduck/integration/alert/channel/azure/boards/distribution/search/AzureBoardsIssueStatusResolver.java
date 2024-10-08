@@ -7,7 +7,7 @@
  */
 package com.blackduck.integration.alert.channel.azure.boards.distribution.search;
 
-import com.synopsys.integration.alert.api.channel.issue.tracker.search.enumeration.IssueStatus;
+import com.blackduck.integration.alert.api.channel.issue.tracker.search.enumeration.IssueStatus;
 
 public class AzureBoardsIssueStatusResolver {
     private final String workItemCompletedState;

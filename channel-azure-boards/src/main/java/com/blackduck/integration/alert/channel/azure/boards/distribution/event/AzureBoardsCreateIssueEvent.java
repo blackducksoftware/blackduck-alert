@@ -10,8 +10,8 @@ package com.blackduck.integration.alert.channel.azure.boards.distribution.event;
 import java.util.Set;
 import java.util.UUID;
 
-import com.synopsys.integration.alert.api.channel.issue.tracker.event.IssueTrackerCreateIssueEvent;
-import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.event.IssueTrackerCreateIssueEvent;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
 
 public class AzureBoardsCreateIssueEvent extends IssueTrackerCreateIssueEvent {
     public AzureBoardsCreateIssueEvent(

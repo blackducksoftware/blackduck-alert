@@ -10,11 +10,11 @@ package com.blackduck.integration.alert.api.channel.jira.distribution.search;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueBomComponentDetails;
-import com.synopsys.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
-import com.synopsys.integration.alert.api.channel.issue.tracker.search.IssueTrackerSearchResult;
-import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectIssueSearchResult;
-import com.synopsys.integration.alert.api.channel.issue.tracker.search.ProjectVersionComponentIssueFinder;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueBomComponentDetails;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueTrackerSearchResult;
+import com.blackduck.integration.alert.api.channel.issue.tracker.search.ProjectIssueSearchResult;
+import com.blackduck.integration.alert.api.channel.issue.tracker.search.ProjectVersionComponentIssueFinder;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.blackduck.integration.alert.api.processor.extract.model.project.BomComponentDetails;

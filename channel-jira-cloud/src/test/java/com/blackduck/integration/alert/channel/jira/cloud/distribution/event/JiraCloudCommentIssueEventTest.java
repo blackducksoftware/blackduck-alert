@@ -9,8 +9,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.channel.jira.cloud.distribution.event.JiraCloudCommentEvent;
-import com.synopsys.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
 
 class JiraCloudCommentIssueEventTest {
     @Test
