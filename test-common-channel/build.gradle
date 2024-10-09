@@ -1,3 +1,5 @@
+ext.moduleName = 'com.blackduck.integration.alert.test.common.channel'
+
 dependencies {
     api project(':api-channel')
     api project(':api-channel-issue-tracker')

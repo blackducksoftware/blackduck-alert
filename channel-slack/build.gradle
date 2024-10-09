@@ -1,4 +1,4 @@
-ext.moduleName = 'com.synopsys.integration.alert.channel.slack'
+ext.moduleName = 'com.blackduck.integration.alert.channel.slack'
 
 dependencies {
     implementation platform(project(':alert-platform'))
@@ -9,9 +9,9 @@ dependencies {
     implementation project(':api-processor')
     implementation project(':api-descriptor')
 
-    implementation 'com.synopsys.integration:integration-rest'
+    implementation 'com.blackduck.integration:integration-rest'
 
     testImplementation project(':test-common')
     testImplementation 'com.squareup.okhttp3:mockwebserver'
-    testImplementation 'com.synopsys.integration:blackduck-common'
+    testImplementation 'com.blackduck.integration:blackduck-common'
 }

@@ -1,7 +1,7 @@
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
-ext.moduleName = 'com.synopsys.integration.alert.ui'
+ext.moduleName = 'com.blackduck.integration.alert.ui'
 
 task cleanBundles(type: Delete) {
     doLast {
