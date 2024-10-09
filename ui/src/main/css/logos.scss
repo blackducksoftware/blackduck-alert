@@ -12,18 +12,19 @@
   margin-top: 2px
 }
 
+.blackduckFooterLogo {
+  background: none;
+  margin: auto;
+  width: auto;
+  max-height: 14px;
+}
+
 .logo {
   width: fit-content;
   & > a {
     text-decoration: none;
     color: white
   }
-}
-
-.logoContainer {
-  display: flex;
-  align-items: center;
-  column-gap: 6px;
 }
 
 .divider {
