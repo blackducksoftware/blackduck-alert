@@ -1,6 +1,6 @@
 @import 'variables';
 
-.synopsysLogoSpan {
+.blackduckLogoSpan {
   display: inline-flex;
   font-family: 'Roboto', 'Arial', sans-serif;
   line-height: 1.25em;
@@ -18,16 +18,23 @@
   margin-right: 8px;
 }
 
-.synopsysFooterLogo {
+.blackduckFooterLogo {
   background: none;
   margin: auto;
   width: auto;
-  max-height: 12px;
+  max-height: 14px;
 }
 
-.synopsysFooterLogoVerticalBarSpace {
-  margin-left: 5.5px;
-  margin-right: 5.5px;
+.logoContainer {
+  display: flex;
+  align-items: center;
+  column-gap: 6px;
+}
+
+.logoDivider {
+  border-left: solid 1px;
+  height: 11px;
+  margin-top: 2px
 }
 
 .headerStandardSize {

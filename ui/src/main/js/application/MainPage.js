@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect, Route, withRouter } from 'react-router-dom';
 import Navigation from 'application/Navigation';
+import TopNavBar from 'application/TopNavBar';
+import AboutInfoFooter from 'page/about/AboutInfoFooter';
 import AboutInfo from 'page/about/AboutInfo';
 import LogoutConfirmation from 'common/component/LogoutConfirmation';
 import { getDescriptors } from 'store/actions/descriptors';
@@ -59,7 +61,6 @@ const useStyles = createUseStyles({
     },
     topnav: {
         gridArea: 'topnav',
-        border: '1px solid black',
         height: '50px'
     },
     appSidenav: {
@@ -71,7 +72,6 @@ const useStyles = createUseStyles({
     },
     footer: {
         gridArea: 'footer',
-        border: '1px solid pink',
         height: '36px'
     },
 })
@@ -300,12 +300,18 @@ const MainPage = ({
 
     return (
         <div className={classes.blackDuckAlertApp}>
-            <div className={classes.topnav}>TopNavHere</div>
+            <div className={classes.topnav}>
+                <TopNavBar />
+            </div>
             <div className={classes.appSidenav}>
                 <Navigation globalDescriptorMap={globalDescriptorMap} />
             </div>
-            <div className={classes.main}>{content}</div>
-            <div className={classes.footer}>footer</div>
+            <div className={classes.main}>
+                {content}
+            </div>
+            <div className={classes.footer}>
+                <AboutInfoFooter />
+            </div>
             <div className="modalsArea">
                 <LogoutConfirmation />
             </div>

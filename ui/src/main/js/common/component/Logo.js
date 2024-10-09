@@ -4,7 +4,7 @@ import '../../../css/logos.scss';
 
 const Logo = () => (
     <div className="productLogo">
-        <span className="synopsysLogoSpan">
+        <span className="blackduckLogoSpan">
             <img
                 className="synopsysHeaderLogo"
                 src="https://www.synopsys.com/content/dam/synopsys/company/about/legal/synopsys-logos/whitelogo/synopsys_wht.png"
