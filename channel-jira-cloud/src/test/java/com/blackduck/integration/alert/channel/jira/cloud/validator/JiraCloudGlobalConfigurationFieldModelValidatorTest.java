@@ -6,10 +6,10 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
-import com.blackduck.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
 import com.blackduck.integration.alert.api.descriptor.JiraCloudChannelKey;
+import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
+import com.blackduck.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
 
 public class JiraCloudGlobalConfigurationFieldModelValidatorTest {
 

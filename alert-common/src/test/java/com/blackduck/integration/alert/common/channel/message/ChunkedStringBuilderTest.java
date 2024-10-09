@@ -7,8 +7,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.common.channel.message.ChunkedStringBuilder;
-
 public class ChunkedStringBuilderTest {
     @Test
     public void appendLessThanMaxLengthTest() {

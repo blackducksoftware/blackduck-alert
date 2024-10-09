@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackduck.integration.alert.component.diagnostic.action.DiagnosticCrudActions;
-import com.blackduck.integration.alert.component.diagnostic.model.DiagnosticModel;
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.common.rest.ResponseFactory;
+import com.blackduck.integration.alert.component.diagnostic.action.DiagnosticCrudActions;
+import com.blackduck.integration.alert.component.diagnostic.model.DiagnosticModel;
 
 @RestController
 @RequestMapping(AlertRestConstants.DIAGNOSTIC_PATH)

@@ -12,22 +12,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.channel.email.action.EmailGlobalCrudActions;
 import com.blackduck.integration.alert.channel.email.convert.EmailGlobalConfigurationModelConverter;
 import com.blackduck.integration.alert.channel.email.convert.EmailGlobalConfigurationModelSaveActions;
 import com.blackduck.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.blackduck.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
-import com.blackduck.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
-import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
-import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
-import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
-import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
-import com.blackduck.integration.alert.util.AlertIntegrationTest;
-import com.blackduck.integration.alert.web.api.config.ConfigActions;
-import com.blackduck.integration.alert.web.api.config.GlobalConfigurationModelToConcreteConversionService;
-import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.common.action.api.GlobalConfigurationModelToConcreteSaveActions;
 import com.blackduck.integration.alert.common.descriptor.DescriptorMap;
 import com.blackduck.integration.alert.common.descriptor.DescriptorProcessor;
@@ -42,6 +34,14 @@ import com.blackduck.integration.alert.common.rest.model.FieldModel;
 import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
 import com.blackduck.integration.alert.common.security.EncryptionUtility;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
+import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
+import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
+import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
+import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
+import com.blackduck.integration.alert.util.AlertIntegrationTest;
+import com.blackduck.integration.alert.web.api.config.ConfigActions;
+import com.blackduck.integration.alert.web.api.config.GlobalConfigurationModelToConcreteConversionService;
 
 @AlertIntegrationTest
 class EmailConfigActionTestIT {

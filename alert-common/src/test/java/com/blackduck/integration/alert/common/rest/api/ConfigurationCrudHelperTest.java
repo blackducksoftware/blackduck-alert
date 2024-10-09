@@ -12,14 +12,13 @@ import org.springframework.http.HttpStatus;
 import com.blackduck.integration.alert.api.common.model.Obfuscated;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.persistence.model.PermissionKey;
 import com.blackduck.integration.alert.common.persistence.model.PermissionMatrixModel;
-import com.blackduck.integration.alert.common.rest.api.ConfigurationCrudHelper;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
-import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
 import com.blackduck.integration.function.ThrowingSupplier;
 

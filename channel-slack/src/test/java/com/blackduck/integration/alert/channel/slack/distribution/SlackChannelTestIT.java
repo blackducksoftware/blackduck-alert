@@ -20,7 +20,13 @@ import org.mockito.Mockito;
 
 import com.blackduck.integration.alert.api.certificates.AlertSSLContextManager;
 import com.blackduck.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
+import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.channel.slack.ChannelITTestAssertions;
+import com.blackduck.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
+import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.common.util.MarkupEncoderUtil;
 import com.blackduck.integration.alert.test.common.MockAlertProperties;
 import com.blackduck.integration.alert.test.common.TestProperties;
 import com.blackduck.integration.alert.test.common.TestPropertyKey;
@@ -28,12 +34,6 @@ import com.blackduck.integration.alert.test.common.TestTags;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
 import com.google.gson.Gson;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
-import com.blackduck.integration.alert.api.event.EventManager;
-import com.blackduck.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
-import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
-import com.blackduck.integration.alert.common.util.MarkupEncoderUtil;
 
 class SlackChannelTestIT {
     private Gson gson;

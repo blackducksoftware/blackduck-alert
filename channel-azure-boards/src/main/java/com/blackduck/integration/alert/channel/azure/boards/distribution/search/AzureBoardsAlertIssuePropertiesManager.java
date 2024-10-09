@@ -10,11 +10,11 @@ package com.blackduck.integration.alert.channel.azure.boards.distribution.search
 import java.util.List;
 import java.util.Optional;
 
-import com.blackduck.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueBomComponentDetails;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssuePolicyDetails;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
+import com.blackduck.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 public class AzureBoardsAlertIssuePropertiesManager {

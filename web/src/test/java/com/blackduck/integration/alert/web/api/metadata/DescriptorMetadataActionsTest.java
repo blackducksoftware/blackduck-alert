@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.blackduck.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.descriptor.Descriptor;
@@ -24,6 +23,7 @@ import com.blackduck.integration.alert.common.enumeration.AccessOperation;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.enumeration.DescriptorType;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
 
 public class DescriptorMetadataActionsTest {
     private final Set<Descriptor> descriptors = createComprehensiveSetOfDescriptors();

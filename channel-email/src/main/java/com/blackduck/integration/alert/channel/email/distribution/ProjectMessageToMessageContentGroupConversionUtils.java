@@ -13,9 +13,6 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.blackduck.integration.alert.channel.email.attachment.compatibility.ComponentItem;
-import com.blackduck.integration.alert.channel.email.attachment.compatibility.MessageContentGroup;
-import com.blackduck.integration.alert.channel.email.attachment.compatibility.ProviderMessageContent;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.processor.extract.model.project.BomComponentDetails;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcern;
@@ -23,6 +20,9 @@ import com.blackduck.integration.alert.api.processor.extract.model.project.Compo
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectOperation;
+import com.blackduck.integration.alert.channel.email.attachment.compatibility.ComponentItem;
+import com.blackduck.integration.alert.channel.email.attachment.compatibility.MessageContentGroup;
+import com.blackduck.integration.alert.channel.email.attachment.compatibility.ProviderMessageContent;
 import com.blackduck.integration.alert.common.enumeration.ItemOperation;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
 

@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.persistence.model.job.JobToNotificationMappingModel;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 
 public interface JobNotificationMappingAccessor {
     AlertPagedModel<JobToNotificationMappingModel> getJobNotificationMappings(UUID correlationId, UUID jobId, int page, int pageSize);

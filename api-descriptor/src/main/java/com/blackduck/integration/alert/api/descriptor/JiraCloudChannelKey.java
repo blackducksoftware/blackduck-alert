@@ -7,9 +7,9 @@
  */
 package com.blackduck.integration.alert.api.descriptor;
 
-import com.blackduck.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
-
 import org.springframework.stereotype.Component;
+
+import com.blackduck.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
 
 @Component
 public final class JiraCloudChannelKey extends IssueTrackerChannelKey {

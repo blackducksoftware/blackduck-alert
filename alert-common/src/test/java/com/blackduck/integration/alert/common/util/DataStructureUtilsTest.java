@@ -9,7 +9,6 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.common.util.DataStructureUtils;
 import com.blackduck.integration.util.Stringable;
 
 class DataStructureUtilsTest {

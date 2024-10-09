@@ -11,12 +11,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.blackduck.integration.alert.common.descriptor.Descriptor;
-import com.blackduck.integration.alert.common.descriptor.DescriptorMap;
-import com.blackduck.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
-import com.blackduck.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
-import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
-import com.blackduck.integration.alert.common.enumeration.DescriptorType;
 import com.blackduck.integration.alert.api.descriptor.AzureBoardsChannelKey;
 import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.api.descriptor.EmailChannelKey;
@@ -25,6 +19,12 @@ import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
 import com.blackduck.integration.alert.api.descriptor.MsTeamsKey;
 import com.blackduck.integration.alert.api.descriptor.SlackChannelKey;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
+import com.blackduck.integration.alert.common.descriptor.Descriptor;
+import com.blackduck.integration.alert.common.descriptor.DescriptorMap;
+import com.blackduck.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
+import com.blackduck.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.enumeration.DescriptorType;
 
 public class MockDescriptorMap extends DescriptorMap {
     static List<DescriptorKey> descriptorKeys;

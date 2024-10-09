@@ -7,9 +7,9 @@
  */
 package com.blackduck.integration.alert.web.api.home;
 
+import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 
 public class SAMLEnabledResponseModel extends AlertSerializableModel {
     @JsonAlias("saml_enabled")

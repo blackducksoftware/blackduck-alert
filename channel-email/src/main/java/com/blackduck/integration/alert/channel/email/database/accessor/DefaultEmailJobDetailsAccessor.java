@@ -17,12 +17,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.blackduck.integration.alert.api.descriptor.EmailChannelKey;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.channel.email.database.job.EmailJobDetailsEntity;
 import com.blackduck.integration.alert.channel.email.database.job.EmailJobDetailsRepository;
 import com.blackduck.integration.alert.channel.email.database.job.additional.EmailJobAdditionalEmailAddressEntity;
 import com.blackduck.integration.alert.channel.email.database.job.additional.EmailJobAdditionalEmailAddressRepository;
-import com.blackduck.integration.alert.api.descriptor.EmailChannelKey;
-import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.common.persistence.accessor.EmailJobDetailsAccessor;
 import com.blackduck.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.blackduck.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;

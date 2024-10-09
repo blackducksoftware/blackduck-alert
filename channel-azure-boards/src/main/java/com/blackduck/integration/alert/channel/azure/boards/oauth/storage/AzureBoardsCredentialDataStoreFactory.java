@@ -12,11 +12,11 @@ import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackduck.integration.alert.api.common.model.exception.AlertRuntimeException;
+import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.google.api.client.auth.oauth2.StoredCredential;
 import com.google.api.client.util.store.AbstractDataStoreFactory;
 import com.google.api.client.util.store.DataStore;
-import com.blackduck.integration.alert.api.common.model.exception.AlertRuntimeException;
-import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 
 @Deprecated(forRemoval = true)
 @Component

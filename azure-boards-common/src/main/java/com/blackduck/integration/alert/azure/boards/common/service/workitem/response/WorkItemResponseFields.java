@@ -14,8 +14,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.blackduck.integration.alert.azure.boards.common.util.AzureFieldDefinition;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.WorkItemUserModel;
+import com.blackduck.integration.alert.azure.boards.common.util.AzureFieldDefinition;
 
 public final class WorkItemResponseFields {
     public static final AzureFieldDefinition<String> System_Id = AzureFieldDefinition.stringField("System.Id");

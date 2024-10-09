@@ -10,12 +10,12 @@ package com.blackduck.integration.alert.azure.boards.common.http;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
+import com.blackduck.integration.function.ThrowingSupplier;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpMethods;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpResponse;
 import com.google.gson.Gson;
-import com.blackduck.integration.function.ThrowingSupplier;
 
 public class AzureHttpService {
     private final Gson gson;

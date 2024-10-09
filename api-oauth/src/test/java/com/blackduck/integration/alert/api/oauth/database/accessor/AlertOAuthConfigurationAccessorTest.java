@@ -15,11 +15,11 @@ import org.junit.jupiter.api.Test;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.api.oauth.database.AlertOAuthModel;
-import com.blackduck.integration.alert.test.common.MockAlertProperties;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.alert.common.AlertProperties;
 import com.blackduck.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.blackduck.integration.alert.common.security.EncryptionUtility;
+import com.blackduck.integration.alert.test.common.MockAlertProperties;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 class AlertOAuthConfigurationAccessorTest {
     private MockAlertOAuthConfigurationRepository repository;

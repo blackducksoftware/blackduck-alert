@@ -6,12 +6,12 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.common.persistence.model.AuditEntryPageModel;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.log.IntLogger;
 import com.blackduck.integration.wait.WaitJobCondition;
+import com.google.gson.Gson;
 
 //TODO: Refactor the duplicate code between this WaitJobCondition and AuditCompleteWaitJobTask
 public class AuditProcessingWaitJobTask implements WaitJobCondition {

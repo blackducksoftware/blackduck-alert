@@ -24,13 +24,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.blackduck.integration.alert.common.enumeration.AuthenticationType;
+import com.blackduck.integration.alert.common.persistence.model.UserRoleModel;
+import com.blackduck.integration.alert.database.user.UserRepository;
 import com.blackduck.integration.alert.util.AlertIntegrationTest;
 import com.blackduck.integration.alert.util.AlertIntegrationTestConstants;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.blackduck.integration.alert.common.enumeration.AuthenticationType;
-import com.blackduck.integration.alert.common.persistence.model.UserRoleModel;
-import com.blackduck.integration.alert.database.user.UserRepository;
 
 import junit.framework.AssertionFailedError;
 

@@ -12,13 +12,13 @@ import java.util.function.Function;
 
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
-import com.blackduck.integration.alert.component.settings.proxy.action.SettingsProxyCrudActions;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.action.api.GlobalConfigurationModelToConcreteSaveActions;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
 import com.blackduck.integration.alert.common.rest.model.SettingsProxyModel;
-import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
+import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
+import com.blackduck.integration.alert.component.settings.proxy.action.SettingsProxyCrudActions;
 
 /**
  * @deprecated This class is required for converting an old ConfigurationModel into the new GlobalConfigModel classes. This is a temporary class that should be removed once we

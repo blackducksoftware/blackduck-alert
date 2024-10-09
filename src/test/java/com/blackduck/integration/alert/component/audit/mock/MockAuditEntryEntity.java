@@ -4,10 +4,10 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.UUID;
 
-import com.google.gson.JsonObject;
 import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
 import com.blackduck.integration.alert.database.audit.AuditEntryEntity;
 import com.blackduck.integration.alert.mock.entity.MockEntityUtil;
+import com.google.gson.JsonObject;
 
 public class MockAuditEntryEntity extends MockEntityUtil<AuditEntryEntity> {
     private UUID commonConfigId = UUID.fromString("1c0c7769-7cae-47d1-b80f-8c09eb8b90b9");

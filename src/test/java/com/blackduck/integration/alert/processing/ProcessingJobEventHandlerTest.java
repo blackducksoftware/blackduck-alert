@@ -21,7 +21,6 @@ import com.blackduck.integration.alert.common.persistence.accessor.JobAccessor;
 import com.blackduck.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
 import com.blackduck.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
 import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
-import com.blackduck.integration.alert.processing.ProcessingJobEventHandler;
 
 class ProcessingJobEventHandlerTest {
     @Test

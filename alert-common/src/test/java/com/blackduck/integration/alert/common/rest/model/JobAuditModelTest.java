@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.blackduck.integration.alert.common.persistence.model.AuditJobStatusModel;
-import com.blackduck.integration.alert.common.rest.model.JobAuditModel;
 
 public class JobAuditModelTest {
     private final String testId = "test-id";

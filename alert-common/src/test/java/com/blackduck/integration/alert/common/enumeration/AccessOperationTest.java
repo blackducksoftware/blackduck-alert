@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.common.enumeration.AccessOperation;
 import com.blackduck.integration.alert.common.util.BitwiseUtil;
 import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
 

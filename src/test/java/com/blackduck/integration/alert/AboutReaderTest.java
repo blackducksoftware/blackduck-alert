@@ -15,12 +15,6 @@ import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.blackduck.integration.alert.web.api.about.AboutModel;
-import com.blackduck.integration.alert.web.api.about.AboutReader;
-import com.blackduck.integration.alert.web.api.metadata.DescriptorMetadataActions;
-import com.blackduck.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
-import com.blackduck.integration.rest.RestConstants;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.blackduck.integration.alert.common.persistence.model.SystemMessageModel;
@@ -28,6 +22,12 @@ import com.blackduck.integration.alert.common.rest.AlertWebServerUrlManager;
 import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.database.job.api.DefaultSystemStatusAccessor;
 import com.blackduck.integration.alert.database.system.DefaultSystemMessageAccessor;
+import com.blackduck.integration.alert.web.api.about.AboutModel;
+import com.blackduck.integration.alert.web.api.about.AboutReader;
+import com.blackduck.integration.alert.web.api.metadata.DescriptorMetadataActions;
+import com.blackduck.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.rest.RestConstants;
 
 public class AboutReaderTest {
     private AlertWebServerUrlManager alertWebServerUrlManager;

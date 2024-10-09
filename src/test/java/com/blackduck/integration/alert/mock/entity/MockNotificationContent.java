@@ -3,10 +3,10 @@ package com.blackduck.integration.alert.mock.entity;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-import com.google.gson.JsonObject;
 import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.database.notification.NotificationEntity;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.google.gson.JsonObject;
 
 public class MockNotificationContent extends MockEntityUtil<NotificationEntity> {
     private static final String DEFAULT_NOTIFICATION_TYPE_NAME = NotificationType.BOM_EDIT.name();

@@ -10,13 +10,13 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.blackduck.integration.alert.api.channel.CommonChannelDistributionValidator;
-import com.blackduck.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
-import com.blackduck.integration.alert.test.common.FieldModelUtils;
-import com.blackduck.integration.alert.test.common.ValidationConstants;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.blackduck.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
 import com.blackduck.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
 import com.blackduck.integration.alert.common.rest.model.JobFieldModel;
+import com.blackduck.integration.alert.test.common.FieldModelUtils;
+import com.blackduck.integration.alert.test.common.ValidationConstants;
 
 public class MsTeamsDistributionConfigurationValidatorTest {
     public static final String EXPECTED_VALID_WEBHOOK_URL = "https://www.example.com/webhook";

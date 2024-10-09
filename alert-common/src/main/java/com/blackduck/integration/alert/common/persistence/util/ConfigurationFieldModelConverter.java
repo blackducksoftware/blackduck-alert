@@ -20,19 +20,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertRuntimeException;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.persistence.accessor.DescriptorAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.FieldUtility;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
 import com.blackduck.integration.alert.common.persistence.model.DefinedFieldModel;
+import com.blackduck.integration.alert.common.persistence.model.RegisteredDescriptorModel;
+import com.blackduck.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
 import com.blackduck.integration.alert.common.rest.model.FieldModel;
 import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
 import com.blackduck.integration.alert.common.security.EncryptionUtility;
 import com.blackduck.integration.alert.common.util.DataStructureUtils;
-import com.blackduck.integration.alert.common.persistence.accessor.DescriptorAccessor;
-import com.blackduck.integration.alert.common.persistence.accessor.FieldUtility;
-import com.blackduck.integration.alert.common.persistence.model.RegisteredDescriptorModel;
-import com.blackduck.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
-import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 
 @Component
 public class ConfigurationFieldModelConverter {

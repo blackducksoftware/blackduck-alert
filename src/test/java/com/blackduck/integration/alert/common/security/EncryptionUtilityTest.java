@@ -17,7 +17,6 @@ import org.mockito.Mockito;
 
 import com.blackduck.integration.alert.common.AlertProperties;
 import com.blackduck.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.blackduck.integration.alert.common.security.EncryptionUtility;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class EncryptionUtilityTest {

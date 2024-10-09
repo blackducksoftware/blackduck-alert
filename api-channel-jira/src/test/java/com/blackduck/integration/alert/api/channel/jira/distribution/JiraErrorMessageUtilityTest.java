@@ -13,6 +13,10 @@ import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 
 import com.blackduck.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
+import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.blackduck.integration.alert.api.common.model.errors.FieldStatusSeverity;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.common.exception.AlertFieldException;
 import com.blackduck.integration.alert.test.common.TestResourceUtils;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.exception.IntegrationException;
@@ -21,10 +25,6 @@ import com.blackduck.integration.jira.common.model.response.CustomFieldCreationR
 import com.blackduck.integration.rest.HttpMethod;
 import com.blackduck.integration.rest.HttpUrl;
 import com.blackduck.integration.rest.exception.IntegrationRestException;
-import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
-import com.blackduck.integration.alert.api.common.model.errors.FieldStatusSeverity;
-import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.blackduck.integration.alert.common.exception.AlertFieldException;
 
 class JiraErrorMessageUtilityTest {
 

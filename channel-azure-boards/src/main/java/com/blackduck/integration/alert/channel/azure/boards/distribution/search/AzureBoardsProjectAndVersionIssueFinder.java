@@ -13,9 +13,6 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.blackduck.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
-import com.blackduck.integration.alert.channel.azure.boards.distribution.util.AzureBoardsWorkItemExtractionUtils;
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueBomComponentDetails;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
@@ -28,7 +25,10 @@ import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetai
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemFieldsWrapper;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
 import com.blackduck.integration.alert.azure.boards.common.util.AzureFieldDefinition;
+import com.blackduck.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
+import com.blackduck.integration.alert.channel.azure.boards.distribution.util.AzureBoardsWorkItemExtractionUtils;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
+import com.google.gson.Gson;
 
 public class AzureBoardsProjectAndVersionIssueFinder implements ProjectIssueFinder<Integer>, ProjectVersionIssueFinder<Integer> {
     private final Gson gson;

@@ -7,8 +7,6 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.common.util.MarkupEncoderUtil;
-
 class MarkupEncoderTest {
 
     @Test

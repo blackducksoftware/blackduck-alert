@@ -15,9 +15,9 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.channel.CommonChannelDistributionValidator;
 import com.blackduck.integration.alert.api.channel.jira.validation.JiraFieldMappingValidator;
-import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.api.descriptor.JiraCloudChannelKey;
+import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.blackduck.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.blackduck.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.blackduck.integration.alert.common.rest.model.JobFieldModel;

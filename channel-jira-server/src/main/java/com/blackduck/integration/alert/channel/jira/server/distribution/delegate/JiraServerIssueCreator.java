@@ -14,6 +14,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.blackduck.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
 import com.blackduck.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
 import com.blackduck.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
 import com.blackduck.integration.alert.api.channel.jira.distribution.custom.MessageReplacementValues;
@@ -21,8 +24,11 @@ import com.blackduck.integration.alert.api.channel.jira.distribution.custom.Mess
 import com.blackduck.integration.alert.api.channel.jira.distribution.delegate.JiraIssueCreator;
 import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraSearcherResponseModel;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
 import com.blackduck.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.blackduck.integration.alert.channel.jira.server.distribution.JiraServerQueryExecutor;
+import com.blackduck.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.model.components.ProjectComponent;
 import com.blackduck.integration.jira.common.model.request.builder.IssueRequestModelFieldsMapBuilder;
@@ -31,12 +37,6 @@ import com.blackduck.integration.jira.common.model.response.IssueResponseModel;
 import com.blackduck.integration.jira.common.server.model.IssueCreationRequestModel;
 import com.blackduck.integration.jira.common.server.service.IssueService;
 import com.blackduck.integration.jira.common.server.service.ProjectService;
-import com.blackduck.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
-import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
-import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
-import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
-import com.blackduck.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 
 public class JiraServerIssueCreator extends JiraIssueCreator<IssueCreationRequestModel> {
     private final Logger logger = LoggerFactory.getLogger(getClass());

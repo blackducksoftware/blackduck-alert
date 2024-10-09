@@ -21,10 +21,6 @@ import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import org.springframework.scheduling.TaskScheduler;
 
-import com.blackduck.integration.alert.database.job.api.StaticJobAccessor;
-import com.blackduck.integration.alert.test.common.TestResourceUtils;
-import com.blackduck.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.api.processor.NotificationMappingProcessor;
 import com.blackduck.integration.alert.api.processor.detail.NotificationDetailExtractionDelegator;
@@ -38,6 +34,10 @@ import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.database.job.api.DefaultNotificationAccessor;
+import com.blackduck.integration.alert.database.job.api.StaticJobAccessor;
+import com.blackduck.integration.alert.test.common.TestResourceUtils;
+import com.blackduck.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 class ProcessingTaskTest {
     private final BlackDuckResponseResolver blackDuckResponseResolver = new BlackDuckResponseResolver(BlackDuckServicesFactory.createDefaultGson());

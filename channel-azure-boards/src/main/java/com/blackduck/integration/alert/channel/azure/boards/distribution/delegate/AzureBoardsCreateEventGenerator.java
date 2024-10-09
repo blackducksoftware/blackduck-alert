@@ -10,11 +10,11 @@ package com.blackduck.integration.alert.channel.azure.boards.distribution.delega
 import java.util.Set;
 import java.util.UUID;
 
-import com.blackduck.integration.alert.channel.azure.boards.distribution.event.AzureBoardsCreateIssueEvent;
 import com.blackduck.integration.alert.api.channel.issue.tracker.event.IssueTrackerCreateIssueEvent;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerCreationEventGenerator;
 import com.blackduck.integration.alert.api.descriptor.AzureBoardsChannelKey;
+import com.blackduck.integration.alert.channel.azure.boards.distribution.event.AzureBoardsCreateIssueEvent;
 
 public class AzureBoardsCreateEventGenerator implements IssueTrackerCreationEventGenerator {
     private final AzureBoardsChannelKey channelKey;

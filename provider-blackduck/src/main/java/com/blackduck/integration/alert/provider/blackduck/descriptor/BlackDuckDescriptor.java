@@ -14,10 +14,10 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
-import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckDistributionConfigurationValidator;
-import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckGlobalConfigurationFieldModelValidator;
 import com.blackduck.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.blackduck.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
+import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckDistributionConfigurationValidator;
+import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckGlobalConfigurationFieldModelValidator;
 
 @Component
 public class BlackDuckDescriptor extends ProviderDescriptor {

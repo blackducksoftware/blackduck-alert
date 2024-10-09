@@ -16,6 +16,9 @@ import org.springframework.stereotype.Component;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.provider.ProviderProjectExistencePopulator;
 import com.blackduck.integration.alert.api.provider.state.StatefulProvider;
+import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
+import com.blackduck.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 import com.blackduck.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.blackduck.integration.blackduck.service.BlackDuckApiClient;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
@@ -23,9 +26,6 @@ import com.blackduck.integration.log.IntLogger;
 import com.blackduck.integration.log.Slf4jIntLogger;
 import com.blackduck.integration.rest.HttpUrl;
 import com.blackduck.integration.rest.response.Response;
-import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
-import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
-import com.blackduck.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 
 @Component
 public class BlackDuckProjectExistencePopulator implements ProviderProjectExistencePopulator {

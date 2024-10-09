@@ -26,13 +26,13 @@ import com.blackduck.integration.alert.api.authentication.descriptor.Authenticat
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.authentication.ldap.action.LDAPManager;
 import com.blackduck.integration.alert.authentication.ldap.model.LDAPConfigModel;
-import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.alert.common.action.FieldModelTestAction;
 import com.blackduck.integration.alert.common.exception.AlertFieldException;
 import com.blackduck.integration.alert.common.message.model.MessageResult;
 import com.blackduck.integration.alert.common.persistence.accessor.FieldUtility;
 import com.blackduck.integration.alert.common.rest.model.FieldModel;
 import com.blackduck.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.exception.IntegrationException;
 
 /**
  * This class should be removed in 8.0.0.

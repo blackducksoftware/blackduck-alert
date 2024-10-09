@@ -17,6 +17,13 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.blackduck.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueCommenter;
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueResponseCreator;
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueTransitioner;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.blackduck.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.model.components.IdComponent;
 import com.blackduck.integration.jira.common.model.components.StatusCategory;
@@ -25,13 +32,6 @@ import com.blackduck.integration.jira.common.model.components.TransitionComponen
 import com.blackduck.integration.jira.common.model.request.IssueRequestModel;
 import com.blackduck.integration.jira.common.model.response.TransitionsResponseModel;
 import com.blackduck.integration.jira.common.server.builder.IssueRequestModelFieldsBuilder;
-import com.blackduck.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
-import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueCommenter;
-import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueResponseCreator;
-import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueTransitioner;
-import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.blackduck.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.blackduck.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
 
 public abstract class JiraIssueTransitioner extends IssueTrackerIssueTransitioner<String> {
     public static final String TODO_STATUS_CATEGORY_KEY = "new";

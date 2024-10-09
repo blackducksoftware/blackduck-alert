@@ -18,6 +18,13 @@ import org.mockito.Mockito;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
+import com.blackduck.integration.alert.common.persistence.model.ProviderProject;
+import com.blackduck.integration.alert.common.persistence.model.ProviderUserModel;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
 import com.blackduck.integration.blackduck.api.core.ResourceLink;
 import com.blackduck.integration.blackduck.api.core.ResourceMetadata;
@@ -36,13 +43,6 @@ import com.blackduck.integration.blackduck.service.dataservice.UserService;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.log.IntLogger;
 import com.blackduck.integration.rest.HttpUrl;
-import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
-import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
-import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
-import com.blackduck.integration.alert.common.persistence.model.ProviderProject;
-import com.blackduck.integration.alert.common.persistence.model.ProviderUserModel;
-import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 
 class ProviderDataAccessorTest {
     private static final String PROVIDER_CONFIG_NAME = "Test Black Duck configuration";

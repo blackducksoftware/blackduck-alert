@@ -9,8 +9,8 @@ package com.blackduck.integration.alert.common.rest;
 
 import java.util.List;
 
-import com.google.gson.JsonObject;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.google.gson.JsonObject;
 
 public class ResponseBodyBuilder {
     private static final String PROPERTY_KEY_ID = "id";

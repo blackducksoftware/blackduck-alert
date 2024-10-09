@@ -14,7 +14,6 @@ import com.blackduck.integration.alert.common.descriptor.accessor.SettingsUtilit
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.common.rest.model.SettingsProxyModel;
 import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
-import com.blackduck.integration.alert.startup.component.ConfigurationLogger;
 import com.blackduck.integration.alert.test.common.MockAlertProperties;
 import com.blackduck.integration.alert.test.common.OutputLogger;
 

@@ -18,11 +18,11 @@ import org.springframework.stereotype.Component;
 import com.blackduck.integration.alert.common.action.ApiAction;
 import com.blackduck.integration.alert.common.action.ConfigurationAction;
 import com.blackduck.integration.alert.common.action.FieldModelTestAction;
-import com.blackduck.integration.alert.common.util.DataStructureUtils;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
 import com.blackduck.integration.alert.common.rest.model.FieldModel;
+import com.blackduck.integration.alert.common.util.DataStructureUtils;
 
 @Deprecated(forRemoval = true)
 @Component

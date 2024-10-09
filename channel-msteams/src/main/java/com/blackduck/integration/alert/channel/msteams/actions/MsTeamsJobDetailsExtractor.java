@@ -13,13 +13,13 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackduck.integration.alert.api.descriptor.MsTeamsKey;
 import com.blackduck.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.blackduck.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 import com.blackduck.integration.alert.common.persistence.model.job.details.processor.DistributionJobDetailsExtractor;
 import com.blackduck.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
-import com.blackduck.integration.alert.api.descriptor.MsTeamsKey;
 
 @Component
 public class MsTeamsJobDetailsExtractor extends DistributionJobDetailsExtractor {

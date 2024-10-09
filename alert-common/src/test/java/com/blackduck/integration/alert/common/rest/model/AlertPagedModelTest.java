@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
-import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 
 public class AlertPagedModelTest {
     private final int testTotalPages = 1;

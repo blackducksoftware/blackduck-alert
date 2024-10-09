@@ -10,8 +10,8 @@ package com.blackduck.integration.alert.common.action;
 import java.util.EnumMap;
 import java.util.Map;
 
-import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 
 @Deprecated(forRemoval = true)
 public abstract class ConfigurationAction {

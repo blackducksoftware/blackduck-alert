@@ -26,11 +26,11 @@ import com.blackduck.integration.alert.api.authentication.descriptor.Authenticat
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.authentication.saml.database.accessor.SAMLConfigAccessor;
 import com.blackduck.integration.alert.authentication.saml.model.SAMLConfigModel;
+import com.blackduck.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.util.AlertIntegrationTest;
 import com.blackduck.integration.alert.util.AlertIntegrationTestConstants;
 import com.google.gson.Gson;
-import com.blackduck.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 
 @AlertIntegrationTest
 class SAMLConfigControllerTestIT {

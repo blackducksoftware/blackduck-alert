@@ -21,7 +21,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
-import com.blackduck.integration.alert.component.audit.mock.MockAuditEntryEntity;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.common.ContentConverter;
 import com.blackduck.integration.alert.common.action.ActionResponse;
@@ -38,6 +37,7 @@ import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.component.audit.AuditDescriptorKey;
+import com.blackduck.integration.alert.component.audit.mock.MockAuditEntryEntity;
 import com.blackduck.integration.alert.database.audit.AuditEntryRepository;
 import com.blackduck.integration.alert.database.audit.AuditNotificationRepository;
 import com.blackduck.integration.alert.database.job.api.DefaultNotificationAccessor;

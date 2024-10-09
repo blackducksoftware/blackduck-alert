@@ -8,9 +8,6 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.api.distribution.execution.JobStage;
-import com.blackduck.integration.alert.api.distribution.execution.JobStageStartedEvent;
-
 class JobStageStartedEventTest {
 
     @Test

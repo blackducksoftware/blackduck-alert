@@ -17,13 +17,6 @@ import org.mockito.Mockito;
 import com.blackduck.integration.alert.api.common.model.errors.FieldStatusSeverity;
 import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
 import com.blackduck.integration.alert.api.provider.state.StatefulProvider;
-import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.blackduck.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
-import com.blackduck.integration.alert.test.common.TestTags;
-import com.blackduck.integration.blackduck.http.client.ApiTokenBlackDuckHttpClient;
-import com.blackduck.integration.exception.IntegrationException;
-import com.blackduck.integration.rest.response.DefaultResponse;
 import com.blackduck.integration.alert.common.message.model.MessageResult;
 import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.blackduck.integration.alert.common.persistence.accessor.FieldUtility;
@@ -33,6 +26,13 @@ import com.blackduck.integration.alert.common.persistence.model.ConfigurationMod
 import com.blackduck.integration.alert.common.persistence.model.ProviderProject;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.util.DataStructureUtils;
+import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.blackduck.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
+import com.blackduck.integration.alert.test.common.TestTags;
+import com.blackduck.integration.blackduck.http.client.ApiTokenBlackDuckHttpClient;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.rest.response.DefaultResponse;
 
 class BlackDuckDistributionFieldModelTestActionTest {
     private static final String PROJECT_1_HREF = "href";

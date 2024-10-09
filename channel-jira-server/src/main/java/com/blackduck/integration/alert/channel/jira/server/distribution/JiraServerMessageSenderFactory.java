@@ -15,25 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
-import com.blackduck.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
-import com.blackduck.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
-import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
-import com.blackduck.integration.alert.channel.jira.server.JiraServerProperties;
-import com.blackduck.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
-import com.blackduck.integration.alert.channel.jira.server.distribution.delegate.JiraServerCommentGenerator;
-import com.blackduck.integration.alert.channel.jira.server.distribution.delegate.JiraServerCreateEventGenerator;
-import com.blackduck.integration.alert.channel.jira.server.distribution.delegate.JiraServerIssueCommenter;
-import com.blackduck.integration.alert.channel.jira.server.distribution.delegate.JiraServerIssueCreator;
-import com.blackduck.integration.alert.channel.jira.server.distribution.delegate.JiraServerIssueTransitioner;
-import com.blackduck.integration.alert.channel.jira.server.distribution.delegate.JiraServerTransitionGenerator;
-import com.blackduck.integration.jira.common.rest.service.IssuePropertyService;
-import com.blackduck.integration.jira.common.server.service.FieldService;
-import com.blackduck.integration.jira.common.server.service.IssueSearchService;
-import com.blackduck.integration.jira.common.server.service.IssueService;
-import com.blackduck.integration.jira.common.server.service.JiraServerServiceFactory;
-import com.blackduck.integration.jira.common.server.service.ProjectService;
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerAsyncMessageSender;
@@ -43,11 +24,30 @@ import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrack
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerMessageSender;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerMessageSenderFactory;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerTransitionEventGenerator;
+import com.blackduck.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
+import com.blackduck.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
+import com.blackduck.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
+import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.event.EventManager;
+import com.blackduck.integration.alert.channel.jira.server.JiraServerProperties;
+import com.blackduck.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
+import com.blackduck.integration.alert.channel.jira.server.distribution.delegate.JiraServerCommentGenerator;
+import com.blackduck.integration.alert.channel.jira.server.distribution.delegate.JiraServerCreateEventGenerator;
+import com.blackduck.integration.alert.channel.jira.server.distribution.delegate.JiraServerIssueCommenter;
+import com.blackduck.integration.alert.channel.jira.server.distribution.delegate.JiraServerIssueCreator;
+import com.blackduck.integration.alert.channel.jira.server.distribution.delegate.JiraServerIssueTransitioner;
+import com.blackduck.integration.alert.channel.jira.server.distribution.delegate.JiraServerTransitionGenerator;
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
+import com.blackduck.integration.jira.common.rest.service.IssuePropertyService;
+import com.blackduck.integration.jira.common.server.service.FieldService;
+import com.blackduck.integration.jira.common.server.service.IssueSearchService;
+import com.blackduck.integration.jira.common.server.service.IssueService;
+import com.blackduck.integration.jira.common.server.service.JiraServerServiceFactory;
+import com.blackduck.integration.jira.common.server.service.ProjectService;
+import com.google.gson.Gson;
 
 @Component
 public class JiraServerMessageSenderFactory implements IssueTrackerMessageSenderFactory<JiraServerJobDetailsModel, String> {

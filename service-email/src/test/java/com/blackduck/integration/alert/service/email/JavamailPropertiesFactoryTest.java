@@ -8,9 +8,9 @@ import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
 
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
-import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 
 class JavamailPropertiesFactoryTest {
     public static final String EXPECTED_FROM_VALUE = "expectedFrom";

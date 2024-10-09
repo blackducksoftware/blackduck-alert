@@ -26,16 +26,16 @@ import com.blackduck.integration.alert.common.action.ValidationActionResponse;
 import com.blackduck.integration.alert.common.descriptor.DescriptorMap;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.enumeration.DescriptorType;
+import com.blackduck.integration.alert.common.persistence.accessor.DescriptorAccessor;
+import com.blackduck.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.blackduck.integration.alert.common.rest.model.FieldModel;
+import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
+import com.blackduck.integration.alert.common.rest.model.JobFieldModel;
 import com.blackduck.integration.alert.common.rest.model.JobPagedModel;
 import com.blackduck.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 import com.blackduck.integration.alert.common.rest.model.MultiJobFieldModel;
-import com.blackduck.integration.alert.common.util.PagingParamValidationUtils;
-import com.blackduck.integration.alert.common.persistence.accessor.DescriptorAccessor;
-import com.blackduck.integration.alert.common.persistence.model.RegisteredDescriptorModel;
-import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
-import com.blackduck.integration.alert.common.rest.model.JobFieldModel;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.common.util.PagingParamValidationUtils;
 
 public abstract class AbstractJobResourceActions {
     private static final EnumSet<DescriptorType> ALLOWED_JOB_DESCRIPTOR_TYPES = EnumSet.of(DescriptorType.PROVIDER, DescriptorType.CHANNEL);

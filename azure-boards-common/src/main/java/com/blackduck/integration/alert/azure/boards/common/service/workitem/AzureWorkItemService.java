@@ -18,14 +18,14 @@ import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpRequest
 import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpService;
 import com.blackduck.integration.alert.azure.boards.common.http.HttpServiceException;
 import com.blackduck.integration.alert.azure.boards.common.model.AzureArrayResponseModel;
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpMethods;
-import com.google.api.client.http.HttpRequest;
-import com.google.gson.reflect.TypeToken;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.request.WorkItemRequest;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemDeletedResponseModel;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpMethods;
+import com.google.api.client.http.HttpRequest;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * Documentation:

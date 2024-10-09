@@ -13,9 +13,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 
 public interface JobAccessor {
 

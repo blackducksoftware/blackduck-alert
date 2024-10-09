@@ -16,11 +16,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 
-import com.blackduck.integration.rest.RestConstants;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.persistence.model.SystemMessageModel;
 import com.blackduck.integration.alert.database.job.api.DefaultSystemStatusAccessor;
 import com.blackduck.integration.alert.database.system.DefaultSystemMessageAccessor;
+import com.blackduck.integration.rest.RestConstants;
 
 public class SystemActionsTest {
     private DefaultSystemStatusAccessor defaultSystemStatusUtility;

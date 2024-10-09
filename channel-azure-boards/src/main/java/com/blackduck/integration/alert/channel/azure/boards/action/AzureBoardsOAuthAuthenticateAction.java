@@ -16,15 +16,14 @@ import org.springframework.stereotype.Component;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.oauth.AlertOAuthCredentialDataStoreFactory;
+import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;
+import com.blackduck.integration.alert.azure.boards.common.oauth.AzureOAuthScopes;
 import com.blackduck.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.blackduck.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
 import com.blackduck.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.blackduck.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.blackduck.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
 import com.blackduck.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
-import com.blackduck.integration.rest.proxy.ProxyInfo;
-import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;
-import com.blackduck.integration.alert.azure.boards.common.oauth.AzureOAuthScopes;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
@@ -32,6 +31,7 @@ import com.blackduck.integration.alert.common.rest.AlertWebServerUrlManager;
 import com.blackduck.integration.alert.common.rest.ResponseFactory;
 import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.rest.proxy.ProxyInfo;
 
 @Component
 public class AzureBoardsOAuthAuthenticateAction {

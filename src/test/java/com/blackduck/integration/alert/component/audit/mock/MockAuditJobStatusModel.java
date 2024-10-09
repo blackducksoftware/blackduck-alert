@@ -7,11 +7,11 @@ import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
 import com.blackduck.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 public class MockAuditJobStatusModel {
     private final Gson gson = BlackDuckServicesFactory.createDefaultGson();

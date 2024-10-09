@@ -23,11 +23,11 @@ import com.blackduck.integration.alert.api.common.model.exception.AlertConfigura
 import com.blackduck.integration.alert.api.environment.EnvironmentProcessingResult;
 import com.blackduck.integration.alert.api.environment.EnvironmentVariableHandler;
 import com.blackduck.integration.alert.api.environment.EnvironmentVariableUtility;
-import com.blackduck.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;
-import com.blackduck.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.common.rest.model.SettingsProxyModel;
 import com.blackduck.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;
+import com.blackduck.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
 
 @Component
 public class ProxySettingsEnvironmentVariableHandler extends EnvironmentVariableHandler<SettingsProxyModel> {

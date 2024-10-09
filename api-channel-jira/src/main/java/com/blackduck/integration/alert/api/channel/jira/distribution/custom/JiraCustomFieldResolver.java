@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.blackduck.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.function.ThrowingSupplier;
 import com.blackduck.integration.jira.common.model.response.CustomFieldCreationResponseModel;
@@ -26,7 +27,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.blackduck.integration.alert.api.common.model.exception.AlertRuntimeException;
 
 public class JiraCustomFieldResolver {
     private static final String CUSTOM_FIELD_TYPE_STRING_VALUE = "string";

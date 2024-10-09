@@ -10,11 +10,11 @@ package com.blackduck.integration.alert.common.persistence.accessor;
 import java.util.List;
 import java.util.Optional;
 
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.enumeration.DescriptorType;
 import com.blackduck.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.RegisteredDescriptorModel;
-import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 
 public interface DescriptorAccessor {
     List<RegisteredDescriptorModel> getRegisteredDescriptors();

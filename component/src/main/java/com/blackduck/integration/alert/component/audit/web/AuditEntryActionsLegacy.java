@@ -20,7 +20,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.blackduck.integration.alert.component.audit.AuditDescriptorKey;
+import com.blackduck.integration.alert.api.processor.JobNotificationProcessor;
+import com.blackduck.integration.alert.api.processor.NotificationMappingProcessor;
+import com.blackduck.integration.alert.api.processor.distribute.ProcessedNotificationDetails;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.enumeration.FrequencyType;
@@ -36,9 +38,7 @@ import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.rest.model.AuditJobStatusesModel;
 import com.blackduck.integration.alert.common.rest.model.JobIdsRequestModel;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
-import com.blackduck.integration.alert.api.processor.JobNotificationProcessor;
-import com.blackduck.integration.alert.api.processor.NotificationMappingProcessor;
-import com.blackduck.integration.alert.api.processor.distribute.ProcessedNotificationDetails;
+import com.blackduck.integration.alert.component.audit.AuditDescriptorKey;
 
 /**
  * @deprecated Replaced by AuditEntryActions. To be removed in 8.0.0.

@@ -9,8 +9,6 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.api.distribution.audit.AuditEvent;
-
 class AuditEventTest {
 
     @Test

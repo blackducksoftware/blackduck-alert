@@ -18,10 +18,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
 import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
+import com.google.gson.Gson;
 
 @Component
 public class JiraFieldMappingValidator {

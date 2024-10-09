@@ -13,16 +13,16 @@ import org.mockito.Mockito;
 import org.springframework.amqp.core.Message;
 import org.springframework.core.task.SyncTaskExecutor;
 
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJob;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobStage;
 import com.blackduck.integration.alert.api.distribution.execution.JobStage;
 import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.google.gson.Gson;
 
 class JiraCloudCommentEventListenerTest {
     private final Gson gson = BlackDuckServicesFactory.createDefaultGson();

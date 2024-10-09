@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.blackduck.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
 
 public class ConfigurationModelMutableTest {
     private final Long descriptorId = 1L;

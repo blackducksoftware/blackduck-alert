@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackduck.integration.alert.channel.jira.server.action.JiraServerGlobalCrudActions;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.channel.jira.server.action.JiraServerGlobalCrudActions;
 import com.blackduck.integration.alert.channel.jira.server.action.JiraServerGlobalTestAction;
 import com.blackduck.integration.alert.channel.jira.server.action.JiraServerGlobalValidationAction;
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;

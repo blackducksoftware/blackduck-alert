@@ -14,15 +14,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.channel.email.action.EmailGlobalCrudActions;
 import com.blackduck.integration.alert.channel.email.action.EmailGlobalTestAction;
 import com.blackduck.integration.alert.channel.email.action.EmailGlobalValidationAction;
-import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
-import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.common.rest.ResponseFactory;
 import com.blackduck.integration.alert.common.rest.api.StaticUniqueConfigResourceController;
 import com.blackduck.integration.alert.common.rest.api.ValidateController;
+import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @RestController
 @RequestMapping(AlertRestConstants.EMAIL_CONFIGURATION_PATH)

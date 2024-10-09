@@ -16,13 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 
 import com.blackduck.integration.alert.api.certificates.AlertTrustStoreManager;
-import com.blackduck.integration.alert.component.certificates.web.CertificateTestUtil;
-import com.blackduck.integration.alert.test.common.MockAlertProperties;
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.common.AlertProperties;
 import com.blackduck.integration.alert.common.persistence.model.CustomCertificateModel;
 import com.blackduck.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.component.certificates.web.CertificateTestUtil;
+import com.blackduck.integration.alert.test.common.MockAlertProperties;
 import com.blackduck.integration.alert.util.AlertIntegrationTest;
 
 @AlertIntegrationTest

@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.event.AlertMessageListener;
+import com.google.gson.Gson;
 
 @Component
 public class AuditSuccessEventListener extends AlertMessageListener<AuditSuccessEvent> {

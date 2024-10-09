@@ -18,8 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
-import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 import com.blackduck.integration.alert.api.task.StartupScheduledTask;
 import com.blackduck.integration.alert.api.task.TaskManager;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
@@ -30,6 +28,8 @@ import com.blackduck.integration.alert.common.persistence.model.ConfigurationFie
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
 import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.component.scheduling.SchedulingConfiguration;
+import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
+import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 
 @Component
 public class PurgeTask extends StartupScheduledTask {

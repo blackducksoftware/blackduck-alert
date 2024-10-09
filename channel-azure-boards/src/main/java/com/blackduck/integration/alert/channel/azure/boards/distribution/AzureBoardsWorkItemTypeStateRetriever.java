@@ -10,7 +10,6 @@ package com.blackduck.integration.alert.channel.azure.boards.distribution;
 import java.util.List;
 import java.util.Optional;
 
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.azure.boards.common.http.HttpServiceException;
 import com.blackduck.integration.alert.azure.boards.common.model.AzureArrayResponseModel;
 import com.blackduck.integration.alert.azure.boards.common.service.state.AzureWorkItemTypeStateService;
@@ -18,6 +17,7 @@ import com.blackduck.integration.alert.azure.boards.common.service.state.WorkIte
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.AzureWorkItemService;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemFieldsWrapper;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
+import com.google.gson.Gson;
 
 public class AzureBoardsWorkItemTypeStateRetriever {
     private final Gson gson;

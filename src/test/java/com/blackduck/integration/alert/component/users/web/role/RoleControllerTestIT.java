@@ -23,12 +23,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
+import com.blackduck.integration.alert.database.user.RoleRepository;
 import com.blackduck.integration.alert.util.AlertIntegrationTest;
 import com.blackduck.integration.alert.util.AlertIntegrationTestConstants;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.blackduck.integration.alert.database.user.RoleRepository;
-import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 
 import junit.framework.AssertionFailedError;
 

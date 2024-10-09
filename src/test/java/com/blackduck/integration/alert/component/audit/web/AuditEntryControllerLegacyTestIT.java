@@ -23,8 +23,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
-import com.blackduck.integration.alert.component.audit.mock.MockAuditEntryEntity;
-import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.enumeration.FrequencyType;
 import com.blackduck.integration.alert.common.enumeration.ProcessingType;
@@ -36,6 +34,7 @@ import com.blackduck.integration.alert.common.persistence.model.job.Distribution
 import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.blackduck.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.component.audit.mock.MockAuditEntryEntity;
 import com.blackduck.integration.alert.database.audit.AuditEntryEntity;
 import com.blackduck.integration.alert.database.audit.AuditEntryRepository;
 import com.blackduck.integration.alert.database.audit.AuditNotificationRelation;
@@ -46,6 +45,7 @@ import com.blackduck.integration.alert.database.notification.NotificationContent
 import com.blackduck.integration.alert.database.notification.NotificationEntity;
 import com.blackduck.integration.alert.mock.MockConfigurationModelFactory;
 import com.blackduck.integration.alert.mock.entity.MockNotificationContent;
+import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.blackduck.integration.alert.util.AlertIntegrationTest;
 import com.blackduck.integration.alert.util.AlertIntegrationTestConstants;
 

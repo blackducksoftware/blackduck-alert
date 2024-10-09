@@ -24,8 +24,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.blackduck.integration.alert.database.job.DistributionJobEntity;
-import com.blackduck.integration.alert.database.job.DistributionJobRepository;
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
@@ -47,6 +45,8 @@ import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.util.DataStructureUtils;
 import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.common.util.SortUtil;
+import com.blackduck.integration.alert.database.job.DistributionJobEntity;
+import com.blackduck.integration.alert.database.job.DistributionJobRepository;
 import com.blackduck.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
 import com.blackduck.integration.alert.database.job.azure.boards.DefaultAzureBoardsJobDetailsAccessor;
 import com.blackduck.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;

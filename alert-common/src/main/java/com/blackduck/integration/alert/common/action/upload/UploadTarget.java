@@ -11,9 +11,9 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
-import com.blackduck.integration.alert.common.descriptor.config.field.validation.UploadValidationFunction;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
+import com.blackduck.integration.alert.common.descriptor.config.field.validation.UploadValidationFunction;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 
 public class UploadTarget {
     private final String fieldKey;

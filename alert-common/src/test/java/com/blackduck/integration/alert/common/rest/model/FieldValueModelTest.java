@@ -9,8 +9,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
-
 public class FieldValueModelTest {
     private final String testValue = "valueToTest";
 

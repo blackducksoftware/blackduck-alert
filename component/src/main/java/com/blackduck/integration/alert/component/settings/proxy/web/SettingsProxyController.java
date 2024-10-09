@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackduck.integration.alert.component.settings.proxy.action.SettingsProxyCrudActions;
-import com.blackduck.integration.alert.component.settings.proxy.action.SettingsProxyTestAction;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.common.rest.ResponseFactory;
 import com.blackduck.integration.alert.common.rest.api.StaticUniqueConfigResourceController;
 import com.blackduck.integration.alert.common.rest.api.ValidateController;
 import com.blackduck.integration.alert.common.rest.model.SettingsProxyModel;
+import com.blackduck.integration.alert.component.settings.proxy.action.SettingsProxyCrudActions;
+import com.blackduck.integration.alert.component.settings.proxy.action.SettingsProxyTestAction;
 import com.blackduck.integration.alert.component.settings.proxy.action.SettingsProxyValidationAction;
 
 @RestController

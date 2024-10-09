@@ -10,10 +10,10 @@ package com.blackduck.integration.alert.common.descriptor.config.ui;
 import java.util.Set;
 
 import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.common.enumeration.AccessOperation;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.enumeration.DescriptorType;
-import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 
 public class DescriptorMetadata extends AlertSerializableModel {
     private final String name;

@@ -18,9 +18,9 @@ import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.action.ValidationActionResponse;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
-import com.blackduck.integration.alert.common.rest.model.FieldModel;
 import com.blackduck.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.blackduck.integration.alert.common.persistence.model.RegisteredDescriptorModel;
+import com.blackduck.integration.alert.common.rest.model.FieldModel;
 import com.blackduck.integration.alert.common.rest.model.MultiFieldModel;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 

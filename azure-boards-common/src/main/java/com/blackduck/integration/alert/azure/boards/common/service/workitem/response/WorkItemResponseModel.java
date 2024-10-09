@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.blackduck.integration.alert.azure.boards.common.model.ReferenceLinkModel;
+import com.blackduck.integration.alert.azure.boards.common.service.workitem.WorkItemCommentVersionRefModel;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.WorkItemRelationModel;
 import com.blackduck.integration.alert.azure.boards.common.util.AzureFieldsExtractor;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.blackduck.integration.alert.azure.boards.common.service.workitem.WorkItemCommentVersionRefModel;
 
 public class WorkItemResponseModel {
     private Integer id;

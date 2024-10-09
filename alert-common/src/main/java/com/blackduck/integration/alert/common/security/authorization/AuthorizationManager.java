@@ -26,15 +26,15 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.blackduck.integration.alert.common.enumeration.AccessOperation;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.exception.AlertForbiddenOperationException;
-import com.blackduck.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.blackduck.integration.alert.common.persistence.model.PermissionKey;
+import com.blackduck.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.blackduck.integration.alert.common.persistence.model.UserModel;
 import com.blackduck.integration.alert.common.persistence.model.UserRoleModel;
-import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 
 @Component
 public class AuthorizationManager {
