@@ -1,3 +1,5 @@
+ext.moduleName = 'com.blackduck.integration.alert.test.common'
+
 dependencies {
     api project(':api-common-model')
     api project(':api-descriptor')

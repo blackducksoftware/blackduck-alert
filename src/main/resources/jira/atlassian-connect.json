@@ -4,8 +4,8 @@
   "key": "com.synopsys.integration.alert",
   "baseUrl": "https://github.com/blackducksoftware/blackduck-alert",
   "vendor": {
-    "name": "Synopsys, Inc.",
-    "url": "https://synopsys.com"
+    "name": "Black Duck Software, Inc.",
+    "url": "https://blackduck.com"
   },
   "authentication": {
     "type": "none"

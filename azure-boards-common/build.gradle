@@ -1,4 +1,4 @@
-ext.moduleName = 'com.synopsys.integration.azure.boards.common'
+ext.moduleName = 'com.blackduck.integration.azure.boards.common'
 
 dependencies {
     implementation platform(project(':alert-platform'))
@@ -9,8 +9,8 @@ dependencies {
     implementation 'com.google.http-client:google-http-client-apache-v2'
 
     implementation 'org.springframework:spring-core'
-    implementation 'com.synopsys.integration:integration-common'
+    implementation 'com.blackduck.integration:integration-common'
 
     testImplementation 'org.mockito:mockito-core'
-    testImplementation 'com.synopsys.integration:blackduck-common'
+    testImplementation 'com.blackduck.integration:blackduck-common'
 }

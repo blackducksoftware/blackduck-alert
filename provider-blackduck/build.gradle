@@ -1,4 +1,4 @@
-ext.moduleName = 'com.synopsys.integration.alert.provider.blackduck'
+ext.moduleName = 'com.blackduck.integration.alert.provider.blackduck'
 
 dependencies {
     implementation platform(project(':alert-platform'))
@@ -16,7 +16,7 @@ dependencies {
     implementation 'org.springframework:spring-web'
     implementation 'org.springframework.amqp:spring-amqp'
 
-    implementation 'com.synopsys.integration:blackduck-common'
+    implementation 'com.blackduck.integration:blackduck-common'
 
     testImplementation project(':test-common-channel')
     testImplementation project(':test-common-blackduck')
