@@ -1,4 +1,4 @@
-ext.moduleName = 'com.synopsys.integration.alert.database.job'
+ext.moduleName = 'com.blackduck.integration.alert.database.job'
 
 dependencies {
     implementation platform(project(':alert-platform'))
@@ -15,5 +15,5 @@ dependencies {
     implementation 'jakarta.persistence:jakarta.persistence-api'
 
     testImplementation project(':test-common')
-    testImplementation 'com.synopsys.integration:blackduck-common'
+    testImplementation 'com.blackduck.integration:blackduck-common'
 }

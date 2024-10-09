@@ -1,6 +1,6 @@
 String keystoreFile = "${project.buildDir}/certs/blackduck-alert.keystore"
 
-task createKeystore(type: com.synopsys.integration.alert.build.CreateKeystoreTask) {
+task createKeystore(type: com.blackduck.integration.alert.build.CreateKeystoreTask) {
     doFirst {
         mkdir "${project.buildDir}/certs"
     }
@@ -13,7 +13,7 @@ task createTruststore(type: Copy) {
     rename 'cacerts', 'blackduck-alert.truststore'
 }
 
-task runServer(type: com.synopsys.integration.alert.build.RunServerTask, dependsOn: [build, createKeystore, createTruststore]) {
+task runServer(type: com.blackduck.integration.alert.build.RunServerTask, dependsOn: [build, createKeystore, createTruststore]) {
     doFirst {
         if (!file(keystoreFile).exists()) {
             throw new GradleException("Required keystore does not exist --> ${keystoreFile}")

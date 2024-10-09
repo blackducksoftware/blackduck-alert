@@ -1,4 +1,4 @@
-ext.moduleName = 'com.synopsys.integration.alert.processor-api'
+ext.moduleName = 'com.blackduck.integration.alert.processor-api'
 
 dependencies {
     implementation platform(project(':alert-platform'))
@@ -8,7 +8,7 @@ dependencies {
     implementation project(':api-distribution')
     implementation project(':api-event')
 
-    implementation 'com.synopsys.integration:blackduck-common'
+    implementation 'com.blackduck.integration:blackduck-common'
     implementation 'org.springframework:spring-context'
     implementation 'org.springframework.amqp:spring-amqp'
 

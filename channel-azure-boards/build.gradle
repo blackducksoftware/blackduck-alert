@@ -1,4 +1,4 @@
-ext.moduleName = 'com.synopsys.integration.alert.channel.azure-boards'
+ext.moduleName = 'com.blackduck.integration.alert.channel.azure-boards'
 
 dependencies {
     implementation platform(project(':alert-platform'))
@@ -14,7 +14,7 @@ dependencies {
 
     api 'org.springframework.data:spring-data-jpa'
     implementation 'jakarta.persistence:jakarta.persistence-api'
-    implementation 'com.synopsys.integration:integration-rest'
+    implementation 'com.blackduck.integration:integration-rest'
 
     implementation 'com.google.http-client:google-http-client-apache-v2'
     implementation 'com.google.http-client:google-http-client-jackson2'
@@ -28,5 +28,5 @@ dependencies {
 
     testImplementation project(':test-common-channel')
     testImplementation project(':alert-database-job')
-    testImplementation 'com.synopsys.integration:blackduck-common'
+    testImplementation 'com.blackduck.integration:blackduck-common'
 }
