@@ -1,8 +1,10 @@
+ext.moduleName = 'com.blackduck.integration.alert.test.common.blackduck'
+
 dependencies {
     api project(':test-common')
 
     implementation platform(project(':alert-platform'))
     implementation project(':alert-common')
     implementation project(':provider-blackduck')
-    implementation 'com.synopsys.integration:blackduck-common'
+    implementation 'com.blackduck.integration:blackduck-common'
 }

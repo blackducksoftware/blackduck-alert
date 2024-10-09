@@ -1,4 +1,4 @@
-ext.moduleName = 'com.synopsys.integration.alert.api-event'
+ext.moduleName = 'com.blackduck.integration.alert.api-event'
 
 dependencies {
     implementation platform(project(':alert-platform'))
@@ -9,5 +9,5 @@ dependencies {
     implementation 'org.springframework.amqp:spring-rabbit'
 
     testImplementation project(':test-common')
-    testImplementation 'com.synopsys.integration:blackduck-common'
+    testImplementation 'com.blackduck.integration:blackduck-common'
 }

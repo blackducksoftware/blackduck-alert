@@ -17,7 +17,7 @@ alertDatabaseUser="${ALERT_DB_USERNAME:-sa}"
 alertDatabasePassword="${ALERT_DB_PASSWORD:-blackduck}"
 alertDatabaseAdminUser="${ALERT_DB_ADMIN_USERNAME:-$alertDatabaseUser}"
 alertDatabaseAdminPassword="${ALERT_DB_ADMIN_PASSWORD:-$alertDatabasePassword}"
-alertDatabaseSslMode="${ALERT_DB_SSL_MODE:-allow}"
+alertDatabaseSslMode="${ALERT_DB_SSL_MODE:-disable}"
 alertDatabaseSslKey=${ALERT_DB_SSL_KEY_PATH}
 alertDatabaseSslCert=${ALERT_DB_SSL_CERT_PATH}
 alertDatabaseSslRootCert=${ALERT_DB_SSL_ROOT_CERT_PATH}
@@ -31,6 +31,12 @@ keystoreFilePath=${SECURITY_DIR}/$keyStoreFile
 keystorePassword="${ALERT_KEY_STORE_PASSWORD:-changeit}"
 truststoreFile=${SECURITY_DIR}/${APPLICATION_NAME}.truststore
 truststorePassword="${ALERT_TRUST_STORE_PASSWORD:-changeit}"
+
+## DB CONNECTION VARIABLES ##
+alertBaseDatabaseConfig="host=${alertDatabaseHost} port=${alertDatabasePort} dbname=${alertDatabaseName} sslmode=${alertDatabaseSslMode}"
+springDatasourceUrl="jdbc:postgresql://${alertDatabaseHost}:${alertDatabasePort}/${alertDatabaseName}?sslmode=${alertDatabaseSslMode}"
+alertDatabaseAdminConfig=""
+alertDatabaseConfig=""
 
 ## OTHER VARIABLES ##
 targetCAHost="${HUB_CFSSL_HOST:-cfssl}"
@@ -486,23 +492,41 @@ logIsVariableConfigured() {
   logIt "${1} is configured as -- ${2} --"
 }
 
+setDatabaseConnectionDetails() {
+  logIt "sslmode is set as ${alertDatabaseSslMode}"
+  logIsVariableConfigured sslkey "${alertDatabaseSslKey}"
+  logIsVariableConfigured sslcert "${alertDatabaseSslCert}"
+  logIsVariableConfigured sssslrootcertlkey "${alertDatabaseSslRootCert}"
+
+  if [ -n "${alertDatabaseSslRootCert}" ] && [ -f "${alertDatabaseSslRootCert}" ]; then
+    logIt "Adding sslrootcert to DB connection"
+    alertBaseDatabaseConfig="${alertBaseDatabaseConfig} sslrootcert=${alertDatabaseSslRootCert}"
+    springDatasourceUrl="${springDatasourceUrl}&sslrootcert=${alertDatabaseSslRootCert}"
+  else
+    logIt "Not including sslrootcert to DB connection"
+  fi
+
+  if [ -n "${alertDatabaseSslKey}" ] && [ -f "${alertDatabaseSslKey}" ] && [ -n "${alertDatabaseSslCert}" ] && [ -f "${alertDatabaseSslCert}" ]; then
+    logIt "Adding sslkey and sslcert to DB connection"
+    alertBaseDatabaseConfig="${alertBaseDatabaseConfig} sslkey=${alertDatabaseSslKey} sslcert=${alertDatabaseSslCert}"
+    springDatasourceUrl="${springDatasourceUrl}&sslkey=${alertDatabaseSslKey}&sslcert=${alertDatabaseSslCert}"
+  else
+      logIt "Not including sslkey and sslcert to DB connection"
+    fi
+
+  alertDatabaseAdminConfig="user=$alertDatabaseAdminUser password=$alertDatabaseAdminPassword $alertBaseDatabaseConfig"
+  alertDatabaseConfig="user=$alertDatabaseUser password=$alertDatabasePassword $alertBaseDatabaseConfig"
+}
+
 [ -z "${ALERT_HOSTNAME}" ] && logIt "Alert Host: [$alertHostName]. Wrong host name? Restart the container with the right host name configured in blackduck-alert.env"
 
 setOverrideVariables
 validateEnvironment
-
-alertBaseDatabaseConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName sslmode=$alertDatabaseSslMode sslkey=$alertDatabaseSslKey sslcert=$alertDatabaseSslCert sslrootcert=$alertDatabaseSslRootCert"
-alertDatabaseAdminConfig="user=$alertDatabaseAdminUser password=$alertDatabaseAdminPassword $alertBaseDatabaseConfig"
-alertDatabaseConfig="user=$alertDatabaseUser password=$alertDatabasePassword $alertBaseDatabaseConfig"
+setDatabaseConnectionDetails
 
 logIt "Alert max heap size: ${ALERT_MAX_HEAP_SIZE}"
 logIt "Certificate authority host: $targetCAHost"
 logIt "Certificate authority port: $targetCAPort"
-
-logIt "sslmode is set as ${alertDatabaseSslMode}"
-logIsVariableConfigured sslkey "${alertDatabaseSslKey}"
-logIsVariableConfigured sslcert "${alertDatabaseSslCert}"
-logIsVariableConfigured sssslrootcertlkey "${alertDatabaseSslRootCert}"
 
 if [ ! -f "${CERTIFICATE_MANAGER_DIR}/certificate-manager.sh" ];
 then
@@ -534,4 +558,4 @@ then
 fi
 
 logIt "Launching exec :: $@"
-exec "$@"
+exec "$@" "--spring.datasource.url=${springDatasourceUrl}" "--spring.datasource.hikari.jdbc-url=${springDatasourceUrl}"
