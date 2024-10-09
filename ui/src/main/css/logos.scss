@@ -23,7 +23,7 @@
 .logoContainer {
   display: flex;
   align-items: center;
-  column-gap: 8px;
+  column-gap: 6px;
 }
 
 .divider {
@@ -35,11 +35,4 @@
   font-size: 1.5em;
   line-height: 1.25em;
   font-family: 'Roboto', 'Arial', 'sans-serif';
-}
-
-.blackduckFooterLogo {
-  background: none;
-  margin: auto;
-  width: auto;
-  max-height: 14px;
 }
