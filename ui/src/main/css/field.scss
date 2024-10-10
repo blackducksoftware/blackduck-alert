@@ -16,7 +16,7 @@ small {
   font-size: 65%;
   font-weight: normal;
   line-height: 1;
-  color: $synopsys-color-light-gray;
+  color: $blackduck-color-light-gray;
 }
 
 #description-tooltip {
@@ -24,7 +24,7 @@ small {
 }
 
 #description-tooltip > .tooltip-inner {
-  background-color: $synopsys-color-subhead-copy;
+  background-color: $blackduck-color-subhead-copy;
   font-size: $base-font-size;
   font-weight: $base-font-weight;
   font-family: 'Roboto', 'Arial', sans-serif;
@@ -61,12 +61,12 @@ small {
 }
 
 .fieldError {
-  color: $synopsys-color-platform-red;
+  color: $blackduck-color-platform-red;
   padding: 4px 0px 0px;
 }
 
 .fieldWarning {
-  color: $synopsys-color-yellow;
+  color: $blackduck-color-yellow;
   padding: 4px 0px 0px;
 }
 
@@ -84,7 +84,7 @@ small {
   }
 
   .Select-control {
-    border-color: $synopsys-color-lightest-gray;
+    border-color: $blackduck-color-lightest-gray;
     border-radius: $border-radius;
 
     .Select-value,
@@ -110,8 +110,8 @@ small {
   }
 
   &.is-focused:not(.is-open) > .Select-control {
-    border-color: $synopsys-color-blue;
-    box-shadow: inset 0 1px 1px $synopsys-color-subhead-copy, 0 0 8px $synopsys-color-platform-blue;
+    border-color: $blackduck-color-blue;
+    box-shadow: inset 0 1px 1px $blackduck-color-subhead-copy, 0 0 8px $blackduck-color-platform-blue;
   }
 }
 
@@ -159,12 +159,12 @@ small {
   vertical-align: middle !important;
   border: 1px solid darken($color-danger, 5%);
   background-color: $color-danger;
-  color: $synopsys-color-section-background;
+  color: $blackduck-color-section-background;
 
   &:hover {
     background-color: darken($color-danger, 10%);
     border-color: darken($color-danger, 17%);
-    color: $synopsys-color-section-background;
+    color: $blackduck-color-section-background;
   }
 }
 
