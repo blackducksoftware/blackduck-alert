@@ -7,24 +7,24 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: $synopsys-color-section-background;
+  background-color: $blackduck-color-section-background;
   height: 36px;
   line-height: 24px;
-  border-top: 1px solid $synopsys-color-light-gray;
+  border-top: 1px solid $blackduck-color-light-gray;
   padding: 0 15px 0 15px;
   font-family: 'Roboto', 'Arial', sans-serif;
   font-size: 11px;
-  color: $synopsys-color-subhead-copy;
+  color: $blackduck-color-subhead-copy;
   transition: opacity .3s ease-in-out 0s;
   z-index: 9999;
 }
 
 .footer a {
-  color: $synopsys-color-subhead-copy;
+  color: $blackduck-color-subhead-copy;
 }
 
 .footer a:hover {
-  color: $synopsys-color-subhead-copy;
+  color: $blackduck-color-subhead-copy;
 }
 
 .footerAlertText {

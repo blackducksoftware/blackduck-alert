@@ -20,15 +20,15 @@
 }
 
 .statusSuccess {
-  color: $synopsys-color-platform-green;
+  color: $blackduck-color-platform-green;
 }
 
 .statusFailure {
-  color: $synopsys-color-platform-red;
+  color: $blackduck-color-platform-red;
 }
 
 .statusPending {
-  color: $synopsys-color-light-gray;
+  color: $blackduck-color-light-gray;
 }
 
 .tableButton {
@@ -36,31 +36,31 @@
 }
 
 .addJobButton {
-  border: 1px solid darken($synopsys-color-platform-blue, 5%);
-  background-color: $synopsys-color-platform-blue;
-  color: $synopsys-color-section-background;
+  border: 1px solid darken($blackduck-color-platform-blue, 5%);
+  background-color: $blackduck-color-platform-blue;
+  color: $blackduck-color-section-background;
 
   &:hover {
-    background-color: darken($synopsys-color-platform-blue, 10%);
-    border-color: darken($synopsys-color-platform-blue, 17%);
-    color: $synopsys-color-section-background;
+    background-color: darken($blackduck-color-platform-blue, 10%);
+    border-color: darken($blackduck-color-platform-blue, 17%);
+    color: $blackduck-color-section-background;
   }
 }
 
 .deleteJobButton {
   border: 1px solid darken($color-danger, 5%);
   background-color: $color-danger;
-  color: $synopsys-color-section-background;
+  color: $blackduck-color-section-background;
 
   &:hover {
     background-color: darken($color-danger, 10%);
     border-color: darken($color-danger, 17%);
-    color: $synopsys-color-section-background;
+    color: $blackduck-color-section-background;
   }
 }
 
 .jobIconButton {
-  color: $synopsys-color-midnight-blue;
+  color: $blackduck-color-midnight-blue;
   margin-left: auto;
   margin-right: auto;
   padding-top: 0;
@@ -68,7 +68,7 @@
 }
 
 .jobIconButtonDisabled {
-  color: $synopsys-color-lightest-gray;
+  color: $blackduck-color-lightest-gray;
   padding: 6px 12px;
   border: 3px solid transparent;
   vertical-align: middle;
@@ -89,7 +89,7 @@
 
 .tableEvenRow {
   cursor: pointer;
-  background-color: $synopsys-color-lightest-gray;
+  background-color: $blackduck-color-lightest-gray;
 }
 
 .tableCell {
@@ -125,7 +125,7 @@
 .expandableContainer {
   border-radius: $border-radius;
   border: 1px solid $border-color;
-  background-color: $synopsys-color-section-background;
+  background-color: $blackduck-color-section-background;
   overflow-y: inherit !important;
   padding-top: 15px;
 }
@@ -179,11 +179,11 @@
   color: #B1B3B3;
 }
 
-.synopsysGreen {
-  color: $synopsys-color-green;
+.blackduckGreen {
+  color: $blackduck-color-green;
 }
 
-.synopsysRed {
-  color: $synopsys-color-platform-red;
+.blackduckRed {
+  color: $blackduck-color-platform-red;
 }
 

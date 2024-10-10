@@ -2,7 +2,7 @@
 
 html,
 body {
-  background-color: $synopsys-color-footer-background;
+  background-color: $blackduck-color-footer-background;
   font-size: $base-font-size;
   font-weight: $base-font-weight;
   font-family: 'Roboto', 'Arial', sans-serif;
@@ -48,7 +48,7 @@ button + button {
 }
 
 .contentArea {
-  background-color: $synopsys-color-section-background;
+  background-color: $blackduck-color-section-background;
   height: 100%;
   overflow: auto;
   padding: 15px;
@@ -79,7 +79,7 @@ button + button {
 
 .advanced {
   cursor: pointer;
-  color: $synopsys-color-platform-blue;
+  color: $blackduck-color-platform-blue;
   text-align: right;
 }
 
@@ -91,8 +91,8 @@ button + button {
 
 .submitButtons {
   margin-right: 10px;
-  color: $synopsys-color-section-background;
-  background: $synopsys-color-platform-blue;
+  color: $blackduck-color-section-background;
+  background: $blackduck-color-platform-blue;
   text-align: center;
   vertical-align: middle;
   padding: 5px 10px 5px 10px;
@@ -110,8 +110,8 @@ button + button {
 
 .submitButtonsFixed {
   margin-right: 10px;
-  color: $synopsys-color-section-background;
-  background: $synopsys-color-platform-blue;
+  color: $blackduck-color-section-background;
+  background: $blackduck-color-platform-blue;
   text-align: center;
   vertical-align: middle;
   padding: 5px 10px 5px 10px;
@@ -129,7 +129,7 @@ button + button {
 }
 
 .configurationError {
-  color: $synopsys-color-platform-red;
+  color: $blackduck-color-platform-red;
   text-align: center;
 }
 
@@ -146,10 +146,10 @@ form.form-horizontal.loginForm {
 }
 
 .loginBox {
-  background-color: $synopsys-color-section-background;
+  background-color: $blackduck-color-section-background;
   border: 0;
   border-radius: $border-radius;
-  box-shadow: 1px 1px 10px $synopsys-color-light-gray;
+  box-shadow: 1px 1px 10px $blackduck-color-light-gray;
   margin-bottom: 20px;
   max-width: 500px;
   min-height: 175px;
@@ -160,10 +160,10 @@ form.form-horizontal.loginForm {
 }
 
 .topLevelModal {
-  background-color: $synopsys-color-section-background;
+  background-color: $blackduck-color-section-background;
   border: 0;
   border-radius: $border-radius;
-  box-shadow: 1px 1px 100px $synopsys-color-dark-gray;
+  box-shadow: 1px 1px 100px $blackduck-color-dark-gray;
 }
 
 .modal-content {
@@ -223,7 +223,7 @@ form.form-horizontal.loginForm {
   width: 75%;
   height: 100%;
   padding: 10px;
-  background-color: $synopsys-color-section-background;
+  background-color: $blackduck-color-section-background;
   position: relative;
   overflow: hidden;
 }
