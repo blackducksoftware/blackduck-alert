@@ -12,7 +12,7 @@ import '../../../css/messages.scss';
 import '../../../css/logos.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import BlackDuckLogoAllBlack from '/src/main/resources/BlackDuckLogoAllBlack.png';
+import BlackDuckLogoAllBlack from '/src/main/img/BlackDuckLogoAllBlack.png';
 
 class AboutInfoFooter extends React.Component {
     constructor(props) {

@@ -5,6 +5,7 @@ const srcDir = path.resolve(__dirname, 'src');
 const jsDir = path.resolve(srcDir, 'main', 'js');
 
 const buildDir = path.resolve(__dirname, 'build', 'resources', 'main', 'static');
+const imgDir = path.resolve(srcDir, 'main', 'img');
 
 module.exports = {
     resolve: {
@@ -29,10 +30,18 @@ module.exports = {
             loader: 'babel-loader'
         }, {
             test: /\.(jpg|png|svg)$/,
-            exclude: /(node_modules)/,
+            exclude: [/(node_modules)/, imgDir],
             loader: 'file-loader',
             options: {
                 name: '[path][name].[ext]'
+            }
+        },
+        {
+            test: /\.(jpg|png|svg)$/,
+            include: imgDir,
+            loader: 'file-loader',
+            options: {
+                name: 'img/[name].[ext]'
             }
         }, {
             test: /\.s[ac]ss$/i,
@@ -67,7 +76,7 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            favicon: 'src/main/resources/BlackDuckIcon.png',
+            favicon: 'src/main/img/BlackDuckIcon.png',
             template: 'src/main/js/index.html',
             xhtml: true
         })

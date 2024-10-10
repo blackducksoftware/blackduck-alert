@@ -10,10 +10,6 @@ import rootReducer from 'store/reducers';
 import { ThemeProvider } from 'react-jss';
 import theme from '_theme';
 
-// export synopsys_black from '../img/synopsys_black.png';
-// export synopsys_purple from '../img/synopsys_purple.png';
-// export synopsys_white from '../img/synopsys_white.png';
-
 const initialState = {};
 // Setup history
 const history = createHistory();
