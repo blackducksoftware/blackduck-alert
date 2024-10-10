@@ -2,7 +2,7 @@ import React from 'react';
 import { createUseStyles } from 'react-jss';
 import { NavLink } from 'react-router-dom';
 import '/src/main/css/logos.scss';
-import BlackDuckLogo from '/src/main/resources/BlackDuckLogo.png';
+import BlackDuckLogo from '/src/main/img/BlackDuckLogo.png';
 
 const useStyles = createUseStyles({
     topNav: {
