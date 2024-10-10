@@ -2,8 +2,8 @@ package com.blackduck.integration.alert.performance.event;
 
 import org.springframework.core.task.TaskExecutor;
 
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.event.AlertMessageListener;
+import com.google.gson.Gson;
 
 public class TestAlertEventListener extends AlertMessageListener<TestAlertEvent> {
     private final TestAlertEventHandler handler;

@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerResponsePostProcessor;
 import com.blackduck.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
 import com.blackduck.integration.alert.api.channel.issue.tracker.event.IssueTrackerCommentEvent;
@@ -21,6 +20,7 @@ import com.blackduck.integration.alert.api.channel.issue.tracker.search.Existing
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.enumeration.IssueCategory;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.enumeration.IssueStatus;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudProperties;
@@ -28,7 +28,6 @@ import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudPropertiesFac
 import com.blackduck.integration.alert.channel.jira.cloud.distribution.JiraCloudMessageSenderFactory;
 import com.blackduck.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.cloud.service.FieldService;
@@ -38,6 +37,7 @@ import com.blackduck.integration.jira.common.cloud.service.JiraCloudServiceFacto
 import com.blackduck.integration.jira.common.cloud.service.ProjectService;
 import com.blackduck.integration.jira.common.model.request.IssueCommentRequestModel;
 import com.blackduck.integration.jira.common.model.response.IssueCommentResponseModel;
+import com.google.gson.Gson;
 
 class JiraCloudCommentEventHandlerTest {
     private final Gson gson = BlackDuckServicesFactory.createDefaultGson();

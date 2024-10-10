@@ -15,13 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.channel.jira.JiraConstants;
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.blackduck.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.blackduck.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
-import com.blackduck.integration.exception.IntegrationException;
-import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.action.ValidationActionResponse;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
@@ -29,6 +28,7 @@ import com.blackduck.integration.alert.common.message.model.ConfigurationTestRes
 import com.blackduck.integration.alert.common.rest.api.ConfigurationTestHelper;
 import com.blackduck.integration.alert.common.rest.api.ConfigurationValidationHelper;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.exception.IntegrationException;
 
 @Component
 public class JiraServerGlobalTestAction {

@@ -10,8 +10,8 @@ package com.blackduck.integration.alert.web.api.metadata;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.web.api.metadata.model.ConfigContextsResponseModel;
 import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.web.api.metadata.model.ConfigContextsResponseModel;
 
 @Component
 public class ContextActions {

@@ -11,18 +11,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.blackduck.integration.alert.api.distribution.mock.MockJobCompletionStatusDurationsRepository;
-import com.blackduck.integration.alert.database.job.api.DefaultJobCompletionStatusModelAccessor;
-import com.blackduck.integration.alert.database.job.execution.JobCompletionDurationsRepository;
-import com.blackduck.integration.alert.database.job.execution.JobCompletionRepository;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJob;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.distribution.execution.JobStage;
+import com.blackduck.integration.alert.api.distribution.mock.MockJobCompletionStatusDurationsRepository;
 import com.blackduck.integration.alert.api.distribution.mock.MockJobCompletionStatusRepository;
 import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.api.event.distribution.JobSubTaskEvent;
 import com.blackduck.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
+import com.blackduck.integration.alert.database.job.api.DefaultJobCompletionStatusModelAccessor;
+import com.blackduck.integration.alert.database.job.execution.JobCompletionDurationsRepository;
+import com.blackduck.integration.alert.database.job.execution.JobCompletionRepository;
 
 class JobSubTaskEventHandlerTest {
     private EventManager eventManager;

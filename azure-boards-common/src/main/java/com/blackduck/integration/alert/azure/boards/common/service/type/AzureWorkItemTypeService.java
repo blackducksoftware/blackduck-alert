@@ -9,10 +9,10 @@ package com.blackduck.integration.alert.azure.boards.common.service.type;
 
 import java.lang.reflect.Type;
 
-import com.google.gson.reflect.TypeToken;
 import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpService;
 import com.blackduck.integration.alert.azure.boards.common.http.HttpServiceException;
 import com.blackduck.integration.alert.azure.boards.common.model.AzureArrayResponseModel;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * <a href="https://docs.microsoft.com/en-us/rest/api/azure/devops/wit/work%20item%20types/list?view=azure-devops-rest-5.1">Documentation</a>

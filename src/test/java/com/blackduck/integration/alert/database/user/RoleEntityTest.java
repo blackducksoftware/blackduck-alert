@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.database.user.RoleEntity;
-
 public class RoleEntityTest {
 
     @Test

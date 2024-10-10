@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.blackduck.integration.alert.test.common.TestTags;
-import com.blackduck.integration.alert.update.DockerTagRetriever;
 import com.blackduck.integration.alert.update.model.DockerTagModel;
 import com.blackduck.integration.alert.update.model.DockerTagsResponseModel;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;

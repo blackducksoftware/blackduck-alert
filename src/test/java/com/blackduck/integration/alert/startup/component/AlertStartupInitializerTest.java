@@ -25,7 +25,6 @@ import com.blackduck.integration.alert.common.persistence.util.ConfigurationFiel
 import com.blackduck.integration.alert.common.rest.FieldModelProcessor;
 import com.blackduck.integration.alert.common.security.EncryptionUtility;
 import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
-import com.blackduck.integration.alert.startup.component.AlertStartupInitializer;
 
 public class AlertStartupInitializerTest {
     private static final SettingsDescriptorKey SETTINGS_DESCRIPTOR_KEY = new SettingsDescriptorKey();

@@ -15,6 +15,7 @@ import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobMa
 import com.blackduck.integration.alert.api.processor.detail.DetailedNotificationContent;
 import com.blackduck.integration.alert.api.processor.detail.NotificationDetailExtractionDelegator;
 import com.blackduck.integration.alert.api.processor.digest.ProjectMessageDigester;
+import com.blackduck.integration.alert.api.processor.event.JobProcessingEvent;
 import com.blackduck.integration.alert.api.processor.extract.ProviderMessageExtractionDelegator;
 import com.blackduck.integration.alert.api.processor.extract.model.ProcessedProviderMessage;
 import com.blackduck.integration.alert.api.processor.extract.model.ProcessedProviderMessageHolder;
@@ -22,7 +23,6 @@ import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.blackduck.integration.alert.api.processor.filter.NotificationContentWrapper;
 import com.blackduck.integration.alert.api.processor.summarize.ProjectMessageSummarizer;
-import com.blackduck.integration.alert.api.processor.event.JobProcessingEvent;
 import com.blackduck.integration.alert.common.enumeration.ProcessingType;
 import com.blackduck.integration.alert.common.logging.AlertLoggerFactory;
 import com.blackduck.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;

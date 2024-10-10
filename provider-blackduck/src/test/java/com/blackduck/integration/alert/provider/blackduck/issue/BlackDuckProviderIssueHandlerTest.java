@@ -10,9 +10,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.blackduck.integration.alert.provider.blackduck.issue.BlackDuckProviderIssueHandler;
-import com.blackduck.integration.alert.provider.blackduck.issue.BlackDuckProviderIssueModel;
-import com.google.gson.Gson;
 import com.blackduck.integration.blackduck.api.core.ResourceMetadata;
 import com.blackduck.integration.blackduck.api.generated.view.ProjectVersionIssuesView;
 import com.blackduck.integration.blackduck.api.generated.view.ProjectVersionView;
@@ -22,6 +19,7 @@ import com.blackduck.integration.blackduck.service.dataservice.IssueService;
 import com.blackduck.integration.blackduck.service.request.BlackDuckResponseRequest;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.rest.HttpUrl;
+import com.google.gson.Gson;
 
 @ExtendWith(SpringExtension.class)
 class BlackDuckProviderIssueHandlerTest {

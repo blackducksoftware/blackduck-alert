@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.provider.blackduck.processor.model.RuleViolationClearedUniquePolicyNotificationContent;
 import com.blackduck.integration.blackduck.api.manual.component.ComponentVersionStatus;
 import com.blackduck.integration.blackduck.api.manual.component.PolicyInfo;
 

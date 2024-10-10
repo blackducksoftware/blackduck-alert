@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.enumeration.FrequencyType;
 import com.blackduck.integration.alert.common.enumeration.ProcessingType;
@@ -19,8 +21,6 @@ import com.blackduck.integration.alert.common.persistence.model.ConfigurationMod
 import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.blackduck.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 
 @AlertIntegrationTest

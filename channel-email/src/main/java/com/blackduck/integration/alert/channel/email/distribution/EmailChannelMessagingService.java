@@ -16,17 +16,17 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.blackduck.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
 import com.blackduck.integration.alert.channel.email.attachment.EmailAttachmentFormat;
+import com.blackduck.integration.alert.common.AlertProperties;
+import com.blackduck.integration.alert.common.message.model.MessageResult;
 import com.blackduck.integration.alert.service.email.EmailMessagingService;
 import com.blackduck.integration.alert.service.email.EmailTarget;
 import com.blackduck.integration.alert.service.email.SmtpConfig;
 import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.blackduck.integration.alert.service.email.template.FreemarkerTemplatingService;
-import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
-import com.blackduck.integration.alert.common.AlertProperties;
-import com.blackduck.integration.alert.common.message.model.MessageResult;
 
 @Component
 public class EmailChannelMessagingService {

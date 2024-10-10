@@ -13,13 +13,6 @@ import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
 import com.blackduck.integration.alert.api.provider.lifecycle.ProviderSchedulingManager;
 import com.blackduck.integration.alert.api.provider.state.StatefulProvider;
-import com.blackduck.integration.alert.provider.blackduck.BlackDuckCacheHttpClientCache;
-import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.blackduck.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.blackduck.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
-import com.blackduck.integration.alert.provider.blackduck.task.BlackDuckDataSyncTask;
-import com.blackduck.integration.alert.provider.blackduck.task.accumulator.BlackDuckAccumulator;
-import com.blackduck.integration.function.ThrowingBiFunction;
 import com.blackduck.integration.alert.api.task.TaskManager;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
@@ -28,6 +21,13 @@ import com.blackduck.integration.alert.common.persistence.model.ConfigurationFie
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
 import com.blackduck.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.blackduck.integration.alert.common.rest.model.FieldModel;
+import com.blackduck.integration.alert.provider.blackduck.BlackDuckCacheHttpClientCache;
+import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.blackduck.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.blackduck.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
+import com.blackduck.integration.alert.provider.blackduck.task.BlackDuckDataSyncTask;
+import com.blackduck.integration.alert.provider.blackduck.task.accumulator.BlackDuckAccumulator;
+import com.blackduck.integration.function.ThrowingBiFunction;
 
 class BlackDuckGlobalApiActionTest {
     @Test

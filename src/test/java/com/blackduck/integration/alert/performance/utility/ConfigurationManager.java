@@ -14,13 +14,6 @@ import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
-import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.blackduck.integration.blackduck.service.model.ProjectVersionWrapper;
-import com.blackduck.integration.exception.IntegrationException;
-import com.blackduck.integration.log.IntLogger;
-import com.blackduck.integration.log.Slf4jIntLogger;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.blackduck.integration.alert.common.descriptor.ChannelDescriptor;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.enumeration.ProcessingType;
@@ -29,6 +22,13 @@ import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
 import com.blackduck.integration.alert.common.rest.model.JobFieldModel;
 import com.blackduck.integration.alert.common.rest.model.JobPagedModel;
 import com.blackduck.integration.alert.common.rest.model.JobProviderProjectFieldModel;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.blackduck.service.model.ProjectVersionWrapper;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.log.IntLogger;
+import com.blackduck.integration.log.Slf4jIntLogger;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 public class ConfigurationManager {
     private final IntLogger intLogger = new Slf4jIntLogger(LoggerFactory.getLogger(getClass()));

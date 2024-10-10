@@ -9,7 +9,6 @@ package com.blackduck.integration.alert.channel.azure.boards.distribution.search
 
 import java.util.Objects;
 
-import com.blackduck.integration.alert.channel.azure.boards.distribution.util.AzureBoardsUILinkUtils;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
@@ -18,6 +17,7 @@ import com.blackduck.integration.alert.api.channel.issue.tracker.search.enumerat
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemFieldsWrapper;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseFields;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
+import com.blackduck.integration.alert.channel.azure.boards.distribution.util.AzureBoardsUILinkUtils;
 
 public class AzureBoardsExistingIssueDetailsCreator {
     private final String organizationName;

@@ -14,8 +14,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.blackduck.integration.alert.common.rest.model.FieldModel;
 import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
 import com.blackduck.integration.exception.IntegrationException;
@@ -25,6 +23,8 @@ import com.blackduck.integration.wait.ResilientJobConfig;
 import com.blackduck.integration.wait.WaitJob;
 import com.blackduck.integration.wait.tracker.WaitIntervalTracker;
 import com.blackduck.integration.wait.tracker.WaitIntervalTrackerFactory;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 //TODO: Implementations of this class should be replaced with IntegrationPerformanceTestRunner
 @Deprecated(forRemoval = true)

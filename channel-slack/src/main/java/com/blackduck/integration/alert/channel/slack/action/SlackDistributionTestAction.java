@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.channel.action.DistributionChannelMessageTestAction;
-import com.blackduck.integration.alert.channel.slack.distribution.SlackChannel;
 import com.blackduck.integration.alert.api.descriptor.SlackChannelKey;
+import com.blackduck.integration.alert.channel.slack.distribution.SlackChannel;
 import com.blackduck.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 
 @Component

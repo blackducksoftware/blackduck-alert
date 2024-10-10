@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.component.diagnostic.model.AlertQueueInformation;
 import com.blackduck.integration.alert.component.diagnostic.model.CompletedJobDiagnosticModel;
@@ -28,6 +27,7 @@ import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.log.IntLogger;
 import com.blackduck.integration.rest.exception.IntegrationRestException;
 import com.blackduck.integration.wait.WaitJobCondition;
+import com.google.gson.Gson;
 
 public class ProcessingCompleteWaitJobTask implements WaitJobCondition {
     private static final String DIAGNOSTIC_ERROR_RESPONSE_MESSAGE = "Diagnostic unavailable";

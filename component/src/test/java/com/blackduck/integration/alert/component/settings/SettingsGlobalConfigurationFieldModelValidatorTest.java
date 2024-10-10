@@ -6,12 +6,12 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
+import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.blackduck.integration.alert.component.settings.validator.SettingsGlobalConfigurationFieldModelValidator;
 import com.blackduck.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
-import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
-import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 
 public class SettingsGlobalConfigurationFieldModelValidatorTest {
 

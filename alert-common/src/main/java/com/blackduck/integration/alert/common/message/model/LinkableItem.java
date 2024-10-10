@@ -14,8 +14,8 @@ import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import com.google.gson.annotations.SerializedName;
 import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
+import com.google.gson.annotations.SerializedName;
 
 public class LinkableItem extends AlertSerializableModel implements Comparable<LinkableItem> {
     private static final String[] EXCLUDED_FIELDS = { "collapsible", "isNumericValue" };

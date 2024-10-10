@@ -21,6 +21,9 @@ import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.blackduck.integration.alert.api.processor.filter.NotificationContentWrapper;
 import com.blackduck.integration.alert.api.processor.summarize.ProjectMessageSummarizer;
+import com.blackduck.integration.alert.common.enumeration.ProcessingType;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
 import com.blackduck.integration.alert.provider.blackduck.processor.message.RuleViolationNotificationMessageExtractor;
 import com.blackduck.integration.alert.provider.blackduck.processor.message.service.BlackDuckComponentVulnerabilityDetailsCreator;
@@ -41,9 +44,6 @@ import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.rest.HttpUrl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.blackduck.integration.alert.common.enumeration.ProcessingType;
-import com.blackduck.integration.alert.common.message.model.LinkableItem;
-import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 
 class NotificationContentProcessorTest {
     private static final Gson GSON = new GsonBuilder().create();

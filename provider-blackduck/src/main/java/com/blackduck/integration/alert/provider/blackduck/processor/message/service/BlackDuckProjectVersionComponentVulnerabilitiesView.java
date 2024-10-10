@@ -9,11 +9,11 @@ package com.blackduck.integration.alert.provider.blackduck.processor.message.ser
 
 import java.math.BigDecimal;
 
-import com.google.gson.JsonElement;
 import com.blackduck.integration.blackduck.api.core.BlackDuckView;
 import com.blackduck.integration.blackduck.api.generated.component.ProjectVersionComponentVersionVulnerabilityRemediationCvss2View;
 import com.blackduck.integration.blackduck.api.generated.component.ProjectVersionComponentVersionVulnerabilityRemediationCvss3View;
 import com.blackduck.integration.blackduck.api.generated.enumeration.VulnerabilityRemediationStatusType;
+import com.google.gson.JsonElement;
 
 // TODO replace with updated model from blackduck-common-api when available
 //  Copied from: ProjectVersionComponentVersionVulnerabilityRemediationView (blackduck-common-api:2020.8.0.18)

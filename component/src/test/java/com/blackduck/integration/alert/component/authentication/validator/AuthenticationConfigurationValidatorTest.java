@@ -14,15 +14,15 @@ import org.mockito.Mockito;
 import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
 import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptorKey;
 import com.blackduck.integration.alert.api.authentication.validator.AuthenticationConfigurationFieldModelValidator;
-import com.blackduck.integration.alert.test.common.MockAlertProperties;
-import com.blackduck.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.common.AlertProperties;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.blackduck.integration.alert.common.rest.model.FieldModel;
 import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
+import com.blackduck.integration.alert.test.common.MockAlertProperties;
+import com.blackduck.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 /**
  * @deprecated This class will be removed in 8.0.0.

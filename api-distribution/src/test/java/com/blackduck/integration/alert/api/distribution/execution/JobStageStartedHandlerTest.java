@@ -10,9 +10,9 @@ import org.junit.jupiter.api.Test;
 
 import com.blackduck.integration.alert.api.distribution.mock.MockJobCompletionStatusDurationsRepository;
 import com.blackduck.integration.alert.api.distribution.mock.MockJobCompletionStatusRepository;
+import com.blackduck.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
 import com.blackduck.integration.alert.database.job.api.DefaultJobCompletionStatusModelAccessor;
 import com.blackduck.integration.alert.database.job.execution.JobCompletionRepository;
-import com.blackduck.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
 
 class JobStageStartedHandlerTest {
 

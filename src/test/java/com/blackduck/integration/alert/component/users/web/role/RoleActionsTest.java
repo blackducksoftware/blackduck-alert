@@ -13,12 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 
-import com.blackduck.integration.alert.component.users.web.role.MultiRolePermissionModel;
-import com.blackduck.integration.alert.component.users.web.role.PermissionModel;
-import com.blackduck.integration.alert.component.users.web.role.RoleActions;
-import com.blackduck.integration.alert.component.users.web.role.RolePermissionModel;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.action.ValidationActionResponse;
 import com.blackduck.integration.alert.common.descriptor.DescriptorMap;
@@ -29,7 +26,6 @@ import com.blackduck.integration.alert.common.persistence.model.UserRoleModel;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 import com.blackduck.integration.alert.component.users.UserManagementDescriptorKey;
 import com.blackduck.integration.alert.component.users.web.role.util.PermissionModelUtil;
-import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 
 class RoleActionsTest {
     private final String roleName = "roleName";

@@ -25,15 +25,15 @@ import com.blackduck.integration.alert.common.enumeration.FrequencyType;
 import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
 import com.blackduck.integration.alert.configuration.ApplicationConfiguration;
 import com.blackduck.integration.alert.database.DatabaseDataSource;
+import com.blackduck.integration.alert.performance.utility.AlertRequestUtility;
+import com.blackduck.integration.alert.performance.utility.BlackDuckProviderService;
+import com.blackduck.integration.alert.performance.utility.ConfigurationManagerLegacy;
+import com.blackduck.integration.alert.performance.utility.IntegrationPerformanceTestRunnerLegacy;
 import com.blackduck.integration.alert.test.common.TestProperties;
 import com.blackduck.integration.alert.test.common.TestPropertyKey;
 import com.blackduck.integration.alert.test.common.TestTags;
 import com.blackduck.integration.alert.util.DescriptorMocker;
 import com.google.gson.Gson;
-import com.blackduck.integration.alert.performance.utility.AlertRequestUtility;
-import com.blackduck.integration.alert.performance.utility.BlackDuckProviderService;
-import com.blackduck.integration.alert.performance.utility.ConfigurationManagerLegacy;
-import com.blackduck.integration.alert.performance.utility.IntegrationPerformanceTestRunnerLegacy;
 
 @Tag(TestTags.DEFAULT_PERFORMANCE)
 @SpringBootTest

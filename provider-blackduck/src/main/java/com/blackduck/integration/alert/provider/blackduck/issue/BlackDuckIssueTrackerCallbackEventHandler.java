@@ -13,15 +13,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.blackduck.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.event.AlertEventHandler;
 import com.blackduck.integration.alert.common.channel.issuetracker.IssueTrackerCallbackEvent;
 import com.blackduck.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.blackduck.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
 import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
+import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.blackduck.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
 import com.blackduck.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.blackduck.integration.blackduck.service.BlackDuckApiClient;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
@@ -29,6 +28,7 @@ import com.blackduck.integration.blackduck.service.dataservice.IssueService;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.log.IntLogger;
 import com.blackduck.integration.log.Slf4jIntLogger;
+import com.google.gson.Gson;
 
 @Component
 public class BlackDuckIssueTrackerCallbackEventHandler implements AlertEventHandler<IssueTrackerCallbackEvent> {

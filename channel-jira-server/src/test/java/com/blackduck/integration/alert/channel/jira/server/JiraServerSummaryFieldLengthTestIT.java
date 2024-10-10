@@ -13,11 +13,6 @@ import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.blackduck.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
-import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
-import com.blackduck.integration.rest.proxy.ProxyInfo;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.blackduck.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
@@ -28,11 +23,16 @@ import com.blackduck.integration.alert.api.common.model.exception.AlertException
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.event.EventManager;
+import com.blackduck.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
+import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.blackduck.integration.alert.test.common.TestProperties;
 import com.blackduck.integration.alert.test.common.TestPropertyKey;
 import com.blackduck.integration.alert.test.common.TestTags;
+import com.blackduck.integration.rest.proxy.ProxyInfo;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 @Tags(value = {
     @Tag(TestTags.DEFAULT_INTEGRATION),

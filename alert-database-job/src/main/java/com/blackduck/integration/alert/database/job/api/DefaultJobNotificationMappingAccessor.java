@@ -18,11 +18,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.blackduck.integration.alert.database.job.JobToNotificationRelation;
-import com.blackduck.integration.alert.database.job.JobToNotificationRelationRepository;
 import com.blackduck.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
 import com.blackduck.integration.alert.common.persistence.model.job.JobToNotificationMappingModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
+import com.blackduck.integration.alert.database.job.JobToNotificationRelation;
+import com.blackduck.integration.alert.database.job.JobToNotificationRelationRepository;
 
 @Component
 public class DefaultJobNotificationMappingAccessor implements JobNotificationMappingAccessor {

@@ -14,9 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.channel.action.DistributionChannelMessageTestAction;
-import com.blackduck.integration.alert.channel.email.distribution.EmailChannel;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.descriptor.EmailChannelKey;
+import com.blackduck.integration.alert.channel.email.distribution.EmailChannel;
 import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.blackduck.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.blackduck.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;

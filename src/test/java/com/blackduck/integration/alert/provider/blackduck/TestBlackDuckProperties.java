@@ -17,9 +17,6 @@ import java.util.Optional;
 
 import org.mockito.Mockito;
 
-import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
@@ -33,6 +30,8 @@ import com.blackduck.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.log.IntLogger;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 public class TestBlackDuckProperties extends BlackDuckProperties {
     private final MockAlertProperties testAlertProperties;

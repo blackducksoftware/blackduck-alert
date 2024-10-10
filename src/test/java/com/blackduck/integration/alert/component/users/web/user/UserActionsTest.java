@@ -17,9 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 
-import com.blackduck.integration.alert.component.users.web.user.MultiUserConfigResponseModel;
-import com.blackduck.integration.alert.component.users.web.user.UserActions;
-import com.blackduck.integration.alert.component.users.web.user.UserConfig;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;

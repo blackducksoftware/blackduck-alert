@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
 
 import com.blackduck.integration.alert.api.event.EventManager;
+import com.blackduck.integration.alert.api.processor.NotificationMappingProcessor;
+import com.blackduck.integration.alert.api.processor.event.JobNotificationMappedEvent;
 import com.blackduck.integration.alert.api.task.StartupScheduledTask;
 import com.blackduck.integration.alert.api.task.TaskManager;
 import com.blackduck.integration.alert.common.enumeration.FrequencyType;
@@ -25,8 +27,6 @@ import com.blackduck.integration.alert.common.persistence.accessor.NotificationA
 import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.util.DateUtils;
-import com.blackduck.integration.alert.api.processor.NotificationMappingProcessor;
-import com.blackduck.integration.alert.api.processor.event.JobNotificationMappedEvent;
 
 public abstract class ProcessingTask extends StartupScheduledTask {
     public static final int PAGE_SIZE = 100;

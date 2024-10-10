@@ -2,10 +2,10 @@ package com.blackduck.integration.alert.api.distribution;
 
 import org.springframework.core.task.TaskExecutor;
 
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.event.AlertEventHandler;
 import com.blackduck.integration.alert.api.event.AlertMessageListener;
 import com.blackduck.integration.alert.api.event.distribution.JobSubTaskEvent;
+import com.google.gson.Gson;
 
 public abstract class JobSubTaskMessageListener<T extends JobSubTaskEvent> extends AlertMessageListener<T> {
 

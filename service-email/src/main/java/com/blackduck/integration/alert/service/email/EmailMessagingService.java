@@ -27,10 +27,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.blackduck.integration.alert.service.email.template.FreemarkerTemplatingService;
 import com.blackduck.integration.exception.IntegrationException;
-import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;

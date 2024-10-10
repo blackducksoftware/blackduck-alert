@@ -17,17 +17,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.blackduck.integration.alert.web.api.metadata.DescriptorMetadataActions;
-import com.blackduck.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
-import com.blackduck.integration.alert.web.documentation.SwaggerConfiguration;
-import com.blackduck.integration.util.ResourceUtil;
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.blackduck.integration.alert.common.enumeration.DescriptorType;
 import com.blackduck.integration.alert.common.persistence.accessor.SystemStatusAccessor;
 import com.blackduck.integration.alert.common.rest.AlertWebServerUrlManager;
 import com.blackduck.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.web.api.metadata.DescriptorMetadataActions;
+import com.blackduck.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
+import com.blackduck.integration.alert.web.documentation.SwaggerConfiguration;
+import com.blackduck.integration.util.ResourceUtil;
+import com.google.gson.Gson;
 
 @Component
 public class AboutReader {

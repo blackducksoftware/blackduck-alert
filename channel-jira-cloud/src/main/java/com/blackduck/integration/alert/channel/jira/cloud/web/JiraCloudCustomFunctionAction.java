@@ -17,20 +17,20 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.channel.jira.JiraConstants;
 import com.blackduck.integration.alert.api.channel.jira.util.JiraPluginCheckUtils;
+import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudPropertiesFactory;
 import com.blackduck.integration.alert.channel.jira.cloud.validator.JiraCloudGlobalConfigurationFieldModelValidator;
-import com.blackduck.integration.exception.IntegrationException;
-import com.blackduck.integration.jira.common.cloud.service.JiraCloudServiceFactory;
-import com.blackduck.integration.jira.common.rest.service.PluginManagerService;
-import com.google.api.client.http.HttpStatusCodes;
-import com.google.gson.Gson;
-import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.action.CustomFunctionAction;
 import com.blackduck.integration.alert.common.rest.HttpServletContentWrapper;
 import com.blackduck.integration.alert.common.rest.model.FieldModel;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.cloud.service.JiraCloudServiceFactory;
+import com.blackduck.integration.jira.common.rest.service.PluginManagerService;
+import com.google.api.client.http.HttpStatusCodes;
+import com.google.gson.Gson;
 
 @Component
 public class JiraCloudCustomFunctionAction extends CustomFunctionAction<String> {

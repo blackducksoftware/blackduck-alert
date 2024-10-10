@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.blackduck.integration.alert.azure.boards.common.model.ReferenceLinkModel;
-import com.google.gson.JsonObject;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.WorkItemUserModel;
+import com.google.gson.JsonObject;
 
 public class WorkItemCommentResponseModel {
     private Integer id;

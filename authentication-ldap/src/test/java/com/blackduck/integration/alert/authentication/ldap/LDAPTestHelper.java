@@ -15,9 +15,6 @@ import com.blackduck.integration.alert.authentication.ldap.database.accessor.LDA
 import com.blackduck.integration.alert.authentication.ldap.database.configuration.MockLDAPConfigurationRepository;
 import com.blackduck.integration.alert.authentication.ldap.model.LDAPAuthenticationType;
 import com.blackduck.integration.alert.authentication.ldap.model.LDAPConfigModel;
-import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
-import com.blackduck.integration.alert.test.common.MockAlertProperties;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.alert.common.AlertProperties;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.persistence.model.PermissionKey;
@@ -26,6 +23,9 @@ import com.blackduck.integration.alert.common.persistence.util.FilePersistenceUt
 import com.blackduck.integration.alert.common.security.EncryptionUtility;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 import com.blackduck.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
+import com.blackduck.integration.alert.test.common.MockAlertProperties;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class LDAPTestHelper {
     public static final String DEFAULT_CONFIG_ID = UUID.randomUUID().toString();

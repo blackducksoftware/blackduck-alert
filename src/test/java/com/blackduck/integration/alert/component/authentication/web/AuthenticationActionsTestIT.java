@@ -42,21 +42,21 @@ import com.blackduck.integration.alert.api.authentication.security.event.Authent
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.authentication.ldap.LDAPAuthenticationPerformer;
 import com.blackduck.integration.alert.authentication.ldap.action.LDAPManager;
-import com.blackduck.integration.alert.component.authentication.security.AlertAuthenticationProvider;
-import com.blackduck.integration.alert.component.authentication.security.database.AlertDatabaseAuthenticationPerformer;
-import com.blackduck.integration.alert.test.common.TestProperties;
-import com.blackduck.integration.alert.test.common.TestPropertyKey;
-import com.blackduck.integration.alert.test.common.TestTags;
 import com.blackduck.integration.alert.common.AlertProperties;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.blackduck.integration.alert.common.enumeration.AuthenticationType;
 import com.blackduck.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.blackduck.integration.alert.common.persistence.model.UserModel;
+import com.blackduck.integration.alert.component.authentication.security.AlertAuthenticationProvider;
+import com.blackduck.integration.alert.component.authentication.security.database.AlertDatabaseAuthenticationPerformer;
 import com.blackduck.integration.alert.database.job.api.DefaultUserAccessor;
+import com.blackduck.integration.alert.mock.model.MockLoginRestModel;
+import com.blackduck.integration.alert.test.common.TestProperties;
+import com.blackduck.integration.alert.test.common.TestPropertyKey;
+import com.blackduck.integration.alert.test.common.TestTags;
 import com.blackduck.integration.alert.util.AlertIntegrationTest;
 import com.blackduck.integration.alert.util.AlertIntegrationTestConstants;
-import com.blackduck.integration.alert.mock.model.MockLoginRestModel;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -12,8 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
-import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
 import com.blackduck.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
 
 public class ConfigurationModelTest {

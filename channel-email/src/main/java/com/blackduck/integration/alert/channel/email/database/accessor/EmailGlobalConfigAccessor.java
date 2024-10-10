@@ -22,16 +22,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.channel.email.database.configuration.EmailConfigurationEntity;
 import com.blackduck.integration.alert.channel.email.database.configuration.EmailConfigurationRepository;
 import com.blackduck.integration.alert.channel.email.database.configuration.properties.EmailConfigurationPropertiesRepository;
 import com.blackduck.integration.alert.channel.email.database.configuration.properties.EmailConfigurationsPropertyEntity;
-import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
-import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.common.persistence.accessor.UniqueConfigurationAccessor;
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.common.security.EncryptionUtility;
 import com.blackduck.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @Component
 public class EmailGlobalConfigAccessor implements UniqueConfigurationAccessor<EmailGlobalConfigModel> {

@@ -18,13 +18,20 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.channel.slack.descriptor.SlackDescriptor;
+import com.blackduck.integration.alert.common.descriptor.ChannelDescriptor;
+import com.blackduck.integration.alert.common.enumeration.FrequencyType;
+import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
 import com.blackduck.integration.alert.performance.utility.AlertRequestUtility;
 import com.blackduck.integration.alert.performance.utility.BlackDuckProviderService;
 import com.blackduck.integration.alert.performance.utility.ConfigurationManagerLegacy;
 import com.blackduck.integration.alert.performance.utility.ExternalAlertRequestUtility;
 import com.blackduck.integration.alert.performance.utility.IntegrationPerformanceTestRunnerLegacy;
 import com.blackduck.integration.alert.performance.utility.NotificationWaitJobTask;
+import com.blackduck.integration.alert.test.common.TestProperties;
+import com.blackduck.integration.alert.test.common.TestPropertyKey;
+import com.blackduck.integration.alert.test.common.TestTags;
 import com.blackduck.integration.log.IntLogger;
 import com.blackduck.integration.log.Slf4jIntLogger;
 import com.blackduck.integration.rest.client.IntHttpClient;
@@ -34,13 +41,6 @@ import com.blackduck.integration.wait.WaitJob;
 import com.blackduck.integration.wait.tracker.WaitIntervalTracker;
 import com.blackduck.integration.wait.tracker.WaitIntervalTrackerFactory;
 import com.google.gson.Gson;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.blackduck.integration.alert.common.descriptor.ChannelDescriptor;
-import com.blackduck.integration.alert.common.enumeration.FrequencyType;
-import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
-import com.blackduck.integration.alert.test.common.TestProperties;
-import com.blackduck.integration.alert.test.common.TestPropertyKey;
-import com.blackduck.integration.alert.test.common.TestTags;
 
 @Tag(TestTags.DEFAULT_PERFORMANCE)
 public class ScalingPerformanceTest {

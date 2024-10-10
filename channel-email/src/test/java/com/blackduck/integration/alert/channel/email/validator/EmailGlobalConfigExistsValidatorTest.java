@@ -6,8 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.blackduck.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.blackduck.integration.alert.api.descriptor.EmailChannelKey;
+import com.blackduck.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 
 class EmailGlobalConfigExistsValidatorTest {
 

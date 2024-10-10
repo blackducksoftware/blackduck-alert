@@ -7,11 +7,11 @@ import java.util.Collection;
 
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 class EmailGlobalConfigurationValidatorTest {
 

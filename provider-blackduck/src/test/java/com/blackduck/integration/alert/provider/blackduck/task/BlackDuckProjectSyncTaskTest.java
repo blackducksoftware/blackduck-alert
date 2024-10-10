@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.alert.provider.blackduck.MockProviderDataAccessor;
 import com.blackduck.integration.blackduck.api.core.ResourceLink;
@@ -24,7 +25,6 @@ import com.blackduck.integration.blackduck.service.dataservice.ProjectUsersServi
 import com.blackduck.integration.blackduck.service.request.BlackDuckRequest;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.rest.HttpUrl;
-import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 
 class BlackDuckProjectSyncTaskTest {
     @Test

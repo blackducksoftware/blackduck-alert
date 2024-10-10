@@ -10,10 +10,10 @@ import org.springframework.amqp.core.Message;
 import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.event.AlertEventHandler;
 import com.blackduck.integration.alert.api.event.distribution.JobSubTaskEvent;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.google.gson.Gson;
 
 class JobSubTaskMessageListenerTest {
 

@@ -10,11 +10,11 @@ package com.blackduck.integration.alert.channel.jira.cloud.distribution.delegate
 import java.util.Set;
 import java.util.UUID;
 
-import com.blackduck.integration.alert.channel.jira.cloud.distribution.event.JiraCloudCommentEvent;
 import com.blackduck.integration.alert.api.channel.issue.tracker.event.IssueTrackerCommentEvent;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerCommentEventGenerator;
 import com.blackduck.integration.alert.api.descriptor.JiraCloudChannelKey;
+import com.blackduck.integration.alert.channel.jira.cloud.distribution.event.JiraCloudCommentEvent;
 
 public class JiraCloudCommentGenerator implements IssueTrackerCommentEventGenerator<String> {
     private final JiraCloudChannelKey channelKey;

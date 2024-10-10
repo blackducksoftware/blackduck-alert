@@ -17,9 +17,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
 import com.blackduck.integration.alert.common.persistence.model.AuditEntryModel;
 import com.blackduck.integration.alert.common.persistence.model.AuditEntryPageModel;
@@ -38,6 +35,9 @@ import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.log.IntLogger;
 import com.blackduck.integration.rest.exception.IntegrationRestException;
 import com.blackduck.integration.wait.WaitJobCondition;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 public class AuditCompleteWaitJobTask implements WaitJobCondition {
     private static final String AUDIT_ERROR_RESPONSE_MESSAGE = "Could not get the Alert audit entries.";

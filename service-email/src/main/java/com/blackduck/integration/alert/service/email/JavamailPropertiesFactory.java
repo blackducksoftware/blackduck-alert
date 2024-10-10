@@ -12,9 +12,9 @@ import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.blackduck.integration.alert.common.persistence.accessor.FieldUtility;
 import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
-import com.blackduck.integration.alert.common.persistence.accessor.FieldUtility;
 
 @Component
 public class JavamailPropertiesFactory {

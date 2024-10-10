@@ -19,13 +19,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.blackduck.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.util.AlertIntegrationTest;
 import com.blackduck.integration.alert.util.AlertIntegrationTestConstants;
 import com.google.gson.Gson;
-import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 
 @AlertIntegrationTest
 class AzureBoardsGlobalConfigControllerTestIT {

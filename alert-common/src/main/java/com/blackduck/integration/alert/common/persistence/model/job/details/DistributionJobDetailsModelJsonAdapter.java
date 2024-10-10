@@ -9,6 +9,7 @@ package com.blackduck.integration.alert.common.persistence.model.job.details;
 
 import java.lang.reflect.Type;
 
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -16,7 +17,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
 
 public class DistributionJobDetailsModelJsonAdapter implements JsonSerializer<DistributionJobDetailsModel>, JsonDeserializer<DistributionJobDetailsModel> {
     @Override

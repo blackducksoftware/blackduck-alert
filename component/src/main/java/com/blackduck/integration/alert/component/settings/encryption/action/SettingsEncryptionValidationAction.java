@@ -10,7 +10,6 @@ package com.blackduck.integration.alert.component.settings.encryption.action;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.component.settings.encryption.validator.SettingsEncryptionValidator;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
@@ -18,6 +17,7 @@ import com.blackduck.integration.alert.common.rest.api.ConfigurationValidationHe
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.blackduck.integration.alert.component.settings.encryption.model.SettingsEncryptionModel;
+import com.blackduck.integration.alert.component.settings.encryption.validator.SettingsEncryptionValidator;
 
 @Component
 public class SettingsEncryptionValidationAction {

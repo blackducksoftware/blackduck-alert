@@ -15,16 +15,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
+import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.model.ProviderKey;
 import com.blackduck.integration.alert.channel.email.database.accessor.DefaultEmailJobDetailsAccessor;
 import com.blackduck.integration.alert.channel.email.database.job.EmailJobDetailsEntity;
 import com.blackduck.integration.alert.channel.jira.server.database.accessor.DefaultJiraServerJobDetailsAccessor;
 import com.blackduck.integration.alert.channel.jira.server.database.job.JiraServerJobDetailsEntity;
-import com.blackduck.integration.alert.database.job.DistributionJobEntity;
-import com.blackduck.integration.alert.database.job.DistributionJobRepository;
-import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.blackduck.integration.alert.api.descriptor.model.ProviderKey;
 import com.blackduck.integration.alert.common.enumeration.FrequencyType;
 import com.blackduck.integration.alert.common.enumeration.ProcessingType;
 import com.blackduck.integration.alert.common.persistence.accessor.JobAccessor;
@@ -39,6 +36,8 @@ import com.blackduck.integration.alert.common.persistence.model.job.details.MSTe
 import com.blackduck.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.database.job.DistributionJobEntity;
+import com.blackduck.integration.alert.database.job.DistributionJobRepository;
 import com.blackduck.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
 import com.blackduck.integration.alert.database.job.azure.boards.DefaultAzureBoardsJobDetailsAccessor;
 import com.blackduck.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
@@ -49,6 +48,7 @@ import com.blackduck.integration.alert.database.job.msteams.DefaultMSTeamsJobDet
 import com.blackduck.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
 import com.blackduck.integration.alert.database.job.slack.DefaultSlackJobDetailsAccessor;
 import com.blackduck.integration.alert.database.job.slack.SlackJobDetailsEntity;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 class StaticJobAccessorTest {
     private DistributionJobRepository distributionJobRepository;

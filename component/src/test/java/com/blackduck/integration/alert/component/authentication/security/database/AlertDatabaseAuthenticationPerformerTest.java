@@ -16,7 +16,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.core.Authentication;
 
 import com.blackduck.integration.alert.api.authentication.security.event.AuthenticationEventManager;
-import com.blackduck.integration.alert.test.common.MockAlertProperties;
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.common.descriptor.accessor.RoleAccessor;
@@ -24,6 +23,7 @@ import com.blackduck.integration.alert.common.enumeration.AuthenticationType;
 import com.blackduck.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.blackduck.integration.alert.common.persistence.accessor.UserAccessor;
 import com.blackduck.integration.alert.common.persistence.model.UserModel;
+import com.blackduck.integration.alert.test.common.MockAlertProperties;
 
 class AlertDatabaseAuthenticationPerformerTest {
     public static final String VALID_USERNAME = "username";

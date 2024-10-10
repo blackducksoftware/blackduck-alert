@@ -7,8 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Sort;
 
-import com.blackduck.integration.alert.common.util.SortUtil;
-
 class SortUtilTest {
 
     @Test

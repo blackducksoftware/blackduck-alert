@@ -11,15 +11,14 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.common.action.ApiAction;
-import com.blackduck.integration.alert.common.descriptor.accessor.DefaultDescriptorGlobalConfigUtility;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
 import com.blackduck.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.blackduck.integration.alert.common.rest.model.FieldModel;
-import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 
 class DefaultDescriptorGlobalConfigUtilityTest {
 

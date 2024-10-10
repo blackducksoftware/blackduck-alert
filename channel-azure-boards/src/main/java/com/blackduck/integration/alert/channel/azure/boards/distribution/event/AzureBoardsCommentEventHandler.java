@@ -16,11 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.channel.azure.boards.AzureBoardsProperties;
-import com.blackduck.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
-import com.blackduck.integration.alert.channel.azure.boards.distribution.AzureBoardsMessageSenderFactory;
-import com.blackduck.integration.rest.proxy.ProxyInfo;
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerResponsePostProcessor;
 import com.blackduck.integration.alert.api.channel.issue.tracker.event.IssueTrackerCommentEventHandler;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
@@ -38,9 +33,14 @@ import com.blackduck.integration.alert.azure.boards.common.service.comment.Azure
 import com.blackduck.integration.alert.azure.boards.common.service.query.AzureWorkItemQueryService;
 import com.blackduck.integration.alert.azure.boards.common.service.state.AzureWorkItemTypeStateService;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.AzureWorkItemService;
+import com.blackduck.integration.alert.channel.azure.boards.AzureBoardsProperties;
+import com.blackduck.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
+import com.blackduck.integration.alert.channel.azure.boards.distribution.AzureBoardsMessageSenderFactory;
 import com.blackduck.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.blackduck.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.rest.proxy.ProxyInfo;
+import com.google.gson.Gson;
 
 @Component
 public class AzureBoardsCommentEventHandler extends IssueTrackerCommentEventHandler<AzureBoardsCommentEvent> {

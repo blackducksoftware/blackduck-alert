@@ -6,8 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.common.message.model.LinkableItem;
-
 public class LinkableItemTest {
 
     @Test

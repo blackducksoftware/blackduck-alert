@@ -8,11 +8,11 @@
 package com.blackduck.integration.alert.api.channel.jira.distribution.search;
 
 import com.blackduck.integration.alert.api.channel.jira.JiraIssueSearchProperties;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.model.response.IssuePropertyResponseModel;
 import com.blackduck.integration.jira.common.rest.service.IssuePropertyService;
 import com.google.gson.Gson;
-import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 
 public class JiraIssueAlertPropertiesManager {
     private final Gson gson;

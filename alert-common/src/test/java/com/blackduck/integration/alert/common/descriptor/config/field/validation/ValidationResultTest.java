@@ -11,8 +11,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.common.descriptor.config.field.validation.ValidationResult;
-
 public class ValidationResultTest {
     private final String ERROR_MESSAGE_1 = "Error Message 1";
     private final String ERROR_MESSAGE_2 = "Error Message 2";

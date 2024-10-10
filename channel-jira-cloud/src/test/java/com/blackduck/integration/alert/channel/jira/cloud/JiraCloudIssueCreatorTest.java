@@ -9,23 +9,23 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
 import com.blackduck.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
 import com.blackduck.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
 import com.blackduck.integration.alert.api.channel.jira.distribution.custom.MessageReplacementValues;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.descriptor.JiraCloudChannelKey;
+import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.blackduck.integration.alert.channel.jira.cloud.distribution.delegate.JiraCloudIssueCreator;
+import com.blackduck.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
 import com.blackduck.integration.jira.common.cloud.model.IssueCreationRequestModel;
 import com.blackduck.integration.jira.common.cloud.service.ProjectService;
 import com.blackduck.integration.jira.common.model.components.ProjectComponent;
 import com.blackduck.integration.jira.common.model.response.PageOfProjectsResponseModel;
-import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
-import com.blackduck.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
-import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
-import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.blackduck.integration.alert.api.descriptor.JiraCloudChannelKey;
-import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
-import com.blackduck.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 
 public class JiraCloudIssueCreatorTest {
 

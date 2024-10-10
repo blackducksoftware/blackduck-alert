@@ -8,10 +8,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.blackduck.integration.alert.provider.blackduck.task.accumulator.BlackDuckAccumulatorSearchDateManager;
-import com.blackduck.integration.alert.provider.blackduck.task.accumulator.BlackDuckNotificationRetriever;
-import com.blackduck.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
 import com.blackduck.integration.alert.api.processor.filter.StatefulAlertPage;
+import com.blackduck.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
 import com.blackduck.integration.blackduck.api.core.response.UrlMultipleResponses;
 import com.blackduck.integration.blackduck.api.core.response.UrlSingleResponse;
 import com.blackduck.integration.blackduck.api.generated.discovery.ApiDiscovery;

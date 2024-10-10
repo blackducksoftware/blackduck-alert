@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackduck.integration.alert.component.settings.encryption.action.SettingsEncryptionCrudActions;
-import com.blackduck.integration.alert.component.settings.encryption.action.SettingsEncryptionValidationAction;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.common.rest.ResponseFactory;
 import com.blackduck.integration.alert.common.rest.api.ValidateController;
+import com.blackduck.integration.alert.component.settings.encryption.action.SettingsEncryptionCrudActions;
+import com.blackduck.integration.alert.component.settings.encryption.action.SettingsEncryptionValidationAction;
 import com.blackduck.integration.alert.component.settings.encryption.model.SettingsEncryptionModel;
 
 @RestController

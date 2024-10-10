@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.provider.blackduck.processor.model.BomEditWithProjectNameNotificationContent;
 import com.blackduck.integration.blackduck.api.manual.component.BomEditNotificationContent;
 
 public class BomEditWithProjectNameNotificationContentTest {

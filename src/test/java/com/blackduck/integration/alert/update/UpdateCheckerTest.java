@@ -25,7 +25,6 @@ import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.database.job.api.DefaultSystemStatusAccessor;
 import com.blackduck.integration.alert.test.common.TestTags;
-import com.blackduck.integration.alert.update.UpdateChecker;
 import com.blackduck.integration.alert.update.model.UpdateModel;
 import com.blackduck.integration.alert.web.api.about.AboutReader;
 import com.blackduck.integration.alert.web.api.metadata.DescriptorMetadataActions;

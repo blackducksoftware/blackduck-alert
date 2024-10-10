@@ -18,8 +18,6 @@ import org.mockito.Mockito;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 
-import com.blackduck.integration.alert.api.task.ScheduledTask;
-
 public class ScheduledTaskTest {
     private final String validCronExpression = "0 0/1 * 1/1 * *";
     private TaskScheduler taskScheduler;

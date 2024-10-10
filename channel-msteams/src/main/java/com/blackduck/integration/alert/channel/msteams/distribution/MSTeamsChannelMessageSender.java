@@ -18,14 +18,14 @@ import org.springframework.stereotype.Component;
 import com.blackduck.integration.alert.api.channel.ChannelMessageSender;
 import com.blackduck.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
 import com.blackduck.integration.alert.api.channel.rest.RestChannelUtility;
-import com.blackduck.integration.rest.client.IntHttpClient;
-import com.blackduck.integration.rest.request.Request;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.descriptor.MsTeamsKey;
 import com.blackduck.integration.alert.common.message.model.MessageResult;
 import com.blackduck.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
+import com.blackduck.integration.rest.client.IntHttpClient;
+import com.blackduck.integration.rest.request.Request;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 @Component
 public class MSTeamsChannelMessageSender implements ChannelMessageSender<MSTeamsJobDetailsModel, MSTeamsChannelMessageModel, MessageResult> {

@@ -10,10 +10,8 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.blackduck.integration.alert.common.descriptor.Descriptor;
-import com.blackduck.integration.alert.common.descriptor.DescriptorMap;
-import com.blackduck.integration.alert.common.enumeration.DescriptorType;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
+import com.blackduck.integration.alert.common.enumeration.DescriptorType;
 
 public class DescriptorMapTest {
     private static final String MISSING_EXPECTED_DESCRIPTOR = "Missing expected descriptor";

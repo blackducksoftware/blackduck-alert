@@ -6,7 +6,6 @@ import java.time.OffsetDateTime;
 
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.common.message.model.DateRange;
 import com.blackduck.integration.alert.common.util.DateUtils;
 
 public class DateRangeTest {

@@ -7,11 +7,10 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.common.descriptor.ChannelDescriptor;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
 import com.blackduck.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.blackduck.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
 
 public class ChannelDescriptorTest {
     @Test

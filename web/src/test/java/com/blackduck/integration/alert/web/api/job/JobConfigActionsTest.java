@@ -26,11 +26,6 @@ import com.blackduck.integration.alert.api.common.model.exception.AlertException
 import com.blackduck.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
-import com.blackduck.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
-import com.blackduck.integration.exception.IntegrationException;
-import com.blackduck.integration.rest.HttpMethod;
-import com.blackduck.integration.rest.HttpUrl;
-import com.blackduck.integration.rest.exception.IntegrationRestException;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.action.FieldModelTestAction;
 import com.blackduck.integration.alert.common.action.ValidationActionResponse;
@@ -66,6 +61,11 @@ import com.blackduck.integration.alert.common.rest.model.JobFieldStatuses;
 import com.blackduck.integration.alert.common.rest.model.JobIdsRequestModel;
 import com.blackduck.integration.alert.common.rest.model.JobPagedModel;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.rest.HttpMethod;
+import com.blackduck.integration.rest.HttpUrl;
+import com.blackduck.integration.rest.exception.IntegrationRestException;
 
 class JobConfigActionsTest {
     private static final String DESCRIPTOR_KEY_STRING = "descriptorName";

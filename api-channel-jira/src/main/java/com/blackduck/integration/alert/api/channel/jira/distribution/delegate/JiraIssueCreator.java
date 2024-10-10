@@ -12,20 +12,6 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.blackduck.integration.alert.api.channel.jira.JiraIssueSearchProperties;
-import com.blackduck.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
-import com.blackduck.integration.alert.api.channel.jira.distribution.custom.MessageReplacementValues;
-import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
-import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesUrlCorrector;
-import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraIssueSearchPropertyStringCompatibilityUtils;
-import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraSearcherResponseModel;
-import com.blackduck.integration.alert.api.channel.jira.util.JiraCallbackUtils;
-import com.blackduck.integration.exception.IntegrationException;
-import com.blackduck.integration.jira.common.exception.JiraPreconditionNotMetException;
-import com.blackduck.integration.jira.common.model.components.IssueFieldsComponent;
-import com.blackduck.integration.jira.common.model.response.IssueCreationResponseModel;
-import com.blackduck.integration.jira.common.model.response.IssueResponseModel;
-import com.blackduck.integration.rest.exception.IntegrationRestException;
 import com.blackduck.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueBomComponentDetails;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
@@ -38,6 +24,14 @@ import com.blackduck.integration.alert.api.channel.issue.tracker.search.enumerat
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.enumeration.IssueStatus;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueCommenter;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueCreator;
+import com.blackduck.integration.alert.api.channel.jira.JiraIssueSearchProperties;
+import com.blackduck.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
+import com.blackduck.integration.alert.api.channel.jira.distribution.custom.MessageReplacementValues;
+import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
+import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesUrlCorrector;
+import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraIssueSearchPropertyStringCompatibilityUtils;
+import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraSearcherResponseModel;
+import com.blackduck.integration.alert.api.channel.jira.util.JiraCallbackUtils;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.blackduck.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
@@ -45,6 +39,12 @@ import com.blackduck.integration.alert.api.processor.extract.model.project.Compo
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentPolicy;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.exception.JiraPreconditionNotMetException;
+import com.blackduck.integration.jira.common.model.components.IssueFieldsComponent;
+import com.blackduck.integration.jira.common.model.response.IssueCreationResponseModel;
+import com.blackduck.integration.jira.common.model.response.IssueResponseModel;
+import com.blackduck.integration.rest.exception.IntegrationRestException;
 
 public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<String> {
     private static final String FAILED_TO_CREATE_ISSUE_MESSAGE = "Failed to create an issue in Jira.";

@@ -11,12 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.job.details.processor.DistributionJobDetailsExtractor;
 import com.blackduck.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
+import com.google.gson.Gson;
 
 public abstract class JiraJobDetailsExtractor extends DistributionJobDetailsExtractor {
     private final DistributionJobFieldExtractor fieldExtractor;

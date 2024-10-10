@@ -13,9 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
-import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 import com.blackduck.integration.alert.api.event.EventManager;
+import com.blackduck.integration.alert.api.processor.NotificationMappingProcessor;
 import com.blackduck.integration.alert.api.task.TaskManager;
 import com.blackduck.integration.alert.common.enumeration.FrequencyType;
 import com.blackduck.integration.alert.common.message.model.DateRange;
@@ -24,8 +23,9 @@ import com.blackduck.integration.alert.common.persistence.accessor.JobAccessor;
 import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.blackduck.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
+import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 import com.blackduck.integration.alert.component.tasks.ProcessingTask;
-import com.blackduck.integration.alert.api.processor.NotificationMappingProcessor;
 
 @Component
 public class DailyTask extends ProcessingTask {

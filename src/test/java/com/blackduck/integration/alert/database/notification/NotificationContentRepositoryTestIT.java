@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.database.configuration.ConfigContextEntity;
@@ -24,7 +25,6 @@ import com.blackduck.integration.alert.database.configuration.RegisteredDescript
 import com.blackduck.integration.alert.database.configuration.repository.ConfigContextRepository;
 import com.blackduck.integration.alert.database.configuration.repository.DescriptorConfigRepository;
 import com.blackduck.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
-import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.test.common.TestTags;
 import com.blackduck.integration.alert.util.AlertIntegrationTest;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;

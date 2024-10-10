@@ -15,10 +15,10 @@ import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.common.rest.model.Config;
 import com.blackduck.integration.alert.mock.MockUtils;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.google.gson.Gson;
 
 public abstract class MockRestModelUtil<R extends Config> implements MockUtils {
 

@@ -26,14 +26,14 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.blackduck.integration.alert.util.AlertIntegrationTest;
-import com.blackduck.integration.alert.util.AlertIntegrationTestConstants;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.common.rest.model.SettingsProxyModel;
 import com.blackduck.integration.alert.database.settings.proxy.NonProxyHostsConfigurationRepository;
 import com.blackduck.integration.alert.database.settings.proxy.SettingsProxyConfigurationRepository;
+import com.blackduck.integration.alert.util.AlertIntegrationTest;
+import com.blackduck.integration.alert.util.AlertIntegrationTestConstants;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 @Transactional
 @AlertIntegrationTest

@@ -14,7 +14,6 @@ import javax.net.ssl.SSLContext;
 
 import org.slf4j.Logger;
 
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.blackduck.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 import com.blackduck.integration.jira.common.rest.JiraHttpClient;
@@ -24,6 +23,7 @@ import com.blackduck.integration.jira.common.server.configuration.JiraServerRest
 import com.blackduck.integration.jira.common.server.service.JiraServerServiceFactory;
 import com.blackduck.integration.log.Slf4jIntLogger;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
+import com.google.gson.Gson;
 
 public class JiraServerProperties {
     private final String url;

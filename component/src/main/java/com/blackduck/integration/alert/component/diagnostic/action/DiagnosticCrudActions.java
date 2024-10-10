@@ -12,11 +12,11 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.component.diagnostic.database.DefaultDiagnosticAccessor;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.rest.api.ConfigurationCrudHelper;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.component.diagnostic.database.DefaultDiagnosticAccessor;
 import com.blackduck.integration.alert.component.diagnostic.model.DiagnosticModel;
 import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 

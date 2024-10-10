@@ -14,7 +14,6 @@ import com.blackduck.integration.alert.common.descriptor.accessor.SettingsUtilit
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.common.rest.model.SettingsProxyModel;
-import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
 
 class ProxyManagerTest {

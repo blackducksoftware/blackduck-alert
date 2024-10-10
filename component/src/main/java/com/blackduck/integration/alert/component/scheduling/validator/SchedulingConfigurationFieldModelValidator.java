@@ -13,11 +13,11 @@ import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.blackduck.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.blackduck.integration.alert.common.rest.model.FieldModel;
+import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
 
 @Component
 public class SchedulingConfigurationFieldModelValidator implements GlobalConfigurationFieldModelValidator {

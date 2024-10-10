@@ -14,10 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import com.blackduck.integration.alert.database.job.api.StaticJobAccessor;
-import com.blackduck.integration.alert.util.AlertIntegrationTest;
-import com.blackduck.integration.blackduck.api.generated.enumeration.VulnerabilitySeverityType;
-import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.common.enumeration.FrequencyType;
 import com.blackduck.integration.alert.common.enumeration.ProcessingType;
@@ -29,6 +25,10 @@ import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.database.job.api.DefaultNotificationAccessor;
+import com.blackduck.integration.alert.database.job.api.StaticJobAccessor;
+import com.blackduck.integration.alert.util.AlertIntegrationTest;
+import com.blackduck.integration.blackduck.api.generated.enumeration.VulnerabilitySeverityType;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @AlertIntegrationTest
 class DistributionJobRepositoryTestIT {

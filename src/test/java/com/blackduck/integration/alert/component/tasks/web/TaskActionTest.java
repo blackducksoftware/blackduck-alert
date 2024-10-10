@@ -13,8 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.scheduling.TaskScheduler;
 
-import com.blackduck.integration.alert.component.tasks.web.MultiTaskMetaDataModel;
-import com.blackduck.integration.alert.component.tasks.web.TaskActions;
 import com.blackduck.integration.alert.api.task.ScheduledTask;
 import com.blackduck.integration.alert.api.task.TaskManager;
 import com.blackduck.integration.alert.api.task.TaskMetaData;

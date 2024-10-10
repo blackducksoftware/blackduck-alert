@@ -12,9 +12,9 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.blackduck.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
-import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.blackduck.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.blackduck.integration.alert.common.rest.model.FieldModel;

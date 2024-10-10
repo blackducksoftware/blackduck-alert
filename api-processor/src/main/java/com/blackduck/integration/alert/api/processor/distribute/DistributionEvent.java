@@ -10,8 +10,8 @@ package com.blackduck.integration.alert.api.processor.distribute;
 import java.util.Set;
 import java.util.UUID;
 
-import com.blackduck.integration.alert.api.event.AlertEvent;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
+import com.blackduck.integration.alert.api.event.AlertEvent;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderMessageHolder;
 
 public class DistributionEvent extends AlertEvent {

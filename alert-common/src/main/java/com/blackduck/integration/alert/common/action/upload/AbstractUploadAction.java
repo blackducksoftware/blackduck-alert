@@ -18,10 +18,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 
 import com.blackduck.integration.alert.common.action.ActionResponse;
-import com.blackduck.integration.alert.common.rest.api.AbstractFunctionController;
 import com.blackduck.integration.alert.common.descriptor.config.field.validation.UploadValidationFunction;
 import com.blackduck.integration.alert.common.descriptor.config.field.validation.ValidationResult;
 import com.blackduck.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.blackduck.integration.alert.common.rest.api.AbstractFunctionController;
 import com.blackduck.integration.alert.common.rest.model.ExistenceModel;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 

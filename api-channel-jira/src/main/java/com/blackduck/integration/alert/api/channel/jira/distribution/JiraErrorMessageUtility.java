@@ -15,14 +15,14 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 
 import com.blackduck.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
+import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.common.exception.AlertFieldException;
 import com.blackduck.integration.rest.exception.IntegrationRestException;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
-import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.blackduck.integration.alert.common.exception.AlertFieldException;
 
 public class JiraErrorMessageUtility {
     private final Gson gson;

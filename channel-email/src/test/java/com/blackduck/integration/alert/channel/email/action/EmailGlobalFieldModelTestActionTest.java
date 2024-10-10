@@ -12,28 +12,28 @@ import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
 import com.blackduck.integration.alert.channel.email.attachment.MessageContentGroupCsvCreator;
 import com.blackduck.integration.alert.channel.email.distribution.EmailChannelMessagingService;
 import com.blackduck.integration.alert.channel.email.distribution.address.JobEmailAddressValidator;
 import com.blackduck.integration.alert.channel.email.distribution.address.ValidatedEmailAddresses;
-import com.blackduck.integration.alert.service.email.EmailMessagingService;
-import com.blackduck.integration.alert.service.email.JavamailPropertiesFactory;
-import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
-import com.blackduck.integration.alert.service.email.template.FreemarkerTemplatingService;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
-import com.google.gson.Gson;
-import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.common.action.FieldModelTestAction;
 import com.blackduck.integration.alert.common.message.model.MessageResult;
 import com.blackduck.integration.alert.common.persistence.accessor.FieldUtility;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.blackduck.integration.alert.common.rest.model.FieldModel;
 import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
+import com.blackduck.integration.alert.service.email.EmailMessagingService;
+import com.blackduck.integration.alert.service.email.JavamailPropertiesFactory;
+import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
+import com.blackduck.integration.alert.service.email.template.FreemarkerTemplatingService;
 import com.blackduck.integration.alert.test.common.MockAlertProperties;
 import com.blackduck.integration.alert.test.common.TestProperties;
 import com.blackduck.integration.alert.test.common.TestPropertyKey;
 import com.blackduck.integration.alert.test.common.TestTags;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.google.gson.Gson;
 
 public class EmailGlobalFieldModelTestActionTest {
     @Test

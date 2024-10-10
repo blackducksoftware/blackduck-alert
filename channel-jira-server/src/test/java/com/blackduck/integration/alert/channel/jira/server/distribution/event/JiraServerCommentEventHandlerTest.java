@@ -11,22 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.blackduck.integration.alert.channel.jira.server.JiraServerProperties;
-import com.blackduck.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
-import com.blackduck.integration.alert.channel.jira.server.database.accessor.DefaultJiraServerJobDetailsAccessor;
-import com.blackduck.integration.alert.channel.jira.server.database.accessor.mock.MockJiraServerJobCustomFieldRepository;
-import com.blackduck.integration.alert.channel.jira.server.database.accessor.mock.MockJiraServerJobDetailsRepository;
-import com.blackduck.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
-import com.blackduck.integration.exception.IntegrationException;
-import com.blackduck.integration.jira.common.model.request.IssueCommentRequestModel;
-import com.blackduck.integration.jira.common.model.response.IssueCommentResponseModel;
-import com.blackduck.integration.jira.common.server.service.FieldService;
-import com.blackduck.integration.jira.common.server.service.IssueSearchService;
-import com.blackduck.integration.jira.common.server.service.IssueService;
-import com.blackduck.integration.jira.common.server.service.JiraServerServiceFactory;
-import com.blackduck.integration.jira.common.server.service.ProjectService;
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerResponsePostProcessor;
 import com.blackduck.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
 import com.blackduck.integration.alert.api.channel.issue.tracker.callback.ProviderCallbackIssueTrackerResponsePostProcessor;
@@ -39,7 +23,23 @@ import com.blackduck.integration.alert.api.channel.issue.tracker.search.enumerat
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.event.EventManager;
+import com.blackduck.integration.alert.channel.jira.server.JiraServerProperties;
+import com.blackduck.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
+import com.blackduck.integration.alert.channel.jira.server.database.accessor.DefaultJiraServerJobDetailsAccessor;
+import com.blackduck.integration.alert.channel.jira.server.database.accessor.mock.MockJiraServerJobCustomFieldRepository;
+import com.blackduck.integration.alert.channel.jira.server.database.accessor.mock.MockJiraServerJobDetailsRepository;
+import com.blackduck.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.model.request.IssueCommentRequestModel;
+import com.blackduck.integration.jira.common.model.response.IssueCommentResponseModel;
+import com.blackduck.integration.jira.common.server.service.FieldService;
+import com.blackduck.integration.jira.common.server.service.IssueSearchService;
+import com.blackduck.integration.jira.common.server.service.IssueService;
+import com.blackduck.integration.jira.common.server.service.JiraServerServiceFactory;
+import com.blackduck.integration.jira.common.server.service.ProjectService;
+import com.google.gson.Gson;
 
 class JiraServerCommentEventHandlerTest {
     private final Gson gson = BlackDuckServicesFactory.createDefaultGson();

@@ -7,10 +7,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.common.channel.message.ChunkedStringBuilder;
-import com.blackduck.integration.alert.common.channel.message.ChunkedStringBuilderRechunker;
-import com.blackduck.integration.alert.common.channel.message.RechunkedModel;
-
 public class ChunkedStringBuilderRechunkerTest {
     @Test
     public void rechunkTest() {

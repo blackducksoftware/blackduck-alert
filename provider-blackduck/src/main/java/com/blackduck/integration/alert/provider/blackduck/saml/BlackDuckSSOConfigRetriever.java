@@ -10,8 +10,8 @@ package com.blackduck.integration.alert.provider.blackduck.saml;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.blackduck.api.core.BlackDuckPath;
 import com.blackduck.integration.blackduck.api.core.response.UrlSingleResponse;
 import com.blackduck.integration.blackduck.api.generated.discovery.ApiDiscovery;

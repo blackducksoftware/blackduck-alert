@@ -17,10 +17,10 @@ import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.api.provider.Provider;
 import com.blackduck.integration.alert.api.provider.lifecycle.ProviderTask;
 import com.blackduck.integration.alert.api.provider.state.StatefulProvider;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
 import com.blackduck.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
 import com.blackduck.integration.alert.provider.blackduck.factory.BlackDuckTaskFactory;
 import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
-import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
 
 @Component
 public class BlackDuckProvider extends Provider {

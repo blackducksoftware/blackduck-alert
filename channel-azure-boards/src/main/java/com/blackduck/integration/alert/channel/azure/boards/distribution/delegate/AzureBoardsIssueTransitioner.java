@@ -16,9 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.blackduck.integration.alert.channel.azure.boards.AzureBoardsHttpExceptionMessageImprover;
-import com.blackduck.integration.alert.channel.azure.boards.distribution.AzureBoardsWorkItemTypeStateRetriever;
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueCommenter;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueResponseCreator;
@@ -33,9 +30,12 @@ import com.blackduck.integration.alert.azure.boards.common.service.workitem.requ
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemFieldsWrapper;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseFields;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
+import com.blackduck.integration.alert.channel.azure.boards.AzureBoardsHttpExceptionMessageImprover;
+import com.blackduck.integration.alert.channel.azure.boards.distribution.AzureBoardsWorkItemTypeStateRetriever;
 import com.blackduck.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.blackduck.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
 import com.blackduck.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
+import com.google.gson.Gson;
 
 public class AzureBoardsIssueTransitioner extends IssueTrackerIssueTransitioner<Integer> {
     public static final String WORK_ITEM_STATE_CATEGORY_PROPOSED = "Proposed";

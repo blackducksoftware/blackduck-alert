@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.component.users.web.user.util.UserCredentialValidator;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
@@ -41,6 +40,7 @@ import com.blackduck.integration.alert.common.persistence.model.UserRoleModel;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 import com.blackduck.integration.alert.component.users.UserManagementDescriptorKey;
 import com.blackduck.integration.alert.component.users.UserSystemValidator;
+import com.blackduck.integration.alert.component.users.web.user.util.UserCredentialValidator;
 
 @Component
 public class UserActions extends AbstractResourceActions<UserConfig, UserModel, MultiUserConfigResponseModel> {

@@ -15,9 +15,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.blackduck.integration.alert.common.rest.model.FieldModel;
-import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
-
 public class FieldModelTest {
     @Test
     public void fieldModelNoIdTest() {

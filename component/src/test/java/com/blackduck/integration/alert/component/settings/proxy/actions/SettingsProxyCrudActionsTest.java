@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 
-import com.google.gson.Gson;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.common.AlertProperties;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
@@ -32,10 +32,10 @@ import com.blackduck.integration.alert.component.settings.proxy.validator.Settin
 import com.blackduck.integration.alert.database.settings.proxy.NonProxyHostsConfigurationRepository;
 import com.blackduck.integration.alert.database.settings.proxy.SettingsProxyConfigurationEntity;
 import com.blackduck.integration.alert.database.settings.proxy.SettingsProxyConfigurationRepository;
-import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
 import com.blackduck.integration.alert.test.common.MockAlertProperties;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.google.gson.Gson;
 
 class SettingsProxyCrudActionsTest {
     private static final String HOST = "hostname";

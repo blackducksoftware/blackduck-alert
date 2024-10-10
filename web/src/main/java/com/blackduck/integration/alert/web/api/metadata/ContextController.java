@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackduck.integration.alert.web.api.metadata.model.ConfigContextsResponseModel;
 import com.blackduck.integration.alert.common.rest.ResponseFactory;
+import com.blackduck.integration.alert.web.api.metadata.model.ConfigContextsResponseModel;
 
 @RestController
 @RequestMapping(ContextController.CONTEXTS_PATH)

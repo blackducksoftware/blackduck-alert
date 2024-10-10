@@ -12,8 +12,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.blackduck.integration.alert.api.channel.jira.JiraIssueSearchProperties;
-import com.blackduck.integration.alert.api.channel.jira.util.JiraCallbackUtils;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueBomComponentDetails;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
@@ -21,6 +19,8 @@ import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCat
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.ProjectIssueSearchResult;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.enumeration.IssueCategory;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.enumeration.IssueStatus;
+import com.blackduck.integration.alert.api.channel.jira.JiraIssueSearchProperties;
+import com.blackduck.integration.alert.api.channel.jira.util.JiraCallbackUtils;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;

@@ -15,8 +15,8 @@ import java.util.function.Function;
 
 import com.blackduck.integration.alert.common.persistence.model.AuditEntryModel;
 import com.blackduck.integration.alert.common.persistence.model.AuditEntryPageModel;
-import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.common.persistence.model.AuditJobStatusModel;
+import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 
 public interface RestApiAuditAccessor {
     Optional<Long> findMatchingAuditId(Long notificationId, UUID commonDistributionId);

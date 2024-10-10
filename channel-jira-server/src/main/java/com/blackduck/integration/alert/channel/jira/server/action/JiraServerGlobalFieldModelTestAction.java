@@ -18,6 +18,7 @@ import com.blackduck.integration.alert.channel.jira.server.JiraServerProperties;
 import com.blackduck.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.blackduck.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
+import com.blackduck.integration.alert.common.persistence.accessor.FieldUtility;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.model.response.MultiPermissionResponseModel;
 import com.blackduck.integration.jira.common.model.response.PermissionModel;
@@ -27,7 +28,6 @@ import com.blackduck.integration.jira.common.server.service.IssueSearchService;
 import com.blackduck.integration.jira.common.server.service.JiraServerServiceFactory;
 import com.blackduck.integration.jira.common.server.service.MyPermissionsService;
 import com.google.gson.Gson;
-import com.blackduck.integration.alert.common.persistence.accessor.FieldUtility;
 
 /**
  * @deprecated Global test actions are now handled through JiraServerGlobalTestAction

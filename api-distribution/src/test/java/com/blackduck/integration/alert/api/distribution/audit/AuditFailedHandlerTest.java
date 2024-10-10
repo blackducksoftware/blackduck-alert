@@ -18,9 +18,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.blackduck.integration.alert.database.job.api.DefaultJobCompletionStatusModelAccessor;
-import com.blackduck.integration.alert.database.job.execution.JobCompletionDurationsRepository;
-import com.blackduck.integration.alert.database.job.execution.JobCompletionRepository;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJob;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
@@ -52,8 +49,11 @@ import com.blackduck.integration.alert.database.audit.AuditFailedNotificationRep
 import com.blackduck.integration.alert.database.audit.AuditNotificationRelation;
 import com.blackduck.integration.alert.database.audit.AuditNotificationRelationPK;
 import com.blackduck.integration.alert.database.audit.AuditNotificationRepository;
+import com.blackduck.integration.alert.database.job.api.DefaultJobCompletionStatusModelAccessor;
 import com.blackduck.integration.alert.database.job.api.DefaultNotificationAccessor;
 import com.blackduck.integration.alert.database.job.api.DefaultProcessingFailedAccessor;
+import com.blackduck.integration.alert.database.job.execution.JobCompletionDurationsRepository;
+import com.blackduck.integration.alert.database.job.execution.JobCompletionRepository;
 import com.blackduck.integration.alert.database.notification.NotificationContentRepository;
 import com.blackduck.integration.alert.database.notification.NotificationEntity;
 

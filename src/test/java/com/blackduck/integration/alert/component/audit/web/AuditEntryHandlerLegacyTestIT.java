@@ -38,10 +38,6 @@ import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.api.processor.JobNotificationProcessor;
 import com.blackduck.integration.alert.api.processor.NotificationMappingProcessor;
 import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
-import com.blackduck.integration.alert.component.audit.AuditDescriptor;
-import com.blackduck.integration.alert.component.audit.AuditDescriptorKey;
-import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.blackduck.integration.util.ResourceUtil;
 import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.enumeration.FrequencyType;
@@ -61,6 +57,8 @@ import com.blackduck.integration.alert.common.persistence.model.job.details.Slac
 import com.blackduck.integration.alert.common.rest.model.NotificationConfig;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 import com.blackduck.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.component.audit.AuditDescriptor;
+import com.blackduck.integration.alert.component.audit.AuditDescriptorKey;
 import com.blackduck.integration.alert.database.audit.AuditEntryEntity;
 import com.blackduck.integration.alert.database.audit.AuditEntryRepository;
 import com.blackduck.integration.alert.database.audit.AuditNotificationRelation;
@@ -70,7 +68,9 @@ import com.blackduck.integration.alert.database.configuration.repository.FieldVa
 import com.blackduck.integration.alert.database.notification.NotificationContentRepository;
 import com.blackduck.integration.alert.database.notification.NotificationEntity;
 import com.blackduck.integration.alert.mock.entity.MockNotificationContent;
+import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.blackduck.integration.alert.util.AlertIntegrationTest;
+import com.blackduck.integration.util.ResourceUtil;
 
 /**
  * @deprecated Replaced by AuditEntryController. To be removed in 8.0.0.

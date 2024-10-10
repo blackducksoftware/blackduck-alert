@@ -5,9 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.web.api.metadata.model.DescriptorTypesResponseModel;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.enumeration.DescriptorType;
+import com.blackduck.integration.alert.web.api.metadata.model.DescriptorTypesResponseModel;
 
 public class DescriptorTypesActionTest {
     @Test

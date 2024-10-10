@@ -11,8 +11,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ValidationResponseModel extends AlertSerializableModel {
     public static final String VALIDATION_SUCCESS_MESSAGE = "The configuration is valid";

@@ -13,6 +13,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.channel.email.action.EmailGlobalCrudActions;
 import com.blackduck.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
 import com.blackduck.integration.alert.channel.email.database.configuration.EmailConfigurationEntity;
@@ -20,11 +22,6 @@ import com.blackduck.integration.alert.channel.email.database.configuration.Emai
 import com.blackduck.integration.alert.channel.email.database.configuration.properties.EmailConfigurationPropertiesRepository;
 import com.blackduck.integration.alert.channel.email.database.configuration.properties.EmailConfigurationsPropertyEntity;
 import com.blackduck.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
-import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
-import com.google.gson.Gson;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.common.AlertProperties;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -34,8 +31,11 @@ import com.blackduck.integration.alert.common.persistence.model.PermissionMatrix
 import com.blackduck.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.blackduck.integration.alert.common.security.EncryptionUtility;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
 import com.blackduck.integration.alert.test.common.MockAlertProperties;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.google.gson.Gson;
 
 class EmailGlobalConfigurationModelSaveActionsTest {
 

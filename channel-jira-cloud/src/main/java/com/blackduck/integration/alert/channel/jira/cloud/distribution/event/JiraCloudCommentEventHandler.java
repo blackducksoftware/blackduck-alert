@@ -16,14 +16,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerResponsePostProcessor;
+import com.blackduck.integration.alert.api.channel.issue.tracker.event.IssueTrackerCommentEventHandler;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerIssueResponseModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerResponse;
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerMessageSender;
 import com.blackduck.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
 import com.blackduck.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
 import com.blackduck.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
 import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
+import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudPropertiesFactory;
 import com.blackduck.integration.alert.channel.jira.cloud.distribution.JiraCloudMessageSenderFactory;
 import com.blackduck.integration.alert.channel.jira.cloud.distribution.JiraCloudQueryExecutor;
+import com.blackduck.integration.alert.common.persistence.accessor.JobDetailsAccessor;
+import com.blackduck.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.blackduck.integration.jira.common.cloud.service.FieldService;
 import com.blackduck.integration.jira.common.cloud.service.IssueSearchService;
 import com.blackduck.integration.jira.common.cloud.service.IssueService;
@@ -31,17 +42,6 @@ import com.blackduck.integration.jira.common.cloud.service.JiraCloudServiceFacto
 import com.blackduck.integration.jira.common.cloud.service.ProjectService;
 import com.blackduck.integration.jira.common.rest.service.IssuePropertyService;
 import com.google.gson.Gson;
-import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerResponsePostProcessor;
-import com.blackduck.integration.alert.api.channel.issue.tracker.event.IssueTrackerCommentEventHandler;
-import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
-import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerIssueResponseModel;
-import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerResponse;
-import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerMessageSender;
-import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
-import com.blackduck.integration.alert.api.event.EventManager;
-import com.blackduck.integration.alert.common.persistence.accessor.JobDetailsAccessor;
-import com.blackduck.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 
 @Component
 public class JiraCloudCommentEventHandler extends IssueTrackerCommentEventHandler<JiraCloudCommentEvent> {

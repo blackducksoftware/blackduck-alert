@@ -9,9 +9,6 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.blackduck.integration.alert.common.rest.model.FieldModel;
-import com.blackduck.integration.alert.common.rest.model.JobFieldModel;
-
 public class JobFieldModelTest {
     @Test
     public void jobFieldModelTest() {

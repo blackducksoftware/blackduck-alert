@@ -5,8 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.common.rest.model.NotificationConfig;
-
 public class NotificationConfigTest {
     private final String id = "test-ID";
     private final String createdAt = "test-createdAt";
