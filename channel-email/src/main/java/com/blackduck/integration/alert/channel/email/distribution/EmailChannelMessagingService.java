@@ -73,7 +73,7 @@ public class EmailChannelMessagingService {
         model.put(FreemarkerTemplatingService.KEY_ALERT_SERVER_URL, alertProperties.getServerURL());
 
         Map<String, String> contentIdsToFilePaths = new HashMap<>();
-        emailMessagingService.addTemplateImage(model, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), alertProperties.createSynopsysLogoPath());
+        emailMessagingService.addTemplateImage(model, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), alertProperties.createBlackDuckLogoPath());
 
         return new EmailTarget(gatheredEmailAddresses, EmailChannelMessageSender.FILE_NAME_MESSAGE_TEMPLATE, model, contentIdsToFilePaths);
     }

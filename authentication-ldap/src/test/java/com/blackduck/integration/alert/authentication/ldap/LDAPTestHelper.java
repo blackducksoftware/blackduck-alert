@@ -38,8 +38,8 @@ public class LDAPTestHelper {
     public static final String DEFAULT_CONFIG_ID = UUID.randomUUID().toString();
     public static final String DEFAULT_DATE_STRING = DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
     public static final boolean DEFAULT_ENABLED = true;
-    public static final String DEFAULT_SERVER_NAME = "ldap://alert.blackduck.synopsys.com:389";
-    public static final String DEFAULT_MANAGER_DN = "cn=Alert Manager,ou=Synopsys,ou=people,dc=blackduck,dc=com";
+    public static final String DEFAULT_SERVER_NAME = "ldap://alert.blackduck.com:389";
+    public static final String DEFAULT_MANAGER_DN = "cn=Alert Manager,ou=Black Duck,ou=people,dc=blackduck,dc=com";
     public static final String DEFAULT_MANAGER_PASSWORD = "managerPassword";
     public static final String DEFAULT_AUTH_TYPE_SIMPLE = LDAPAuthenticationType.SIMPLE.getAuthenticationType();
     public static final String DEFAULT_AUTH_TYPE_DIGEST = LDAPAuthenticationType.DIGEST.getAuthenticationType();

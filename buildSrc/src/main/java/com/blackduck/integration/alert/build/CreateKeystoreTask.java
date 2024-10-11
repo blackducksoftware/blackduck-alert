@@ -43,7 +43,7 @@ public class CreateKeystoreTask extends Exec {
             "-storepass",
             "changeit",
             "-dname",
-            "CN=localhost, OU=Engineering, O=Synopsys, C=US",
+            "CN=localhost, OU=Engineering, O=Black Duck, C=US",
             "-ext",
             "eku=sa,ca",
             "-ext",

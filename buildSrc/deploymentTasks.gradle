@@ -42,9 +42,9 @@ project.tasks.create(name: copyDeploymentFilesTaskName, type: Copy, group: 'Depl
         ant.replace(file: "${project.buildDir}/deployment/docker-swarm/external-db/hub/docker-compose.yml", token: "ALERT_VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/docker-swarm/standalone/docker-compose.yml", token: "ALERT_VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/docker-swarm/external-db/standalone/docker-compose.yml", token: "ALERT_VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/helm/synopsys-alert/Chart.yaml", token: "ALERT_VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/helm/synopsys-alert/values.yaml", token: "ALERT_VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/helm/synopsys-alert/README.md", token: "ALERT_VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/helm/blackduck-alert/Chart.yaml", token: "ALERT_VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/helm/blackduck-alert/values.yaml", token: "ALERT_VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/helm/blackduck-alert/README.md", token: "ALERT_VERSION_TOKEN", value: "${project.version}")
     }
 }
 
@@ -56,18 +56,18 @@ project.tasks.create(name: createDeploymentZipTaskName, type: Zip, dependsOn: [c
 }
 
 project.tasks.create(name: helmLintTaskName, type: Exec, dependsOn: [copyDeploymentFilesTaskName], group: 'Deployment', description: "Execute helm lint. <sub-task>") {
-    workingDir = "${project.buildDir}/deployment/helm/synopsys-alert/"
-    commandLine "helm", "lint", "${project.buildDir}/deployment/helm/synopsys-alert/"
+    workingDir = "${project.buildDir}/deployment/helm/blackduck-alert/"
+    commandLine "helm", "lint", "${project.buildDir}/deployment/helm/blackduck-alert/"
 }
 
 project.tasks.create(name: helmDryRunTaskName, type: Exec, dependsOn: [copyDeploymentFilesTaskName], group: 'Deployment', description: "Execute helm install with --dry-run option. <sub-task>") {
-    workingDir = "${project.buildDir}/deployment/helm/synopsys-alert/"
-    commandLine "helm", "install", "alert", "${project.buildDir}/deployment/helm/synopsys-alert/", "-n", "alert", "--dry-run"
+    workingDir = "${project.buildDir}/deployment/helm/blackduck-alert/"
+    commandLine "helm", "install", "alert", "${project.buildDir}/deployment/helm/blackduck-alert/", "-n", "alert", "--dry-run"
 }
 
 project.tasks.create(name: helmPackageTaskName, type: Exec, dependsOn: [copyDeploymentFilesTaskName], group: 'Deployment', description: "Create helm tgz package file. <sub-task>") {
-    workingDir = "${project.buildDir}/deployment/helm/synopsys-alert/"
-    commandLine "helm", "package", "${project.buildDir}/deployment/helm/synopsys-alert/", "-d", "${project.buildDir}/helmchart"
+    workingDir = "${project.buildDir}/deployment/helm/blackduck-alert/"
+    commandLine "helm", "package", "${project.buildDir}/deployment/helm/blackduck-alert/", "-d", "${project.buildDir}/helmchart"
 }
 
 project.tasks.create(name: helmValidationTaskName, dependsOn: [copyDeploymentFilesTaskName, helmLintTaskName, helmDryRunTaskName, helmPackageTaskName], group: 'Deployment', description: "Perform all configured helm validation steps. <primary task>") {
@@ -97,10 +97,10 @@ for (String repoName : project.ext.helmArtifactoryRepos) {
     project.tasks.create(name: thisHelmRepoPushTaskName, type: Exec, dependsOn: [thisHelmRepoAddTaskName, copyDeploymentFilesTaskName, helmPackageTaskName], group: 'Deployment', description: "Push to ${repoName} helm repository. <sub-task>") {
         outputs.upToDateWhen { false }
         String uploadArtifact = '.'
-        workingDir = "${project.buildDir}/deployment/helm/synopsys-alert/"
+        workingDir = "${project.buildDir}/deployment/helm/blackduck-alert/"
 
         if (helmPrePackagedRepoNames.contains(repoName)) {
-            uploadArtifact = "synopsys-alert-${project.version}.tgz"
+            uploadArtifact = "blackduck-alert-${project.version}.tgz"
             workingDir = "${project.buildDir}/helmchart"
         }
         commandLine 'helm', 'push-artifactory', uploadArtifact, repoName, '-u', "${System.env.ARTIFACTORY_DEPLOYER_USER}", '-p', "${System.env.ARTIFACTORY_DEPLOYER_PASSWORD}"

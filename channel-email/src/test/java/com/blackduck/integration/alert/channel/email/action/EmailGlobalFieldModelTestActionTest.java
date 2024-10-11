@@ -51,7 +51,7 @@ public class EmailGlobalFieldModelTestActionTest {
         JavamailPropertiesFactory javamailPropertiesFactory = new JavamailPropertiesFactory();
         EmailGlobalFieldModelTestAction emailGlobalFieldModelTestAction = new EmailGlobalFieldModelTestAction(emailChannelMessagingService, javamailPropertiesFactory);
 
-        FieldModel validFieldModel = createFieldModelToTest("noreply@synopsys.com");
+        FieldModel validFieldModel = createFieldModelToTest("noreply@blackduck.com");
 
         try {
             MessageResult messageResult = emailGlobalFieldModelTestAction.testConfig("0", validFieldModel, new FieldUtility(Map.of()));

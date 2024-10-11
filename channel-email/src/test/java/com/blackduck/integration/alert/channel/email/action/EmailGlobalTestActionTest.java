@@ -83,7 +83,7 @@ class EmailGlobalTestActionTest {
         );
 
         ConfigurationTestResult testResult = emailGlobalTestAction
-            .testConfigModelContent("noreply@synopsys.com", new EmailGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, "from", "host"));
+            .testConfigModelContent("noreply@blackduck.com", new EmailGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, "from", "host"));
         assertTrue(testResult.isSuccess(), "Expected the message result to not have errors");
     }
 
@@ -156,7 +156,7 @@ class EmailGlobalTestActionTest {
         configModelWithPassword.setSmtpPassword("password");
         Mockito.when(configurationAccessor.getConfiguration()).thenReturn(Optional.of(configModelWithPassword));
 
-        ConfigurationTestResult testResult = emailGlobalTestAction.testConfigModelContent("noreply@synopsys.com", emailGlobalConfigModel);
+        ConfigurationTestResult testResult = emailGlobalTestAction.testConfigModelContent("noreply@blackduck.com", emailGlobalConfigModel);
         assertTrue(testResult.isSuccess(), "Expected the message result to not have errors");
     }
 
@@ -236,7 +236,7 @@ class EmailGlobalTestActionTest {
         );
 
         ActionResponse<ValidationResponseModel> response = emailGlobalTestAction
-            .testWithPermissionCheck("noreply@synopsys.com", new EmailGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, "from", "host"));
+            .testWithPermissionCheck("noreply@blackduck.com", new EmailGlobalConfigModel(null, AlertRestConstants.DEFAULT_CONFIGURATION_NAME, "from", "host"));
         assertEquals(HttpStatus.FORBIDDEN, response.getHttpStatus());
     }
 
@@ -259,7 +259,7 @@ class EmailGlobalTestActionTest {
 
         EmailGlobalConfigModel globalConfigModel = createValidEmailGlobalConfigModel(testProperties);
 
-        ActionResponse<ValidationResponseModel> response = emailGlobalTestAction.testWithPermissionCheck("noreply@synopsys.com", globalConfigModel);
+        ActionResponse<ValidationResponseModel> response = emailGlobalTestAction.testWithPermissionCheck("noreply@blackduck.com", globalConfigModel);
         assertEquals(HttpStatus.OK, response.getHttpStatus());
         assertTrue(response.isSuccessful());
         assertTrue(response.hasContent());

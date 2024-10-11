@@ -109,7 +109,7 @@ public class BomComponentDetailsTest {
     @Test
     public void combineWithDifferentComponentsTest() {
         ComponentConcern policyConcern = ComponentConcern.policy(ItemOperation.ADD, "Added Policy", "https://policy");
-        ComponentConcern vulnerabilityConcern = ComponentConcern.vulnerability(ItemOperation.ADD, "Added-Vuln01", ComponentConcernSeverity.CRITICAL, "https://synopsys.com");
+        ComponentConcern vulnerabilityConcern = ComponentConcern.vulnerability(ItemOperation.ADD, "Added-Vuln01", ComponentConcernSeverity.CRITICAL, "https://blackduck.com");
         LinkableItem differentComponent = new LinkableItem("Component-does-not-match", "A BOM component");
 
         BomComponentDetails bomComponentDetailsPolicy = new BomComponentDetails(COMPONENT, COMPONENT_VERSION, ComponentVulnerabilities.none(), List.of(), List.of(policyConcern), LICENSE, USAGE, ComponentUpgradeGuidance.none(), List.of(),
@@ -128,7 +128,7 @@ public class BomComponentDetailsTest {
     @Test
     public void combineOneComponentVersionNullTest() {
         ComponentConcern policyConcern = ComponentConcern.policy(ItemOperation.ADD, "Added Policy", "https://policy");
-        ComponentConcern vulnerabilityConcern = ComponentConcern.vulnerability(ItemOperation.ADD, "Added-Vuln01", ComponentConcernSeverity.CRITICAL, "https://synopsys.com");
+        ComponentConcern vulnerabilityConcern = ComponentConcern.vulnerability(ItemOperation.ADD, "Added-Vuln01", ComponentConcernSeverity.CRITICAL, "https://blackduck.com");
 
         BomComponentDetails bomComponentDetailsPolicy = new BomComponentDetails(COMPONENT, COMPONENT_VERSION, ComponentVulnerabilities.none(), List.of(), List.of(policyConcern), LICENSE, USAGE, ComponentUpgradeGuidance.none(), List.of(),
             ISSUES_URL);

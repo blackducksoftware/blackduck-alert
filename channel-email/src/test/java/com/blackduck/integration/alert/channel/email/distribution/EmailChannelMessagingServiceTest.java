@@ -49,8 +49,8 @@ class EmailChannelMessagingServiceTest {
     private static final String EXPECTED_CONTENT = "content";
     private static final String EXPECTED_PROVIDER_NAME = "providerName";
     private static final String EXPECTED_PROVIDER_URL = "www.example.com/provider";
-    private static final String EXPECTED_EMAIL_ADDRESS_A = "noreply@synopsys.com";
-    private static final String EXPECTED_EMAIL_ADDRESS_B = "noreply@example.synopsys.com";
+    private static final String EXPECTED_EMAIL_ADDRESS_A = "noreply@blackduck.com";
+    private static final String EXPECTED_EMAIL_ADDRESS_B = "noreply@example.blackduck.com";
 
     private static MockAlertProperties alertProperties;
     private static EmailAttachmentFileCreator emailAttachmentFileCreator;

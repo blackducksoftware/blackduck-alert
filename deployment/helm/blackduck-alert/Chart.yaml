@@ -1,6 +1,6 @@
 apiVersion: v2
-name: synopsys-alert
-description: Helm chart to deploy Synopsys Alert application
+name: blackduck-alert
+description: Helm chart to deploy Black Duck Alert application
 
 # A chart can be either an 'application' or a 'library' chart.
 #

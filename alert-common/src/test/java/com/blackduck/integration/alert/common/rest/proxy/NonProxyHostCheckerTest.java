@@ -39,8 +39,8 @@ public class NonProxyHostCheckerTest {
 
     @Test
     public void isNonProxyHostPatternTest() {
-        String matchingHost = "https://subdomain.synopsys.com";
-        Set<String> nonProxyHosts = Set.of("example", "*.synopsys.com");
+        String matchingHost = "https://subdomain.blackduck.com";
+        Set<String> nonProxyHosts = Set.of("example", "*.blackduck.com");
         NonProxyHostChecker nonProxyHostChecker = new NonProxyHostChecker(nonProxyHosts);
 
         boolean nonProxyHost = nonProxyHostChecker.isNonProxyHost(matchingHost);
@@ -49,8 +49,8 @@ public class NonProxyHostCheckerTest {
 
     @Test
     public void isNonProxyHostComplexUrlTest() {
-        String matchingHost = "https://subdomain.synopsys.com/some/path/or/page/file.pdf";
-        Set<String> nonProxyHosts = Set.of("example", "*.synopsys.com");
+        String matchingHost = "https://subdomain.blackduck.com/some/path/or/page/file.pdf";
+        Set<String> nonProxyHosts = Set.of("example", "*.blackduck.com");
         NonProxyHostChecker nonProxyHostChecker = new NonProxyHostChecker(nonProxyHosts);
 
         boolean nonProxyHost = nonProxyHostChecker.isNonProxyHost(matchingHost);
@@ -60,7 +60,7 @@ public class NonProxyHostCheckerTest {
     @Test
     public void isNonProxyHostNoMatchTest() {
         String matchingHost = "not a url";
-        Set<String> nonProxyHosts = Set.of("example", "*.synopsys.com");
+        Set<String> nonProxyHosts = Set.of("example", "*.blackduck.com");
         NonProxyHostChecker nonProxyHostChecker = new NonProxyHostChecker(nonProxyHosts);
 
         boolean nonProxyHost = nonProxyHostChecker.isNonProxyHost(matchingHost);

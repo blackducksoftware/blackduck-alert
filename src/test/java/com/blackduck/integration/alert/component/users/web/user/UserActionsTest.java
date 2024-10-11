@@ -49,7 +49,7 @@ class UserActionsTest {
     private final Long id = 10L;
     private final String name = "user";
     private final String password = "testPassword123!@#";
-    private final String emailAddress = "noreply@synopsys.com";
+    private final String emailAddress = "noreply@blackduck.com";
     private final OffsetDateTime lastLogin = OffsetDateTime.now();
     private final long failedLoginCount = 0L;
     private final Set<UserRoleModel> roles = Set.of();

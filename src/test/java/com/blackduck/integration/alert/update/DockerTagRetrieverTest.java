@@ -61,7 +61,7 @@ public class DockerTagRetrieverTest {
         IntLogger intLogger = new PrintStreamIntLogger(System.out, LogLevel.INFO);
         IntHttpClient intHttpClient = new IntHttpClient(intLogger, gson, 10, true, ProxyInfo.NO_PROXY_INFO);
 
-        HttpUrl httpUrl = new HttpUrl("https://synopsys.com");
+        HttpUrl httpUrl = new HttpUrl("https://blackduck.com");
         Request testRequest = new Request.Builder(httpUrl).build();
         try (Response googleResponse = intHttpClient.execute(testRequest)) {
             googleResponse.throwExceptionForError();

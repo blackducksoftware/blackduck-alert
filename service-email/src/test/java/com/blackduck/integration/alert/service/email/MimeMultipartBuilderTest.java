@@ -27,7 +27,7 @@ public class MimeMultipartBuilderTest {
         List<String> attachmentFilePaths = new ArrayList<>();
         attachmentFilePaths.add(TestResourceUtils.DEFAULT_PROPERTIES_FILE_NAME);
         Map<String, String> contentIdsToFilePaths = new HashMap<>();
-        contentIdsToFilePaths.put("entry", "synopsys.png");
+        contentIdsToFilePaths.put("entry", "blackduck.png");
 
         String originalValue = System.getProperty(AlertConstants.SYSTEM_PROPERTY_KEY_APP_HOME);
         try {

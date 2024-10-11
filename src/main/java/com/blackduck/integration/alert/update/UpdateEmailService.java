@@ -129,7 +129,7 @@ public class UpdateEmailService {
     )
         throws AlertException {
         try {
-            String alertLogo = alertProperties.createSynopsysLogoPath();
+            String alertLogo = alertProperties.createBlackDuckLogoPath();
 
             Map<String, String> contentIdsToFilePaths = new HashMap<>();
             emailMessagingService.addTemplateImage(templateFields, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), alertLogo);

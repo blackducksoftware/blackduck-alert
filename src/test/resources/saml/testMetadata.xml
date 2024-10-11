@@ -12,7 +12,7 @@
     <md:NameIDFormat>
       urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress
     </md:NameIDFormat>
-    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://saml.sample.example.com/app/synopsys/abcdEFghijklmonp1/sso/saml"/>
-    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://saml.sample.example.com/app/synopsys/abcdEFghijklmonp1/sso/saml"/>
+    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://saml.sample.example.com/app/blackduck/abcdEFghijklmonp1/sso/saml"/>
+    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://saml.sample.example.com/app/blackduck/abcdEFghijklmonp1/sso/saml"/>
   </md:IDPSSODescriptor>
 </md:EntityDescriptor>
