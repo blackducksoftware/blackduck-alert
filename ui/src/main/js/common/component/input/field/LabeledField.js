@@ -23,7 +23,8 @@ const useStyles = createUseStyles((theme) => ({
         top: '-25px',
         left: '-35px',
         padding: ['2px', '10px'],
-        backgroundColor: theme.colors.grey.darkGrey,
+        backgroundColor: theme.colors.defaultAlertColor,
+        opacity: '0.9',
         width: 'max-content',
         maxWidth: '500px',
         zIndex: 100,
@@ -51,7 +52,7 @@ const LabeledField = ({
             <label id={`${id}-label`} className={labelClasses}>{label}</label>
             { (description || customDescription) && (
                 <div className="d-inline-flex">
-                    
+
                     <span
                         className="descriptionIcon"
                         onClick={() => setShowDescription(!showDescription)}
