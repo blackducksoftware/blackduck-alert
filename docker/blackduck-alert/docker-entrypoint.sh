@@ -1,4 +1,5 @@
 #!/bin/sh
+set -x
 
 logIt() {
   echo "$(date "+%F %T") :: ${1}"
@@ -252,6 +253,39 @@ AND tablename  = 'databasechangeloglock'
 SQL
 )
 
+  logIt "DEBUG :: Start altered IF check"
+  # shellcheck disable=SC2039
+  if [[ ${tableExists} =~ ^t.*|^T.* ]]; then
+    logIt "DEBUG :: tableExists is true, table exists"
+  else
+    logIt "DEBUG :: tableExists is false, table does not exists"
+  fi
+  logIt "DEBUG :: End altered IF check"
+
+  logIt "DEBUG :: Start EXISTING IF check logic"
+  # shellcheck disable=SC2039
+  if [[ ${tableExists} =~ ^"t|T"* ]]; then
+    logIt "DEBUG :: tableExists is true, table exists"
+  else
+    logIt "DEBUG :: tableExists is false, table does not exists"
+  fi
+  logIt "DEBUG :: End EXISTING IF check logic"
+
+  logIt "DEBUG :: Start select count psql check"
+  tableExistsCount=$(psql "${alertDatabaseAdminConfig}" -qtAX -c "SELECT COUNT(*) FROM pg_tables where schemaname = 'public' AND tablename = 'databasechangeloglock';")
+  # shellcheck disable=SC2039
+  if [[ -n "${tableExistsCount}" ]] && [[ "${tableExistsCount}" -eq 1 ]]; then
+    logIt "DEBUG :: tableExistsCount is true, databasechangeloglock exists"
+  else
+    logIt "DEBUG :: tableExistsCount is false, databasechangeloglock does not exist"
+  fi
+  logIt "DEBUG :: Finish select count psql check"
+
+  logIt "DEBUG :: Start :: SELECT COUNT(CONTEXT) FROM Alert.Config_Contexts"
+  psql "${alertDatabaseConfig}" -c 'SELECT COUNT(CONTEXT) FROM Alert.Config_Contexts;'
+  psql "${alertDatabaseConfig}" -c 'SELECT COUNT(CONTEXT) FROM Alert.Config_Contexts;' | grep -q '2'
+  logIt "DEBUG :: End :: SELECT COUNT(CONTEXT) FROM Alert.Config_Contexts"
+
   # shellcheck disable=SC2039
   if [[ "${tableExists}" =~ ^"t|T"* ]]
   then
@@ -488,6 +522,10 @@ logIsVariableConfigured() {
 
 [ -z "${ALERT_HOSTNAME}" ] && logIt "Alert Host: [$alertHostName]. Wrong host name? Restart the container with the right host name configured in blackduck-alert.env"
 
+logIt "DEBUG :: Begin listing of ${ALERT_DATA_DIR}"
+ls -ltr "${ALERT_DATA_DIR}/alertdb.mv.db"
+logIt "DEBUG :: End listing of ${ALERT_DATA_DIR}"
+
 setOverrideVariables
 validateEnvironment
 
@@ -532,6 +570,10 @@ if [ -f "$truststoreFile" ];
 then
     export JAVA_OPTS="$JAVA_OPTS -Xmx${ALERT_MAX_HEAP_SIZE} -Djavax.net.ssl.trustStore=$truststoreFile"
 fi
+
+logIt "DEBUG :: Begin listing of ${ALERT_DATA_DIR}"
+ls -ltr "${ALERT_DATA_DIR}/alertdb.mv.db"
+logIt "DEBUG :: End listing of ${ALERT_DATA_DIR}"
 
 logIt "Launching exec :: $@"
 exec "$@"
