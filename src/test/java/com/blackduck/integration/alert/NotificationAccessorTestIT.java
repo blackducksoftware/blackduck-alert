@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,10 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
-import com.blackduck.integration.alert.database.job.DistributionJobEntity;
-import com.blackduck.integration.alert.database.job.DistributionJobRepository;
-import com.blackduck.integration.alert.mock.entity.MockNotificationContent;
-import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.enumeration.FrequencyType;
@@ -45,9 +48,13 @@ import com.blackduck.integration.alert.database.audit.AuditNotificationRelation;
 import com.blackduck.integration.alert.database.audit.AuditNotificationRepository;
 import com.blackduck.integration.alert.database.configuration.repository.DescriptorConfigRepository;
 import com.blackduck.integration.alert.database.configuration.repository.FieldValueRepository;
+import com.blackduck.integration.alert.database.job.DistributionJobEntity;
+import com.blackduck.integration.alert.database.job.DistributionJobRepository;
 import com.blackduck.integration.alert.database.job.api.DefaultNotificationAccessor;
 import com.blackduck.integration.alert.database.notification.NotificationContentRepository;
 import com.blackduck.integration.alert.database.notification.NotificationEntity;
+import com.blackduck.integration.alert.mock.entity.MockNotificationContent;
+import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.blackduck.integration.alert.util.AlertIntegrationTest;
 
 @Transactional

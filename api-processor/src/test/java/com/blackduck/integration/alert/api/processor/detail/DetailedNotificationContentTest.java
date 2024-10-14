@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.api.processor.detail;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -9,12 +16,12 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
+import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
 import com.blackduck.integration.blackduck.api.manual.component.NotificationContentComponent;
 import com.blackduck.integration.blackduck.api.manual.component.ProjectVersionNotificationContent;
 import com.blackduck.integration.blackduck.api.manual.component.RuleViolationNotificationContent;
 import com.blackduck.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
-import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 
 public class DetailedNotificationContentTest {
     private static final String EXPECTED_NO_POLICY = "Expected no policy name";

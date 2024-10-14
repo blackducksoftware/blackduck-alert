@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.util;
 
 import java.util.List;
@@ -8,6 +15,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -18,7 +26,6 @@ import com.blackduck.integration.alert.database.configuration.repository.Descrip
 import com.blackduck.integration.alert.database.configuration.repository.DescriptorTypeRepository;
 import com.blackduck.integration.alert.database.configuration.repository.FieldContextRepository;
 import com.blackduck.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
-import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.blackduck.integration.alert.test.common.TestProperties;
 import com.blackduck.integration.alert.test.common.TestPropertyKey;

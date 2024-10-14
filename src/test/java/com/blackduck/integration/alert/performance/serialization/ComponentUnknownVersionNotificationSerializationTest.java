@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.performance.serialization;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -34,6 +41,10 @@ import com.blackduck.integration.alert.common.persistence.accessor.NotificationA
 import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
 import com.blackduck.integration.alert.configuration.ApplicationConfiguration;
 import com.blackduck.integration.alert.database.DatabaseDataSource;
+import com.blackduck.integration.alert.performance.utility.AlertRequestUtility;
+import com.blackduck.integration.alert.performance.utility.BlackDuckProviderService;
+import com.blackduck.integration.alert.performance.utility.ConfigurationManagerLegacy;
+import com.blackduck.integration.alert.performance.utility.IntegrationPerformanceTestRunnerLegacy;
 import com.blackduck.integration.alert.test.common.TestProperties;
 import com.blackduck.integration.alert.test.common.TestPropertyKey;
 import com.blackduck.integration.alert.test.common.TestTags;
@@ -54,10 +65,6 @@ import com.blackduck.integration.wait.WaitJob;
 import com.blackduck.integration.wait.tracker.WaitIntervalTracker;
 import com.blackduck.integration.wait.tracker.WaitIntervalTrackerFactory;
 import com.google.gson.Gson;
-import com.blackduck.integration.alert.performance.utility.AlertRequestUtility;
-import com.blackduck.integration.alert.performance.utility.BlackDuckProviderService;
-import com.blackduck.integration.alert.performance.utility.ConfigurationManagerLegacy;
-import com.blackduck.integration.alert.performance.utility.IntegrationPerformanceTestRunnerLegacy;
 
 @Tag(TestTags.DEFAULT_INTEGRATION)
 @SpringBootTest

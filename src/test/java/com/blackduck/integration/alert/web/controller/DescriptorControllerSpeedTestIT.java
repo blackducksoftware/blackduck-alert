@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.web.controller;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -19,13 +26,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.blackduck.integration.alert.common.descriptor.Descriptor;
 import com.blackduck.integration.alert.util.AlertIntegrationTest;
 import com.blackduck.integration.alert.util.AlertIntegrationTestConstants;
 import com.blackduck.integration.alert.web.api.metadata.DescriptorController;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.blackduck.integration.alert.common.descriptor.Descriptor;
 
 @Transactional
 @AlertIntegrationTest

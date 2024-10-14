@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.api.distribution.audit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,19 +28,14 @@ import org.springframework.amqp.core.Message;
 import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 
-import com.blackduck.integration.alert.api.distribution.mock.MockAuditFailedEntryRepository;
-import com.blackduck.integration.alert.api.distribution.mock.MockJobCompletionStatusDurationsRepository;
-import com.blackduck.integration.alert.database.job.api.DefaultJobCompletionStatusModelAccessor;
-import com.blackduck.integration.alert.database.job.execution.JobCompletionDurationsRepository;
-import com.blackduck.integration.alert.database.job.execution.JobCompletionRepository;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJob;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.distribution.mock.MockAuditEntryRepository;
+import com.blackduck.integration.alert.api.distribution.mock.MockAuditFailedEntryRepository;
 import com.blackduck.integration.alert.api.distribution.mock.MockAuditFailedNotificationRepository;
 import com.blackduck.integration.alert.api.distribution.mock.MockAuditNotificationRepository;
+import com.blackduck.integration.alert.api.distribution.mock.MockJobCompletionStatusDurationsRepository;
 import com.blackduck.integration.alert.api.distribution.mock.MockJobCompletionStatusRepository;
 import com.blackduck.integration.alert.api.distribution.mock.MockNotificationContentRepository;
 import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
@@ -58,11 +60,16 @@ import com.blackduck.integration.alert.database.audit.AuditFailedNotificationRep
 import com.blackduck.integration.alert.database.audit.AuditNotificationRelation;
 import com.blackduck.integration.alert.database.audit.AuditNotificationRelationPK;
 import com.blackduck.integration.alert.database.audit.AuditNotificationRepository;
+import com.blackduck.integration.alert.database.job.api.DefaultJobCompletionStatusModelAccessor;
 import com.blackduck.integration.alert.database.job.api.DefaultNotificationAccessor;
 import com.blackduck.integration.alert.database.job.api.DefaultProcessingAuditAccessor;
 import com.blackduck.integration.alert.database.job.api.DefaultProcessingFailedAccessor;
+import com.blackduck.integration.alert.database.job.execution.JobCompletionDurationsRepository;
+import com.blackduck.integration.alert.database.job.execution.JobCompletionRepository;
 import com.blackduck.integration.alert.database.notification.NotificationContentRepository;
 import com.blackduck.integration.alert.database.notification.NotificationEntity;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.google.gson.Gson;
 
 class AuditFailedEventListenerTest {
     public static final String TEST_JOB_NAME = "Test Job";

@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.api.processor.filter;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -12,13 +19,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.blackduck.integration.alert.api.processor.detail.DetailedNotificationContent;
-import com.blackduck.integration.blackduck.api.manual.component.NotificationContentComponent;
-import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.blackduck.integration.alert.common.enumeration.ProcessingType;
 import com.blackduck.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
 import com.blackduck.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
 import com.blackduck.integration.alert.common.persistence.model.job.SimpleFilteredDistributionJobResponseModel;
 import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
+import com.blackduck.integration.blackduck.api.manual.component.NotificationContentComponent;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 class JobNotificationFilterUtilsTest {
     private static final String PROJECT_NAME = "projectName";

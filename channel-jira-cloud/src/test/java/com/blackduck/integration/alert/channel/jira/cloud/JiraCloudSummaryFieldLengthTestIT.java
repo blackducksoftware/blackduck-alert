@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.jira.cloud;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -13,8 +20,6 @@ import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.blackduck.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
@@ -22,16 +27,18 @@ import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCat
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerMessageSender;
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.channel.jira.cloud.distribution.JiraCloudMessageSenderFactory;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.test.common.TestProperties;
 import com.blackduck.integration.alert.test.common.TestPropertyKey;
 import com.blackduck.integration.alert.test.common.TestTags;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 @Tags(value = {
     @Tag(TestTags.DEFAULT_INTEGRATION),

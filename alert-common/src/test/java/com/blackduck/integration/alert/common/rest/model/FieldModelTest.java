@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.common.rest.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,9 +21,6 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-
-import com.blackduck.integration.alert.common.rest.model.FieldModel;
-import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
 
 public class FieldModelTest {
     @Test

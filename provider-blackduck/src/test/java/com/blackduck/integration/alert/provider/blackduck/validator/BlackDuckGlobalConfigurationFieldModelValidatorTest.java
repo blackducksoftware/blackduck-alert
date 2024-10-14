@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.provider.blackduck.validator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,14 +23,14 @@ import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.api.common.model.errors.FieldStatusSeverity;
 import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
-import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.blackduck.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
 import com.blackduck.integration.alert.common.rest.model.FieldModel;
 import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
+import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.blackduck.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
 
 public class BlackDuckGlobalConfigurationFieldModelValidatorTest {
 

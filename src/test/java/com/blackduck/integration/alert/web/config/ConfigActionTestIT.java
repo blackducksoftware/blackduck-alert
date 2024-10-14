@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.web.config;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -11,12 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.blackduck.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
-import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptor;
-import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
-import com.blackduck.integration.alert.util.AlertIntegrationTest;
-import com.blackduck.integration.alert.web.api.config.ConfigActions;
-import com.blackduck.integration.alert.web.api.config.GlobalConfigurationModelToConcreteConversionService;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.descriptor.DescriptorMap;
 import com.blackduck.integration.alert.common.descriptor.DescriptorProcessor;
@@ -32,6 +33,12 @@ import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
 import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 import com.blackduck.integration.alert.common.security.EncryptionUtility;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
+import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptor;
+import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
+import com.blackduck.integration.alert.util.AlertIntegrationTest;
+import com.blackduck.integration.alert.web.api.config.ConfigActions;
+import com.blackduck.integration.alert.web.api.config.GlobalConfigurationModelToConcreteConversionService;
 
 import junit.framework.AssertionFailedError;
 

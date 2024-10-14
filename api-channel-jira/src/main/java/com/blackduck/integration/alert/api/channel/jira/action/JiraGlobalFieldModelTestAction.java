@@ -1,19 +1,19 @@
 /*
- * api-channel-jira
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.api.channel.jira.action;
 
 import com.blackduck.integration.alert.api.channel.jira.JiraConstants;
-import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.common.action.FieldModelTestAction;
 import com.blackduck.integration.alert.common.message.model.MessageResult;
 import com.blackduck.integration.alert.common.persistence.accessor.FieldUtility;
 import com.blackduck.integration.alert.common.rest.model.FieldModel;
+import com.blackduck.integration.exception.IntegrationException;
 
 @Deprecated(forRemoval = true)
 public abstract class JiraGlobalFieldModelTestAction extends FieldModelTestAction {

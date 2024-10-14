@@ -1,9 +1,9 @@
 /*
- * api-channel-jira
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.api.channel.jira.distribution.custom;
 
@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.blackduck.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.function.ThrowingSupplier;
 import com.blackduck.integration.jira.common.model.response.CustomFieldCreationResponseModel;
@@ -26,7 +27,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.blackduck.integration.alert.api.common.model.exception.AlertRuntimeException;
 
 public class JiraCustomFieldResolver {
     private static final String CUSTOM_FIELD_TYPE_STRING_VALUE = "string";

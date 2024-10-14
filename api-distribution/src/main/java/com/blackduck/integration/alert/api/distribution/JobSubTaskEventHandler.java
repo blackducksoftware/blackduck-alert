@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.api.distribution;
 
 import java.time.Instant;
@@ -6,8 +13,8 @@ import java.util.function.Predicate;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.distribution.audit.AuditFailedEvent;
-import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJob;
+import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.distribution.execution.JobStage;
 import com.blackduck.integration.alert.api.event.AlertEventHandler;
 import com.blackduck.integration.alert.api.event.EventManager;

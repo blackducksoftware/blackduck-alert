@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.authentication.saml;
 
 import java.nio.file.Path;
@@ -9,9 +16,6 @@ import com.blackduck.integration.alert.authentication.saml.database.accessor.SAM
 import com.blackduck.integration.alert.authentication.saml.database.mock.MockSAMLConfigurationRepository;
 import com.blackduck.integration.alert.authentication.saml.model.SAMLConfigModel;
 import com.blackduck.integration.alert.authentication.saml.model.SAMLMetadataMode;
-import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
-import com.blackduck.integration.alert.test.common.MockAlertProperties;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.alert.common.AlertProperties;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.persistence.model.PermissionKey;
@@ -19,6 +23,9 @@ import com.blackduck.integration.alert.common.persistence.model.PermissionMatrix
 import com.blackduck.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 import com.blackduck.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
+import com.blackduck.integration.alert.test.common.MockAlertProperties;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class SAMLTestHelper {
     public static final String TEST_PRIVATE_KEY = "-----BEGIN PRIVATE KEY-----\n" +

@@ -1,9 +1,9 @@
 /*
- * alert-common
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.common.persistence.model.job.details;
 
@@ -11,10 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import com.google.gson.annotations.JsonAdapter;
 import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
+import com.google.gson.annotations.JsonAdapter;
 
 @JsonAdapter(DistributionJobDetailsModelJsonAdapter.class)
 public abstract class DistributionJobDetailsModel extends AlertSerializableModel {

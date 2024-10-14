@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.common.persistence.model.job.details;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,22 +20,14 @@ import java.util.function.Predicate;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
-import com.blackduck.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
-import com.blackduck.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModelJsonAdapter;
-import com.blackduck.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
-import com.blackduck.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
-import com.blackduck.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
-import com.blackduck.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
-import com.blackduck.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 public class DistributionJobDetailsModelJsonAdapterTest {
     private final Gson gson = BlackDuckServicesFactory.createDefaultGson();

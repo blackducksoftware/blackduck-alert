@@ -1,9 +1,9 @@
 /*
- * provider-blackduck
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.provider.blackduck.task.accumulator;
 
@@ -29,13 +29,6 @@ import com.blackduck.integration.alert.api.event.NotificationReceivedEvent;
 import com.blackduck.integration.alert.api.processor.filter.StatefulAlertPage;
 import com.blackduck.integration.alert.api.provider.lifecycle.ProviderTask;
 import com.blackduck.integration.alert.api.provider.state.ProviderProperties;
-import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckApiTokenValidator;
-import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
-import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.blackduck.integration.blackduck.api.manual.view.NotificationUserView;
-import com.blackduck.integration.blackduck.api.manual.view.NotificationView;
-import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.alert.api.task.ScheduledTask;
 import com.blackduck.integration.alert.common.logging.AlertLoggerFactory;
 import com.blackduck.integration.alert.common.message.model.DateRange;
@@ -43,6 +36,13 @@ import com.blackduck.integration.alert.common.persistence.accessor.NotificationA
 import com.blackduck.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
 import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckApiTokenValidator;
+import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.blackduck.api.manual.view.NotificationUserView;
+import com.blackduck.integration.blackduck.api.manual.view.NotificationView;
+import com.blackduck.integration.exception.IntegrationException;
 
 public class BlackDuckAccumulator extends ProviderTask {
     private static final List<String> SUPPORTED_NOTIFICATION_TYPES = Stream.of(NotificationType.values())

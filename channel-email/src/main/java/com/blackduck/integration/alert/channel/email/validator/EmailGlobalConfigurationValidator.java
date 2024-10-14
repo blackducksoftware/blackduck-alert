@@ -1,9 +1,9 @@
 /*
- * channel-email
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.channel.email.validator;
 
@@ -14,10 +14,10 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatusMessages;
+import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 @Component
 public class EmailGlobalConfigurationValidator {

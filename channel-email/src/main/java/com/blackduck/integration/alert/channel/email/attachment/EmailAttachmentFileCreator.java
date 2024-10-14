@@ -1,9 +1,9 @@
 /*
- * channel-email
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.channel.email.attachment;
 
@@ -19,14 +19,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.blackduck.integration.alert.channel.email.attachment.compatibility.MessageContentGroup;
 import com.blackduck.integration.alert.channel.email.distribution.ProjectMessageToMessageContentGroupConversionUtils;
+import com.blackduck.integration.alert.common.AlertProperties;
+import com.blackduck.integration.alert.common.util.DateUtils;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.google.gson.Gson;
-import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
-import com.blackduck.integration.alert.common.AlertProperties;
-import com.blackduck.integration.alert.common.util.DateUtils;
 
 @Component
 public class EmailAttachmentFileCreator {

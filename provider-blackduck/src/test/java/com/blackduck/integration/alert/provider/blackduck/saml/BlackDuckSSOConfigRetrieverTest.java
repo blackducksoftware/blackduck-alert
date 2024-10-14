@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.provider.blackduck.saml;
 
 import static org.junit.jupiter.api.Assertions.fail;
@@ -9,6 +16,10 @@ import org.mockito.Mockito;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
+import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.blackduck.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
+import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.blackduck.integration.alert.test.common.MockAlertProperties;
@@ -22,10 +33,6 @@ import com.blackduck.integration.blackduck.service.request.BlackDuckRequest;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.rest.HttpUrl;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
-import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
-import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.blackduck.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
-import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 
 public class BlackDuckSSOConfigRetrieverTest {
     @Test

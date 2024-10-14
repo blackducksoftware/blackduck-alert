@@ -1,9 +1,9 @@
 /*
- * service-email
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.service.email;
 
@@ -27,10 +27,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.blackduck.integration.alert.service.email.template.FreemarkerTemplatingService;
 import com.blackduck.integration.exception.IntegrationException;
-import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;

@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.provider.blackduck.processor.message;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -10,6 +17,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 
+import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
+import com.blackduck.integration.alert.api.processor.extract.model.project.BomComponentDetails;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentPolicy;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
+import com.blackduck.integration.alert.common.enumeration.ItemOperation;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 import com.blackduck.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
 import com.blackduck.integration.alert.provider.blackduck.processor.message.service.BlackDuckComponentVulnerabilityDetailsCreator;
 import com.blackduck.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageBomComponentDetailsCreatorFactory;
@@ -40,13 +54,6 @@ import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.rest.HttpMethod;
 import com.blackduck.integration.rest.HttpUrl;
 import com.blackduck.integration.rest.exception.IntegrationRestException;
-import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
-import com.blackduck.integration.alert.api.processor.extract.model.project.BomComponentDetails;
-import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernSeverity;
-import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentPolicy;
-import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
-import com.blackduck.integration.alert.common.enumeration.ItemOperation;
-import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 class RuleViolationClearedNotificationMessageExtractorTest {
     private static String PROJECT = "ProjectName";

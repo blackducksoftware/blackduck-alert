@@ -1,9 +1,9 @@
 /*
- * channel-email
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.channel.email.attachment.compatibility;
 
@@ -15,12 +15,12 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.blackduck.integration.builder.Buildable;
-import com.blackduck.integration.datastructure.SetMap;
 import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.common.enumeration.ItemOperation;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.builder.Buildable;
+import com.blackduck.integration.datastructure.SetMap;
 
 public class ProviderMessageContent extends AlertSerializableModel implements Buildable {
     private static final long serialVersionUID = -9019185621384719085L;

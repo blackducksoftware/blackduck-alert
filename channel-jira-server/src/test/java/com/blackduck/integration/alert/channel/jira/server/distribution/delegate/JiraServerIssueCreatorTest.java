@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.jira.server.distribution.delegate;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -17,26 +24,26 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.blackduck.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
 import com.blackduck.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
 import com.blackduck.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
 import com.blackduck.integration.alert.api.channel.jira.distribution.custom.MessageReplacementValues;
 import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraSearcherResponseModel;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.channel.jira.server.distribution.JiraServerQueryExecutor;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
 import com.blackduck.integration.jira.common.model.components.ProjectComponent;
 import com.blackduck.integration.jira.common.server.model.IssueCreationRequestModel;
 import com.blackduck.integration.jira.common.server.service.IssueService;
 import com.blackduck.integration.jira.common.server.service.ProjectService;
-import com.blackduck.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
-import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
-import com.blackduck.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
-import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
-import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.blackduck.integration.alert.common.message.model.LinkableItem;
-import com.blackduck.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 
 @ExtendWith(SpringExtension.class)
 public class JiraServerIssueCreatorTest {

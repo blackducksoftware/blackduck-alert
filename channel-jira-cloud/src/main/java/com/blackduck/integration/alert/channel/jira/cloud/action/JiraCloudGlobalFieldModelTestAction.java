@@ -1,9 +1,9 @@
 /*
- * channel-jira-cloud
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.channel.jira.cloud.action;
 
@@ -17,6 +17,7 @@ import com.blackduck.integration.alert.api.channel.jira.action.JiraGlobalFieldMo
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudPropertiesFactory;
 import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
+import com.blackduck.integration.alert.common.persistence.accessor.FieldUtility;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.cloud.model.IssueSearchResponseModel;
 import com.blackduck.integration.jira.common.cloud.service.IssueSearchService;
@@ -26,7 +27,6 @@ import com.blackduck.integration.jira.common.model.response.MultiPermissionRespo
 import com.blackduck.integration.jira.common.model.response.PermissionModel;
 import com.blackduck.integration.jira.common.rest.service.PluginManagerService;
 import com.google.gson.Gson;
-import com.blackduck.integration.alert.common.persistence.accessor.FieldUtility;
 
 @Component
 public class JiraCloudGlobalFieldModelTestAction extends JiraGlobalFieldModelTestAction {

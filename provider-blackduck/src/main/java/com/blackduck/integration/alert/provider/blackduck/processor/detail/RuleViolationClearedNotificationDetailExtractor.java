@@ -1,9 +1,9 @@
 /*
- * provider-blackduck
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.provider.blackduck.processor.detail;
 
@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.api.processor.detail.DetailedNotificationContent;
 import com.blackduck.integration.alert.api.processor.detail.NotificationDetailExtractor;
+import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.provider.blackduck.processor.model.RuleViolationClearedUniquePolicyNotificationContent;
 import com.blackduck.integration.blackduck.api.manual.component.ComponentVersionStatus;
 import com.blackduck.integration.blackduck.api.manual.component.PolicyInfo;

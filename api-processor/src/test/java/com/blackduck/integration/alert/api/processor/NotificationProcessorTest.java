@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.api.processor;
 
 import java.time.OffsetDateTime;
@@ -16,6 +23,13 @@ import com.blackduck.integration.alert.api.processor.extract.model.ProcessedProv
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage;
 import com.blackduck.integration.alert.api.processor.filter.JobNotificationMapper;
+import com.blackduck.integration.alert.common.enumeration.FrequencyType;
+import com.blackduck.integration.alert.common.enumeration.ProcessingType;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
+import com.blackduck.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
+import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.provider.blackduck.processor.detail.RuleViolationNotificationDetailExtractor;
 import com.blackduck.integration.blackduck.api.generated.enumeration.PolicyRuleSeverityType;
 import com.blackduck.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
@@ -27,13 +41,6 @@ import com.blackduck.integration.blackduck.api.manual.view.RuleViolationNotifica
 import com.blackduck.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.blackduck.integration.alert.common.enumeration.FrequencyType;
-import com.blackduck.integration.alert.common.enumeration.ProcessingType;
-import com.blackduck.integration.alert.common.message.model.LinkableItem;
-import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
-import com.blackduck.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
-import com.blackduck.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
-import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 
 public class NotificationProcessorTest {
     private static final Gson GSON = new GsonBuilder().create();

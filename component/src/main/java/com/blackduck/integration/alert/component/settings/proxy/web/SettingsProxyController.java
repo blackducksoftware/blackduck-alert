@@ -1,9 +1,9 @@
 /*
- * component
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.component.settings.proxy.web;
 
@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackduck.integration.alert.component.settings.proxy.action.SettingsProxyCrudActions;
-import com.blackduck.integration.alert.component.settings.proxy.action.SettingsProxyTestAction;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.common.rest.ResponseFactory;
 import com.blackduck.integration.alert.common.rest.api.StaticUniqueConfigResourceController;
 import com.blackduck.integration.alert.common.rest.api.ValidateController;
 import com.blackduck.integration.alert.common.rest.model.SettingsProxyModel;
+import com.blackduck.integration.alert.component.settings.proxy.action.SettingsProxyCrudActions;
+import com.blackduck.integration.alert.component.settings.proxy.action.SettingsProxyTestAction;
 import com.blackduck.integration.alert.component.settings.proxy.action.SettingsProxyValidationAction;
 
 @RestController

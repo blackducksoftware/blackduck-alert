@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.database.settings.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,11 +41,6 @@ import com.blackduck.integration.alert.api.common.model.exception.AlertException
 import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
-import com.blackduck.integration.alert.mock.entity.MockNotificationContent;
-import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.blackduck.integration.alert.test.common.TestTags;
-import com.blackduck.integration.alert.util.AlertIntegrationTest;
-import com.blackduck.integration.rest.RestConstants;
 import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.enumeration.FrequencyType;
@@ -58,6 +60,11 @@ import com.blackduck.integration.alert.database.audit.AuditNotificationRelation;
 import com.blackduck.integration.alert.database.audit.AuditNotificationRepository;
 import com.blackduck.integration.alert.database.notification.NotificationContentRepository;
 import com.blackduck.integration.alert.database.notification.NotificationEntity;
+import com.blackduck.integration.alert.mock.entity.MockNotificationContent;
+import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.blackduck.integration.alert.test.common.TestTags;
+import com.blackduck.integration.alert.util.AlertIntegrationTest;
+import com.blackduck.integration.rest.RestConstants;
 
 @Transactional
 @AlertIntegrationTest

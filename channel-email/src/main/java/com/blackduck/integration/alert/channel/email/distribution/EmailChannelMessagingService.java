@@ -1,9 +1,9 @@
 /*
- * channel-email
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.channel.email.distribution;
 
@@ -16,17 +16,17 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.blackduck.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
 import com.blackduck.integration.alert.channel.email.attachment.EmailAttachmentFormat;
+import com.blackduck.integration.alert.common.AlertProperties;
+import com.blackduck.integration.alert.common.message.model.MessageResult;
 import com.blackduck.integration.alert.service.email.EmailMessagingService;
 import com.blackduck.integration.alert.service.email.EmailTarget;
 import com.blackduck.integration.alert.service.email.SmtpConfig;
 import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.blackduck.integration.alert.service.email.template.FreemarkerTemplatingService;
-import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
-import com.blackduck.integration.alert.common.AlertProperties;
-import com.blackduck.integration.alert.common.message.model.MessageResult;
 
 @Component
 public class EmailChannelMessagingService {

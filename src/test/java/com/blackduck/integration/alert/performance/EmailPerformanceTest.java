@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.performance;
 
 import java.time.format.DateTimeFormatter;
@@ -30,6 +37,7 @@ import com.blackduck.integration.alert.configuration.ApplicationConfiguration;
 import com.blackduck.integration.alert.database.DatabaseDataSource;
 import com.blackduck.integration.alert.performance.utility.AlertRequestUtility;
 import com.blackduck.integration.alert.performance.utility.BlackDuckProviderService;
+import com.blackduck.integration.alert.performance.utility.ConfigurationManagerLegacy;
 import com.blackduck.integration.alert.performance.utility.IntegrationPerformanceTestRunnerLegacy;
 import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.blackduck.integration.alert.test.common.TestProperties;
@@ -37,7 +45,6 @@ import com.blackduck.integration.alert.test.common.TestPropertyKey;
 import com.blackduck.integration.alert.test.common.TestTags;
 import com.blackduck.integration.alert.util.DescriptorMocker;
 import com.google.gson.Gson;
-import com.blackduck.integration.alert.performance.utility.ConfigurationManagerLegacy;
 
 @Tag(TestTags.DEFAULT_PERFORMANCE)
 @SpringBootTest

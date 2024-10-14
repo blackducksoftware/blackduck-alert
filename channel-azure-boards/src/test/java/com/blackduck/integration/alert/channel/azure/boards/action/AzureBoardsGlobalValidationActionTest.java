@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.azure.boards.action;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,12 +18,12 @@ import org.mockito.Mock;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.blackduck.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
-import com.blackduck.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
-import com.blackduck.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationValidator;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
+import com.blackduck.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
+import com.blackduck.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
+import com.blackduck.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationValidator;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.persistence.model.PermissionKey;

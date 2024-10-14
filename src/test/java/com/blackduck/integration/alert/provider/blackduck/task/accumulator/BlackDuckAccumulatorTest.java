@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.provider.blackduck.task.accumulator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,17 +20,14 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.blackduck.integration.alert.provider.blackduck.task.accumulator.BlackDuckAccumulator;
-import com.blackduck.integration.alert.provider.blackduck.task.accumulator.BlackDuckNotificationRetriever;
-import com.blackduck.integration.alert.provider.blackduck.task.accumulator.BlackDuckNotificationRetrieverFactory;
+import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.api.event.NotificationReceivedEvent;
+import com.blackduck.integration.alert.api.processor.filter.PageRetriever;
+import com.blackduck.integration.alert.api.processor.filter.StatefulAlertPage;
 import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.blackduck.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedDetails;
-import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
-import com.blackduck.integration.alert.api.processor.filter.PageRetriever;
-import com.blackduck.integration.alert.api.processor.filter.StatefulAlertPage;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckApiTokenValidator;
 import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;

@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.component.scheduling;
 
 import java.util.HashMap;
@@ -8,11 +15,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
 import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
 import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 import com.blackduck.integration.alert.component.scheduling.validator.SchedulingConfigurationFieldModelValidator;
 import com.blackduck.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
-import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
 class SchedulingConfigurationValidatorTest {
 
     /*

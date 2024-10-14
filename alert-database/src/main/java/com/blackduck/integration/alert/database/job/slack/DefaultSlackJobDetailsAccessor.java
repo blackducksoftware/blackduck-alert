@@ -1,21 +1,22 @@
 /*
- * alert-database
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.database.job.slack;
 
-import com.blackduck.integration.alert.common.persistence.accessor.SlackJobDetailsAccessor;
-import com.blackduck.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-import java.util.UUID;
+import com.blackduck.integration.alert.common.persistence.accessor.SlackJobDetailsAccessor;
+import com.blackduck.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 
 @Component
 public class DefaultSlackJobDetailsAccessor implements SlackJobDetailsAccessor {

@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.common.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,7 +20,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.HttpStatus;
 
 import com.blackduck.integration.alert.common.action.ActionResponse;
-import com.blackduck.integration.alert.common.util.PagingParamValidationUtils;
 
 class PagingParamValidationUtilsTest {
     private static final Integer VALID_PAGE_NUMBER = 0;

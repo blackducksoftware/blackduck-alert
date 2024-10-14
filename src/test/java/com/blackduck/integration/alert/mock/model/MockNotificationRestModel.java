@@ -1,10 +1,17 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.mock.model;
 
 import java.util.Date;
 
-import com.google.gson.JsonObject;
 import com.blackduck.integration.alert.common.rest.model.NotificationConfig;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.google.gson.JsonObject;
 
 public class MockNotificationRestModel extends MockRestModelUtil<NotificationConfig> {
     private final String createdAt = new Date(400).toString();

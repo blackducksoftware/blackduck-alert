@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.jira.server.validator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -9,11 +16,11 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
-import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
-import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.common.util.DateUtils;

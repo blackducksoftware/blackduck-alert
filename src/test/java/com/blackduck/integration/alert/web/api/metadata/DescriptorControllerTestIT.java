@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.web.api.metadata;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,14 +29,14 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.blackduck.integration.alert.util.AlertIntegrationTest;
-import com.blackduck.integration.alert.util.AlertIntegrationTestConstants;
-import com.blackduck.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.enumeration.DescriptorType;
+import com.blackduck.integration.alert.util.AlertIntegrationTest;
+import com.blackduck.integration.alert.util.AlertIntegrationTestConstants;
+import com.blackduck.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 @Transactional
 @AlertIntegrationTest

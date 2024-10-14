@@ -1,14 +1,15 @@
 /*
- * alert-common
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.common.persistence.model.job.details;
 
 import java.lang.reflect.Type;
 
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -16,7 +17,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKey;
 
 public class DistributionJobDetailsModelJsonAdapter implements JsonSerializer<DistributionJobDetailsModel>, JsonDeserializer<DistributionJobDetailsModel> {
     @Override

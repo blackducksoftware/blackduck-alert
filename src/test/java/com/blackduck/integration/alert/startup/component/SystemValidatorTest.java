@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.startup.component;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -26,7 +33,6 @@ import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckApiTokenValidator;
 import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
-import com.blackduck.integration.alert.startup.component.SystemMessageInitializer;
 import com.blackduck.integration.alert.test.common.OutputLogger;
 import com.blackduck.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.blackduck.integration.exception.IntegrationException;

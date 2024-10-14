@@ -1,9 +1,9 @@
 /*
- * provider-blackduck
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.provider.blackduck.web;
 
@@ -22,9 +22,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
-import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.blackduck.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
-import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckApiTokenValidator;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.action.PagedCustomFunctionAction;
 import com.blackduck.integration.alert.common.descriptor.ChannelDescriptor;
@@ -36,6 +33,9 @@ import com.blackduck.integration.alert.common.rest.HttpServletContentWrapper;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.rest.model.FieldModel;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.blackduck.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
+import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckApiTokenValidator;
 
 @Component
 public class BlackDuckProjectCustomFunctionAction extends PagedCustomFunctionAction<ProviderProjectOptions> {

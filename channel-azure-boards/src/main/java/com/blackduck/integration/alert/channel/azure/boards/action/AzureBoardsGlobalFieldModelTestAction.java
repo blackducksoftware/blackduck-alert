@@ -1,9 +1,9 @@
 /*
- * channel-azure-boards
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.channel.azure.boards.action;
 
@@ -14,24 +14,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.channel.azure.boards.AzureBoardsProperties;
-import com.blackduck.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
-import com.blackduck.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.blackduck.integration.exception.IntegrationException;
-import com.blackduck.integration.rest.proxy.ProxyInfo;
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.azure.boards.common.http.AzureApiVersionAppender;
 import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpRequestCreatorFactory;
 import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpService;
 import com.blackduck.integration.alert.azure.boards.common.http.HttpServiceException;
 import com.blackduck.integration.alert.azure.boards.common.service.project.AzureProjectService;
+import com.blackduck.integration.alert.channel.azure.boards.AzureBoardsProperties;
+import com.blackduck.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
+import com.blackduck.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.blackduck.integration.alert.common.action.FieldModelTestAction;
 import com.blackduck.integration.alert.common.message.model.MessageResult;
 import com.blackduck.integration.alert.common.persistence.accessor.FieldUtility;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.blackduck.integration.alert.common.rest.model.FieldModel;
 import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.rest.proxy.ProxyInfo;
+import com.google.gson.Gson;
 
 /**
  * @deprecated Replaced by AzureBoardsGlobalTestAction. To be removed in 8.0.0.

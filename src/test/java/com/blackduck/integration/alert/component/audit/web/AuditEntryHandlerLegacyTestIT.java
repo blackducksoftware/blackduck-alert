@@ -1,13 +1,9 @@
 /*
- * Copyright (C) 2017 Black Duck Software Inc.
- * http://www.blackducksoftware.com/
- * All rights reserved.
+ * blackduck-alert
  *
- * This software is the confidential and proprietary information of
- * Black Duck Software ("Confidential Information"). You shall not
- * disclose such Confidential Information and shall use it only in
- * accordance with the terms of the license agreement you entered into
- * with Black Duck Software.
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.component.audit.web;
 
@@ -38,10 +34,6 @@ import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.api.processor.JobNotificationProcessor;
 import com.blackduck.integration.alert.api.processor.NotificationMappingProcessor;
 import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
-import com.blackduck.integration.alert.component.audit.AuditDescriptor;
-import com.blackduck.integration.alert.component.audit.AuditDescriptorKey;
-import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.blackduck.integration.util.ResourceUtil;
 import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.enumeration.FrequencyType;
@@ -61,6 +53,8 @@ import com.blackduck.integration.alert.common.persistence.model.job.details.Slac
 import com.blackduck.integration.alert.common.rest.model.NotificationConfig;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 import com.blackduck.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.component.audit.AuditDescriptor;
+import com.blackduck.integration.alert.component.audit.AuditDescriptorKey;
 import com.blackduck.integration.alert.database.audit.AuditEntryEntity;
 import com.blackduck.integration.alert.database.audit.AuditEntryRepository;
 import com.blackduck.integration.alert.database.audit.AuditNotificationRelation;
@@ -70,7 +64,9 @@ import com.blackduck.integration.alert.database.configuration.repository.FieldVa
 import com.blackduck.integration.alert.database.notification.NotificationContentRepository;
 import com.blackduck.integration.alert.database.notification.NotificationEntity;
 import com.blackduck.integration.alert.mock.entity.MockNotificationContent;
+import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.blackduck.integration.alert.util.AlertIntegrationTest;
+import com.blackduck.integration.util.ResourceUtil;
 
 /**
  * @deprecated Replaced by AuditEntryController. To be removed in 8.0.0.

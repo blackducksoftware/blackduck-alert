@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.component.settings.convert;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,7 +20,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.common.AlertProperties;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -34,6 +40,7 @@ import com.blackduck.integration.alert.database.settings.proxy.SettingsProxyConf
 import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
 import com.blackduck.integration.alert.test.common.MockAlertProperties;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.google.gson.Gson;
 
 class ProxyConfigurationModelSaveActionsTest {
     public static final String TEST_PROXY_HOST = "host";

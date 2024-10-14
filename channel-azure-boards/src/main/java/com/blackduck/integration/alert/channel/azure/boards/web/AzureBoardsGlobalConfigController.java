@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.azure.boards.web;
 
 import java.util.UUID;
@@ -8,12 +15,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.channel.azure.boards.action.AzureBoardsGlobalCrudActions;
 import com.blackduck.integration.alert.channel.azure.boards.action.AzureBoardsGlobalTestAction;
 import com.blackduck.integration.alert.channel.azure.boards.action.AzureBoardsGlobalValidationAction;
 import com.blackduck.integration.alert.channel.azure.boards.action.AzureBoardsOAuthAuthenticateAction;
 import com.blackduck.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
-import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.common.rest.ResponseFactory;

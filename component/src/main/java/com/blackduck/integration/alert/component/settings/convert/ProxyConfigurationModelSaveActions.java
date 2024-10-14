@@ -1,9 +1,9 @@
 /*
- * component
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.component.settings.convert;
 
@@ -12,13 +12,13 @@ import java.util.function.Function;
 
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
-import com.blackduck.integration.alert.component.settings.proxy.action.SettingsProxyCrudActions;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.action.api.GlobalConfigurationModelToConcreteSaveActions;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
 import com.blackduck.integration.alert.common.rest.model.SettingsProxyModel;
-import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
+import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
+import com.blackduck.integration.alert.component.settings.proxy.action.SettingsProxyCrudActions;
 
 /**
  * @deprecated This class is required for converting an old ConfigurationModel into the new GlobalConfigModel classes. This is a temporary class that should be removed once we

@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.web.api.job;
 
 import java.nio.charset.StandardCharsets;
@@ -29,11 +36,6 @@ import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
 import com.blackduck.integration.alert.channel.slack.descriptor.SlackDescriptor;
-import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.blackduck.integration.alert.test.common.TestProperties;
-import com.blackduck.integration.alert.util.AlertIntegrationTestConstants;
-import com.blackduck.integration.alert.util.DatabaseConfiguredFieldTest;
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.common.descriptor.ChannelDescriptor;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.enumeration.FrequencyType;
@@ -48,6 +50,11 @@ import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
 import com.blackduck.integration.alert.common.rest.model.JobFieldModel;
 import com.blackduck.integration.alert.common.rest.model.JobIdsRequestModel;
 import com.blackduck.integration.alert.common.rest.model.JobProviderProjectFieldModel;
+import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.blackduck.integration.alert.test.common.TestProperties;
+import com.blackduck.integration.alert.util.AlertIntegrationTestConstants;
+import com.blackduck.integration.alert.util.DatabaseConfiguredFieldTest;
+import com.google.gson.Gson;
 
 public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     private static final String DEFAULT_BLACK_DUCK_CONFIG = "Default Black Duck Config";

@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.jira.server.validator;
 
 import java.util.HashMap;
@@ -6,10 +13,10 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
-import com.blackduck.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
 import com.blackduck.integration.alert.api.descriptor.JiraCloudChannelKey;
+import com.blackduck.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
+import com.blackduck.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
 
 public class JiraServerGlobalConfigurationFieldModelValidatorTest {
     /*

@@ -1,9 +1,9 @@
 /*
- * component
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.component.users.web.role.util;
 
@@ -11,11 +11,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.blackduck.integration.alert.component.users.web.role.PermissionModel;
 import com.blackduck.integration.alert.common.enumeration.AccessOperation;
 import com.blackduck.integration.alert.common.persistence.model.PermissionKey;
 import com.blackduck.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.blackduck.integration.alert.common.util.BitwiseUtil;
+import com.blackduck.integration.alert.component.users.web.role.PermissionModel;
 
 public final class PermissionModelUtil {
     public static PermissionMatrixModel convertToPermissionMatrixModel(Set<PermissionModel> permissionModels) {

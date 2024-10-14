@@ -1,9 +1,9 @@
 /*
- * component
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.component.tasks;
 
@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
 
 import com.blackduck.integration.alert.api.event.EventManager;
+import com.blackduck.integration.alert.api.processor.NotificationMappingProcessor;
+import com.blackduck.integration.alert.api.processor.event.JobNotificationMappedEvent;
 import com.blackduck.integration.alert.api.task.StartupScheduledTask;
 import com.blackduck.integration.alert.api.task.TaskManager;
 import com.blackduck.integration.alert.common.enumeration.FrequencyType;
@@ -25,8 +27,6 @@ import com.blackduck.integration.alert.common.persistence.accessor.NotificationA
 import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.util.DateUtils;
-import com.blackduck.integration.alert.api.processor.NotificationMappingProcessor;
-import com.blackduck.integration.alert.api.processor.event.JobNotificationMappedEvent;
 
 public abstract class ProcessingTask extends StartupScheduledTask {
     public static final int PAGE_SIZE = 100;

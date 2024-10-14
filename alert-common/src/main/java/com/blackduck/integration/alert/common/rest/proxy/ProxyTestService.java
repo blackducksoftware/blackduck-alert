@@ -1,9 +1,9 @@
 /*
- * alert-common
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.common.rest.proxy;
 
@@ -15,9 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.common.AlertProperties;
-import com.blackduck.integration.alert.common.rest.model.SettingsProxyModel;
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.common.message.model.ConfigurationTestResult;
+import com.blackduck.integration.alert.common.rest.model.SettingsProxyModel;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.log.Slf4jIntLogger;
 import com.blackduck.integration.rest.HttpUrl;
@@ -26,6 +25,7 @@ import com.blackduck.integration.rest.client.IntHttpClient;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
 import com.blackduck.integration.rest.request.Request;
 import com.blackduck.integration.rest.response.Response;
+import com.google.gson.Gson;
 
 //TODO: This should be in the component subproject but currently requires several dependencies not available to that subproject.
 @Component

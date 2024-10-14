@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.web.api.system;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,11 +23,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 
-import com.blackduck.integration.rest.RestConstants;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.persistence.model.SystemMessageModel;
 import com.blackduck.integration.alert.database.job.api.DefaultSystemStatusAccessor;
 import com.blackduck.integration.alert.database.system.DefaultSystemMessageAccessor;
+import com.blackduck.integration.rest.RestConstants;
 
 public class SystemActionsTest {
     private DefaultSystemStatusAccessor defaultSystemStatusUtility;

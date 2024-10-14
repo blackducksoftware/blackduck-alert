@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.provider.blackduck.processor;
 
 import static org.junit.jupiter.api.Assertions.assertNotSame;
@@ -12,7 +19,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.common.AlertProperties;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
@@ -24,6 +30,7 @@ import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDe
 import com.blackduck.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
+import com.google.gson.Gson;
 
 class NotificationExtractorBlackDuckServicesFactoryCacheTest {
     private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);

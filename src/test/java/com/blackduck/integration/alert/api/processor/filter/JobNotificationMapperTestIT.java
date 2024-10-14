@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.api.processor.filter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -17,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.processor.detail.DetailedNotificationContent;
 import com.blackduck.integration.alert.common.enumeration.FrequencyType;
 import com.blackduck.integration.alert.common.enumeration.ProcessingType;
@@ -27,7 +35,6 @@ import com.blackduck.integration.alert.common.persistence.model.job.Distribution
 import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.blackduck.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.provider.blackduck.processor.model.VulnerabilityUniqueProjectNotificationContent;
 import com.blackduck.integration.alert.util.AlertIntegrationTest;
 import com.blackduck.integration.blackduck.api.generated.enumeration.VulnerabilitySeverityType;

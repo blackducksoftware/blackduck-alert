@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.component.tasks.web;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,8 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.scheduling.TaskScheduler;
 
-import com.blackduck.integration.alert.component.tasks.web.MultiTaskMetaDataModel;
-import com.blackduck.integration.alert.component.tasks.web.TaskActions;
 import com.blackduck.integration.alert.api.task.ScheduledTask;
 import com.blackduck.integration.alert.api.task.TaskManager;
 import com.blackduck.integration.alert.api.task.TaskMetaData;

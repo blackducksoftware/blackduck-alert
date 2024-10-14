@@ -1,9 +1,9 @@
 /*
- * channel-jira-server
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.channel.jira.server.distribution;
 
@@ -12,11 +12,11 @@ import java.util.stream.Collectors;
 
 import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraSearcherResponseModel;
 import com.blackduck.integration.alert.api.channel.jira.distribution.search.JqlQueryExecutor;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.server.model.IssueSearchIssueComponent;
 import com.blackduck.integration.jira.common.server.model.IssueSearchResponseModel;
 import com.blackduck.integration.jira.common.server.service.IssueSearchService;
-import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 
 public class JiraServerQueryExecutor implements JqlQueryExecutor {
     private final IssueSearchService issueSearchService;

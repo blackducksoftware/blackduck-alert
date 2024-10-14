@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.email.database.accessor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,12 +19,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.blackduck.integration.alert.api.descriptor.EmailChannelKey;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.channel.email.database.job.EmailJobDetailsEntity;
 import com.blackduck.integration.alert.channel.email.database.job.EmailJobDetailsRepository;
 import com.blackduck.integration.alert.channel.email.database.job.additional.EmailJobAdditionalEmailAddressEntity;
 import com.blackduck.integration.alert.channel.email.database.job.additional.EmailJobAdditionalEmailAddressRepository;
-import com.blackduck.integration.alert.api.descriptor.EmailChannelKey;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 
 class EmailJobDetailsAccessorTest {

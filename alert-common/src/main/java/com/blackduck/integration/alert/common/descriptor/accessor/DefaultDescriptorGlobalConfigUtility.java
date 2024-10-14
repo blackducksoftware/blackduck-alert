@@ -1,9 +1,9 @@
 /*
- * alert-common
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.common.descriptor.accessor;
 
@@ -13,14 +13,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.common.action.ApiAction;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
+import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
 import com.blackduck.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.blackduck.integration.alert.common.rest.model.FieldModel;
-import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
-import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 
 public class DefaultDescriptorGlobalConfigUtility {
     private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;

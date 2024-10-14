@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.email.validator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -9,13 +16,13 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
-import com.blackduck.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.api.descriptor.EmailChannelKey;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.rest.model.FieldModel;
 import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
+import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
+import com.blackduck.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
 
 class EmailGlobalConfigurationFieldModelValidatorTest {
 

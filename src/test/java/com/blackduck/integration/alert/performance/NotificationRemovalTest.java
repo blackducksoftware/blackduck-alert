@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.performance;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,11 +31,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 
-import com.blackduck.integration.alert.performance.utility.IntegrationPerformanceTestRunnerLegacy;
-import com.blackduck.integration.alert.util.AlertIntegrationTest;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.api.event.EventManager;
+import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.blackduck.integration.alert.api.task.TaskManager;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
@@ -42,10 +47,10 @@ import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 import com.blackduck.integration.alert.component.scheduling.workflow.PurgeTask;
-import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
-import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
+import com.blackduck.integration.alert.performance.utility.IntegrationPerformanceTestRunnerLegacy;
 import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.blackduck.integration.alert.test.common.TestTags;
+import com.blackduck.integration.alert.util.AlertIntegrationTest;
 import com.blackduck.integration.blackduck.api.generated.enumeration.PolicyRuleSeverityType;
 import com.blackduck.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
 import com.blackduck.integration.blackduck.api.manual.component.ComponentVersionStatus;
@@ -61,6 +66,8 @@ import com.blackduck.integration.wait.WaitJob;
 import com.blackduck.integration.wait.WaitJobCondition;
 import com.blackduck.integration.wait.tracker.WaitIntervalTracker;
 import com.blackduck.integration.wait.tracker.WaitIntervalTrackerFactory;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 @Tag(TestTags.DEFAULT_PERFORMANCE)
 @AlertIntegrationTest

@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.email.action;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -7,17 +14,17 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import com.blackduck.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
-import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
+import com.blackduck.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.persistence.model.PermissionKey;
 import com.blackduck.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
 import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
 
 class EmailGlobalValidationActionTest {

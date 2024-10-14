@@ -1,9 +1,9 @@
 /*
- * component
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.component.certificates.web;
 
@@ -21,9 +21,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.certificates.AlertTrustStoreManager;
-import com.blackduck.integration.alert.component.certificates.CertificatesDescriptor;
-import com.blackduck.integration.alert.component.certificates.CertificatesDescriptorKey;
-import com.blackduck.integration.util.IntegrationEscapeUtil;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
@@ -34,6 +31,9 @@ import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
 import com.blackduck.integration.alert.common.persistence.model.CustomCertificateModel;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.component.certificates.CertificatesDescriptor;
+import com.blackduck.integration.alert.component.certificates.CertificatesDescriptorKey;
+import com.blackduck.integration.util.IntegrationEscapeUtil;
 
 @Component
 public class CertificateActions extends AbstractResourceActions<CertificateModel, CustomCertificateModel, MultiCertificateModel> {

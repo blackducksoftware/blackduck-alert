@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.component.audit.web;
 
 import java.util.List;
@@ -8,8 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.component.audit.AuditDescriptorKey;
 import com.blackduck.integration.alert.api.event.EventManager;
+import com.blackduck.integration.alert.api.processor.NotificationMappingProcessor;
+import com.blackduck.integration.alert.api.processor.event.JobNotificationMappedEvent;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.enumeration.FrequencyType;
@@ -20,8 +28,7 @@ import com.blackduck.integration.alert.common.persistence.model.AuditEntryPageMo
 import com.blackduck.integration.alert.common.persistence.model.job.JobToNotificationMappingModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
-import com.blackduck.integration.alert.api.processor.NotificationMappingProcessor;
-import com.blackduck.integration.alert.api.processor.event.JobNotificationMappedEvent;
+import com.blackduck.integration.alert.component.audit.AuditDescriptorKey;
 
 @Component
 public class AuditEntryActions {

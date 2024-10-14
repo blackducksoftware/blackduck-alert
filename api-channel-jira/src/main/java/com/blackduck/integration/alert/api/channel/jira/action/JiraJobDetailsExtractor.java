@@ -1,9 +1,9 @@
 /*
- * api-channel-jira
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.api.channel.jira.action;
 
@@ -11,12 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.job.details.processor.DistributionJobDetailsExtractor;
 import com.blackduck.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
+import com.google.gson.Gson;
 
 public abstract class JiraJobDetailsExtractor extends DistributionJobDetailsExtractor {
     private final DistributionJobFieldExtractor fieldExtractor;

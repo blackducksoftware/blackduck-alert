@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.util;
 
 import java.util.Collection;
@@ -9,6 +16,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.enumeration.FrequencyType;
 import com.blackduck.integration.alert.common.enumeration.ProcessingType;
@@ -19,8 +28,6 @@ import com.blackduck.integration.alert.common.persistence.model.ConfigurationMod
 import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.blackduck.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 
 @AlertIntegrationTest

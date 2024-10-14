@@ -1,9 +1,9 @@
 /*
- * api-channel
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.api.channel.rest;
 
@@ -15,6 +15,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.rest.HttpMethod;
 import com.blackduck.integration.rest.HttpUrl;
@@ -24,8 +26,6 @@ import com.blackduck.integration.rest.body.StringBodyContent;
 import com.blackduck.integration.rest.client.IntHttpClient;
 import com.blackduck.integration.rest.request.Request;
 import com.blackduck.integration.rest.response.Response;
-import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.blackduck.integration.alert.api.common.model.exception.AlertRuntimeException;
 
 public class RestChannelUtility {
     private final Logger logger = LoggerFactory.getLogger(getClass());

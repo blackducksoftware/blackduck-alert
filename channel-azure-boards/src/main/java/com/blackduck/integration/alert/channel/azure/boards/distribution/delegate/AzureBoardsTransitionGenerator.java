@@ -1,20 +1,20 @@
 /*
- * channel-azure-boards
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.channel.azure.boards.distribution.delegate;
 
 import java.util.Set;
 import java.util.UUID;
 
-import com.blackduck.integration.alert.channel.azure.boards.distribution.event.AzureBoardsTransitionEvent;
 import com.blackduck.integration.alert.api.channel.issue.tracker.event.IssueTrackerTransitionIssueEvent;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTransitionModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerTransitionEventGenerator;
 import com.blackduck.integration.alert.api.descriptor.AzureBoardsChannelKey;
+import com.blackduck.integration.alert.channel.azure.boards.distribution.event.AzureBoardsTransitionEvent;
 
 public class AzureBoardsTransitionGenerator implements IssueTrackerTransitionEventGenerator<Integer> {
     private final AzureBoardsChannelKey channelKey;

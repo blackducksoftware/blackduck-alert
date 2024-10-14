@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.msteams.distribution;
 
 import java.util.List;
@@ -13,13 +20,6 @@ import org.mockito.Mockito;
 
 import com.blackduck.integration.alert.api.certificates.AlertSSLContextManager;
 import com.blackduck.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
-import com.blackduck.integration.alert.test.common.MockAlertProperties;
-import com.blackduck.integration.alert.test.common.TestProperties;
-import com.blackduck.integration.alert.test.common.TestPropertyKey;
-import com.blackduck.integration.alert.test.common.TestTags;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
-import com.blackduck.integration.rest.proxy.ProxyInfo;
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
@@ -32,6 +32,13 @@ import com.blackduck.integration.alert.common.message.model.MessageResult;
 import com.blackduck.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 import com.blackduck.integration.alert.common.util.MarkupEncoderUtil;
+import com.blackduck.integration.alert.test.common.MockAlertProperties;
+import com.blackduck.integration.alert.test.common.TestProperties;
+import com.blackduck.integration.alert.test.common.TestPropertyKey;
+import com.blackduck.integration.alert.test.common.TestTags;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.rest.proxy.ProxyInfo;
+import com.google.gson.Gson;
 
 class MsTeamsChannelTest {
     private static final LinkableItem TEST_PROVIDER = new LinkableItem("Test Provider Label", "Test Provider Config Name");

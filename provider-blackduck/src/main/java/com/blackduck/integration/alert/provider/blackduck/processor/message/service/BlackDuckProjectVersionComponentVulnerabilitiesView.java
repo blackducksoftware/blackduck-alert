@@ -1,19 +1,19 @@
 /*
- * provider-blackduck
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.provider.blackduck.processor.message.service;
 
 import java.math.BigDecimal;
 
-import com.google.gson.JsonElement;
 import com.blackduck.integration.blackduck.api.core.BlackDuckView;
 import com.blackduck.integration.blackduck.api.generated.component.ProjectVersionComponentVersionVulnerabilityRemediationCvss2View;
 import com.blackduck.integration.blackduck.api.generated.component.ProjectVersionComponentVersionVulnerabilityRemediationCvss3View;
 import com.blackduck.integration.blackduck.api.generated.enumeration.VulnerabilityRemediationStatusType;
+import com.google.gson.JsonElement;
 
 // TODO replace with updated model from blackduck-common-api when available
 //  Copied from: ProjectVersionComponentVersionVulnerabilityRemediationView (blackduck-common-api:2020.8.0.18)

@@ -1,9 +1,9 @@
 /*
- * web
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.web.api.metadata;
 
@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.descriptor.Descriptor;
@@ -30,6 +29,7 @@ import com.blackduck.integration.alert.common.enumeration.AccessOperation;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.enumeration.DescriptorType;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
 
 @Component
 public class DescriptorMetadataActions {

@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.azure.boards.action;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,6 +29,9 @@ import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.api.oauth.AlertOAuthCredentialDataStoreFactory;
 import com.blackduck.integration.alert.api.oauth.database.accessor.AlertOAuthConfigurationAccessor;
+import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpService;
+import com.blackduck.integration.alert.azure.boards.common.model.AzureArrayResponseModel;
+import com.blackduck.integration.alert.azure.boards.common.service.project.TeamProjectReferenceResponseModel;
 import com.blackduck.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.blackduck.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
 import com.blackduck.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
@@ -31,14 +41,6 @@ import com.blackduck.integration.alert.channel.azure.boards.database.mock.MockAl
 import com.blackduck.integration.alert.channel.azure.boards.database.mock.MockAzureBoardsConfigurationRepository;
 import com.blackduck.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
 import com.blackduck.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
-import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
-import com.blackduck.integration.alert.test.common.MockAlertProperties;
-import com.blackduck.integration.alert.test.common.database.MockRepositorySorter;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
-import com.google.gson.Gson;
-import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpService;
-import com.blackduck.integration.alert.azure.boards.common.model.AzureArrayResponseModel;
-import com.blackduck.integration.alert.azure.boards.common.service.project.TeamProjectReferenceResponseModel;
 import com.blackduck.integration.alert.common.AlertProperties;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.descriptor.accessor.SettingsUtility;
@@ -51,6 +53,11 @@ import com.blackduck.integration.alert.common.rest.model.SettingsProxyModel;
 import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 import com.blackduck.integration.alert.common.security.EncryptionUtility;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
+import com.blackduck.integration.alert.test.common.MockAlertProperties;
+import com.blackduck.integration.alert.test.common.database.MockRepositorySorter;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.google.gson.Gson;
 
 import jakarta.servlet.http.HttpServletRequest;
 

@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.jira.server.distribution.event;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -13,8 +20,6 @@ import org.mockito.Mockito;
 import org.springframework.amqp.core.Message;
 import org.springframework.core.task.SyncTaskExecutor;
 
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJob;
@@ -23,6 +28,8 @@ import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobSt
 import com.blackduck.integration.alert.api.distribution.execution.JobStage;
 import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.google.gson.Gson;
 
 class JiraServerCommentEventListenerTest {
     private final Gson gson = BlackDuckServicesFactory.createDefaultGson();

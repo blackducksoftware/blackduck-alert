@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.processing;
 
 import static org.junit.jupiter.api.Assertions.fail;
@@ -21,7 +28,6 @@ import com.blackduck.integration.alert.common.persistence.accessor.JobAccessor;
 import com.blackduck.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
 import com.blackduck.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
 import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
-import com.blackduck.integration.alert.processing.ProcessingJobEventHandler;
 
 class ProcessingJobEventHandlerTest {
     @Test

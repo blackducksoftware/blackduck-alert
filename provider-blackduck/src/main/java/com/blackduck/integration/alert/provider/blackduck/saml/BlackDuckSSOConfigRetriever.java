@@ -1,17 +1,17 @@
 /*
- * provider-blackduck
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.provider.blackduck.saml;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.blackduck.api.core.BlackDuckPath;
 import com.blackduck.integration.blackduck.api.core.response.UrlSingleResponse;
 import com.blackduck.integration.blackduck.api.generated.discovery.ApiDiscovery;

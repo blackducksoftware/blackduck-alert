@@ -1,9 +1,9 @@
 /*
- * azure-boards-common
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.azure.boards.common.service.workitem.response;
 
@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.blackduck.integration.alert.azure.boards.common.model.ReferenceLinkModel;
+import com.blackduck.integration.alert.azure.boards.common.service.workitem.WorkItemCommentVersionRefModel;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.WorkItemRelationModel;
 import com.blackduck.integration.alert.azure.boards.common.util.AzureFieldsExtractor;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.blackduck.integration.alert.azure.boards.common.service.workitem.WorkItemCommentVersionRefModel;
 
 public class WorkItemResponseModel {
     private Integer id;

@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.database.job.api;
 
 import java.util.List;
@@ -14,16 +21,16 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.blackduck.integration.alert.database.job.execution.JobCompletionDurationsRepository;
-import com.blackduck.integration.alert.database.job.execution.JobCompletionRepository;
-import com.blackduck.integration.alert.database.job.execution.JobCompletionStatusDurationsEntity;
-import com.blackduck.integration.alert.database.job.execution.JobCompletionStatusEntity;
 import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
 import com.blackduck.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
 import com.blackduck.integration.alert.common.persistence.model.job.executions.JobCompletionStatusDurations;
 import com.blackduck.integration.alert.common.persistence.model.job.executions.JobCompletionStatusModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedQueryDetails;
+import com.blackduck.integration.alert.database.job.execution.JobCompletionDurationsRepository;
+import com.blackduck.integration.alert.database.job.execution.JobCompletionRepository;
+import com.blackduck.integration.alert.database.job.execution.JobCompletionStatusDurationsEntity;
+import com.blackduck.integration.alert.database.job.execution.JobCompletionStatusEntity;
 
 @Component
 public class DefaultJobCompletionStatusModelAccessor implements JobCompletionStatusModelAccessor {

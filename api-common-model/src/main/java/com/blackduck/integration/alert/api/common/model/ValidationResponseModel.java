@@ -1,9 +1,9 @@
 /*
- * api-common-model
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.api.common.model;
 
@@ -11,8 +11,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ValidationResponseModel extends AlertSerializableModel {
     public static final String VALIDATION_SUCCESS_MESSAGE = "The configuration is valid";

@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.slack.distribution;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -15,10 +22,6 @@ import org.mockito.Mockito;
 
 import com.blackduck.integration.alert.api.certificates.AlertSSLContextManager;
 import com.blackduck.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
-import com.blackduck.integration.alert.test.common.MockAlertProperties;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
-import com.blackduck.integration.rest.proxy.ProxyInfo;
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.descriptor.SlackChannelKey;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.distribution.audit.AuditFailedEvent;
@@ -34,6 +37,10 @@ import com.blackduck.integration.alert.common.persistence.accessor.SlackJobDetai
 import com.blackduck.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 import com.blackduck.integration.alert.common.util.MarkupEncoderUtil;
+import com.blackduck.integration.alert.test.common.MockAlertProperties;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.rest.proxy.ProxyInfo;
+import com.google.gson.Gson;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;

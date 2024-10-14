@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.database.job;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,10 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import com.blackduck.integration.alert.database.job.api.StaticJobAccessor;
-import com.blackduck.integration.alert.util.AlertIntegrationTest;
-import com.blackduck.integration.blackduck.api.generated.enumeration.VulnerabilitySeverityType;
-import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.common.enumeration.FrequencyType;
 import com.blackduck.integration.alert.common.enumeration.ProcessingType;
@@ -29,6 +32,10 @@ import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.database.job.api.DefaultNotificationAccessor;
+import com.blackduck.integration.alert.database.job.api.StaticJobAccessor;
+import com.blackduck.integration.alert.util.AlertIntegrationTest;
+import com.blackduck.integration.blackduck.api.generated.enumeration.VulnerabilitySeverityType;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @AlertIntegrationTest
 class DistributionJobRepositoryTestIT {

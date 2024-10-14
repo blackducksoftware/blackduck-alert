@@ -1,9 +1,9 @@
 /*
- * provider-blackduck
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.provider.blackduck.processor;
 
@@ -15,11 +15,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.blackduck.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.processor.NotificationProcessingLifecycleCache;
+import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.blackduck.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
 import com.blackduck.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.log.Slf4jIntLogger;

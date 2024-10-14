@@ -1,9 +1,9 @@
 /*
- * channel-email
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.channel.email.attachment;
 
@@ -18,10 +18,10 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.channel.email.attachment.compatibility.ComponentItem;
 import com.blackduck.integration.alert.channel.email.attachment.compatibility.MessageContentGroup;
 import com.blackduck.integration.alert.channel.email.attachment.compatibility.ProviderMessageContent;
-import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.common.enumeration.ItemOperation;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
 

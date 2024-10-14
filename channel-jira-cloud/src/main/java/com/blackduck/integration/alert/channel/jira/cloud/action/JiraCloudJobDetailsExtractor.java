@@ -1,9 +1,9 @@
 /*
- * channel-jira-cloud
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.channel.jira.cloud.action;
 
@@ -13,13 +13,13 @@ import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.channel.jira.action.JiraJobDetailsExtractor;
-import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.descriptor.JiraCloudChannelKey;
+import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.blackduck.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
+import com.google.gson.Gson;
 
 @Component
 public class JiraCloudJobDetailsExtractor extends JiraJobDetailsExtractor {

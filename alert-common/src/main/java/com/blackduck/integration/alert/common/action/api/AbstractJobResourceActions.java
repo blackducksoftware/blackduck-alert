@@ -1,9 +1,9 @@
 /*
- * alert-common
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.common.action.api;
 
@@ -26,16 +26,16 @@ import com.blackduck.integration.alert.common.action.ValidationActionResponse;
 import com.blackduck.integration.alert.common.descriptor.DescriptorMap;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.enumeration.DescriptorType;
+import com.blackduck.integration.alert.common.persistence.accessor.DescriptorAccessor;
+import com.blackduck.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.blackduck.integration.alert.common.rest.model.FieldModel;
+import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
+import com.blackduck.integration.alert.common.rest.model.JobFieldModel;
 import com.blackduck.integration.alert.common.rest.model.JobPagedModel;
 import com.blackduck.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 import com.blackduck.integration.alert.common.rest.model.MultiJobFieldModel;
-import com.blackduck.integration.alert.common.util.PagingParamValidationUtils;
-import com.blackduck.integration.alert.common.persistence.accessor.DescriptorAccessor;
-import com.blackduck.integration.alert.common.persistence.model.RegisteredDescriptorModel;
-import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
-import com.blackduck.integration.alert.common.rest.model.JobFieldModel;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.common.util.PagingParamValidationUtils;
 
 public abstract class AbstractJobResourceActions {
     private static final EnumSet<DescriptorType> ALLOWED_JOB_DESCRIPTOR_TYPES = EnumSet.of(DescriptorType.PROVIDER, DescriptorType.CHANNEL);

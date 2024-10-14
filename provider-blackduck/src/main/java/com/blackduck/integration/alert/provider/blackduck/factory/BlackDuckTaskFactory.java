@@ -1,9 +1,9 @@
 /*
- * provider-blackduck
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.provider.blackduck.factory;
 
@@ -18,13 +18,13 @@ import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.api.provider.lifecycle.ProviderTask;
 import com.blackduck.integration.alert.api.provider.lifecycle.ProviderTaskFactory;
 import com.blackduck.integration.alert.api.provider.state.ProviderProperties;
+import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.ProviderDataAccessor;
+import com.blackduck.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
 import com.blackduck.integration.alert.provider.blackduck.task.BlackDuckDataSyncTask;
 import com.blackduck.integration.alert.provider.blackduck.task.accumulator.BlackDuckAccumulator;
 import com.blackduck.integration.alert.provider.blackduck.task.accumulator.BlackDuckNotificationRetrieverFactory;
 import com.blackduck.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
-import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
-import com.blackduck.integration.alert.common.persistence.accessor.ProviderDataAccessor;
-import com.blackduck.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
 
 @Component
 public class BlackDuckTaskFactory implements ProviderTaskFactory {

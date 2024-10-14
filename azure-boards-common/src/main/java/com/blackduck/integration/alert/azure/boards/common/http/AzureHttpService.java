@@ -1,21 +1,21 @@
 /*
- * azure-boards-common
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.azure.boards.common.http;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 
+import com.blackduck.integration.function.ThrowingSupplier;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpMethods;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpResponse;
 import com.google.gson.Gson;
-import com.blackduck.integration.function.ThrowingSupplier;
 
 public class AzureHttpService {
     private final Gson gson;

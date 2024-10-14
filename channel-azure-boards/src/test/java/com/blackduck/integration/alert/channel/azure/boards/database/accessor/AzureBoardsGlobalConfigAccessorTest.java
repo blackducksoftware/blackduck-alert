@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.azure.boards.database.accessor;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -15,12 +22,10 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.channel.azure.boards.database.configuration.AzureBoardsConfigurationEntity;
 import com.blackduck.integration.alert.channel.azure.boards.database.mock.MockAzureBoardsConfigurationRepository;
 import com.blackduck.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
-import com.google.gson.Gson;
-import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.common.AlertProperties;
 import com.blackduck.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;
@@ -28,6 +33,8 @@ import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.security.EncryptionUtility;
 import com.blackduck.integration.alert.test.common.MockAlertProperties;
 import com.blackduck.integration.alert.test.common.database.MockRepositorySorter;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.google.gson.Gson;
 
 class AzureBoardsGlobalConfigAccessorTest {
     private static final String TEST_ORG_NAME = "organizationName";

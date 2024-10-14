@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.performance.utility;
 
 import java.time.LocalDateTime;
@@ -6,9 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
 import com.blackduck.integration.alert.common.persistence.model.AuditEntryModel;
 import com.blackduck.integration.alert.common.persistence.model.AuditEntryPageModel;
@@ -19,6 +23,9 @@ import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationTy
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.log.IntLogger;
 import com.blackduck.integration.wait.WaitJobCondition;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 public class NotificationWaitJobTask implements WaitJobCondition {
     private final IntLogger intLogger;

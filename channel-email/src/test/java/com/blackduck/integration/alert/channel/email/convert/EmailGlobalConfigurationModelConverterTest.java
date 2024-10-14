@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.email.convert;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,11 +18,11 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 import com.blackduck.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
-import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
-import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
+import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
+import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
 
 class EmailGlobalConfigurationModelConverterTest {
     public static final String TEST_AUTH_REQUIRED = "true";

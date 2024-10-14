@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.azure.boards;
 
 import java.util.List;
@@ -9,9 +16,9 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.api.oauth.AlertOAuthCredentialDataStoreFactory;
+import com.blackduck.integration.alert.azure.boards.common.oauth.AzureOAuthScopes;
 import com.blackduck.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.blackduck.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
-import com.blackduck.integration.alert.azure.boards.common.oauth.AzureOAuthScopes;
 import com.blackduck.integration.alert.common.persistence.accessor.JobAccessor;
 import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;

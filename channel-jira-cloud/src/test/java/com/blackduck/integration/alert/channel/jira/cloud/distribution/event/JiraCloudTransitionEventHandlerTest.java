@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.jira.cloud.distribution.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,7 +20,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerResponsePostProcessor;
 import com.blackduck.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
 import com.blackduck.integration.alert.api.channel.issue.tracker.event.IssueTrackerTransitionIssueEvent;
@@ -22,6 +28,7 @@ import com.blackduck.integration.alert.api.channel.issue.tracker.search.Existing
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.enumeration.IssueCategory;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.enumeration.IssueStatus;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudProperties;
@@ -30,7 +37,6 @@ import com.blackduck.integration.alert.channel.jira.cloud.distribution.JiraCloud
 import com.blackduck.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.blackduck.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.cloud.service.FieldService;
@@ -43,6 +49,7 @@ import com.blackduck.integration.jira.common.model.components.StatusDetailsCompo
 import com.blackduck.integration.jira.common.model.components.TransitionComponent;
 import com.blackduck.integration.jira.common.model.request.IssueRequestModel;
 import com.blackduck.integration.jira.common.model.response.TransitionsResponseModel;
+import com.google.gson.Gson;
 
 class JiraCloudTransitionEventHandlerTest {
 

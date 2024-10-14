@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.component.certificates.web;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -15,10 +22,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.blackduck.integration.alert.api.certificates.AlertClientCertificateManager;
-import com.blackduck.integration.alert.component.certificates.CertificatesDescriptorKey;
-import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
-import com.blackduck.integration.alert.test.common.MockAlertProperties;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.common.AlertProperties;
 import com.blackduck.integration.alert.common.action.ActionResponse;
@@ -29,7 +32,11 @@ import com.blackduck.integration.alert.common.persistence.model.PermissionMatrix
 import com.blackduck.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.blackduck.integration.alert.common.security.EncryptionUtility;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.component.certificates.CertificatesDescriptorKey;
 import com.blackduck.integration.alert.database.job.api.ClientCertificateAccessor;
+import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
+import com.blackduck.integration.alert.test.common.MockAlertProperties;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 @ExtendWith(SpringExtension.class)
 class ClientCertificateCrudActionsTest {

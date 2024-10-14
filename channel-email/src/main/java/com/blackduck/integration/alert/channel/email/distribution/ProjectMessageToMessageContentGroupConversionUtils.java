@@ -1,9 +1,9 @@
 /*
- * channel-email
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.channel.email.distribution;
 
@@ -13,9 +13,6 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.blackduck.integration.alert.channel.email.attachment.compatibility.ComponentItem;
-import com.blackduck.integration.alert.channel.email.attachment.compatibility.MessageContentGroup;
-import com.blackduck.integration.alert.channel.email.attachment.compatibility.ProviderMessageContent;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.processor.extract.model.project.BomComponentDetails;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcern;
@@ -23,6 +20,9 @@ import com.blackduck.integration.alert.api.processor.extract.model.project.Compo
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectOperation;
+import com.blackduck.integration.alert.channel.email.attachment.compatibility.ComponentItem;
+import com.blackduck.integration.alert.channel.email.attachment.compatibility.MessageContentGroup;
+import com.blackduck.integration.alert.channel.email.attachment.compatibility.ProviderMessageContent;
 import com.blackduck.integration.alert.common.enumeration.ItemOperation;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
 

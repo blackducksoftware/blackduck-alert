@@ -1,9 +1,9 @@
 /*
- * channel-jira-cloud
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.channel.jira.cloud;
 
@@ -13,7 +13,6 @@ import javax.net.ssl.SSLContext;
 import org.slf4j.Logger;
 
 import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 import com.blackduck.integration.alert.common.persistence.accessor.FieldUtility;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
@@ -23,6 +22,7 @@ import com.blackduck.integration.jira.common.cloud.service.JiraCloudServiceFacto
 import com.blackduck.integration.jira.common.rest.JiraHttpClient;
 import com.blackduck.integration.log.Slf4jIntLogger;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
+import com.google.gson.Gson;
 
 public class JiraCloudProperties {
     private final String url;

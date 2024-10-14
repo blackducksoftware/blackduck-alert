@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.api.distribution;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -10,10 +17,10 @@ import org.springframework.amqp.core.Message;
 import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.event.AlertEventHandler;
 import com.blackduck.integration.alert.api.event.distribution.JobSubTaskEvent;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.google.gson.Gson;
 
 class JobSubTaskMessageListenerTest {
 

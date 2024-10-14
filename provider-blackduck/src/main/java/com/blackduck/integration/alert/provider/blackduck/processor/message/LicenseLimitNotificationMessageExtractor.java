@@ -1,9 +1,9 @@
 /*
- * provider-blackduck
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.provider.blackduck.processor.message;
 
@@ -14,14 +14,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.common.message.model.LinkableItem;
-import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.api.processor.extract.ProviderMessageExtractor;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderMessageHolder;
 import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage;
 import com.blackduck.integration.alert.api.processor.filter.NotificationContentWrapper;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 

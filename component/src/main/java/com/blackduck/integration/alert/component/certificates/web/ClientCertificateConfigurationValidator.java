@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.component.certificates.web;
 
 import java.util.HashSet;
@@ -8,10 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.certificates.AlertClientCertificateManager;
-import com.blackduck.integration.alert.component.certificates.CertificatesDescriptor;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.common.persistence.model.ClientCertificateModel;
+import com.blackduck.integration.alert.component.certificates.CertificatesDescriptor;
 
 @Component
 public class ClientCertificateConfigurationValidator {

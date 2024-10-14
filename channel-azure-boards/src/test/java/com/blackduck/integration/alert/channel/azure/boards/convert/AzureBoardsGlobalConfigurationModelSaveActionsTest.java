@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.azure.boards.convert;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,15 +18,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.channel.azure.boards.action.AzureBoardsGlobalCrudActions;
 import com.blackduck.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
 import com.blackduck.integration.alert.channel.azure.boards.database.configuration.AzureBoardsConfigurationEntity;
 import com.blackduck.integration.alert.channel.azure.boards.database.mock.MockAzureBoardsConfigurationRepository;
 import com.blackduck.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationValidator;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
-import com.google.gson.Gson;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.common.AlertProperties;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -33,6 +38,8 @@ import com.blackduck.integration.alert.common.security.authorization.Authorizati
 import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
 import com.blackduck.integration.alert.test.common.MockAlertProperties;
 import com.blackduck.integration.alert.test.common.database.MockRepositorySorter;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.google.gson.Gson;
 
 class AzureBoardsGlobalConfigurationModelSaveActionsTest {
     private static final String TEST_ORGANIZATION_NAME = "testOrganizationName";

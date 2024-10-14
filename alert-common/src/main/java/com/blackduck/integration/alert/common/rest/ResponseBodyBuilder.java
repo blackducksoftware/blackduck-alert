@@ -1,16 +1,16 @@
 /*
- * alert-common
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.common.rest;
 
 import java.util.List;
 
-import com.google.gson.JsonObject;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
+import com.google.gson.JsonObject;
 
 public class ResponseBodyBuilder {
     private static final String PROPERTY_KEY_ID = "id";

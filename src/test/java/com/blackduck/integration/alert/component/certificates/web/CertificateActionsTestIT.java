@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.component.certificates.web;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -17,7 +24,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.blackduck.integration.alert.api.certificates.AlertTrustStoreManager;
-import com.blackduck.integration.alert.component.certificates.CertificatesDescriptorKey;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.common.AlertProperties;
@@ -27,6 +33,7 @@ import com.blackduck.integration.alert.common.persistence.accessor.CustomCertifi
 import com.blackduck.integration.alert.common.persistence.model.CustomCertificateModel;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 import com.blackduck.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.component.certificates.CertificatesDescriptorKey;
 import com.blackduck.integration.alert.database.certificates.CustomCertificateRepository;
 import com.blackduck.integration.alert.util.AlertIntegrationTest;
 

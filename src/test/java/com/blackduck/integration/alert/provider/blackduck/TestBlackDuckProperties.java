@@ -1,13 +1,9 @@
 /*
- * Copyright (C) 2017 Black Duck Software Inc.
- * http://www.blackducksoftware.com/
- * All rights reserved.
+ * blackduck-alert
  *
- * This software is the confidential and proprietary information of
- * Black Duck Software ("Confidential Information"). You shall not
- * disclose such Confidential Information and shall use it only in
- * accordance with the terms of the license agreement you entered into
- * with Black Duck Software.
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.provider.blackduck;
 
@@ -17,9 +13,6 @@ import java.util.Optional;
 
 import org.mockito.Mockito;
 
-import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
@@ -33,6 +26,8 @@ import com.blackduck.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.log.IntLogger;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 public class TestBlackDuckProperties extends BlackDuckProperties {
     private final MockAlertProperties testAlertProperties;

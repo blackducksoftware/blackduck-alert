@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.jira.cloud.distribution.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,9 +19,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.blackduck.integration.alert.channel.jira.cloud.database.accessor.mock.MockJiraCloudJobCustomFieldRepository;
-import com.blackduck.integration.alert.channel.jira.cloud.database.accessor.mock.MockJiraCloudJobDetailsRepository;
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerResponsePostProcessor;
 import com.blackduck.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
 import com.blackduck.integration.alert.api.channel.issue.tracker.callback.ProviderCallbackIssueTrackerResponsePostProcessor;
@@ -23,16 +27,18 @@ import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueBomC
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.event.EventManager;
+import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudPropertiesFactory;
+import com.blackduck.integration.alert.channel.jira.cloud.database.accessor.mock.MockJiraCloudJobCustomFieldRepository;
+import com.blackduck.integration.alert.channel.jira.cloud.database.accessor.mock.MockJiraCloudJobDetailsRepository;
 import com.blackduck.integration.alert.channel.jira.cloud.distribution.JiraCloudMessageSenderFactory;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.blackduck.integration.alert.database.job.jira.cloud.DefaultJiraCloudJobDetailsAccessor;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.cloud.model.IssueCreationRequestModel;
@@ -48,6 +54,7 @@ import com.blackduck.integration.jira.common.model.response.IssueCreationRespons
 import com.blackduck.integration.jira.common.model.response.IssueResponseModel;
 import com.blackduck.integration.jira.common.model.response.PageOfProjectsResponseModel;
 import com.blackduck.integration.jira.common.rest.service.IssuePropertyService;
+import com.google.gson.Gson;
 
 class JiraCloudCreateIssueEventHandlerTest {
 

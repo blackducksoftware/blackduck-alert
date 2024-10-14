@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.common.channel.message;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -6,10 +13,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
-
-import com.blackduck.integration.alert.common.channel.message.ChunkedStringBuilder;
-import com.blackduck.integration.alert.common.channel.message.ChunkedStringBuilderRechunker;
-import com.blackduck.integration.alert.common.channel.message.RechunkedModel;
 
 public class ChunkedStringBuilderRechunkerTest {
     @Test

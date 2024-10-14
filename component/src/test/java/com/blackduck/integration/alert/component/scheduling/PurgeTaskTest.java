@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.component.scheduling;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -7,6 +14,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -14,7 +22,6 @@ import com.blackduck.integration.alert.common.persistence.model.mutable.Configur
 import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
 import com.blackduck.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 import com.blackduck.integration.alert.component.scheduling.workflow.PurgeTask;
-import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 
 public class PurgeTaskTest {
 

@@ -1,9 +1,9 @@
 /*
- * provider-blackduck
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.provider.blackduck.action;
 
@@ -16,6 +16,11 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.provider.state.ProviderProperties;
+import com.blackduck.integration.alert.common.action.FieldModelTestAction;
+import com.blackduck.integration.alert.common.exception.AlertFieldException;
+import com.blackduck.integration.alert.common.message.model.MessageResult;
+import com.blackduck.integration.alert.common.persistence.accessor.FieldUtility;
+import com.blackduck.integration.alert.common.rest.model.FieldModel;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.blackduck.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
@@ -30,11 +35,6 @@ import com.blackduck.integration.rest.HttpUrl;
 import com.blackduck.integration.rest.RestConstants;
 import com.blackduck.integration.rest.client.ConnectionResult;
 import com.blackduck.integration.rest.exception.IntegrationRestException;
-import com.blackduck.integration.alert.common.action.FieldModelTestAction;
-import com.blackduck.integration.alert.common.exception.AlertFieldException;
-import com.blackduck.integration.alert.common.message.model.MessageResult;
-import com.blackduck.integration.alert.common.persistence.accessor.FieldUtility;
-import com.blackduck.integration.alert.common.rest.model.FieldModel;
 
 @Component
 public class BlackDuckGlobalFieldModelTestAction extends FieldModelTestAction {

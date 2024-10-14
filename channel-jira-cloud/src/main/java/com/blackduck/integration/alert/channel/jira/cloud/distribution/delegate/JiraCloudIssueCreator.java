@@ -1,9 +1,9 @@
 /*
- * channel-jira-cloud
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.channel.jira.cloud.distribution.delegate;
 
@@ -13,6 +13,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.blackduck.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
 import com.blackduck.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
 import com.blackduck.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
 import com.blackduck.integration.alert.api.channel.jira.distribution.custom.MessageReplacementValues;
@@ -20,8 +23,11 @@ import com.blackduck.integration.alert.api.channel.jira.distribution.custom.Mess
 import com.blackduck.integration.alert.api.channel.jira.distribution.delegate.JiraIssueCreator;
 import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraSearcherResponseModel;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.descriptor.JiraCloudChannelKey;
 import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.blackduck.integration.alert.channel.jira.cloud.distribution.JiraCloudQueryExecutor;
+import com.blackduck.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.cloud.model.IssueCreationRequestModel;
 import com.blackduck.integration.jira.common.cloud.service.IssueService;
@@ -31,12 +37,6 @@ import com.blackduck.integration.jira.common.model.request.builder.IssueRequestM
 import com.blackduck.integration.jira.common.model.response.IssueCreationResponseModel;
 import com.blackduck.integration.jira.common.model.response.IssueResponseModel;
 import com.blackduck.integration.jira.common.model.response.PageOfProjectsResponseModel;
-import com.blackduck.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
-import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
-import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
-import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.blackduck.integration.alert.api.descriptor.JiraCloudChannelKey;
-import com.blackduck.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 
 public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequestModel> {
     private Logger logger = LoggerFactory.getLogger(getClass());

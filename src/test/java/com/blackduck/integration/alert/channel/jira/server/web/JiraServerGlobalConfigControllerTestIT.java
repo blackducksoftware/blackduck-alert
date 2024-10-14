@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.jira.server.web;
 
 import java.nio.charset.StandardCharsets;
@@ -19,14 +26,14 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.blackduck.integration.alert.util.AlertIntegrationTest;
-import com.blackduck.integration.alert.util.AlertIntegrationTestConstants;
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.util.AlertIntegrationTest;
+import com.blackduck.integration.alert.util.AlertIntegrationTestConstants;
+import com.google.gson.Gson;
 
 @AlertIntegrationTest
 class JiraServerGlobalConfigControllerTestIT {

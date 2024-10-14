@@ -1,9 +1,9 @@
 /*
- * component
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.component.settings.environment;
 
@@ -23,11 +23,11 @@ import com.blackduck.integration.alert.api.common.model.exception.AlertConfigura
 import com.blackduck.integration.alert.api.environment.EnvironmentProcessingResult;
 import com.blackduck.integration.alert.api.environment.EnvironmentVariableHandler;
 import com.blackduck.integration.alert.api.environment.EnvironmentVariableUtility;
-import com.blackduck.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;
-import com.blackduck.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.common.rest.model.SettingsProxyModel;
 import com.blackduck.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.component.settings.proxy.database.accessor.SettingsProxyConfigAccessor;
+import com.blackduck.integration.alert.component.settings.proxy.validator.SettingsProxyValidator;
 
 @Component
 public class ProxySettingsEnvironmentVariableHandler extends EnvironmentVariableHandler<SettingsProxyModel> {

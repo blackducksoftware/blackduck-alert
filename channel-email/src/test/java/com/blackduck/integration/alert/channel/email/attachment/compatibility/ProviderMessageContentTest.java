@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.email.attachment.compatibility;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -16,10 +23,10 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.blackduck.integration.datastructure.SetMap;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.common.enumeration.ItemOperation;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.datastructure.SetMap;
 
 class ProviderMessageContentTest {
     private static final String PROVIDER_NAME = "test-providerName";

@@ -1,19 +1,19 @@
 /*
- * provider-blackduck
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.provider.blackduck.task.accumulator;
 
 import java.util.List;
 import java.util.function.Predicate;
 
-import com.blackduck.integration.alert.common.message.model.DateRange;
-import com.blackduck.integration.alert.common.rest.model.AlertPagedDetails;
 import com.blackduck.integration.alert.api.processor.filter.PageRetriever;
 import com.blackduck.integration.alert.api.processor.filter.StatefulAlertPage;
+import com.blackduck.integration.alert.common.message.model.DateRange;
+import com.blackduck.integration.alert.common.rest.model.AlertPagedDetails;
 import com.blackduck.integration.blackduck.api.core.response.UrlMultipleResponses;
 import com.blackduck.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.blackduck.integration.blackduck.api.generated.view.UserView;

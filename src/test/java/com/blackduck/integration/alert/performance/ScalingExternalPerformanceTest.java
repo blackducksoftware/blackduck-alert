@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.performance;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -15,10 +22,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
+import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
-import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
 import com.blackduck.integration.alert.performance.model.PerformanceExecutionStatusModel;
 import com.blackduck.integration.alert.performance.utility.BlackDuckProviderService;
 import com.blackduck.integration.alert.performance.utility.ConfigurationManager;
@@ -35,6 +41,7 @@ import com.blackduck.integration.log.IntLogger;
 import com.blackduck.integration.log.Slf4jIntLogger;
 import com.blackduck.integration.rest.client.IntHttpClient;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
+import com.google.gson.Gson;
 
 @Tag(TestTags.DEFAULT_PERFORMANCE)
 class ScalingExternalPerformanceTest {

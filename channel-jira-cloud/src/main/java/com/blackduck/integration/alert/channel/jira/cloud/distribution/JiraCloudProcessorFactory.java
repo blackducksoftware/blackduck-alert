@@ -1,9 +1,9 @@
 /*
- * channel-jira-cloud
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.channel.jira.cloud.distribution;
 
@@ -16,20 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.certificates.AlertSSLContextManager;
-import com.blackduck.integration.alert.api.channel.jira.JiraConstants;
-import com.blackduck.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
-import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
-import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraIssueStatusCreator;
-import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraSearcherFactory;
-import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudProperties;
-import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
-import com.blackduck.integration.exception.IntegrationException;
-import com.blackduck.integration.jira.common.cloud.service.IssueSearchService;
-import com.blackduck.integration.jira.common.cloud.service.IssueService;
-import com.blackduck.integration.jira.common.cloud.service.JiraCloudServiceFactory;
-import com.blackduck.integration.jira.common.rest.service.IssuePropertyService;
-import com.blackduck.integration.jira.common.rest.service.PluginManagerService;
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerModelExtractor;
 import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerProcessor;
 import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerProcessorFactory;
@@ -37,9 +23,16 @@ import com.blackduck.integration.alert.api.channel.issue.tracker.convert.Project
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueTrackerSearcher;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerAsyncMessageSender;
+import com.blackduck.integration.alert.api.channel.jira.JiraConstants;
+import com.blackduck.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
+import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
+import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraIssueStatusCreator;
+import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraSearcherFactory;
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.descriptor.JiraCloudChannelKey;
+import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudProperties;
+import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.blackduck.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
@@ -47,6 +40,13 @@ import com.blackduck.integration.alert.common.persistence.model.ConfigurationFie
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.cloud.service.IssueSearchService;
+import com.blackduck.integration.jira.common.cloud.service.IssueService;
+import com.blackduck.integration.jira.common.cloud.service.JiraCloudServiceFactory;
+import com.blackduck.integration.jira.common.rest.service.IssuePropertyService;
+import com.blackduck.integration.jira.common.rest.service.PluginManagerService;
+import com.google.gson.Gson;
 
 @Component
 public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<JiraCloudJobDetailsModel, String> {

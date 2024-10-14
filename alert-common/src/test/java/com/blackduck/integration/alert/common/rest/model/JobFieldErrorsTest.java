@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.common.rest.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -8,7 +15,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
-import com.blackduck.integration.alert.common.rest.model.JobFieldStatuses;
 
 public class JobFieldErrorsTest {
     @Test

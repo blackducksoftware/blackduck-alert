@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.jira.server.environment;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,9 +30,9 @@ import com.blackduck.integration.alert.channel.jira.server.database.accessor.Jir
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.blackduck.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
-import com.blackduck.integration.alert.test.common.EnvironmentVariableMockingUtil;
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.test.common.EnvironmentVariableMockingUtil;
 import com.blackduck.integration.alert.util.AlertIntegrationTest;
 
 @AlertIntegrationTest

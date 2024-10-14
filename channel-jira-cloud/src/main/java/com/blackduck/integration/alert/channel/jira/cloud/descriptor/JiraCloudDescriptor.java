@@ -1,9 +1,9 @@
 /*
- * channel-jira-cloud
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.channel.jira.cloud.descriptor;
 
@@ -13,13 +13,13 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.channel.jira.cloud.validator.JiraCloudGlobalConfigurationFieldModelValidator;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.channel.jira.cloud.validator.JiraCloudDistributionConfigurationValidator;
+import com.blackduck.integration.alert.channel.jira.cloud.validator.JiraCloudGlobalConfigurationFieldModelValidator;
 import com.blackduck.integration.alert.common.descriptor.ChannelDescriptor;
 import com.blackduck.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.blackduck.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 
 @Component
 public class JiraCloudDescriptor extends ChannelDescriptor {

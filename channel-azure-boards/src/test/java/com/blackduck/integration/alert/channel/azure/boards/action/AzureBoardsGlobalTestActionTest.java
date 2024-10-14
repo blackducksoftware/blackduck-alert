@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.azure.boards.action;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -18,6 +25,7 @@ import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.api.oauth.AlertOAuthCredentialDataStoreFactory;
+import com.blackduck.integration.alert.azure.boards.common.service.project.AzureProjectService;
 import com.blackduck.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
 import com.blackduck.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.blackduck.integration.alert.channel.azure.boards.database.accessor.AzureBoardsGlobalConfigAccessor;
@@ -25,13 +33,6 @@ import com.blackduck.integration.alert.channel.azure.boards.database.configurati
 import com.blackduck.integration.alert.channel.azure.boards.database.mock.MockAzureBoardsConfigurationRepository;
 import com.blackduck.integration.alert.channel.azure.boards.model.AzureBoardsGlobalConfigModel;
 import com.blackduck.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationValidator;
-import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
-import com.blackduck.integration.alert.test.common.MockAlertProperties;
-import com.blackduck.integration.alert.test.common.database.MockRepositorySorter;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
-import com.blackduck.integration.exception.IntegrationException;
-import com.google.gson.Gson;
-import com.blackduck.integration.alert.azure.boards.common.service.project.AzureProjectService;
 import com.blackduck.integration.alert.common.AlertProperties;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
@@ -43,6 +44,12 @@ import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 import com.blackduck.integration.alert.common.security.EncryptionUtility;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
+import com.blackduck.integration.alert.test.common.MockAlertProperties;
+import com.blackduck.integration.alert.test.common.database.MockRepositorySorter;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.blackduck.integration.exception.IntegrationException;
+import com.google.gson.Gson;
 
 @ExtendWith(SpringExtension.class)
 class AzureBoardsGlobalTestActionTest {

@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.web.api.job;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -13,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.data.domain.Sort;
 
-import com.blackduck.integration.alert.test.common.MockDescriptorMap;
 import com.blackduck.integration.alert.api.descriptor.JiraCloudChannelKey;
 import com.blackduck.integration.alert.api.descriptor.MsTeamsKey;
 import com.blackduck.integration.alert.api.descriptor.SlackChannelKey;
@@ -27,6 +33,7 @@ import com.blackduck.integration.alert.common.persistence.accessor.DistributionA
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.rest.model.DistributionWithAuditInfo;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.test.common.MockDescriptorMap;
 
 public class DistributionActionsTest {
     private final String slackKey = new SlackChannelKey().getUniversalKey();

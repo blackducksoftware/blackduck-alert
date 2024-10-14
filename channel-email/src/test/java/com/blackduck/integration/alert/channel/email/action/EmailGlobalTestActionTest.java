@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.email.action;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -18,6 +25,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 
+import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
 import com.blackduck.integration.alert.channel.email.attachment.MessageContentGroupCsvCreator;
 import com.blackduck.integration.alert.channel.email.database.accessor.EmailGlobalConfigAccessor;
@@ -26,17 +37,6 @@ import com.blackduck.integration.alert.channel.email.distribution.address.EmailA
 import com.blackduck.integration.alert.channel.email.distribution.address.JobEmailAddressValidator;
 import com.blackduck.integration.alert.channel.email.distribution.address.ValidatedEmailAddresses;
 import com.blackduck.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
-import com.blackduck.integration.alert.service.email.EmailMessagingService;
-import com.blackduck.integration.alert.service.email.JavamailPropertiesFactory;
-import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
-import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
-import com.blackduck.integration.alert.service.email.template.FreemarkerTemplatingService;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
-import com.google.gson.Gson;
-import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
-import com.blackduck.integration.alert.api.common.model.exception.AlertException;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.message.model.ConfigurationTestResult;
@@ -45,11 +45,18 @@ import com.blackduck.integration.alert.common.persistence.model.PermissionKey;
 import com.blackduck.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.service.email.EmailMessagingService;
+import com.blackduck.integration.alert.service.email.JavamailPropertiesFactory;
+import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
+import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
+import com.blackduck.integration.alert.service.email.template.FreemarkerTemplatingService;
 import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
 import com.blackduck.integration.alert.test.common.MockAlertProperties;
 import com.blackduck.integration.alert.test.common.TestProperties;
 import com.blackduck.integration.alert.test.common.TestPropertyKey;
 import com.blackduck.integration.alert.test.common.TestTags;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.google.gson.Gson;
 
 class EmailGlobalTestActionTest {
     private EmailGlobalConfigAccessor configurationAccessor;

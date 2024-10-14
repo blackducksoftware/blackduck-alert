@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.component.authentication.web;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,17 +37,17 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.blackduck.integration.alert.authentication.ldap.action.LDAPManager;
+import com.blackduck.integration.alert.common.AlertProperties;
+import com.blackduck.integration.alert.common.action.ActionResponse;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
+import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.mock.model.MockLoginRestModel;
 import com.blackduck.integration.alert.test.common.TestProperties;
 import com.blackduck.integration.alert.test.common.TestPropertyKey;
 import com.blackduck.integration.alert.util.AlertIntegrationTest;
 import com.blackduck.integration.alert.util.AlertIntegrationTestConstants;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.google.gson.Gson;
-import com.blackduck.integration.alert.common.AlertProperties;
-import com.blackduck.integration.alert.common.action.ActionResponse;
-import com.blackduck.integration.alert.common.rest.AlertRestConstants;
-import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
-import com.blackduck.integration.alert.mock.model.MockLoginRestModel;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

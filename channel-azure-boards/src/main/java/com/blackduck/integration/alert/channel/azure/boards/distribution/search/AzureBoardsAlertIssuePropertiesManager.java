@@ -1,20 +1,20 @@
 /*
- * channel-azure-boards
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.channel.azure.boards.distribution.search;
 
 import java.util.List;
 import java.util.Optional;
 
-import com.blackduck.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueBomComponentDetails;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssuePolicyDetails;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
+import com.blackduck.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 public class AzureBoardsAlertIssuePropertiesManager {

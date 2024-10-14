@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.component.certificates.web;
 
 import org.slf4j.Logger;
@@ -6,13 +13,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.certificates.AlertClientCertificateManager;
-import com.blackduck.integration.alert.component.certificates.CertificatesDescriptorKey;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.logging.AlertLoggerFactory;
 import com.blackduck.integration.alert.common.persistence.model.ClientCertificateModel;
 import com.blackduck.integration.alert.common.rest.api.ConfigurationCrudHelper;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.component.certificates.CertificatesDescriptorKey;
 import com.blackduck.integration.alert.database.job.api.ClientCertificateAccessor;
 
 @Component

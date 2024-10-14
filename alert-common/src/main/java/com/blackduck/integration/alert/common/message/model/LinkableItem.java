@@ -1,9 +1,9 @@
 /*
- * alert-common
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.common.message.model;
 
@@ -14,8 +14,8 @@ import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import com.google.gson.annotations.SerializedName;
 import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
+import com.google.gson.annotations.SerializedName;
 
 public class LinkableItem extends AlertSerializableModel implements Comparable<LinkableItem> {
     private static final String[] EXCLUDED_FIELDS = { "collapsible", "isNumericValue" };

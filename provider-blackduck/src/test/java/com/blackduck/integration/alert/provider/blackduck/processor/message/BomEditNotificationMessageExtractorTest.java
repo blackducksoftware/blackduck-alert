@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.provider.blackduck.processor.message;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,7 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 
-import com.blackduck.integration.alert.common.message.model.LinkableItem;
 import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.blackduck.integration.alert.api.processor.extract.model.project.BomComponentDetails;
@@ -19,6 +25,7 @@ import com.blackduck.integration.alert.api.processor.extract.model.project.Compo
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
 import com.blackduck.integration.alert.api.processor.extract.model.project.MessageReason;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 import com.blackduck.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
 import com.blackduck.integration.alert.provider.blackduck.processor.message.service.BlackDuckComponentVulnerabilityDetailsCreator;
 import com.blackduck.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageBomComponentDetailsCreatorFactory;

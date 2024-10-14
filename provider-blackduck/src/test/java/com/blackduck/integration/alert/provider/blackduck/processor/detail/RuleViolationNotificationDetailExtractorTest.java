@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.provider.blackduck.processor.detail;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,15 +18,15 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-import com.google.gson.Gson;
-import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.api.processor.detail.DetailedNotificationContent;
+import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.provider.blackduck.processor.model.RuleViolationUniquePolicyNotificationContent;
 import com.blackduck.integration.alert.test.common.TestResourceUtils;
 import com.blackduck.integration.blackduck.api.manual.component.PolicyInfo;
 import com.blackduck.integration.blackduck.api.manual.component.RuleViolationNotificationContent;
 import com.blackduck.integration.blackduck.api.manual.view.RuleViolationNotificationView;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.google.gson.Gson;
 
 public class RuleViolationNotificationDetailExtractorTest {
     public static final String NOTIFICATION_JSON_PATH = "json/ruleViolationNotification.json";

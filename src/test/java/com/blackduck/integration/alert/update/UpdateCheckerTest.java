@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.update;
 
 import static com.blackduck.integration.alert.common.util.DateUtils.DOCKER_DATE_FORMAT;
@@ -25,7 +32,6 @@ import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.database.job.api.DefaultSystemStatusAccessor;
 import com.blackduck.integration.alert.test.common.TestTags;
-import com.blackduck.integration.alert.update.UpdateChecker;
 import com.blackduck.integration.alert.update.model.UpdateModel;
 import com.blackduck.integration.alert.web.api.about.AboutReader;
 import com.blackduck.integration.alert.web.api.metadata.DescriptorMetadataActions;

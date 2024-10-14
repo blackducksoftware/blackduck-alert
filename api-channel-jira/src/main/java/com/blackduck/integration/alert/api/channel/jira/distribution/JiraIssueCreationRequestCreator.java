@@ -1,9 +1,9 @@
 /*
- * api-channel-jira
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.api.channel.jira.distribution;
 
@@ -16,8 +16,8 @@ import com.blackduck.integration.alert.api.channel.jira.distribution.custom.Jira
 import com.blackduck.integration.alert.api.channel.jira.distribution.custom.JiraResolvedCustomField;
 import com.blackduck.integration.alert.api.channel.jira.distribution.custom.MessageReplacementValues;
 import com.blackduck.integration.alert.api.channel.jira.distribution.custom.MessageValueReplacementResolver;
-import com.blackduck.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
+import com.blackduck.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
 
 public class JiraIssueCreationRequestCreator {
     private final JiraCustomFieldResolver jiraCustomFieldResolver;

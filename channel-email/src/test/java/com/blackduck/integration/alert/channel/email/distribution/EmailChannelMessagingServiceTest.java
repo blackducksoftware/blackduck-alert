@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.email.distribution;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -17,19 +24,19 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.blackduck.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
 import com.blackduck.integration.alert.channel.email.attachment.EmailAttachmentFormat;
 import com.blackduck.integration.alert.channel.email.attachment.MessageContentGroupCsvCreator;
+import com.blackduck.integration.alert.common.message.model.MessageResult;
 import com.blackduck.integration.alert.service.email.EmailMessagingService;
 import com.blackduck.integration.alert.service.email.EmailTarget;
 import com.blackduck.integration.alert.service.email.SmtpConfig;
 import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.blackduck.integration.alert.service.email.template.FreemarkerTemplatingService;
+import com.blackduck.integration.alert.test.common.MockAlertProperties;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.google.gson.Gson;
-import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
-import com.blackduck.integration.alert.common.message.model.MessageResult;
-import com.blackduck.integration.alert.test.common.MockAlertProperties;
 
 @ExtendWith(SpringExtension.class)
 class EmailChannelMessagingServiceTest {

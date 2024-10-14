@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.provider.blackduck.task.accumulator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,7 +20,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.blackduck.integration.alert.provider.blackduck.task.accumulator.BlackDuckAccumulatorSearchDateManager;
 import com.blackduck.integration.alert.common.message.model.DateRange;
 import com.blackduck.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
 import com.blackduck.integration.alert.common.util.DateUtils;

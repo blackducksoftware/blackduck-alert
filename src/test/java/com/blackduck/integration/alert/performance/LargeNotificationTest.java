@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.performance;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,6 +35,7 @@ import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGloba
 import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
 import com.blackduck.integration.alert.configuration.ApplicationConfiguration;
 import com.blackduck.integration.alert.database.DatabaseDataSource;
+import com.blackduck.integration.alert.performance.model.PerformanceExecutionStatusModel;
 import com.blackduck.integration.alert.performance.utility.AlertRequestUtility;
 import com.blackduck.integration.alert.performance.utility.BlackDuckProviderService;
 import com.blackduck.integration.alert.performance.utility.ConfigurationManager;
@@ -42,7 +50,6 @@ import com.blackduck.integration.blackduck.api.generated.view.ProjectVersionView
 import com.blackduck.integration.blackduck.service.model.ProjectVersionWrapper;
 import com.blackduck.integration.exception.IntegrationException;
 import com.google.gson.Gson;
-import com.blackduck.integration.alert.performance.model.PerformanceExecutionStatusModel;
 
 @Tag(TestTags.DEFAULT_PERFORMANCE)
 @SpringBootTest

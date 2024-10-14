@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.api.channel.jira.action;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -8,13 +15,13 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.blackduck.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class JiraJobDetailsExtractorTest {
     private static final String CLASS_NAME = JiraJobDetailsExtractorTest.class.getSimpleName();

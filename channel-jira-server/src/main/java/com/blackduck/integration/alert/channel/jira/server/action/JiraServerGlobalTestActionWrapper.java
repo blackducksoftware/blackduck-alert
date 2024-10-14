@@ -1,9 +1,9 @@
 /*
- * channel-jira-server
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.channel.jira.server.action;
 
@@ -14,6 +14,7 @@ import com.blackduck.integration.alert.api.channel.jira.JiraConstants;
 import com.blackduck.integration.alert.channel.jira.server.JiraServerProperties;
 import com.blackduck.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
+import com.blackduck.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.model.response.MultiPermissionResponseModel;
 import com.blackduck.integration.jira.common.model.response.PermissionModel;
@@ -23,7 +24,6 @@ import com.blackduck.integration.jira.common.server.service.IssueSearchService;
 import com.blackduck.integration.jira.common.server.service.JiraServerServiceFactory;
 import com.blackduck.integration.jira.common.server.service.MyPermissionsService;
 import com.google.gson.Gson;
-import com.blackduck.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 
 public class JiraServerGlobalTestActionWrapper {
     private final Logger logger = LoggerFactory.getLogger(getClass());

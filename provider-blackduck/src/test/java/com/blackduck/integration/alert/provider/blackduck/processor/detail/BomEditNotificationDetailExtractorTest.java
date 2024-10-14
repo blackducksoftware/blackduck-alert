@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.provider.blackduck.processor.detail;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,10 +18,9 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.api.processor.detail.DetailedNotificationContent;
+import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
 import com.blackduck.integration.alert.test.common.TestResourceUtils;
 import com.blackduck.integration.blackduck.api.generated.view.ProjectVersionView;
@@ -24,6 +30,7 @@ import com.blackduck.integration.blackduck.service.BlackDuckApiClient;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.rest.HttpUrl;
+import com.google.gson.Gson;
 
 class BomEditNotificationDetailExtractorTest {
     static final String BOM_EDIT_JSON_PATH = "json/bomEditNotification.json";

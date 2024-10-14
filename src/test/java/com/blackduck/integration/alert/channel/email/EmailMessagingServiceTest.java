@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.email;
 
 import java.util.List;
@@ -5,9 +12,9 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.service.email.EmailMessagingService;
 import com.blackduck.integration.alert.service.email.template.FreemarkerTemplatingService;
-import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.test.common.TestProperties;
 
 import jakarta.mail.Message;

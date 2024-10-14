@@ -1,9 +1,9 @@
 /*
- * provider-blackduck
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.provider.blackduck;
 
@@ -16,6 +16,9 @@ import org.springframework.stereotype.Component;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.provider.ProviderProjectExistencePopulator;
 import com.blackduck.integration.alert.api.provider.state.StatefulProvider;
+import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
+import com.blackduck.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 import com.blackduck.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.blackduck.integration.blackduck.service.BlackDuckApiClient;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
@@ -23,9 +26,6 @@ import com.blackduck.integration.log.IntLogger;
 import com.blackduck.integration.log.Slf4jIntLogger;
 import com.blackduck.integration.rest.HttpUrl;
 import com.blackduck.integration.rest.response.Response;
-import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
-import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
-import com.blackduck.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 
 @Component
 public class BlackDuckProjectExistencePopulator implements ProviderProjectExistencePopulator {

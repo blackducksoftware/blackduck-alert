@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.component.settings;
 
 import java.util.HashMap;
@@ -6,12 +13,12 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
+import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.blackduck.integration.alert.component.settings.validator.SettingsGlobalConfigurationFieldModelValidator;
 import com.blackduck.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
-import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
-import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 
 public class SettingsGlobalConfigurationFieldModelValidatorTest {
 

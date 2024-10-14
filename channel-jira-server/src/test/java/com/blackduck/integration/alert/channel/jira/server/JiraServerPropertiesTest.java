@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.jira.server;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,11 +20,11 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
 import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
+import com.blackduck.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.jira.common.server.configuration.JiraServerRestConfig;
 import com.blackduck.integration.jira.common.server.service.JiraServerServiceFactory;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
-import com.blackduck.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 
 class JiraServerPropertiesTest {
     @Test

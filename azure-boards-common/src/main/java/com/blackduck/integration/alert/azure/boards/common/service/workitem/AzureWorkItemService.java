@@ -1,9 +1,9 @@
 /*
- * azure-boards-common
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.azure.boards.common.service.workitem;
 
@@ -18,14 +18,14 @@ import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpRequest
 import com.blackduck.integration.alert.azure.boards.common.http.AzureHttpService;
 import com.blackduck.integration.alert.azure.boards.common.http.HttpServiceException;
 import com.blackduck.integration.alert.azure.boards.common.model.AzureArrayResponseModel;
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpMethods;
-import com.google.api.client.http.HttpRequest;
-import com.google.gson.reflect.TypeToken;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.request.WorkItemRequest;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemDeletedResponseModel;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpMethods;
+import com.google.api.client.http.HttpRequest;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * Documentation:

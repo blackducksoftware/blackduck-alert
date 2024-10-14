@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.component.tasks;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,10 +28,6 @@ import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import org.springframework.scheduling.TaskScheduler;
 
-import com.blackduck.integration.alert.database.job.api.StaticJobAccessor;
-import com.blackduck.integration.alert.test.common.TestResourceUtils;
-import com.blackduck.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.api.processor.NotificationMappingProcessor;
 import com.blackduck.integration.alert.api.processor.detail.NotificationDetailExtractionDelegator;
@@ -38,6 +41,10 @@ import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.database.job.api.DefaultNotificationAccessor;
+import com.blackduck.integration.alert.database.job.api.StaticJobAccessor;
+import com.blackduck.integration.alert.test.common.TestResourceUtils;
+import com.blackduck.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 class ProcessingTaskTest {
     private final BlackDuckResponseResolver blackDuckResponseResolver = new BlackDuckResponseResolver(BlackDuckServicesFactory.createDefaultGson());

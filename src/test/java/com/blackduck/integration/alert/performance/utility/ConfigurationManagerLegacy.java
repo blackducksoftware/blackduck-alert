@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.performance.utility;
 
 import java.util.HashMap;
@@ -9,12 +16,6 @@ import java.util.stream.Collectors;
 import com.blackduck.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
-import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.blackduck.integration.exception.IntegrationException;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.blackduck.integration.alert.common.descriptor.ChannelDescriptor;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.enumeration.ProcessingType;
@@ -23,6 +24,12 @@ import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
 import com.blackduck.integration.alert.common.rest.model.JobFieldModel;
 import com.blackduck.integration.alert.common.rest.model.JobPagedModel;
 import com.blackduck.integration.alert.common.rest.model.JobProviderProjectFieldModel;
+import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.blackduck.integration.exception.IntegrationException;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 //TODO: Implementaions of this class should be replaced with ConfigurationManager
 @Deprecated(forRemoval = true)

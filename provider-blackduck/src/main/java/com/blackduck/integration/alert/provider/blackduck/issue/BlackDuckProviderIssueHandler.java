@@ -1,9 +1,9 @@
 /*
- * provider-blackduck
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.provider.blackduck.issue;
 
@@ -15,7 +15,6 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import com.google.gson.Gson;
 import com.blackduck.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageLinkUtils;
 import com.blackduck.integration.blackduck.api.generated.view.ProjectVersionIssuesView;
 import com.blackduck.integration.blackduck.api.generated.view.ProjectVersionView;
@@ -29,6 +28,7 @@ import com.blackduck.integration.rest.HttpMethod;
 import com.blackduck.integration.rest.HttpUrl;
 import com.blackduck.integration.rest.body.BodyContentConverter;
 import com.blackduck.integration.rest.body.StringBodyContent;
+import com.google.gson.Gson;
 
 public class BlackDuckProviderIssueHandler {
     private final Gson gson;

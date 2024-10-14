@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.api.processor.detail;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -10,6 +17,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
+import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.provider.blackduck.processor.detail.ProjectVersionNotificationDetailExtractor;
 import com.blackduck.integration.blackduck.api.manual.component.ProjectVersionNotificationContent;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
@@ -18,7 +26,6 @@ import com.blackduck.integration.blackduck.api.manual.view.ProjectVersionNotific
 import com.blackduck.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 
 public class NotificationDetailExtractionDelegatorTest {
     private static final Random RANDOM = new Random();

@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.jira.server.database.accessor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,12 +19,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
+import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.channel.jira.server.database.job.JiraServerJobDetailsEntity;
 import com.blackduck.integration.alert.channel.jira.server.database.job.JiraServerJobDetailsRepository;
 import com.blackduck.integration.alert.channel.jira.server.database.job.custom_field.JiraServerJobCustomFieldEntity;
 import com.blackduck.integration.alert.channel.jira.server.database.job.custom_field.JiraServerJobCustomFieldRepository;
-import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
-import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 

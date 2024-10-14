@@ -1,13 +1,20 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.email.attachment;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.channel.email.attachment.compatibility.ComponentItem;
 import com.blackduck.integration.alert.channel.email.attachment.compatibility.MessageContentGroup;
 import com.blackduck.integration.alert.channel.email.attachment.compatibility.ProviderMessageContent;
-import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.common.enumeration.ItemOperation;
 
 class MessageContentGroupCsvCreatorTest {

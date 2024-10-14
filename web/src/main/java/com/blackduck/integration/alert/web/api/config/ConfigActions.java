@@ -1,9 +1,9 @@
 /*
- * web
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.web.api.config;
 
@@ -22,10 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.blackduck.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
-import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
-import com.blackduck.integration.exception.IntegrationException;
-import com.blackduck.integration.rest.exception.IntegrationRestException;
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
@@ -51,6 +47,10 @@ import com.blackduck.integration.alert.common.rest.model.FieldModel;
 import com.blackduck.integration.alert.common.rest.model.MultiFieldModel;
 import com.blackduck.integration.alert.common.security.EncryptionUtility;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
+import com.blackduck.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
+import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
+import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.rest.exception.IntegrationRestException;
 
 @Component
 public class ConfigActions extends AbstractConfigResourceActions {

@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.channel.email.distribution;
 
 import java.util.List;
@@ -11,6 +18,8 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
+import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.channel.email.EmailITTestAssertions;
 import com.blackduck.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
 import com.blackduck.integration.alert.channel.email.attachment.EmailAttachmentFormat;
@@ -19,20 +28,18 @@ import com.blackduck.integration.alert.channel.email.database.accessor.EmailGlob
 import com.blackduck.integration.alert.channel.email.distribution.address.EmailAddressGatherer;
 import com.blackduck.integration.alert.channel.email.distribution.address.JobEmailAddressValidator;
 import com.blackduck.integration.alert.channel.email.distribution.address.ValidatedEmailAddresses;
+import com.blackduck.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.service.email.EmailMessagingService;
 import com.blackduck.integration.alert.service.email.JavamailPropertiesFactory;
 import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
 import com.blackduck.integration.alert.service.email.template.FreemarkerTemplatingService;
-import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
-import com.google.gson.Gson;
-import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
-import com.blackduck.integration.alert.api.event.EventManager;
-import com.blackduck.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
-import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.test.common.MockAlertProperties;
 import com.blackduck.integration.alert.test.common.TestProperties;
 import com.blackduck.integration.alert.test.common.TestPropertyKey;
 import com.blackduck.integration.alert.test.common.TestTags;
+import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.google.gson.Gson;
 
 class EmailChannelTestIT {
     protected Gson gson;

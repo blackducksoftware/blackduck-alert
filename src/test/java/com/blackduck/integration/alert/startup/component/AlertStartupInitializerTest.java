@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.startup.component;
 
 import java.util.List;
@@ -25,7 +32,6 @@ import com.blackduck.integration.alert.common.persistence.util.ConfigurationFiel
 import com.blackduck.integration.alert.common.rest.FieldModelProcessor;
 import com.blackduck.integration.alert.common.security.EncryptionUtility;
 import com.blackduck.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
-import com.blackduck.integration.alert.startup.component.AlertStartupInitializer;
 
 public class AlertStartupInitializerTest {
     private static final SettingsDescriptorKey SETTINGS_DESCRIPTOR_KEY = new SettingsDescriptorKey();

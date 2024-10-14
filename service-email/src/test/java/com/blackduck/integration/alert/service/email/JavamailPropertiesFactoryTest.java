@@ -1,3 +1,10 @@
+/*
+ * blackduck-alert
+ *
+ * Copyright (c) 2024 Black Duck Software, Inc.
+ *
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.blackduck.integration.alert.service.email;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -8,9 +15,9 @@ import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
 
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.blackduck.integration.alert.service.email.model.EmailGlobalConfigModel;
-import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 
 class JavamailPropertiesFactoryTest {
     public static final String EXPECTED_FROM_VALUE = "expectedFrom";

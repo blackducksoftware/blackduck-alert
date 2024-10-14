@@ -1,9 +1,9 @@
 /*
- * channel-azure-boards
+ * blackduck-alert
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Black Duck Software, Inc.
  *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
 package com.blackduck.integration.alert.channel.azure.boards.oauth.storage;
 
@@ -16,17 +16,17 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.blackduck.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.google.api.client.auth.oauth2.StoredCredential;
-import com.google.api.client.util.store.AbstractDataStore;
-import com.google.api.client.util.store.DataStore;
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
+import com.google.api.client.auth.oauth2.StoredCredential;
+import com.google.api.client.util.store.AbstractDataStore;
+import com.google.api.client.util.store.DataStore;
 
 /**
  * This class is meant to be a very basic implementation of a {@link DataStore}.<br/>
