@@ -103,7 +103,7 @@ class JmsNotificationReceiverTestIT {
         ConfigurationFieldModel providerConfigName = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
         providerConfigName.setFieldValue("blackduck-config");
         ConfigurationFieldModel blackduckUrl = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_URL);
-        blackduckUrl.setFieldValue("https://www.synopsys.com");
+        blackduckUrl.setFieldValue("https://www.blackduck.com");
         ConfigurationFieldModel blackduckApiKey = ConfigurationFieldModel.createSensitive(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
         blackduckApiKey.setFieldValue("someApiKey");
         ConfigurationFieldModel blackduckTimeout = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT);

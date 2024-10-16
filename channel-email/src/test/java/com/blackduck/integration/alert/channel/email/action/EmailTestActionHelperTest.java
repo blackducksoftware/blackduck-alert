@@ -38,8 +38,8 @@ import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 @ExtendWith(SpringExtension.class)
 public class EmailTestActionHelperTest {
     private final List<ProviderProject> providerProjects = createProviderProjects();
-    private final String projectOwnerEmailAddress = "project-owner@synopsys.com";
-    private final String additionalEmailAddress = "additional-email@synopsy.com";
+    private final String projectOwnerEmailAddress = "project-owner@blackduck.com";
+    private final String additionalEmailAddress = "additional-email@blackduck.com";
 
     @Mock
     private ProviderDataAccessor providerDataAccessor;

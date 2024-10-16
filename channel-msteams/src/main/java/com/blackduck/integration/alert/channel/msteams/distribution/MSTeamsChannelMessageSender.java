@@ -29,7 +29,7 @@ import com.google.gson.JsonObject;
 
 @Component
 public class MSTeamsChannelMessageSender implements ChannelMessageSender<MSTeamsJobDetailsModel, MSTeamsChannelMessageModel, MessageResult> {
-    private static final String MESSAGE_THEME_COLOR = "5A2A82"; // Synopsys Purple
+    private static final String MESSAGE_THEME_COLOR = "9A73B3"; // Black Duck Purple
     private static final String MESSAGE_SUMMARY = "New Content from Alert";
 
     private final MsTeamsKey msTeamsKey;

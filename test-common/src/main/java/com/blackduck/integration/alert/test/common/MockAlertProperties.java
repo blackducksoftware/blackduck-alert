@@ -63,7 +63,7 @@ public class MockAlertProperties extends AlertProperties {
     }
 
     @Override
-    public String createSynopsysLogoPath() throws AlertException {
+    public String createBlackDuckLogoPath() throws AlertException {
         String imagesDirectory = getAlertImagesDir();
         if (StringUtils.isNotBlank(imagesDirectory)) {
             return Path.of(imagesDirectory, "test_logo.png").toString();

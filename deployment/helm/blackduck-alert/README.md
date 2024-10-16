@@ -1,6 +1,6 @@
 
 # alert-helm
-Helm Charts for Synopsys Alert
+Helm Charts for Black Duck Alert
 
 ## Table Of Contents
 - [Prerequisites](#prerequisites)
@@ -32,7 +32,7 @@ Helm Charts for Synopsys Alert
 ### Add the helm repository
 
 ```bash
- $ helm repo add synopsys https://sig-repo.synopsys.com/artifactory/sig-cloudnative
+ $ helm repo add blackduck https://repo.blackduck.com/sig-cloudnative
 ```
 
 ### Create the Namespace
@@ -48,7 +48,7 @@ Modify the values.yaml file or pass in values to `helm install` with --set.
 ### Install the Alert Chart
 
 ```bash
-$ helm install synopsys/synopsys-alert --name <name> --namespace <namespace>
+$ helm install blackduck/blackduck-alert --name <name> --namespace <namespace>
 ```
 
 > **Tip**: List all releases using `helm list`
@@ -58,7 +58,7 @@ $ helm install synopsys/synopsys-alert --name <name> --namespace <namespace>
 ### Add the helm repository
 
 ```bash
- $ helm repo add synopsys https://sig-repo.synopsys.com/artifactory/sig-cloudnative
+ $ helm repo add blackduck https://repo.blackduck.com/sig-cloudnative
 ```
 
 ### Create the Namespace and TLS Secrets
@@ -74,7 +74,7 @@ Please see the [Configuration](#configuration) section for more details.
 
 ### Install the Alert Chart
 ```bash
-$ helm install <name> synopsys/synopsys-alert --namespace <namespace>
+$ helm install <name> blackduck/blackduck-alert --namespace <namespace>
 ```
 
 ### Quick Start with Helm 3
@@ -92,7 +92,7 @@ $ kubectl create ns myalert
 #### Step 3
 Deploy Alert
 ```bash
-$ helm install myalert synopsys/synopsys-alert --namespace myalert
+$ helm install myalert blackduck/blackduck-alert --namespace myalert
 ```
 
 ## Finding Alert External Port
@@ -147,7 +147,7 @@ Restoring a database backup must be to the same version of Alert it was taken fr
 ### Perform upgrade
 
 ```bash
-$ helm upgrade <name> synopsys/synopsys-alert --namespace <namespace>
+$ helm upgrade <name> blackduck/blackduck-alert --namespace <namespace>
 ```
 
 ## Uninstalling the Chart
@@ -262,7 +262,7 @@ Specify each parameter using the `--set key=value[,key=value]` argument to `helm
 Alternatively, a YAML file that specifies the values for the above parameters can be provided while installing the chart. For example,
 
 ```bash
-$ helm install synopsys/synopsys-alert --name <name> --namespace <namespace> --set enableStandalone=true
+$ helm install blackduck/blackduck-alert --name <name> --namespace <namespace> --set enableStandalone=true
 ```
 
 ### Database Credential Secrets

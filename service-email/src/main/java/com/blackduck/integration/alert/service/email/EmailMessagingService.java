@@ -208,7 +208,7 @@ public class EmailMessagingService {
     }
 
     private String generateContentId(String value) {
-        return value.replaceAll("[^A-Za-z0-9]", "bd").trim() + "@synopsys.com";
+        return value.replaceAll("[^A-Za-z0-9]", "bd").trim() + "@blackduck.com";
     }
 
     private String cleanForFreemarker(String s) {

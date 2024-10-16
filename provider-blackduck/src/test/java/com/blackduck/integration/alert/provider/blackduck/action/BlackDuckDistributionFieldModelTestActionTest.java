@@ -193,7 +193,7 @@ class BlackDuckDistributionFieldModelTestActionTest {
         Mockito.when(blackDuckProperties.createApiTokenBlackDuckHttpClient(Mockito.any())).thenReturn(apiTokenBlackDuckHttpClient);
         Mockito.when(httpResponse.isStatusCodeSuccess()).thenReturn(canConnect);
         Mockito.when(apiTokenBlackDuckHttpClient.attemptAuthentication()).thenReturn(httpResponse);
-        Mockito.when(blackDuckProperties.getBlackDuckUrl()).thenReturn(Optional.of("https://synopsys.com"));
+        Mockito.when(blackDuckProperties.getBlackDuckUrl()).thenReturn(Optional.of("https://blackduck.com"));
         return blackDuckProvider;
     }
 

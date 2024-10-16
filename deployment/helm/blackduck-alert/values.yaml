@@ -134,11 +134,11 @@ exposedNodePort: ""
 #   HUB_WEBAPP_HOST
 #   HUB_CFSSL_HOST
 #   ALERT_SERVER_PORT
-# if you are setting the value using set flag in helm command, do --set environs.* = ""; i.e.: --set environs.ALERT_CHANNEL_EMAIL_MAIL_SMTP_HOST="email@synopsys.com"
+# if you are setting the value using set flag in helm command, do --set environs.* = ""; i.e.: --set environs.ALERT_CHANNEL_EMAIL_MAIL_SMTP_HOST="email@blackduck.com"
 environs: {}
 
 # secretEnvirons is a map of environs to add to the Alert's Secret
-# if you are setting the value using set flag in helm command, do --set secretEnvirons.* = ""; i.e.: --set secretEnvirons.ALERT_CHANNEL_EMAIL_MAIL_SMTP_HOST="email@synopsys.com"
+# if you are setting the value using set flag in helm command, do --set secretEnvirons.* = ""; i.e.: --set secretEnvirons.ALERT_CHANNEL_EMAIL_MAIL_SMTP_HOST="email@blackduck.com"
 secretEnvirons: {}
 
 # If true, requires the user to set...

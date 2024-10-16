@@ -151,7 +151,7 @@ class JiraServerGlobalConfigControllerTestIT {
             .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
             .with(SecurityMockMvcRequestPostProcessors.csrf());
 
-        JiraServerGlobalConfigModel configModel = createPersonalAccessTokenConfigModel(null, "https://synopsys.com");
+        JiraServerGlobalConfigModel configModel = createPersonalAccessTokenConfigModel(null, "https://blackduck.com");
         request.content(gson.toJson(configModel));
         request.contentType(MEDIA_TYPE);
 

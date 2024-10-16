@@ -132,7 +132,13 @@ public class ProjectMessageToIssueModelTransformerTest {
 
     @Test
     public void convertToIssueModelsForComponentUnknownVersionTest() {
-        ComponentConcern unknownComponentConcern = ComponentConcern.unknownComponentVersion(ItemOperation.ADD, "Component01", ComponentConcernSeverity.MAJOR_HIGH, 2, "https://synopsys.com");
+        ComponentConcern unknownComponentConcern = ComponentConcern.unknownComponentVersion(
+            ItemOperation.ADD,
+            "Component01",
+            ComponentConcernSeverity.MAJOR_HIGH,
+            2,
+            "https://blackduck.com"
+        );
         BomComponentDetails bomComponentDetails = createBomComponentDetails(unknownComponentConcern);
         ProjectMessage projectMessage = ProjectMessage.componentConcern(
             PROVIDER_DETAILS,

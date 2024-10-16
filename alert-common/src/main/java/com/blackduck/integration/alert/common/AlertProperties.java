@@ -18,7 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 
 public class AlertProperties {
-    public static final String FILE_NAME_SYNOPSYS_LOGO = "synopsys.png";
+    public static final String FILE_NAME_BLACKDUCK_LOGO = "BlackDuckLogo.png";
 
     @Value("${alert.config.home:}")
     private String alertConfigHome;
@@ -94,11 +94,11 @@ public class AlertProperties {
         return StringUtils.trimToNull(alertImagesDir);
     }
 
-    public String createSynopsysLogoPath() throws AlertException {
+    public String createBlackDuckLogoPath() throws AlertException {
         String imagesDirectory = getAlertImagesDir();
         if (StringUtils.isNotBlank(imagesDirectory)) {
-            Path synopsysLogoPath = Path.of(imagesDirectory, FILE_NAME_SYNOPSYS_LOGO);
-            return synopsysLogoPath.toString();
+            Path blackduckLogoPath = Path.of(imagesDirectory, FILE_NAME_BLACKDUCK_LOGO);
+            return blackduckLogoPath.toString();
         }
         throw new AlertException(String.format("Could not find the Alert logo in the images directory '%s'", imagesDirectory));
     }

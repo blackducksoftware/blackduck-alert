@@ -1,5 +1,5 @@
 # Alert Helm Chart Versioning
-This document covers the versioning of the Helm charts for synopsys-alert.
+This document covers the versioning of the Helm charts for blackduck-alert.
 The version of the helm chart can be released independently of a product release if only modifications to the helm chart have been made.
 
 ## Table of Contents
@@ -82,7 +82,7 @@ $ ./gradlew helmValidation
 ```
 A helm package tar ball will be created in the following directory:
 
-`build/deployment/helm/synopsys-alert`
+`build/deployment/helm/blackduck-alert`
 
 ## Creating the package manually
 If you want to build the package manually for testing you can follow these procedures.

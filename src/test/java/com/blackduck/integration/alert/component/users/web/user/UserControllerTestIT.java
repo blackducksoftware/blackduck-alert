@@ -62,7 +62,7 @@ class UserControllerTestIT {
     private final Long id = Long.MAX_VALUE - 1;
     private final String name = "user";
     private final String password = "testPassword123!@#";
-    private final String emailAddress = "noreply@synopsys.com";
+    private final String emailAddress = "noreply@blackduck.com";
     private final Set<UserRoleModel> roles = Set.of();
     private final AuthenticationType authenticationType = AuthenticationType.DATABASE;
 

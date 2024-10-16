@@ -1,7 +1,7 @@
 {
   "name": "Alert Issue Property Indexer",
   "description": "An application used for indexing issue properties to allow Alert to map notifications to the correct issue(s).",
-  "key": "com.synopsys.integration.alert",
+  "key": "com.blackduck.integration.alert",
   "baseUrl": "https://github.com/blackducksoftware/blackduck-alert",
   "vendor": {
     "name": "Black Duck Software, Inc.",
@@ -14,14 +14,14 @@
   "modules": {
     "jiraEntityProperties": [
       {
-        "key": "com-synopsys-integration-alert",
+        "key": "com-blackduck-integration-alert",
         "name": {
           "value": "Alert Issue Property"
         },
         "entityType": "issue",
         "keyConfigurations": [
           {
-            "propertyKey": "com-synopsys-integration-alert",
+            "propertyKey": "com-blackduck-integration-alert",
             "extractions": [
               {
                 "objectName": "provider",
