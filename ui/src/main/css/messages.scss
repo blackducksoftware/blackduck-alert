@@ -1,20 +1,20 @@
 @import 'variables';
 
 .errorStatus {
-  color: $synopsys-color-platform-red;
+  color: $blackduck-color-platform-red;
 }
 
 .validStatus {
-  color: $synopsys-color-platform-green;
+  color: $blackduck-color-platform-green;
 }
 
 .warningStatus {
-  color: $synopsys-color-orange;
+  color: $blackduck-color-orange;
 }
 
 .messageHeader {
   width: 100%;
-  border-top: 1px solid $synopsys-color-dark-gray;
+  border-top: 1px solid $blackduck-color-dark-gray;
 }
 
 .messageDate {

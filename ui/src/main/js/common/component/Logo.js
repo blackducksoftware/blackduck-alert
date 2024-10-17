@@ -1,20 +1,16 @@
 import React from 'react';
-
-import '../../../css/logos.scss';
+import '/src/main/css/logos.scss';
+import BlackDuckLogo from '/src/main/img/BlackDuckLogo.png';
 
 const Logo = () => (
     <div className="productLogo">
-        <span className="synopsysLogoSpan">
-            <img
-                className="synopsysHeaderLogo"
-                src="https://www.synopsys.com/content/dam/synopsys/company/about/legal/synopsys-logos/whitelogo/synopsys_wht.png"
-                alt="Synopsys"
-            />
-            <span className="headerStandardSize">
-                <span className="synopsysHeaderLogoVerticalBarSpace">|</span>
-                ALERT
-            </span>
-        </span>
+        <div className="logo">
+            <div className="logoContainer">
+                <img src={BlackDuckLogo} alt="logo" height="30px" />
+                <span className="divider" />
+                <span className="alertText">ALERT</span>
+            </div>
+        </div>
     </div>
 );
 

@@ -1,38 +1,39 @@
 @import 'variables';
 
-.synopsysLogoSpan {
-  display: inline-flex;
-  font-family: 'Roboto', 'Arial', sans-serif;
+.logoContainer {
+  display: flex;
+  align-items: center;
+  column-gap: 6px;
+}
+
+.logoDivider {
+  border-left: solid 1px;
+  height: 11px;
+  margin-top: 2px
+}
+
+.blackduckFooterLogo {
+  background: none;
+  margin: auto;
+  width: auto;
+  max-height: 14px;
+}
+
+.logo {
+  width: fit-content;
+  & > a {
+    text-decoration: none;
+    color: white
+  }
+}
+
+.divider {
+  height: 25px;
+  border-left: 1px solid;
+}
+
+.alertText {
+  font-size: 1.5em;
   line-height: 1.25em;
-}
-
-.synopsysHeaderLogo {
-  background: none;
-  margin: auto;
-  width: auto;
-  max-height: 17px;
-}
-
-.synopsysHeaderLogoVerticalBarSpace {
-  margin-left: 8px;
-  margin-right: 8px;
-}
-
-.synopsysFooterLogo {
-  background: none;
-  margin: auto;
-  width: auto;
-  max-height: 12px;
-}
-
-.synopsysFooterLogoVerticalBarSpace {
-  margin-left: 5.5px;
-  margin-right: 5.5px;
-}
-
-.headerStandardSize {
-  display: inline-flex;
-  margin-bottom: 3px;
-  font-size: 1.25em;
-  font-weight: lighter;
+  font-family: 'Roboto', 'Arial', 'sans-serif';
 }
