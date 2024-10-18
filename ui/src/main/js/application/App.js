@@ -1,19 +1,19 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
 import MainPage from 'application/MainPage';
 import LoginPage from 'application/auth/LoginPage';
-import LogoutPage from 'application/auth/LogoutPage';
-import * as IconUtility from 'common/util/iconUtility';
 import AboutInfoFooter from 'page/about/AboutInfoFooter';
 import { verifyLogin, verifySaml } from 'store/actions/session';
+import * as IconUtility from 'common/util/iconUtility';
+import LogoutPage from 'application/auth/LogoutPage';
 // These are needed for the react-bootstrap tables to show the ascending/descending icons
-import '@fortawesome/fontawesome-free/js/all.js';
-import '@fortawesome/fontawesome-free/js/v4-shims.js';
 import '@fortawesome/fontawesome-free/scss/fontawesome.scss';
+import '@fortawesome/fontawesome-free/js/all.js';
 import '@fortawesome/fontawesome-free/scss/v4-shims.scss';
+import '@fortawesome/fontawesome-free/js/v4-shims.js';
 
 import '../../css/main.scss';
 
