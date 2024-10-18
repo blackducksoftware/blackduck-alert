@@ -1,50 +1,49 @@
-import React, { useEffect, useState } from 'react';
-import { createUseStyles } from 'react-jss';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { Redirect, Route, withRouter } from 'react-router-dom';
-import Navigation from 'application/Navigation';
-import TopNavBar from 'application/TopNavBar';
-import AboutInfoFooter from 'page/about/AboutInfoFooter';
-import AboutInfo from 'page/about/AboutInfo';
-import LogoutConfirmation from 'common/component/LogoutConfirmation';
-import { getDescriptors } from 'store/actions/descriptors';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import SlackGlobalConfiguration from 'page/channel/slack/SlackGlobalConfiguration';
-import JiraCloudGlobalConfiguration from 'page/channel/jira/cloud/JiraCloudGlobalConfiguration';
-import { JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';
-import { SLACK_INFO } from 'page/channel/slack/SlackModels';
-import { EMAIL_INFO } from 'page/channel/email/EmailModels';
-import { JIRA_SERVER_INFO } from 'page/channel/jira/server/JiraServerModel';
-import JiraServerPageLayout from 'page/channel/jira/server/JiraServerPageLayout';
-import { MSTEAMS_INFO } from 'page/channel/msteams/MSTeamsModel';
-import MSTeamsGlobalConfiguration from 'page/channel/msteams/MSTeamsGlobalConfiguration';
-import { AZURE_BOARDS_INFO } from 'page/channel/azure/AzureBoardsModel';
-import AzureBoardsPageLayout from 'page/channel/azure/AzureBoardsPageLayout';
-import { SCHEDULING_INFO } from 'page/scheduling/SchedulingModel';
-import SchedulingConfiguration from 'page/scheduling/SchedulingConfiguration';
-import { SETTINGS_INFO } from 'page/settings/SettingsModel';
-import SettingsConfiguration from 'page/settings/standalone/SettingsConfiguration';
 import { AUTHENTICATION_INFO } from 'application/auth/AuthenticationModel';
 import AuthenticationPageLayout from 'application/auth/AuthenticationPageLayout';
-import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
-import ProviderPageLayout from 'page/provider/ProviderPageLayout';
+import Navigation from 'application/Navigation';
+import TopNavBar from 'application/TopNavBar';
+import DescriptorRoute from 'common/component/descriptor/DescriptorRoute';
+import LogoutConfirmation from 'common/component/LogoutConfirmation';
+import { CONTEXT_TYPE, isOperationAssigned, OPERATIONS } from 'common/util/descriptorUtilities';
+import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
+import AboutInfo from 'page/about/AboutInfo';
 import { AUDIT_INFO } from 'page/audit/AuditModel';
 import AuditPageLayout from 'page/audit/AuditPageLayout';
 import { CERTIFICATE_INFO } from 'page/certificates/CertificateModel';
 import CertificatesPageLayout from 'page/certificates/CertificatesPageLayout';
-import { TASK_MANAGEMENT_INFO } from 'page/task/TaskManagementModel';
-import TaskManagementPageLayout from 'page/task/TaskManagementPageLayout';
-import { USER_MANAGEMENT_INFO } from 'page/usermgmt/UserModel';
-import UserManagement from 'page/usermgmt/UserManagement';
-import { CONTEXT_TYPE, isOperationAssigned, OPERATIONS } from 'common/util/descriptorUtilities';
-import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
+import { AZURE_BOARDS_INFO } from 'page/channel/azure/AzureBoardsModel';
+import AzureBoardsPageLayout from 'page/channel/azure/AzureBoardsPageLayout';
+import EmailGlobalConfiguration from 'page/channel/email/EmailGlobalConfiguration';
+import { EMAIL_INFO } from 'page/channel/email/EmailModels';
+import JiraCloudGlobalConfiguration from 'page/channel/jira/cloud/JiraCloudGlobalConfiguration';
+import { JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';
+import { JIRA_SERVER_INFO } from 'page/channel/jira/server/JiraServerModel';
+import JiraServerPageLayout from 'page/channel/jira/server/JiraServerPageLayout';
+import MSTeamsGlobalConfiguration from 'page/channel/msteams/MSTeamsGlobalConfiguration';
+import { MSTEAMS_INFO } from 'page/channel/msteams/MSTeamsModel';
+import SlackGlobalConfiguration from 'page/channel/slack/SlackGlobalConfiguration';
+import { SLACK_INFO } from 'page/channel/slack/SlackModels';
 import DistributionConfiguration from 'page/distribution/DistributionConfiguration';
 import DistributionConfigurationForm from 'page/distribution/DistributionConfigurationForm';
+import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
+import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
+import ProviderPageLayout from 'page/provider/ProviderPageLayout';
+import SchedulingConfiguration from 'page/scheduling/SchedulingConfiguration';
+import { SCHEDULING_INFO } from 'page/scheduling/SchedulingModel';
+import { SETTINGS_INFO } from 'page/settings/SettingsModel';
+import SettingsConfiguration from 'page/settings/standalone/SettingsConfiguration';
+import { TASK_MANAGEMENT_INFO } from 'page/task/TaskManagementModel';
+import TaskManagementPageLayout from 'page/task/TaskManagementPageLayout';
+import UserManagement from 'page/usermgmt/UserManagement';
+import { USER_MANAGEMENT_INFO } from 'page/usermgmt/UserModel';
+import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
+import { createUseStyles } from 'react-jss';
+import { connect } from 'react-redux';
+import { Redirect, Route, withRouter } from 'react-router-dom';
+import { getDescriptors } from 'store/actions/descriptors';
 import { unauthorized } from 'store/actions/session';
-import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
-import DescriptorRoute from 'common/component/descriptor/DescriptorRoute';
-import EmailGlobalConfiguration from 'page/channel/email/EmailGlobalConfiguration';
 
 const useStyles = createUseStyles({
     blackDuckAlertApp: {
@@ -69,11 +68,7 @@ const useStyles = createUseStyles({
     },
     main: {
         gridArea: 'main',
-    },
-    footer: {
-        gridArea: 'footer',
-        height: '36px'
-    },
+    }
 })
 
 const MainPage = ({
@@ -308,9 +303,6 @@ const MainPage = ({
             </div>
             <div className={classes.main}>
                 {content}
-            </div>
-            <div className={classes.footer}>
-                <AboutInfoFooter />
             </div>
             <div className="modalsArea">
                 <LogoutConfirmation />
