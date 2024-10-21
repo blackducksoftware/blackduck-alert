@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import { Redirect, Route, withRouter } from 'react-router-dom';
 import Navigation from 'application/Navigation';
 import TopNavBar from 'application/TopNavBar';
-import AboutInfoFooter from 'page/about/AboutInfoFooter';
 import AboutInfo from 'page/about/AboutInfo';
 import LogoutConfirmation from 'common/component/LogoutConfirmation';
 import { getDescriptors } from 'store/actions/descriptors';
@@ -69,11 +68,7 @@ const useStyles = createUseStyles({
     },
     main: {
         gridArea: 'main',
-    },
-    footer: {
-        gridArea: 'footer',
-        height: '36px'
-    },
+    }
 })
 
 const MainPage = ({
@@ -308,9 +303,6 @@ const MainPage = ({
             </div>
             <div className={classes.main}>
                 {content}
-            </div>
-            <div className={classes.footer}>
-                <AboutInfoFooter />
             </div>
             <div className="modalsArea">
                 <LogoutConfirmation />
