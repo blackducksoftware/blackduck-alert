@@ -27,7 +27,6 @@ const Checkbox = ({ id, name, label, placeholder, value = '', isChecked = false,
                 checked={isChecked}
                 aria-label={label}
                 className={classes.input}
-                defaultChecked={isChecked}
                 disabled={isDisabled ? 'disabled' : null}
                 id={id}
                 onChange={changeHandler}
