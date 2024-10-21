@@ -24,7 +24,7 @@ const SettingsProxyConfiguration = ({
             id={SETTINGS_PROXY_TEST_FIELD.key}
             name={SETTINGS_PROXY_TEST_FIELD.key}
             label={SETTINGS_PROXY_TEST_FIELD.label}
-            description={SETTINGS_PROXY_TEST_FIELD.description}
+            customDescription={SETTINGS_PROXY_TEST_FIELD.description}
             onChange={({ target }) => setTestUrl(target.value)}
             value={testUrl}
         />

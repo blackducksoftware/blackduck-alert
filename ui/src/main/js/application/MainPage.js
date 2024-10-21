@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { createUseStyles } from 'react-jss';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect, Route, withRouter } from 'react-router-dom';
 import Navigation from 'application/Navigation';
+import TopNavBar from 'application/TopNavBar';
 import AboutInfo from 'page/about/AboutInfo';
 import LogoutConfirmation from 'common/component/LogoutConfirmation';
 import { getDescriptors } from 'store/actions/descriptors';
@@ -43,9 +45,36 @@ import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import DescriptorRoute from 'common/component/descriptor/DescriptorRoute';
 import EmailGlobalConfiguration from 'page/channel/email/EmailGlobalConfiguration';
 
+const useStyles = createUseStyles({
+    blackDuckAlertApp: {
+        display: 'grid',
+        gridTemplateAreas: `
+            "topnav topnav"
+            "sidenav main"
+            "footer footer"
+        `,
+        gridTemplateRows: 'auto 1fr auto',
+        gridTemplateColumns: 'auto 1fr',
+        height: '100vh',
+        width: '100vw'
+    },
+    topnav: {
+        gridArea: 'topnav',
+        height: '50px'
+    },
+    appSidenav: {
+        gridArea: 'sidenav',
+        width: '80px'
+    },
+    main: {
+        gridArea: 'main',
+    }
+})
+
 const MainPage = ({
     descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh, unauthorizedFunction
 }) => {
+    const classes = useStyles();
     const [globalDescriptorMap, setGlobalDescriptorMap] = useState({});
     const [distributionDescriptorMap, setDistributionDescriptorMap] = useState({});
 
@@ -265,9 +294,16 @@ const MainPage = ({
     const content = (fetching) ? spinner : page;
 
     return (
-        <div>
-            <Navigation globalDescriptorMap={globalDescriptorMap} />
-            {content}
+        <div className={classes.blackDuckAlertApp}>
+            <div className={classes.topnav}>
+                <TopNavBar />
+            </div>
+            <div className={classes.appSidenav}>
+                <Navigation globalDescriptorMap={globalDescriptorMap} />
+            </div>
+            <div className={classes.main}>
+                {content}
+            </div>
             <div className="modalsArea">
                 <LogoutConfirmation />
             </div>

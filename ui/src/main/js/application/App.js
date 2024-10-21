@@ -39,7 +39,9 @@ class App extends Component {
         return (
             <div>
                 {contentPage}
-                <AboutInfoFooter />
+                <div>
+                    <AboutInfoFooter />
+                </div>
             </div>
         );
     }

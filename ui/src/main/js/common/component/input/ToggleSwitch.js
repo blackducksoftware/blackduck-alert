@@ -20,7 +20,7 @@ const useStyles = createUseStyles({
     },
     switchLabel: {
         display: 'block',
-        width: '40px',
+        width: '24px',
         height: '15px',
         textIndent: '-150%',
         clip: 'rect(0 0 0 0)',

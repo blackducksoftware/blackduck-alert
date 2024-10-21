@@ -13,8 +13,7 @@ const useStyles = createUseStyles((theme) => ({
     modal: {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         display: 'block',
-        // TODO: offset to the navigation width of 250px - please fix when navigation is updated
-        inset: '0 0 0 250px',
+        inset: '50px 0 36px 80px',
         position: 'fixed',
         zIndex: '10000',
         outline: 0,
