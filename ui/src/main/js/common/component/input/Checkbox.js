@@ -20,14 +20,13 @@ const Checkbox = ({ id, name, label, placeholder, value = '', isChecked = false,
     }
 
     return (
-        <div className={classes.checkboxField} >
-            <FieldLabel label={label}/>
+        <div className={classes.checkboxField}>
+            <FieldLabel label={label} />
             <input
                 name={name}
-                aria-checked={isChecked}
+                checked={isChecked}
                 aria-label={label}
                 className={classes.input}
-                defaultChecked={isChecked}
                 disabled={isDisabled ? 'disabled' : null}
                 id={id}
                 onChange={changeHandler}
