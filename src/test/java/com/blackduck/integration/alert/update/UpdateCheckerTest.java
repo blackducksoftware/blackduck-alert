@@ -266,7 +266,7 @@ public class UpdateCheckerTest {
         AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
         Mockito.when(alertProperties.getAlertTrustCertificate()).thenReturn(Optional.of(Boolean.TRUE));
 
-        AboutReader reader = new AboutReader(gson, alertWebServerUrlManager, defaultSystemStatusUtility, descriptorMetadataActions);
+        AboutReader reader = new AboutReader(gson, defaultSystemStatusUtility, descriptorMetadataActions);
         UpdateChecker updateChecker = new UpdateChecker(gson, reader, proxyManager, alertProperties);
 
         UpdateModel updateModel = updateChecker.getUpdateModel();
