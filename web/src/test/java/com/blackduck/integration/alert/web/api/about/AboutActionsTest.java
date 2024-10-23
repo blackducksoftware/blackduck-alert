@@ -59,7 +59,7 @@ public class AboutActionsTest {
         SystemStatusAccessor systemStatusAccessor = Mockito.mock(SystemStatusAccessor.class);
         DescriptorMetadataActions descriptorActions = Mockito.mock(DescriptorMetadataActions.class);
 
-        AboutReader aboutReader = new AboutReader(gson, alertWebServerUrlManager, systemStatusAccessor, descriptorActions);
+        AboutReader aboutReader = new AboutReader(gson, systemStatusAccessor, descriptorActions);
         AboutActions aboutActions = new AboutActions(aboutReader);
         ActionResponse<AboutModel> resultModel = aboutActions.getAboutModel();
         assertTrue(resultModel.isError());

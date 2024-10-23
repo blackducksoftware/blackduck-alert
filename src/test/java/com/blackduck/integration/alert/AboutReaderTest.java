@@ -20,12 +20,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.blackduck.integration.alert.common.persistence.model.SystemMessageModel;
-import com.blackduck.integration.alert.common.rest.AlertWebServerUrlManager;
 import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.database.job.api.DefaultSystemStatusAccessor;
 import com.blackduck.integration.alert.database.system.DefaultSystemMessageAccessor;
@@ -37,16 +38,12 @@ import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.rest.RestConstants;
 
 public class AboutReaderTest {
-    private AlertWebServerUrlManager alertWebServerUrlManager;
     private DefaultSystemStatusAccessor defaultSystemStatusUtility;
     private DefaultSystemMessageAccessor defaultSystemMessageUtility;
     private DescriptorMetadataActions descriptorMetadataActions;
 
     @BeforeEach
     public void initialize() {
-        alertWebServerUrlManager = Mockito.mock(AlertWebServerUrlManager.class);
-        Mockito.when(alertWebServerUrlManager.getServerComponentsBuilder()).thenReturn(UriComponentsBuilder.newInstance());
-
         defaultSystemStatusUtility = Mockito.mock(DefaultSystemStatusAccessor.class);
         Mockito.when(defaultSystemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);
         Mockito.when(defaultSystemStatusUtility.getStartupTime()).thenReturn(DateUtils.createCurrentDateTimestamp());
@@ -62,28 +59,31 @@ public class AboutReaderTest {
 
     @Test
     public void testAboutReadNull() {
-        AboutReader reader = new AboutReader(null, alertWebServerUrlManager, defaultSystemStatusUtility, descriptorMetadataActions);
+        AboutReader reader = new AboutReader(null, defaultSystemStatusUtility, descriptorMetadataActions);
         Optional<AboutModel> aboutModel = reader.getAboutModel();
         assertTrue(aboutModel.isEmpty());
     }
 
     @Test
     public void testAboutRead() {
-        AboutReader reader = new AboutReader(BlackDuckServicesFactory.createDefaultGson(), alertWebServerUrlManager, defaultSystemStatusUtility, descriptorMetadataActions);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+
+        AboutReader reader = new AboutReader(BlackDuckServicesFactory.createDefaultGson(), defaultSystemStatusUtility, descriptorMetadataActions);
         Optional<AboutModel> aboutModel = reader.getAboutModel();
         assertTrue(aboutModel.isPresent());
     }
 
     @Test
     public void testAboutReadVersionUnknown() {
-        AboutReader reader = new AboutReader(null, alertWebServerUrlManager, defaultSystemStatusUtility, descriptorMetadataActions);
+        AboutReader reader = new AboutReader(null, defaultSystemStatusUtility, descriptorMetadataActions);
         String version = reader.getProductVersion();
         assertEquals(AboutReader.PRODUCT_VERSION_UNKNOWN, version);
     }
 
     @Test
     public void testAboutReadVersion() {
-        AboutReader reader = new AboutReader(BlackDuckServicesFactory.createDefaultGson(), alertWebServerUrlManager, defaultSystemStatusUtility, descriptorMetadataActions);
+        AboutReader reader = new AboutReader(BlackDuckServicesFactory.createDefaultGson(), defaultSystemStatusUtility, descriptorMetadataActions);
         String version = reader.getProductVersion();
         assertTrue(StringUtils.isNotBlank(version));
     }

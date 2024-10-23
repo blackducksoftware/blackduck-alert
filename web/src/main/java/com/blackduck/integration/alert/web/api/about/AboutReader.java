@@ -15,13 +15,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.blackduck.integration.alert.common.enumeration.DescriptorType;
 import com.blackduck.integration.alert.common.persistence.accessor.SystemStatusAccessor;
-import com.blackduck.integration.alert.common.rest.AlertWebServerUrlManager;
 import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.web.api.metadata.DescriptorMetadataActions;
 import com.blackduck.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
@@ -35,14 +35,12 @@ public class AboutReader {
     private final Logger logger = LoggerFactory.getLogger(AboutReader.class);
 
     private final Gson gson;
-    private final AlertWebServerUrlManager alertWebServerUrlManager;
     private final SystemStatusAccessor systemStatusAccessor;
     private final DescriptorMetadataActions descriptorActions;
 
     @Autowired
-    public AboutReader(Gson gson, AlertWebServerUrlManager alertWebServerUrlManager, SystemStatusAccessor systemStatusAccessor, DescriptorMetadataActions descriptorActions) {
+    public AboutReader(Gson gson, SystemStatusAccessor systemStatusAccessor, DescriptorMetadataActions descriptorActions) {
         this.gson = gson;
-        this.alertWebServerUrlManager = alertWebServerUrlManager;
         this.systemStatusAccessor = systemStatusAccessor;
         this.descriptorActions = descriptorActions;
     }
@@ -91,7 +89,7 @@ public class AboutReader {
     }
 
     private String createSwaggerUrl(String swaggerPath) {
-        UriComponentsBuilder serverUrlBuilder = alertWebServerUrlManager.getServerComponentsBuilder();
+        UriComponentsBuilder serverUrlBuilder = ServletUriComponentsBuilder.fromCurrentContextPath();
         serverUrlBuilder.pathSegment(swaggerPath);
         return serverUrlBuilder.toUriString();
     }
