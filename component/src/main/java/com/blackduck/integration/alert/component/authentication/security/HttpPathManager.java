@@ -23,6 +23,7 @@ public class HttpPathManager {
     public static final String PATH_ROOT = "/";
 
     public static final String PATH_CSS_STYLE_CSS = "/css/style.css";
+    public static final String PATH_FAVICON_ICO = "/BlackDuckIcon.png";
     public static final String PATH_IMGS = "/img/**";
     public static final String PATH_FONTS = "/fonts/**";
     public static final String PATH_INDEX_HTML = "/index.html";
@@ -43,6 +44,7 @@ public class HttpPathManager {
     private static final String[] DEFAULT_PATHS = {
         PATH_ROOT,
         PATH_ROOT_HASHTAG,
+        PATH_FAVICON_ICO,
         PATH_IMGS,
         PATH_FONTS,
         PATH_JS_BUNDLE_JS,
