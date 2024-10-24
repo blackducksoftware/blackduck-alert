@@ -55,8 +55,9 @@ const useStyles = createUseStyles({
         `,
         gridTemplateRows: 'auto 1fr auto',
         gridTemplateColumns: 'auto 1fr',
-        height: '100vh',
-        width: '100vw'
+        height: '100%',
+        width: '100vw',
+        overflow: 'auto'
     },
     topnav: {
         gridArea: 'topnav',
