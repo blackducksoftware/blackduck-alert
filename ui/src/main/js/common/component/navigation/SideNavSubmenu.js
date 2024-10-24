@@ -39,7 +39,7 @@ const useStyles = createUseStyles({
         '&:hover, &:focus, &:active': {
             color: 'white',
             background: '#313944 !important',
-            textDecoration: 'none',
+            textDecoration: 'none'
         },
         '&::after': {
             display: 'none !important'
@@ -74,7 +74,7 @@ const SideNavSubmenu = ({ icon, id, label, subMenuItems }) => {
     const classes = useStyles();
 
     return (
-        <Dropdown drop="right">
+        <Dropdown drop="end">
             <Dropdown.Toggle className={classes.navItem}>
                 <FontAwesomeIcon size="2x" className={classes.icon} icon={icon} fixedWidth />
                 <span id={id} className={classes.navLabel}>{label}</span>
@@ -85,17 +85,16 @@ const SideNavSubmenu = ({ icon, id, label, subMenuItems }) => {
                     if (!item.showOption) {
                         return null;
                     }
-
                     return (
-                        <NavLink to={item.href} className={classes.navMenuItem} key={item.id}>
+                        <Dropdown.Item as={NavLink} to={item.href} className={classes.navMenuItem} key={item.id}>
                             {item.label}
-                        </NavLink>
-                    )
+                        </Dropdown.Item>
+                    );
                 })}
             </Dropdown.Menu>
         </Dropdown>
     );
-}
+};
 
 SideNavSubmenu.propTypes = {
     icon: PropTypes.string,
