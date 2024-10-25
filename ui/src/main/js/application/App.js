@@ -38,8 +38,10 @@ class App extends Component {
 
         return (
             <div>
-                {contentPage}
-                <div>
+                <div style={{ height: '96.5vh' }}>
+                    {contentPage}
+                </div>
+                <div style={{ height: '3.5vh' }}>
                     <AboutInfoFooter />
                 </div>
             </div>
