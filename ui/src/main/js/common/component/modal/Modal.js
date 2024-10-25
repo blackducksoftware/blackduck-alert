@@ -17,7 +17,8 @@ const useStyles = createUseStyles((theme) => ({
         position: 'fixed',
         zIndex: '10000',
         outline: 0,
-        cursor: 'default'
+        cursor: 'default',
+        overflow: 'hidden'
     },
     modalStyle: {
         backgroundColor: theme.colors.white.default,
