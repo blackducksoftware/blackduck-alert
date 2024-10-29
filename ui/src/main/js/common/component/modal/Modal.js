@@ -26,9 +26,7 @@ const useStyles = createUseStyles((theme) => ({
         position: 'relative',
         width: '90%',
         maxWidth: 600,
-        margin: ['100px', 'auto'],
-        maxHeight: '80%',
-        overflow: 'auto'
+        margin: ['100px', 'auto']
     },
     modalStyleLarge: {
         maxWidth: 900
