@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import Modal from 'common/component/modal/Modal';
 import Table from 'common/component/table/Table';
 import { createNewConfigurationRequest } from 'common/util/configurationRequestBuilder';
-import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import { DISTRIBUTION_COMMON_FIELD_KEYS, DISTRIBUTION_URLS } from './DistributionModel';
 
 const KEY_CELL = "name"
@@ -20,7 +19,7 @@ export default function ProjectSelectModal({ isOpen, handleClose, csrfToken, pro
     const [pageNumber, setPageNumber] = useState(0);
     const [pageSize, setPageSize] = useState(25);
     const [searchTerm, setSearchTerm] = useState('');
-    const [selected, setSelected] = useState((FieldModelUtilities.getFieldModelValues(formData, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects)));
+    const [selected, setSelected] = useState(formData);
     const [showLoader, setShowLoader] = useState(false);
     const [errorMessage, setErrorMessage] = useState({ message: 'No Projects Available' });
     const selectedProjectNames = selected.map((project) => project.label);
@@ -58,7 +57,7 @@ export default function ProjectSelectModal({ isOpen, handleClose, csrfToken, pro
 
         fetchProjectList();
     }, [pageNumber, pageSize, searchTerm, csrfToken, projectRequestBody]);
-
+    console.log(formData);
     return (
         <>
             <Modal
@@ -114,5 +113,5 @@ ProjectSelectModal.propTypes = {
     csrfToken: PropTypes.string,
     projectRequestBody: PropTypes.func,
     handleSubmit: PropTypes.func,
-    formData: PropTypes.object
+    formData: PropTypes.oneOf([PropTypes.object, PropTypes.array])
 };
