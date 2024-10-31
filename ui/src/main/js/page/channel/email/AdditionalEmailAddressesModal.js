@@ -68,6 +68,7 @@ export default function AdditionalEmailAddressesModal({ isOpen, handleClose, csr
                         multiSelect
                         searchBarPlaceholder="Search Email Address..."
                         handleSearchChange={(newSearchTerm) => {
+                            setPageNumber(0);
                             setSearchTerm(newSearchTerm);
                         }}
                         selected={selected}
