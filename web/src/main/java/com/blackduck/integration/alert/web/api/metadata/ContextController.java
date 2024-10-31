@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.blackduck.integration.alert.common.rest.ResponseFactory;
 import com.blackduck.integration.alert.web.api.metadata.model.ConfigContextsResponseModel;
 
+/**
+ * @deprecated Deprecated in 8.x, planned for removed in 9.0.0.
+ */
+@Deprecated(forRemoval = true)
 @RestController
 @RequestMapping(ContextController.CONTEXTS_PATH)
 public class ContextController {

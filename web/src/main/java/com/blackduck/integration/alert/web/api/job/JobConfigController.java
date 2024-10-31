@@ -28,6 +28,10 @@ import com.blackduck.integration.alert.common.rest.model.JobFieldStatuses;
 import com.blackduck.integration.alert.common.rest.model.JobIdsRequestModel;
 import com.blackduck.integration.alert.common.rest.model.JobPagedModel;
 
+/**
+ * @deprecated Deprecated in 8.x, planned for removed in 10.0.0.
+ */
+@Deprecated(forRemoval = true)
 @RestController
 @RequestMapping(JobConfigController.JOB_CONFIGURATION_PATH)
 public class JobConfigController implements BaseJobResourceController, ReadPageController<JobPagedModel>, TestController<JobFieldModel>, ValidateController<JobFieldModel> {

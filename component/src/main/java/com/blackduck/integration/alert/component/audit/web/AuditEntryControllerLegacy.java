@@ -30,7 +30,8 @@ import com.blackduck.integration.alert.common.rest.model.AuditJobStatusesModel;
 import com.blackduck.integration.alert.common.rest.model.JobIdsRequestModel;
 
 /**
- * @deprecated Replaced by AuditEntryController. To be removed in 8.0.0.
+ * @deprecated Replaced by AuditEntryController.
+ * Deprecated in 7.x, To be removed in 9.0.0.
  */
 @Deprecated(forRemoval = true)
 @RestController

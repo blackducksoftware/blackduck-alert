@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.blackduck.integration.alert.common.rest.ResponseFactory;
 import com.blackduck.integration.alert.web.api.metadata.model.DescriptorTypesResponseModel;
 
+/**
+ * @deprecated Deprecated in 8.x, planned for removed in 10.0.0.
+ */
+@Deprecated(forRemoval = true)
 @RestController
 @RequestMapping(DescriptorTypeController.TYPES_PATH)
 public class DescriptorTypeController {

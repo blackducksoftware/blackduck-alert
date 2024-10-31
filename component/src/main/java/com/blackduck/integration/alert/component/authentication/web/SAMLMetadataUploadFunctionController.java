@@ -15,6 +15,10 @@ import com.blackduck.integration.alert.api.authentication.descriptor.Authenticat
 import com.blackduck.integration.alert.common.action.upload.AbstractUploadAction;
 import com.blackduck.integration.alert.common.rest.api.AbstractUploadFunctionController;
 
+/**
+ * @deprecated Deprecated in 8.x, planned for removed in 9.0.0.
+ */
+@Deprecated(forRemoval = true)
 @Controller
 @RequestMapping(SAMLMetadataUploadFunctionController.SAML_UPLOAD_URL)
 public class SAMLMetadataUploadFunctionController extends AbstractUploadFunctionController {
