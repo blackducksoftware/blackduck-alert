@@ -17,7 +17,7 @@ import com.blackduck.integration.alert.common.rest.api.AbstractFunctionControlle
 
 /**
  * @deprecated This controller is replaced by the oAuthAuthenticate endpoint of AzureBoardsGlobalConfigController.
- * This class should be removed in 8.0.0.
+ * Deprecated in 7.x, To be removed in 9.0.0.
  */
 @Deprecated(forRemoval = true)
 @RestController

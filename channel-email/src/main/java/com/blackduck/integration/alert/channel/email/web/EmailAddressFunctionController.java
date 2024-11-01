@@ -15,8 +15,9 @@ import com.blackduck.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.blackduck.integration.alert.common.rest.api.AbstractFunctionController;
 
 /**
- * TODO: This class needs to be updated to follow the new model/request paradigm for retrieving additional email addresses
+ * @deprecated Deprecated in 8.x, planned for removed in 10.0.0.
  */
+@Deprecated(forRemoval = true)
 @RestController
 @RequestMapping(EmailAddressFunctionController.EMAIL_ADDRESS_FUNCTION_URL)
 public class EmailAddressFunctionController extends AbstractFunctionController<EmailAddressOptions> {
