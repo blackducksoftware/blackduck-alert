@@ -66,7 +66,7 @@ public class MockAlertProperties extends AlertProperties {
     public String createBlackDuckLogoPath() throws AlertException {
         String imagesDirectory = getAlertImagesDir();
         if (StringUtils.isNotBlank(imagesDirectory)) {
-            return Path.of(imagesDirectory, "test_logo.png").toString();
+            return Path.of(imagesDirectory, "BlackDuck_test_logo.png").toString();
         }
         throw new AlertException(String.format("Could not find the Alert logo in the images directory '%s'", imagesDirectory));
     }
