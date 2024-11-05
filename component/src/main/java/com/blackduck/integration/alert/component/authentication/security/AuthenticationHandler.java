@@ -96,7 +96,7 @@ public class AuthenticationHandler {
             .headers(customizer -> {
                 customizer.contentSecurityPolicy(cspCustomizer -> {
                     cspCustomizer.policyDirectives(
-                        "form-action 'self'; default-src 'none'; connect-src 'self'; object-src 'self'; script-src 'self' 'unsafe-eval'; img-src 'self' data: https://www.synopsys.com/ https://images.synopsys.com/ https://www.blackduck.com/; style-src 'self' 'unsafe-inline'; font-src 'self';"
+                        "form-action 'self'; default-src 'none'; connect-src 'self'; object-src 'self'; script-src 'self' 'unsafe-eval'; img-src 'self' data: https://www.blackduck.com/; style-src 'self' 'unsafe-inline'; font-src 'self';"
                     );
                 });
             })
