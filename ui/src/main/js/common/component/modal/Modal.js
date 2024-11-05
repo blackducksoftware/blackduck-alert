@@ -13,7 +13,7 @@ const useStyles = createUseStyles((theme) => ({
     modal: {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         display: 'block',
-        inset: '50px 0 36px 80px',
+        inset: '0 0 36px 80px',
         position: 'fixed',
         zIndex: '10000',
         outline: 0,
