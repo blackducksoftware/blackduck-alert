@@ -8,8 +8,8 @@
 package com.blackduck.integration.alert.component.authentication.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
 import com.blackduck.integration.alert.common.action.upload.AbstractUploadAction;
@@ -19,7 +19,7 @@ import com.blackduck.integration.alert.common.rest.api.AbstractUploadFunctionCon
  * @deprecated Deprecated in 8.x, planned for removed in 9.0.0.
  */
 @Deprecated(forRemoval = true)
-@Controller
+@RestController
 @RequestMapping(SAMLMetadataUploadFunctionController.SAML_UPLOAD_URL)
 public class SAMLMetadataUploadFunctionController extends AbstractUploadFunctionController {
     public static final String SAML_UPLOAD_URL = AbstractUploadAction.API_FUNCTION_UPLOAD_URL + "/" + AuthenticationDescriptor.KEY_SAML_METADATA_FILE;
