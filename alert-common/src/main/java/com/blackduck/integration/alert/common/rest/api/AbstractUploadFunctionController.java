@@ -21,6 +21,10 @@ import com.blackduck.integration.alert.common.action.upload.AbstractUploadAction
 import com.blackduck.integration.alert.common.rest.ResponseFactory;
 import com.blackduck.integration.alert.common.rest.model.ExistenceModel;
 
+/**
+ * @deprecated Deprecated in 8.x as a result of deprecation of SAMLMetadataUploadFunctionController, planned for removed in 9.0.0.
+ */
+@Deprecated(forRemoval = true)
 @RestController
 @RequestMapping(AbstractUploadAction.API_FUNCTION_UPLOAD_URL)
 public abstract class AbstractUploadFunctionController {
