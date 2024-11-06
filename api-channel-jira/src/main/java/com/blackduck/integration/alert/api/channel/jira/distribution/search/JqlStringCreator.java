@@ -140,9 +140,9 @@ public final class JqlStringCreator {
     }
 
     private static String createPropertySearchString(String key, String value) {
-        String propertySearchFormat = "issue.property[%s].%s = '%s'";
+        String propertySearchFormat = "(issue.property[%s].%s = '%s' OR issue.property[%s].%s = '%s')";
         String escapedValue = escapeSearchString(value);
-        return String.format(propertySearchFormat, JiraConstants.JIRA_ISSUE_PROPERTY_KEY, key, escapedValue);
+        return String.format(propertySearchFormat, JiraConstants.JIRA_ISSUE_PROPERTY_KEY, key, escapedValue, JiraConstants.JIRA_ISSUE_PROPERTY_OLD_KEY, key, escapedValue);
     }
 
     private static String escapeSearchString(String originalString) {
