@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import Modal from 'common/component/modal/Modal';
 import Table from 'common/component/table/Table';
 import { createNewConfigurationRequest } from 'common/util/configurationRequestBuilder';
+import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
 import { DISTRIBUTION_COMMON_FIELD_KEYS, DISTRIBUTION_URLS } from './DistributionModel';
 
 const KEY_CELL = "name"
@@ -57,7 +57,7 @@ export default function ProjectSelectModal({ isOpen, handleClose, csrfToken, pro
 
         fetchProjectList();
     }, [pageNumber, pageSize, searchTerm, csrfToken, projectRequestBody]);
-    console.log(formData);
+
     return (
         <>
             <Modal
