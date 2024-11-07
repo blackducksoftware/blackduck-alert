@@ -49,6 +49,8 @@ const EmailDistributionConfiguration = ({
                 )}
                 onChange={() => {
                 }}
+                errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses)}
+                errorValue={errors.fieldErrors[EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses]}
             />
             {showAdditionalEmailAddressesModal && (
                 <AdditionalEmailAddressesModal
