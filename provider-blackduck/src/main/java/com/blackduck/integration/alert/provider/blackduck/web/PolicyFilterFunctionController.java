@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.blackduck.integration.alert.common.rest.api.AbstractFunctionController;
 import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 
+/**
+ * @deprecated Deprecated in 8.x, planned for removed in 10.0.0.
+ */
+@Deprecated(forRemoval = true)
 @RestController
 @RequestMapping(PolicyFilterFunctionController.POLICY_FILTER_FUNCTION_URL)
 public class PolicyFilterFunctionController extends AbstractFunctionController<NotificationFilterModelOptions> {

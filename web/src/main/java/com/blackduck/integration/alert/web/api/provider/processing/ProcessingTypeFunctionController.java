@@ -14,6 +14,10 @@ import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
 import com.blackduck.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
 import com.blackduck.integration.alert.common.rest.api.AbstractFunctionController;
 
+/**
+ * @deprecated Deprecated in 8.x, planned for removed in 10.0.0.
+ */
+@Deprecated(forRemoval = true)
 @RestController
 @RequestMapping(ProcessingTypeFunctionController.PROCESSING_TYPE_FUNCTION_URL)
 public class ProcessingTypeFunctionController extends AbstractFunctionController<LabelValueSelectOptions> {

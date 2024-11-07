@@ -45,7 +45,7 @@
     <br />
 </#if>
 <div style="display:inline-block;width:100%;">
-    <img src="cid:${logo_image}" height="33" width="150" />
+    <img src="cid:${logo_image}" height="33" width="211" />
 </div>
 <br />
 </body>

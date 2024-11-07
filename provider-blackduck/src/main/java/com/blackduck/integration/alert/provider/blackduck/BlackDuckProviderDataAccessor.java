@@ -277,12 +277,21 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
         BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(blackDuckConfigurationModel);
 
         Predicate<UserView> searchFilter = userView -> StringUtils.isNotBlank(userView.getEmail());
+        Optional<BlackDuckQuery> emailAddressQuery = Optional.empty();
         if (StringUtils.isNotBlank(searchTerm)) {
             searchFilter = searchFilter.and(userView -> StringUtils.containsIgnoreCase(userView.getEmail(), searchTerm));
+            emailAddressQuery = Optional.of(new BlackDuckQuery("email", searchTerm));
         }
 
         ApiDiscovery apiDiscovery = blackDuckServicesFactory.getApiDiscovery();
-        BlackDuckPageResponse<UserView> pageOfUsers = retrieveBlackDuckPageResponse(blackDuckServicesFactory, apiDiscovery.metaUsersLink(), pageNumber, pageSize, searchFilter);
+        BlackDuckPageResponse<UserView> pageOfUsers = retrieveBlackDuckPageResponse(
+            blackDuckServicesFactory,
+            apiDiscovery.metaUsersLink(),
+            pageNumber,
+            pageSize,
+            searchFilter,
+            emailAddressQuery
+        );
 
         List<ProviderUserModel> foundUsers = pageOfUsers.getItems()
             .stream()
@@ -363,15 +372,18 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
         UrlMultipleResponses<T> urlMultipleResponses,
         int pageNumber,
         int pageSize,
-        Predicate<T> searchFilter
+        Predicate<T> searchFilter,
+        Optional<BlackDuckQuery> emailAddressQuery
     ) throws IntegrationException {
         BlackDuckResponsesTransformer blackDuckResponsesTransformer = blackDuckServicesFactory.getBlackDuckResponsesTransformer();
 
         int offset = pageNumber * pageSize;
-        BlackDuckMultipleRequest<T> spec = new BlackDuckRequestBuilder()
+        BlackDuckRequestBuilder builder = new BlackDuckRequestBuilder()
             .commonGet()
-            .setLimitAndOffset(pageSize, offset)
-            .buildBlackDuckRequest(urlMultipleResponses);
+            .setLimitAndOffset(pageSize, offset);
+        emailAddressQuery.ifPresent(builder::addBlackDuckQuery);
+        BlackDuckMultipleRequest<T> spec = builder.buildBlackDuckRequest(urlMultipleResponses);
+
         return blackDuckResponsesTransformer.getSomeMatchingResponses(spec, searchFilter, pageSize);
     }
 

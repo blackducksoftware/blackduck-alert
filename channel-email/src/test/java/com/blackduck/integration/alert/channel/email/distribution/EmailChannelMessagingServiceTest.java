@@ -24,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.blackduck.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
 import com.blackduck.integration.alert.channel.email.attachment.EmailAttachmentFormat;
@@ -124,7 +125,7 @@ class EmailChannelMessagingServiceTest {
     }
 
     @Test
-    void createTargetReturnsExpectedTest() {
+    void createTargetReturnsExpectedTest() throws AlertException {
         EmailChannelMessageModel emailChannelMessageModel = EmailChannelMessageModel.simple(EXPECTED_SUBJECT_LINE, EXPECTED_CONTENT, EXPECTED_PROVIDER_NAME, EXPECTED_PROVIDER_URL);
         EmailTarget target = assertDoesNotThrow(() -> emailChannelMessagingService.createTarget(emailChannelMessageModel, EXPECTED_EMAIL_ADDRESS_A, EXPECTED_EMAIL_ADDRESS_B));
 
@@ -140,7 +141,7 @@ class EmailChannelMessagingServiceTest {
         assertTrue(target.getModel().containsKey(EmailPropertyKeys.TEMPLATE_KEY_START_DATE.getPropertyKey()));
         assertTrue(target.getModel().containsKey(EmailPropertyKeys.TEMPLATE_KEY_END_DATE.getPropertyKey()));
         assertTrue(target.getModel().containsKey(FreemarkerTemplatingService.KEY_ALERT_SERVER_URL));
-
+        assertTrue(target.getContentIdsToFilePaths().containsValue(alertProperties.createBlackDuckLogoPath()), "Could not find the content ID for the logo.");
     }
 
 }

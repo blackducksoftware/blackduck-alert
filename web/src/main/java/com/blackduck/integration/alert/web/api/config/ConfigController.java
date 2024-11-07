@@ -23,6 +23,12 @@ import com.blackduck.integration.alert.common.rest.api.ValidateController;
 import com.blackduck.integration.alert.common.rest.model.FieldModel;
 import com.blackduck.integration.alert.common.rest.model.MultiFieldModel;
 
+/**
+ * @deprecated Further development on endpoints should be done with explicit implementations. This controller is planned for removal
+ * once all Alert functions are migrated to their own endpoints.
+ * Deprecated in 8.x, planned for removed in 10.0.0.
+ */
+@Deprecated(forRemoval = true)
 @RestController
 @RequestMapping(AlertRestConstants.CONFIGURATION_PATH)
 public class ConfigController implements ConfigResourceController, TestController<FieldModel>, ValidateController<FieldModel> {

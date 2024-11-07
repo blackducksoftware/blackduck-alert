@@ -15,7 +15,8 @@ import com.blackduck.integration.alert.channel.jira.server.descriptor.JiraServer
 import com.blackduck.integration.alert.common.rest.api.AbstractFunctionController;
 
 /**
- * @deprecated This class is unused and part of the old Jira Server REST API. It is set for removal in 8.0.0.
+ * @deprecated This class is unused and part of the old Jira Server REST API.
+ * Deprecated in 7.x, To be removed in 9.0.0.
  */
 @RestController
 @RequestMapping(JiraServerFunctionController.JIRA_SERVER_FUNCTION_URL)
