@@ -14,6 +14,8 @@ public final class JiraConstants {
     public static final String JIRA_ALERT_APP_NAME = "Alert Issue Property Indexer";
     // This String must always match the String found in the atlassian-connect.json file under modules.jiraEntityProperties.key.
     public static final String JIRA_ISSUE_PROPERTY_KEY = "com-blackduck-integration-alert";
+    // This String is used to support backwards compatability prior to rebranding in 8.0.0.
+    public static final String JIRA_ISSUE_PROPERTY_OLD_KEY = "com-synopsys-integration-alert";
 
     public static final String JIRA_SEARCH_KEY_JIRA_PROJECT = "project";
 

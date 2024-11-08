@@ -140,9 +140,12 @@ public final class JqlStringCreator {
     }
 
     private static String createPropertySearchString(String key, String value) {
-        String propertySearchFormat = "issue.property[%s].%s = '%s'";
+        // To support backwards compatability of Jira tickets prior to Alert 8.0.0 we check if properties contain either the new blackduck (post 8.0.0)
+        //  OR the old synopsys (pre 8.0.0) property index.
+        //  Ex. "(issue.property[com-blackduck-integration-alert].provider = 'Black Duck' OR issue.property[com-synopsys-integration-alert].provider = 'Black Duck')"
+        String propertySearchFormat = "(issue.property[%s].%s = '%s' OR issue.property[%s].%s = '%s')";
         String escapedValue = escapeSearchString(value);
-        return String.format(propertySearchFormat, JiraConstants.JIRA_ISSUE_PROPERTY_KEY, key, escapedValue);
+        return String.format(propertySearchFormat, JiraConstants.JIRA_ISSUE_PROPERTY_KEY, key, escapedValue, JiraConstants.JIRA_ISSUE_PROPERTY_OLD_KEY, key, escapedValue);
     }
 
     private static String escapeSearchString(String originalString) {
