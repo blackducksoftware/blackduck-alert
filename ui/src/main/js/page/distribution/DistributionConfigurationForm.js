@@ -66,6 +66,7 @@ const DistributionConfigurationForm = ({
         const providerConfig = JSON.parse(JSON.stringify(providerModelData));
         let configuredProviderProjects = [];
 
+        const fieldConfiguredProjects = FieldModelUtilities.getFieldModelValues(providerConfig, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects);
         
         // Determine if fieldConfiguredProjects has shape { label: projectName, href: projectHREF }
         //      If true change shape to { name: projectName, href: projectHREF, missing: false }
