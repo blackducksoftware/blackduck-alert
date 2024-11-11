@@ -474,6 +474,22 @@ class JobConfigActionsTest {
     }
 
     @Test
+    void validateConfiguredProviderProjectsBlankTest() {
+        Descriptor descriptorWithValidator = createDescriptor(Optional::empty, () -> Optional.of(jobFieldModel -> Set.of()));
+        JobConfigActions jobConfigActionsForTest = createJobConfigActions(new DescriptorMap(List.of(descriptorKey), List.of(descriptorWithValidator)), List.of());
+
+        JobProviderProjectFieldModel jobProviderProjectFieldModel = new JobProviderProjectFieldModel("", "", false);
+        JobFieldModel jobWithConfiguredProviderProjects = new JobFieldModel(UUID.randomUUID().toString(), Set.of(fieldModel), List.of(jobProviderProjectFieldModel));
+        ValidationActionResponse validationActionResponse = jobConfigActionsForTest.validate(jobWithConfiguredProviderProjects);
+
+        assertTrue(validationActionResponse.isSuccessful());
+        assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
+        assertTrue(validationActionResponse.hasContent());
+        ValidationResponseModel validationResponseModel = validationActionResponse.getContent().get();
+        assertTrue(validationResponseModel.hasErrors());
+    }
+
+    @Test
     void validateConfiguredProviderProjectsEmptyTest() {
         Descriptor descriptorWithValidator = createDescriptor(Optional::empty, () -> Optional.of(jobFieldModel -> Set.of()));
         JobConfigActions jobConfigActionsForTest = createJobConfigActions(new DescriptorMap(List.of(descriptorKey), List.of(descriptorWithValidator)), List.of());

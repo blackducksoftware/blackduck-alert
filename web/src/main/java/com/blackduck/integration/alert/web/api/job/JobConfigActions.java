@@ -364,7 +364,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
     private Optional<AlertFieldStatus> validateConfiguredProviderProjects(JobFieldModel jobFieldModel) {
         return jobFieldModel.getConfiguredProviderProjects()
             .stream()
-            .filter(model -> model.getName() == null || model.getHref() == null)
+            .filter(model -> StringUtils.isBlank(model.getName())  || StringUtils.isBlank(model.getHref()))
             .findAny()
             .map(ignored -> AlertFieldStatus.error(ProviderDescriptor.KEY_CONFIGURED_PROJECT, "A Project name or link is invalid"));
     }
