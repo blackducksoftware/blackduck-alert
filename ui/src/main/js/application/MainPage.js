@@ -61,16 +61,17 @@ const useStyles = createUseStyles({
     },
     topnav: {
         gridArea: 'topnav',
-        height: '50px'
+        height: '50px',
+        zIndex: 10001 // above modal gray background
     },
     appSidenav: {
         gridArea: 'sidenav',
         width: '80px'
     },
     main: {
-        gridArea: 'main',
+        gridArea: 'main'
     }
-})
+});
 
 const MainPage = ({
     descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh, unauthorizedFunction
