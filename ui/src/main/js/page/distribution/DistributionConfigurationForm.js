@@ -327,6 +327,16 @@ const DistributionConfigurationForm = ({
         );
     };
 
+    function getProjectValues(data) {
+        if (data.some(project => project.hasOwnProperty('label'))) {
+            return data;
+        }
+
+        return data.map((project) => (
+            {label: project.name, value: project.href}
+        ))
+    }
+
     // TODO need to provide finer grain control with permissions.
     return (
         <>
@@ -507,7 +517,7 @@ const DistributionConfigurationForm = ({
                                             openMenuOnClick={false}
                                             isSearchable={false}
                                             placeholder="Select Projects..."
-                                            value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects)}
+                                            value={getProjectValues(FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects))}
                                             isMulti
                                             isClearable
                                             styles={{
@@ -553,7 +563,7 @@ const DistributionConfigurationForm = ({
                                 csrfToken={csrfToken}
                                 projectRequestBody={createCommonRequestBody}
                                 handleSubmit={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
-                                formData={providerModel}
+                                formData={getProjectValues(FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects))}
                             />
                         )}
                     </div>
