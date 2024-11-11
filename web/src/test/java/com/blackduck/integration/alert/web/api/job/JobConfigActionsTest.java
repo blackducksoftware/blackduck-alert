@@ -67,6 +67,7 @@ import com.blackduck.integration.alert.common.rest.model.JobFieldModel;
 import com.blackduck.integration.alert.common.rest.model.JobFieldStatuses;
 import com.blackduck.integration.alert.common.rest.model.JobIdsRequestModel;
 import com.blackduck.integration.alert.common.rest.model.JobPagedModel;
+import com.blackduck.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 import com.blackduck.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
 import com.blackduck.integration.exception.IntegrationException;
@@ -416,6 +417,85 @@ class JobConfigActionsTest {
         JobConfigActions jobConfigActionsForTest = createJobConfigActions(new DescriptorMap(List.of(descriptorKey), List.of(descriptorWithValidator)), List.of());
 
         ValidationActionResponse validationActionResponse = jobConfigActionsForTest.validate(jobFieldModel);
+
+        assertTrue(validationActionResponse.isSuccessful());
+        assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
+        assertTrue(validationActionResponse.hasContent());
+        ValidationResponseModel validationResponseModel = validationActionResponse.getContent().get();
+        assertFalse(validationResponseModel.hasErrors());
+    }
+
+    @Test
+    void validateConfiguredProviderProjects() {
+        Descriptor descriptorWithValidator = createDescriptor(Optional::empty, () -> Optional.of(jobFieldModel -> Set.of()));
+        JobConfigActions jobConfigActionsForTest = createJobConfigActions(new DescriptorMap(List.of(descriptorKey), List.of(descriptorWithValidator)), List.of());
+
+        JobProviderProjectFieldModel jobProviderProjectFieldModel = new JobProviderProjectFieldModel("projectName", "https://href", false);
+        JobFieldModel jobWithConfiguredProviderProjects = new JobFieldModel(UUID.randomUUID().toString(), Set.of(fieldModel), List.of(jobProviderProjectFieldModel));
+        ValidationActionResponse validationActionResponse = jobConfigActionsForTest.validate(jobWithConfiguredProviderProjects);
+
+        assertTrue(validationActionResponse.isSuccessful());
+        assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
+        assertTrue(validationActionResponse.hasContent());
+        ValidationResponseModel validationResponseModel = validationActionResponse.getContent().get();
+        assertFalse(validationResponseModel.hasErrors());
+    }
+
+    @Test
+    void validateConfiguredProviderProjectsNullTest() {
+        Descriptor descriptorWithValidator = createDescriptor(Optional::empty, () -> Optional.of(jobFieldModel -> Set.of()));
+        JobConfigActions jobConfigActionsForTest = createJobConfigActions(new DescriptorMap(List.of(descriptorKey), List.of(descriptorWithValidator)), List.of());
+
+        JobProviderProjectFieldModel jobProviderProjectFieldModel = new JobProviderProjectFieldModel(null, null, false);
+        JobFieldModel jobWithConfiguredProviderProjects = new JobFieldModel(UUID.randomUUID().toString(), Set.of(fieldModel), List.of(jobProviderProjectFieldModel));
+        ValidationActionResponse validationActionResponse = jobConfigActionsForTest.validate(jobWithConfiguredProviderProjects);
+
+        assertTrue(validationActionResponse.isSuccessful());
+        assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
+        assertTrue(validationActionResponse.hasContent());
+        ValidationResponseModel validationResponseModel = validationActionResponse.getContent().get();
+        assertTrue(validationResponseModel.hasErrors());
+    }
+
+    @Test
+    void validateConfiguredProviderProjectsOnlyHrefNullTest() {
+        Descriptor descriptorWithValidator = createDescriptor(Optional::empty, () -> Optional.of(jobFieldModel -> Set.of()));
+        JobConfigActions jobConfigActionsForTest = createJobConfigActions(new DescriptorMap(List.of(descriptorKey), List.of(descriptorWithValidator)), List.of());
+
+        JobProviderProjectFieldModel jobProviderProjectFieldModel = new JobProviderProjectFieldModel("projectName", null, false);
+        JobFieldModel jobWithConfiguredProviderProjects = new JobFieldModel(UUID.randomUUID().toString(), Set.of(fieldModel), List.of(jobProviderProjectFieldModel));
+        ValidationActionResponse validationActionResponse = jobConfigActionsForTest.validate(jobWithConfiguredProviderProjects);
+
+        assertTrue(validationActionResponse.isSuccessful());
+        assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
+        assertTrue(validationActionResponse.hasContent());
+        ValidationResponseModel validationResponseModel = validationActionResponse.getContent().get();
+        assertTrue(validationResponseModel.hasErrors());
+    }
+
+    @Test
+    void validateConfiguredProviderProjectsBlankTest() {
+        Descriptor descriptorWithValidator = createDescriptor(Optional::empty, () -> Optional.of(jobFieldModel -> Set.of()));
+        JobConfigActions jobConfigActionsForTest = createJobConfigActions(new DescriptorMap(List.of(descriptorKey), List.of(descriptorWithValidator)), List.of());
+
+        JobProviderProjectFieldModel jobProviderProjectFieldModel = new JobProviderProjectFieldModel("", "", false);
+        JobFieldModel jobWithConfiguredProviderProjects = new JobFieldModel(UUID.randomUUID().toString(), Set.of(fieldModel), List.of(jobProviderProjectFieldModel));
+        ValidationActionResponse validationActionResponse = jobConfigActionsForTest.validate(jobWithConfiguredProviderProjects);
+
+        assertTrue(validationActionResponse.isSuccessful());
+        assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
+        assertTrue(validationActionResponse.hasContent());
+        ValidationResponseModel validationResponseModel = validationActionResponse.getContent().get();
+        assertTrue(validationResponseModel.hasErrors());
+    }
+
+    @Test
+    void validateConfiguredProviderProjectsEmptyTest() {
+        Descriptor descriptorWithValidator = createDescriptor(Optional::empty, () -> Optional.of(jobFieldModel -> Set.of()));
+        JobConfigActions jobConfigActionsForTest = createJobConfigActions(new DescriptorMap(List.of(descriptorKey), List.of(descriptorWithValidator)), List.of());
+
+        JobFieldModel jobWithConfiguredProviderProjects = new JobFieldModel(UUID.randomUUID().toString(), Set.of(fieldModel), List.of());
+        ValidationActionResponse validationActionResponse = jobConfigActionsForTest.validate(jobWithConfiguredProviderProjects);
 
         assertTrue(validationActionResponse.isSuccessful());
         assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());

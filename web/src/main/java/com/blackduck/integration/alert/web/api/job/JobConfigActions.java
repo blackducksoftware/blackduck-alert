@@ -34,6 +34,7 @@ import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
 import com.blackduck.integration.alert.api.common.model.errors.AlertFieldStatus;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.descriptor.model.DescriptorKey;
+import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
 import com.blackduck.integration.alert.api.provider.ProviderProjectExistencePopulator;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.action.FieldModelTestAction;
@@ -288,6 +289,8 @@ public class JobConfigActions extends AbstractJobResourceActions {
         List<AlertFieldStatus> descriptorValidationResults = validateDescriptorFields(resource);
         fieldStatuses.addAll(descriptorValidationResults);
 
+        validateConfiguredProviderProjects(resource).ifPresent(fieldStatuses::add);
+
         if (!fieldStatuses.isEmpty()) {
             ValidationResponseModel responseModel = ValidationResponseModel.fromStatusCollection("Invalid Configuration", fieldStatuses);
             return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
@@ -356,6 +359,14 @@ public class JobConfigActions extends AbstractJobResourceActions {
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
         return fieldErrors;
+    }
+
+    private Optional<AlertFieldStatus> validateConfiguredProviderProjects(JobFieldModel jobFieldModel) {
+        return jobFieldModel.getConfiguredProviderProjects()
+            .stream()
+            .filter(model -> StringUtils.isBlank(model.getName())  || StringUtils.isBlank(model.getHref()))
+            .findAny()
+            .map(ignored -> AlertFieldStatus.error(ProviderDescriptor.KEY_CONFIGURED_PROJECT, "A Project name or link is invalid"));
     }
 
     @Override
