@@ -66,13 +66,18 @@ const DistributionConfigurationForm = ({
         const providerConfig = JSON.parse(JSON.stringify(providerModelData));
         let configuredProviderProjects = [];
 
-        const fieldConfiguredProjects = FieldModelUtilities.getFieldModelValues(providerConfig, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects);
-        if (fieldConfiguredProjects && fieldConfiguredProjects.length > 0) {
+        
+        // Determine if fieldConfiguredProjects has shape { label: projectName, href: projectHREF }
+        //      If true change shape to { name: projectName, href: projectHREF, missing: false }
+        //      If false, data shape is OK
+        if (fieldConfiguredProjects.some(project => project.hasOwnProperty('label'))) {
             configuredProviderProjects = fieldConfiguredProjects.map((selectedValue) => ({
                 name: selectedValue.label,
                 href: selectedValue.value,
                 missing: false
             }));
+        } else {
+            configuredProviderProjects = fieldConfiguredProjects;
         }
 
         const providerConfigToSave = FieldModelUtilities.updateFieldModelValues(providerConfig, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects, []);
