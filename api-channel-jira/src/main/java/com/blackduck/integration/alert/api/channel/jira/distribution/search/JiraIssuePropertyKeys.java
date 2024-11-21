@@ -9,7 +9,7 @@ package com.blackduck.integration.alert.api.channel.jira.distribution.search;
 
 public final class JiraIssuePropertyKeys {
     // This String must always match the String found in the atlassian-connect.json file under modules.jiraEntityProperties.key.
-    public static final String JIRA_ISSUE_PROPERTY_KEY = "com-blackduck-integration-alert";
+    public static final String JIRA_ISSUE_PROPERTY_KEY = "com-synopsys-integration-alert";
     // These Strings must always match the Strings found in the atlassian-connect.json file under modules.jiraEntityProperties.keyConfigurations.propertyKey["com-blackduck-integration-alert"].extractions.objectName.
     public static final String JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER = "provider";
     public static final String JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER_URL = "providerUrl";

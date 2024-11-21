@@ -14,14 +14,14 @@
   "modules": {
     "jiraEntityProperties": [
       {
-        "key": "com-blackduck-integration-alert",
+        "key": "com-synopsys-integration-alert",
         "name": {
           "value": "Alert Issue Property"
         },
         "entityType": "issue",
         "keyConfigurations": [
           {
-            "propertyKey": "com-blackduck-integration-alert",
+            "propertyKey": "com-synopsys-integration-alert",
             "extractions": [
               {
                 "objectName": "provider",
