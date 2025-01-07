@@ -40,7 +40,7 @@ public class BlackDuckProjectVersionComponentVulnerabilitiesView extends BlackDu
     private String title;
     private java.util.Date updatedAt;
     private JsonElement updatedBy;
-    private Boolean useCvss3;
+    private String cvssVersion;
     private Boolean workaroundAvailable;
 
     public String getComment() {
@@ -219,12 +219,12 @@ public class BlackDuckProjectVersionComponentVulnerabilitiesView extends BlackDu
         this.updatedBy = updatedBy;
     }
 
-    public Boolean getUseCvss3() {
-        return useCvss3;
+    public String getCvssVersion() {
+        return cvssVersion;
     }
 
-    public void setUseCvss3(Boolean useCvss3) {
-        this.useCvss3 = useCvss3;
+    public void setCvssVersion(String cvssVersion) {
+        this.cvssVersion = cvssVersion;
     }
 
     public Boolean getWorkaroundAvailable() {
