@@ -10,8 +10,6 @@ package com.blackduck.integration.alert.provider.blackduck.processor.message.ser
 import java.math.BigDecimal;
 
 import com.blackduck.integration.blackduck.api.core.BlackDuckView;
-import com.blackduck.integration.blackduck.api.generated.component.ProjectVersionComponentVersionVulnerabilityRemediationCvss2View;
-import com.blackduck.integration.blackduck.api.generated.component.ProjectVersionComponentVersionVulnerabilityRemediationCvss3View;
 import com.blackduck.integration.blackduck.api.generated.enumeration.VulnerabilityRemediationStatusType;
 import com.google.gson.JsonElement;
 
@@ -21,8 +19,9 @@ public class BlackDuckProjectVersionComponentVulnerabilitiesView extends BlackDu
     private String comment;
     private java.util.Date createdAt;
     private JsonElement createdBy;
-    private ProjectVersionComponentVersionVulnerabilityRemediationCvss2View cvss2;
-    private ProjectVersionComponentVersionVulnerabilityRemediationCvss3View cvss3;
+    private ProjectVersionComponentVersionVulnerabilityRemediationCvssView cvss2;
+    private ProjectVersionComponentVersionVulnerabilityRemediationCvssView cvss3;
+    private ProjectVersionComponentVersionVulnerabilityRemediationCvssView cvss4;
     private java.util.Date disclosureDate;
     private Boolean exploitAvailable;
     private java.util.Date exploitPublishDate;
@@ -40,6 +39,7 @@ public class BlackDuckProjectVersionComponentVulnerabilitiesView extends BlackDu
     private String title;
     private java.util.Date updatedAt;
     private JsonElement updatedBy;
+    private Boolean useCvss3;   // TODO: For backwards compatability with hub 2024.10.0, remove when version is not supported
     private String cvssVersion;
     private Boolean workaroundAvailable;
 
@@ -67,20 +67,28 @@ public class BlackDuckProjectVersionComponentVulnerabilitiesView extends BlackDu
         this.createdBy = createdBy;
     }
 
-    public ProjectVersionComponentVersionVulnerabilityRemediationCvss2View getCvss2() {
+    public ProjectVersionComponentVersionVulnerabilityRemediationCvssView getCvss2() {
         return cvss2;
     }
 
-    public void setCvss2(ProjectVersionComponentVersionVulnerabilityRemediationCvss2View cvss2) {
+    public void setCvss2(ProjectVersionComponentVersionVulnerabilityRemediationCvssView cvss2) {
         this.cvss2 = cvss2;
     }
 
-    public ProjectVersionComponentVersionVulnerabilityRemediationCvss3View getCvss3() {
+    public ProjectVersionComponentVersionVulnerabilityRemediationCvssView getCvss3() {
         return cvss3;
     }
 
-    public void setCvss3(ProjectVersionComponentVersionVulnerabilityRemediationCvss3View cvss3) {
+    public void setCvss3(ProjectVersionComponentVersionVulnerabilityRemediationCvssView cvss3) {
         this.cvss3 = cvss3;
+    }
+
+    public ProjectVersionComponentVersionVulnerabilityRemediationCvssView getCvss4() {
+        return cvss4;
+    }
+
+    public void setCvss4(ProjectVersionComponentVersionVulnerabilityRemediationCvssView cvss4) {
+        this.cvss4 = cvss4;
     }
 
     public java.util.Date getDisclosureDate() {
@@ -217,6 +225,14 @@ public class BlackDuckProjectVersionComponentVulnerabilitiesView extends BlackDu
 
     public void setUpdatedBy(JsonElement updatedBy) {
         this.updatedBy = updatedBy;
+    }
+
+    public Boolean getUseCvss3() {
+        return useCvss3;
+    }
+
+    public void setUseCvss3(Boolean useCvss3) {
+        this.useCvss3 = useCvss3;
     }
 
     public String getCvssVersion() {
