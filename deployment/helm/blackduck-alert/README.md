@@ -32,7 +32,7 @@ Helm Charts for Black Duck Alert
 ### Add the helm repository
 
 ```bash
- $ helm repo add blackduck https://repo.blackduck.com/sig-cloudnative
+ $ helm repo add blackduck https://repo.blackduck.com/cloudnative
 ```
 
 ### Create the Namespace
@@ -58,7 +58,7 @@ $ helm install blackduck/blackduck-alert --name <name> --namespace <namespace>
 ### Add the helm repository
 
 ```bash
- $ helm repo add blackduck https://repo.blackduck.com/sig-cloudnative
+ $ helm repo add blackduck https://repo.blackduck.com/cloudnative
 ```
 
 ### Create the Namespace and TLS Secrets
