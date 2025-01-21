@@ -198,6 +198,7 @@ class EmailGlobalTestActionTest {
         @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     })
     void testConfigITTest() {
+        // HERE
         AuthorizationManager authorizationManager = createAuthorizationManager(AuthenticationTestUtils.FULL_PERMISSIONS);
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         TestProperties testProperties = new TestProperties();
@@ -213,7 +214,9 @@ class EmailGlobalTestActionTest {
             configurationAccessor
         );
 
+        System.out.println("Before createValidEmailGlobalConfigModel");
         EmailGlobalConfigModel globalConfigModel = createValidEmailGlobalConfigModel(testProperties);
+        System.out.println("After createValidEmailGlobalConfigModel");
 
         ConfigurationTestResult testResult = emailGlobalTestAction.testConfigModelContent(emailAddress, globalConfigModel);
         assertTrue(testResult.isSuccess(), "Expected the message result to not have errors");
@@ -323,6 +326,7 @@ class EmailGlobalTestActionTest {
         @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     })
     void testPermissionConfigITTest() {
+        // HERE
         AuthorizationManager authorizationManager = createAuthorizationManager(AuthenticationTestUtils.FULL_PERMISSIONS);
         EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
         TestProperties testProperties = new TestProperties();
@@ -382,6 +386,12 @@ class EmailGlobalTestActionTest {
         testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_USER).ifPresent(emailGlobalConfigModel::setSmtpUsername);
         testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_PASSWORD).ifPresent(emailGlobalConfigModel::setSmtpPassword);
 
+        System.out.println(smtpFrom);
+        System.out.println(smtpHost);
+        System.out.println(emailGlobalConfigModel.getSmtpPort().toString());
+        System.out.println(emailGlobalConfigModel.getSmtpAuth().toString());
+        System.out.println(emailGlobalConfigModel.getSmtpUsername().toString());
+        System.out.println(emailGlobalConfigModel.getSmtpPassword().toString());
         Map<String, String> additionalPropertiesMap = new HashMap<>();
         testProperties.getOptionalProperty(TestPropertyKey.TEST_EMAIL_SMTP_EHLO)
             .ifPresent(prop -> additionalPropertiesMap.put(EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey(), prop));
