@@ -78,6 +78,9 @@ postgres:
   claimSize: "5Gi" # PVC claim size
   storageClass: "" # PVC storage class name
   volumeName: "" # existing persistent volume name backing the PVC
+  volumeMounts:
+    - mountPath: /var/lib/postgresql/data
+      name: alert-postgres-data-volume
   nodeSelector: {}
   tolerations: []
   affinity: {}
