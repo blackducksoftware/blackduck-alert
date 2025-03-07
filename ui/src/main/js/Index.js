@@ -9,6 +9,7 @@ import { ConnectedRouter, routerMiddleware } from 'connected-react-router';
 import rootReducer from 'store/reducers';
 import { ThemeProvider } from 'react-jss';
 import theme from '_theme';
+import { dom } from '@fortawesome/fontawesome-svg-core';
 
 const initialState = {};
 // Setup history
@@ -16,6 +17,10 @@ const history = createHistory();
 
 // Configure store with redux, thunk and history
 const store = createStore(rootReducer(history), initialState, applyMiddleware(thunk, routerMiddleware(history)));
+
+dom.watch({
+    autoReplaceSvgRoot: document
+});
 
 ReactDOM.render(
     <Provider store={store}>
