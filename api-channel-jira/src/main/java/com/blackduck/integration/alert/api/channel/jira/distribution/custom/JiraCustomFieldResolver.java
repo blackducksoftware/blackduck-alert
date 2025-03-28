@@ -94,9 +94,6 @@ public class JiraCustomFieldResolver {
                 return createJsonObject("value", innerFieldValue);
             case CUSTOM_FIELD_TYPE_PRIORITY_VALUE:
                 return createJsonObject("name", innerFieldValue);
-            case CUSTOM_FIELD_TYPE_OBJECT_VALUE:
-                // This is a Jira Cloud custom field type.  It is possible to create a JSON object
-                return createJsonObjectFromString(innerFieldValue, jiraCustomFieldConfig.getFieldName());
             case CUSTOM_FIELD_TYPE_USER_VALUE:
                 // "name" is used for Jira Server (ignored on Jira Cloud)
                 JsonObject createUserObject = createJsonObject("name", innerFieldValue);
@@ -104,6 +101,9 @@ public class JiraCustomFieldResolver {
                 createUserObject.addProperty("accountId", innerFieldValue);
                 // TODO consider separating this functionality depending on which Jira channel is being used
                 return createUserObject;
+            case CUSTOM_FIELD_TYPE_OBJECT_VALUE:
+                // This is a Jira Cloud custom field type.  It is possible to create a JSON object
+                return createJsonObjectFromString(innerFieldValue, jiraCustomFieldConfig.getFieldName());
             case CUSTOM_FIELD_TYPE_ANY_VALUE:
                 // Write the string value as is for any custom field of type any.
                 // custom fields are written to the Jira Server database as a string.
