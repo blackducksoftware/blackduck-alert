@@ -15,6 +15,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +37,8 @@ public class JiraCustomFieldResolver {
     private static final String CUSTOM_FIELD_TYPE_PRIORITY_VALUE = "priority";
     private static final String CUSTOM_FIELD_TYPE_USER_VALUE = "user";
     private static final String CUSTOM_FIELD_TYPE_COMPONENT_VALUE = "component";
+    private static final String CUSTOM_FIELD_TYPE_OBJECT_VALUE = "object";
+    private static final String CUSTOM_FIELD_TYPE_ANY_VALUE = "any";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -97,6 +101,13 @@ public class JiraCustomFieldResolver {
                 createUserObject.addProperty("accountId", innerFieldValue);
                 // TODO consider separating this functionality depending on which Jira channel is being used
                 return createUserObject;
+            case CUSTOM_FIELD_TYPE_OBJECT_VALUE:
+                // This is a Jira Cloud custom field type.  It is possible to create a JSON object
+                return createJsonObjectFromString(innerFieldValue, jiraCustomFieldConfig.getFieldName());
+            case CUSTOM_FIELD_TYPE_ANY_VALUE:
+                // Write the string value as is for any custom field of type any.
+                // custom fields are written to the Jira Server database as a string.
+                return innerFieldValue;
             default:
                 throw new AlertRuntimeException(String.format("Unsupported field type '%s' for field: %s", fieldType, jiraCustomFieldConfig.getFieldName()));
         }
@@ -155,6 +166,14 @@ public class JiraCustomFieldResolver {
         JsonObject objectWithName = new JsonObject();
         objectWithName.addProperty(key, value);
         return objectWithName;
+    }
+
+    private JsonObject createJsonObjectFromString(String jsonValue, String fieldName) {
+        try {
+            return JsonParser.parseString(jsonValue).getAsJsonObject();
+        } catch (JsonSyntaxException jse) {
+            throw new AlertRuntimeException(String.format("Invalid JSON syntax for field type '%s' field: %s", CUSTOM_FIELD_TYPE_OBJECT_VALUE, fieldName));
+        }
     }
 
 }
