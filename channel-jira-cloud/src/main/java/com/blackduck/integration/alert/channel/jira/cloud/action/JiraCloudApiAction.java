@@ -3,6 +3,7 @@ package com.blackduck.integration.alert.channel.jira.cloud.action;
 import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraSchedulingManager;
 import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraTask;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.channel.jira.cloud.task.JiraCloudSchedulingManager;
 import com.blackduck.integration.alert.common.action.ApiAction;
 import com.blackduck.integration.alert.common.descriptor.ChannelDescriptor;
 import com.blackduck.integration.alert.common.rest.model.FieldModel;
@@ -15,37 +16,28 @@ import java.util.UUID;
 
 @Component
 public class JiraCloudApiAction extends ApiAction {
-    private JiraSchedulingManager jiraSchedulingManager;
-    private TaskScheduler taskScheduler;
+    private JiraCloudSchedulingManager jiraSchedulingManager;
 
     @Autowired
-    public JiraCloudApiAction(JiraSchedulingManager jiraSchedulingManager, TaskScheduler taskScheduler) {
+    public JiraCloudApiAction(JiraCloudSchedulingManager jiraSchedulingManager) {
         this.jiraSchedulingManager = jiraSchedulingManager;
-        this.taskScheduler = taskScheduler;
     }
 
     @Override
     public FieldModel afterSaveAction(FieldModel fieldModel) throws AlertException {
-        jiraSchedulingManager.scheduleTasksForJiraConfig(createTasks(fieldModel));
+        jiraSchedulingManager.scheduleTasks(fieldModel);
         return super.afterSaveAction(fieldModel);
     }
 
     @Override
     public FieldModel afterUpdateAction(FieldModel previousFieldModel, FieldModel currentFieldModel) throws AlertException {
-        jiraSchedulingManager.scheduleTasksForJiraConfig(createTasks(currentFieldModel));
+        jiraSchedulingManager.scheduleTasks(currentFieldModel);
         return super.afterUpdateAction(previousFieldModel, currentFieldModel);
     }
 
     @Override
     public void afterDeleteAction(FieldModel fieldModel) throws AlertException {
-        jiraSchedulingManager.unscheduleTasksForProviderConfig(UUID.fromString(fieldModel.getId()));
+        jiraSchedulingManager.unscheduleTasks(UUID.fromString(fieldModel.getId()));
         super.afterDeleteAction(fieldModel);
-    }
-
-    private List<JiraTask> createTasks(FieldModel fieldModel) {
-        UUID configId = UUID.fromString(fieldModel.getId());
-        String configName = fieldModel.getFieldValue(ChannelDescriptor.KEY_NAME).orElse("");
-        JiraPropertyMigratorTask task = new JiraPropertyMigratorTask(taskScheduler,configId, configName, "JiraCloud");
-        return List.of(task);
     }
 }
