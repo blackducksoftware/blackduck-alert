@@ -12,8 +12,7 @@ import java.util.UUID;
 
 import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraSchedulingManager;
 import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraTask;
-import com.blackduck.integration.alert.common.descriptor.ChannelDescriptor;
-import com.blackduck.integration.alert.common.rest.model.FieldModel;
+import com.blackduck.integration.alert.channel.jira.server.task.JiraServerSchedulingManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
@@ -33,22 +32,19 @@ public class JiraServerGlobalCrudActions {
     private final ConfigurationCrudHelper configurationHelper;
     private final JiraServerGlobalConfigAccessor configurationAccessor;
     private final JiraServerGlobalConfigurationValidator validator;
-    private final JiraSchedulingManager jiraSchedulingManager;
-    private final TaskScheduler taskScheduler;
+    private final JiraServerSchedulingManager jiraSchedulingManager;
 
     @Autowired
     public JiraServerGlobalCrudActions(
         AuthorizationManager authorizationManager,
         JiraServerGlobalConfigAccessor configurationAccessor,
         JiraServerGlobalConfigurationValidator validator,
-        JiraSchedulingManager jiraSchedulingManager,
-        TaskScheduler taskScheduler
+        JiraServerSchedulingManager jiraSchedulingManager
     ) {
         this.configurationHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, ChannelKeys.JIRA_SERVER);
         this.configurationAccessor = configurationAccessor;
         this.validator = validator;
         this.jiraSchedulingManager = jiraSchedulingManager;
-        this.taskScheduler = taskScheduler;
     }
 
     public ActionResponse<JiraServerGlobalConfigModel> getOne(UUID id) {
@@ -67,7 +63,7 @@ public class JiraServerGlobalCrudActions {
             () -> configurationAccessor.existsConfigurationByName(resource.getName()),
             () -> {
                 JiraServerGlobalConfigModel configModel = configurationAccessor.createConfiguration(resource);
-                jiraSchedulingManager.scheduleTasksForJiraConfig(createTasks(configModel));
+                jiraSchedulingManager.scheduleTasks(configModel);
                 return configModel;
             }
         );
@@ -79,7 +75,7 @@ public class JiraServerGlobalCrudActions {
             () -> configurationAccessor.existsConfigurationById(id),
             () -> {
                 JiraServerGlobalConfigModel configModel = configurationAccessor.updateConfiguration(id, requestResource);
-                jiraSchedulingManager.scheduleTasksForJiraConfig(createTasks(configModel));
+                jiraSchedulingManager.scheduleTasks(configModel);
                 return configModel;
             }
         );
@@ -90,16 +86,8 @@ public class JiraServerGlobalCrudActions {
             () -> configurationAccessor.existsConfigurationById(id),
             () -> {
                 configurationAccessor.deleteConfiguration(id);
-                jiraSchedulingManager.unscheduleTasksForProviderConfig(id);
+                jiraSchedulingManager.unscheduleTasks(id);
             }
         );
     }
-
-    private List<JiraTask> createTasks(JiraServerGlobalConfigModel configModel) {
-        UUID configId = UUID.fromString(configModel.getId());
-        String configName = configModel.getName();
-        JiraPropertyMigratorTask task = new JiraPropertyMigratorTask(taskScheduler,configId, configName, "JiraServer");
-        return List.of(task);
-    }
-
 }

@@ -1,6 +1,5 @@
 package com.blackduck.integration.alert.api.channel.jira.lifecycle;
 
-import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.task.TaskManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,11 +20,11 @@ public class JiraSchedulingManager {
         this.taskManager = taskManager;
     }
 
-    public List<JiraTask> scheduleTasksForJiraConfig(List<JiraTask> tasks) {
+    public List<JiraTask> scheduleTasks(List<JiraTask> tasks) {
         List<JiraTask> acceptedTasks = new ArrayList<>();
         for (JiraTask task : tasks) {
             logger.debug("Perform scheduling jira tasks for config with id {} and name {}", task.getConfigId(), task.getConfigName());
-            unscheduleTasksForProviderConfig(task.getConfigId());
+            unscheduleTasks(task.getConfigId());
             if (taskManager.getNextRunTime(task.getTaskName()).isEmpty()) {
                 scheduleTask(task);
                 acceptedTasks.add(task);
@@ -36,7 +35,7 @@ public class JiraSchedulingManager {
         return acceptedTasks;
     }
 
-    public void unscheduleTasksForProviderConfig(UUID configId) {
+    public void unscheduleTasks(UUID configId) {
         logger.debug("Performing unscheduling jira tasks for config: id={}", configId);
 
         List<JiraTask> tasks = taskManager.getTasksByClass(JiraTask.class)
