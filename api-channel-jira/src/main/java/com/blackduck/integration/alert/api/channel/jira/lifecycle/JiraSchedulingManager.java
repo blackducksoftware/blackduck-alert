@@ -21,7 +21,7 @@ public class JiraSchedulingManager {
         this.taskManager = taskManager;
     }
 
-    public List<JiraTask> scheduleTasksForJiraConfig(JiraTask... tasks) throws AlertException {
+    public List<JiraTask> scheduleTasksForJiraConfig(List<JiraTask> tasks) {
         List<JiraTask> acceptedTasks = new ArrayList<>();
         for (JiraTask task : tasks) {
             logger.debug("Perform scheduling jira tasks for config with id {} and name {}", task.getConfigId(), task.getConfigName());
