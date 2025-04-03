@@ -37,6 +37,7 @@ import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
 import com.blackduck.integration.alert.util.AlertIntegrationTest;
+import org.springframework.scheduling.TaskScheduler;
 
 @AlertIntegrationTest
 class JiraServerGlobalCrudActionsTestIT {
@@ -47,6 +48,8 @@ class JiraServerGlobalCrudActionsTestIT {
     private JiraServerGlobalConfigurationValidator validator;
     @Autowired
     private JiraSchedulingManager jiraSchedulingManager;
+    @Autowired
+    private TaskScheduler taskScheduler;
 
     @BeforeEach
     public void init() {
@@ -67,7 +70,7 @@ class JiraServerGlobalCrudActionsTestIT {
 
     @Test
     void getOneTest() {
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager, taskScheduler);
         ActionResponse<JiraServerGlobalConfigModel> createResponse = crudActions.create(createBasicJiraModel());
 
         Optional<JiraServerGlobalConfigModel> jiraServerModel = createResponse.getContent();
@@ -81,7 +84,7 @@ class JiraServerGlobalCrudActionsTestIT {
 
     @Test
     void getOneNotFoundTest() {
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager, taskScheduler);
 
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.getOne(UUID.randomUUID());
 
@@ -94,7 +97,7 @@ class JiraServerGlobalCrudActionsTestIT {
     void getPagedTest() {
         int numOfModels = 10;
         int pageSize = 5;
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager, taskScheduler);
         for (int i = 0; i < numOfModels; i++) {
             crudActions.create(createJiraModelWithName(String.format("config-%d", i)));
         }
@@ -112,7 +115,7 @@ class JiraServerGlobalCrudActionsTestIT {
     void getPagedSortAscendingTest() {
         int numOfModels = 10;
         int pageSize = 5;
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager, taskScheduler);
         for (int i = 0; i < numOfModels; i++) {
             crudActions.create(createJiraModelWithName(String.format("config-%d", i)));
         }
@@ -133,7 +136,7 @@ class JiraServerGlobalCrudActionsTestIT {
     void getPagedSearchTermAndSortAscendingTest() {
         int numOfModels = 10;
         int pageSize = 5;
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager, taskScheduler);
         for (int i = 0; i < numOfModels; i++) {
             crudActions.create(createJiraModelWithName(String.format("config-%d", i)));
         }
@@ -152,7 +155,7 @@ class JiraServerGlobalCrudActionsTestIT {
     void getPagedSortDecendingTest() {
         int numOfModels = 10;
         int pageSize = 5;
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager, taskScheduler);
         for (int i = 0; i < numOfModels; i++) {
             crudActions.create(createJiraModelWithName(String.format("config-%d", i)));
         }
@@ -173,7 +176,7 @@ class JiraServerGlobalCrudActionsTestIT {
     void getPagedMissingSearchTermTest() {
         int numOfModels = 10;
         int pageSize = 5;
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager, taskScheduler);
         for (int i = 0; i < numOfModels; i++) {
             crudActions.create(createJiraModelWithName(String.format("config-%d", i)));
         }
@@ -190,7 +193,7 @@ class JiraServerGlobalCrudActionsTestIT {
     @Test
     void getPageNotFoundTest() {
         int pageSize = 5;
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager, taskScheduler);
 
         ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> pagedActionResponse = crudActions.getPaged(1, pageSize, null, null, null);
         assertTrue(pagedActionResponse.isError());
@@ -200,7 +203,7 @@ class JiraServerGlobalCrudActionsTestIT {
 
     @Test
     void createBasicAuthTest() {
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager, taskScheduler);
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.create(createBasicJiraModel());
 
         assertTrue(actionResponse.isSuccessful());
@@ -210,7 +213,7 @@ class JiraServerGlobalCrudActionsTestIT {
 
     @Test
     void createPersonalAccessTokenAuthTest() {
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager, taskScheduler);
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.create(createPersonalAccessTokenJiraModel());
 
         assertTrue(actionResponse.isSuccessful());
@@ -220,7 +223,7 @@ class JiraServerGlobalCrudActionsTestIT {
 
     @Test
     void createBadRequestTest() {
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager, taskScheduler);
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = new JiraServerGlobalConfigModel();
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.create(jiraServerGlobalConfigModel);
 
@@ -231,7 +234,7 @@ class JiraServerGlobalCrudActionsTestIT {
 
     @Test
     void createDuplicateNameTest() {
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager, taskScheduler);
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createBasicJiraModel();
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.create(jiraServerGlobalConfigModel);
 
@@ -248,7 +251,7 @@ class JiraServerGlobalCrudActionsTestIT {
 
     @Test
     void updateBasicAuthTest() {
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager, taskScheduler);
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createBasicJiraModel();
         ActionResponse<JiraServerGlobalConfigModel> createActionResponse = crudActions.create(jiraServerGlobalConfigModel);
         assertTrue(createActionResponse.isSuccessful());
@@ -274,7 +277,7 @@ class JiraServerGlobalCrudActionsTestIT {
 
     @Test
     void updatePersonalAccessTokenAuthTest() {
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager, taskScheduler);
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createPersonalAccessTokenJiraModel();
         ActionResponse<JiraServerGlobalConfigModel> createActionResponse = crudActions.create(jiraServerGlobalConfigModel);
         assertTrue(createActionResponse.isSuccessful());
@@ -299,7 +302,7 @@ class JiraServerGlobalCrudActionsTestIT {
 
     @Test
     void updateNotFoundTest() {
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager, taskScheduler);
 
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createBasicJiraModel();
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.update(UUID.randomUUID(), jiraServerGlobalConfigModel);
@@ -311,7 +314,7 @@ class JiraServerGlobalCrudActionsTestIT {
 
     @Test
     void updateBadRequestTest() {
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager, taskScheduler);
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createBasicJiraModel();
         ActionResponse<JiraServerGlobalConfigModel> createActionResponse = crudActions.create(jiraServerGlobalConfigModel);
         assertTrue(createActionResponse.isSuccessful());
@@ -334,7 +337,7 @@ class JiraServerGlobalCrudActionsTestIT {
 
     @Test
     void updateSwitchBetweenAuthorizationTypesTest() {
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager, taskScheduler);
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createBasicJiraModel();
         ActionResponse<JiraServerGlobalConfigModel> createActionResponse = crudActions.create(jiraServerGlobalConfigModel);
         assertTrue(createActionResponse.isSuccessful());
@@ -361,7 +364,7 @@ class JiraServerGlobalCrudActionsTestIT {
 
     @Test
     void deleteTest() {
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager, taskScheduler);
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createBasicJiraModel();
         ActionResponse<JiraServerGlobalConfigModel> createActionResponse = crudActions.create(jiraServerGlobalConfigModel);
         assertTrue(createActionResponse.isSuccessful());
@@ -382,7 +385,7 @@ class JiraServerGlobalCrudActionsTestIT {
 
     @Test
     void deleteNotFoundTest() {
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager);
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, validator, jiraSchedulingManager, taskScheduler);
 
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.delete(UUID.randomUUID());
 
