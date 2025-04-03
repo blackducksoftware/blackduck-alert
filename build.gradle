@@ -141,6 +141,7 @@ dependencies {
     implementation project(':api-certificates')
     implementation project(':api-common-model')
     implementation project(':api-channel')
+    implementation project(':api-channel-jira')
     implementation project(':api-descriptor')
     implementation project(':api-distribution')
     implementation project(':api-environment')

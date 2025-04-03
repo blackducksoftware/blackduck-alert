@@ -1,0 +1,61 @@
+package com.blackduck.integration.alert.api.channel.jira.lifecycle;
+
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.task.TaskManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+@Component
+public class JiraSchedulingManager {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final TaskManager taskManager;
+
+    @Autowired
+    public JiraSchedulingManager(TaskManager taskManager) {
+        this.taskManager = taskManager;
+    }
+
+    public List<JiraTask> scheduleTasksForJiraConfig(JiraTask... tasks) throws AlertException {
+        List<JiraTask> acceptedTasks = new ArrayList<>();
+        for (JiraTask task : tasks) {
+            logger.debug("Perform scheduling jira tasks for config with id {} and name {}", task.getConfigId(), task.getConfigName());
+            unscheduleTasksForProviderConfig(task.getConfigId());
+            if (taskManager.getNextRunTime(task.getTaskName()).isEmpty()) {
+                scheduleTask(task);
+                acceptedTasks.add(task);
+            }
+            logger.debug("Finished scheduling jira tasks for config with id {} and name {}", task.getConfigId(), task.getConfigName());
+        }
+
+        return acceptedTasks;
+    }
+
+    public void unscheduleTasksForProviderConfig(UUID configId) {
+        logger.debug("Performing unscheduling jira tasks for config: id={}", configId);
+
+        List<JiraTask> tasks = taskManager.getTasksByClass(JiraTask.class)
+                .stream()
+                .filter(task -> task.getConfigId().equals(configId))
+                .toList();
+
+        for (JiraTask task : tasks) {
+            unscheduleTask(task);
+        }
+        logger.debug("Finished unscheduling jira tasks for config: id={}", configId);
+    }
+
+    private void scheduleTask(JiraTask task) {
+        taskManager.registerTask(task);
+        taskManager.scheduleCronTask(task.scheduleCronExpression(), task.getTaskName());
+    }
+
+    private void unscheduleTask(JiraTask task) {
+        taskManager.unregisterTask(task.getTaskName());
+    }
+}

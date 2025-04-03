@@ -11,6 +11,7 @@ dependencies {
     implementation project(':api-channel-issue-tracker')
     implementation project(':api-processor')
     implementation project(':api-descriptor')
+    api project(':api-task')
 
     testImplementation project(':test-common')
     testImplementation 'com.blackduck.integration:blackduck-common'

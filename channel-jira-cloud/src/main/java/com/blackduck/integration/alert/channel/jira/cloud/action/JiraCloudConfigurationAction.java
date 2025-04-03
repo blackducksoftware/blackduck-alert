@@ -16,8 +16,9 @@ import com.blackduck.integration.alert.common.action.ConfigurationAction;
 @Component
 public class JiraCloudConfigurationAction extends ConfigurationAction {
     @Autowired
-    public JiraCloudConfigurationAction(JiraCloudGlobalFieldModelTestAction globalTestAction) {
+    public JiraCloudConfigurationAction(JiraCloudGlobalFieldModelTestAction globalTestAction, JiraCloudApiAction jiraApiAction) {
         super(ChannelKeys.JIRA_CLOUD);
+        addGlobalApiAction(jiraApiAction);
         addGlobalTestAction(globalTestAction);
     }
 
