@@ -9,6 +9,7 @@ package com.blackduck.integration.alert.channel.jira.server.action;
 
 import java.util.UUID;
 
+import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraSchedulingManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,16 +28,19 @@ public class JiraServerGlobalCrudActions {
     private final ConfigurationCrudHelper configurationHelper;
     private final JiraServerGlobalConfigAccessor configurationAccessor;
     private final JiraServerGlobalConfigurationValidator validator;
+    private final JiraSchedulingManager jiraSchedulingManager;
 
     @Autowired
     public JiraServerGlobalCrudActions(
         AuthorizationManager authorizationManager,
         JiraServerGlobalConfigAccessor configurationAccessor,
-        JiraServerGlobalConfigurationValidator validator
+        JiraServerGlobalConfigurationValidator validator,
+        JiraSchedulingManager jiraSchedulingManager
     ) {
         this.configurationHelper = new ConfigurationCrudHelper(authorizationManager, ConfigContextEnum.GLOBAL, ChannelKeys.JIRA_SERVER);
         this.configurationAccessor = configurationAccessor;
         this.validator = validator;
+        this.jiraSchedulingManager = jiraSchedulingManager;
     }
 
     public ActionResponse<JiraServerGlobalConfigModel> getOne(UUID id) {
