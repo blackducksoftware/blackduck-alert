@@ -35,7 +35,7 @@ public class JiraSchedulingManager {
         return acceptedTasks;
     }
 
-    public void unscheduleTasks(UUID configId) {
+    public void unscheduleTasks(String configId) {
         logger.debug("Performing unscheduling jira tasks for config: id={}", configId);
 
         List<JiraTask> tasks = taskManager.getTasksByClass(JiraTask.class)

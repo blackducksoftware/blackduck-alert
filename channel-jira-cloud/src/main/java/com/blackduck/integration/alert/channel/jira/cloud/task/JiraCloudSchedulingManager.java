@@ -27,12 +27,12 @@ public class JiraCloudSchedulingManager {
         return jiraSchedulingManager.scheduleTasks(createTasks(fieldModel));
     }
 
-    public void unscheduleTasks(UUID configId) {
+    public void unscheduleTasks(String configId) {
         jiraSchedulingManager.unscheduleTasks(configId);
     }
 
     private List<JiraTask> createTasks(FieldModel fieldModel) {
-        UUID configId = UUID.fromString(fieldModel.getId());
+        String configId = fieldModel.getId();
         String configName = fieldModel.getFieldValue(ChannelDescriptor.KEY_NAME).orElse("");
         JiraPropertyMigratorTask task = new JiraPropertyMigratorTask(taskScheduler,configId, configName, "JiraCloud");
         return List.of(task);
