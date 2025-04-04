@@ -1,19 +1,26 @@
 package com.blackduck.integration.alert.api.channel.jira.lifecycle;
 
+import com.blackduck.integration.alert.api.channel.jira.JiraConstants;
 import com.blackduck.integration.alert.api.task.ScheduledTask;
+import com.blackduck.integration.alert.api.task.TaskManager;
 import com.blackduck.integration.alert.api.task.TaskMetaData;
 import com.blackduck.integration.alert.api.task.TaskMetaDataProperty;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
 
 import java.util.List;
 
 public abstract class JiraTask extends ScheduledTask {
+    protected static final String JQL_QUERY_FOR_ISSUE_PROPERTY_MIGRATION = String.format("issue.property[%s].topicName != \"\"", JiraConstants.JIRA_ISSUE_PROPERTY_OLD_KEY);
+    protected static final int JQL_QUERY_MAX_RESULTS = 100;
+    private final TaskManager taskManager;
     private final String taskName;
     private final String configId;
     private final String configName;
 
-    protected JiraTask(TaskScheduler taskScheduler, String configId, String configName, String taskNameSuffix) {
+    protected JiraTask(TaskScheduler taskScheduler, TaskManager taskManager, String configId, String configName, String taskNameSuffix) {
         super(taskScheduler);
+        this.taskManager = taskManager;
         this.configId = configId;
         this.configName = configName;
         this.taskName = computeTaskName(taskNameSuffix);
@@ -47,6 +54,11 @@ public abstract class JiraTask extends ScheduledTask {
 
     public String getConfigName() {
         return configName;
+    }
+
+    public void unScheduleTask() {
+        taskManager.unScheduleTask(taskName);
+        scheduleExecutionAtFixedRate(0);
     }
 
     private String computeTaskName(String taskNameSuffix) {

@@ -40,8 +40,8 @@ public class JiraTaskInitializer extends StartupComponent{
 
     @Override
     protected void initialize() {
-        startJiraCloudTasks();
-        startJiraServerTasks();
+        //startJiraCloudTasks();
+        //startJiraServerTasks();
     }
     private void startJiraCloudTasks() {
         logger.info("Starting Jira Cloud Tasks");
