@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraSchedulingManager;
 import com.blackduck.integration.alert.api.task.TaskManager;
+import com.blackduck.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.blackduck.integration.alert.channel.jira.server.task.JiraServerSchedulingManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,7 +61,9 @@ class JiraServerGlobalConfigurationModelSaveActionsTest {
     private final AuthorizationManager authorizationManager = createAuthorizationManager();
     private final JiraSchedulingManager jiraSchedulingManager = new JiraSchedulingManager(new TaskManager());
     private final TaskScheduler taskScheduler = Mockito.mock(TaskScheduler .class);
-    private final JiraServerSchedulingManager jiraServerSchedulingManager = new JiraServerSchedulingManager(jiraSchedulingManager, taskScheduler);
+    private final TaskManager taskManager = new TaskManager();
+    private final JiraServerPropertiesFactory jiraPropertiesFactory = Mockito.mock(JiraServerPropertiesFactory.class);
+    private final JiraServerSchedulingManager jiraServerSchedulingManager = new JiraServerSchedulingManager(gson, jiraSchedulingManager, taskScheduler, taskManager, jiraPropertiesFactory);
 
     private JiraServerGlobalConfigurationModelConverter converter;
 

@@ -18,7 +18,9 @@ import java.util.UUID;
 
 import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraSchedulingManager;
 import com.blackduck.integration.alert.api.task.TaskManager;
+import com.blackduck.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.blackduck.integration.alert.channel.jira.server.task.JiraServerSchedulingManager;
+import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
@@ -51,6 +53,7 @@ class JiraServerGlobalCrudActionsTest {
 
     private final UUID id = UUID.randomUUID();
 
+    private final Gson gson = new Gson();
     private final AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
     private final DescriptorKey descriptorKey = new JiraServerChannelKey();
     private final PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
@@ -64,7 +67,8 @@ class JiraServerGlobalCrudActionsTest {
     private final TaskManager taskManager = new TaskManager();
     private final JiraSchedulingManager jiraSchedulingManager = new JiraSchedulingManager(taskManager);
     private final TaskScheduler taskScheduler = Mockito.mock(TaskScheduler .class);
-    private final JiraServerSchedulingManager jiraServerSchedulingManager = new JiraServerSchedulingManager(jiraSchedulingManager, taskScheduler);
+    private final JiraServerPropertiesFactory jiraPropertiesFactory = Mockito.mock(JiraServerPropertiesFactory.class);
+    private final JiraServerSchedulingManager jiraServerSchedulingManager = new JiraServerSchedulingManager(gson, jiraSchedulingManager, taskScheduler, taskManager, jiraPropertiesFactory);
 
     @Test
     void getOneTest() {
