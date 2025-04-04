@@ -28,13 +28,11 @@ public class JiraServerSchedulingManager {
     }
 
     public void unscheduleTasks(UUID configId) {
-        jiraSchedulingManager.unscheduleTasks(configId);
+        jiraSchedulingManager.unscheduleTasks(configId.toString());
     }
 
     private List<JiraTask> createTasks(JiraServerGlobalConfigModel configModel) {
-        UUID configId = UUID.fromString(configModel.getId());
-        String configName = configModel.getName();
-        JiraPropertyMigratorTask task = new JiraPropertyMigratorTask(taskScheduler,configId, configName, "JiraServer");
+        JiraPropertyMigratorTask task = new JiraPropertyMigratorTask(taskScheduler,configModel.getId(), configModel.getName(), "JiraServer");
         return List.of(task);
     }
 }

@@ -6,14 +6,13 @@ import com.blackduck.integration.alert.api.task.TaskMetaDataProperty;
 import org.springframework.scheduling.TaskScheduler;
 
 import java.util.List;
-import java.util.UUID;
 
 public abstract class JiraTask extends ScheduledTask {
     private final String taskName;
-    private final UUID configId;
+    private final String configId;
     private final String configName;
 
-    protected JiraTask(TaskScheduler taskScheduler, UUID configId, String configName, String taskNameSuffix) {
+    protected JiraTask(TaskScheduler taskScheduler, String configId, String configName, String taskNameSuffix) {
         super(taskScheduler);
         this.configId = configId;
         this.configName = configName;
@@ -42,7 +41,7 @@ public abstract class JiraTask extends ScheduledTask {
         return new TaskMetaData(getTaskName(), getClass().getSimpleName(), fullyQualifiedName, nextRunTime, properties);
     }
 
-    public UUID getConfigId() {
+    public String getConfigId() {
         return configId;
     }
 

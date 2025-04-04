@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public class JiraPropertyMigratorTask extends JiraTask {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    public JiraPropertyMigratorTask(TaskScheduler taskScheduler, UUID configId, String configName, String taskNameSuffix) {
+    public JiraPropertyMigratorTask(TaskScheduler taskScheduler, String configId, String configName, String taskNameSuffix) {
         super(taskScheduler, configId, configName, taskNameSuffix);
     }
 

@@ -40,8 +40,7 @@ public class JiraTaskInitializer extends StartupComponent{
 
     @Override
     protected void initialize() {
-        //TODO FIX the scheduler because the Jira Cloud instance hasn't been updated to a UUID.
-        //startJiraCloudTasks();
+        startJiraCloudTasks();
         startJiraServerTasks();
     }
     private void startJiraCloudTasks() {
