@@ -35,7 +35,7 @@ public class JiraPropertyMigratorTask extends JiraTask {
 
     @Override
     protected void executeTaskImplementation() {
-        logger.info("Jira Cloud property migrator task started.");
+        logger.info("Jira Server property migrator task started.");
         UUID configId = UUID.fromString(getConfigId());
         try {
             JiraServerProperties jiraProperties = jiraPropertiesFactory.createJiraProperties(configId);
@@ -48,9 +48,13 @@ public class JiraPropertyMigratorTask extends JiraTask {
             while(startOffset <= responseModel.getTotal()) {
                 List<IssueSearchIssueComponent> issueList = responseModel.getIssues();
                 for (IssueSearchIssueComponent issue : issueList) {
-                    String issueKey = issue.getKey();
-                    IssuePropertyResponseModel issuePropertyResponse = issuePropertyService.getProperty(issueKey, JiraConstants.JIRA_ISSUE_PROPERTY_OLD_KEY);
-                    issuePropertyService.setProperty(issueKey, JiraConstants.JIRA_ISSUE_PROPERTY_KEY, gson.toJson(issuePropertyResponse.getValue()));
+                    try {
+                        String issueKey = issue.getKey();
+                        IssuePropertyResponseModel issuePropertyResponse = issuePropertyService.getProperty(issueKey, JiraConstants.JIRA_ISSUE_PROPERTY_OLD_KEY);
+                        issuePropertyService.setProperty(issueKey, JiraConstants.JIRA_ISSUE_PROPERTY_KEY, gson.toJson(issuePropertyResponse.getValue()));
+                    } catch (IntegrationException e) {
+                        logger.error(String.format("Error migrating issue property for issue: %s",issue.getKey()), e);
+                    }
                 }
                 startOffset += JQL_QUERY_MAX_RESULTS;
                 responseModel = issueSearchService.queryForIssuePage(JQL_QUERY_FOR_ISSUE_PROPERTY_MIGRATION, startOffset, JQL_QUERY_MAX_RESULTS);
@@ -64,7 +68,7 @@ public class JiraPropertyMigratorTask extends JiraTask {
             logger.error("Error getting Jira Server Configuration.", e);
         }
 
-        logger.info("Jira Cloud property migrator task ended.");
+        logger.info("Jira Server property migrator task ended.");
     }
 
     @Override

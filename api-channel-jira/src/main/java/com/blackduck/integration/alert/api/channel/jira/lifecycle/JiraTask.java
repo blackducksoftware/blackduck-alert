@@ -10,7 +10,9 @@ import org.springframework.scheduling.TaskScheduler;
 import java.util.List;
 
 public abstract class JiraTask extends ScheduledTask {
-    protected static final String JQL_QUERY_FOR_ISSUE_PROPERTY_MIGRATION = String.format("issue.property[%s].topicName != \"\" ORDER BY createdDate DESC", JiraConstants.JIRA_ISSUE_PROPERTY_OLD_KEY);
+    //protected static final String JQL_QUERY_FOR_ISSUE_PROPERTY_MIGRATION = String.format("issue.property[%s].topicName IS NOT EMPTY AND issue.property[%s].topicName IS EMPTY ORDER BY createdDate DESC", JiraConstants.JIRA_ISSUE_PROPERTY_OLD_KEY, JiraConstants.JIRA_ISSUE_PROPERTY_KEY);
+    // summary ~ "Alert " OR comment ~ "This issue was automatically created by Alert." ORDER BY  created DESC
+    protected static final String JQL_QUERY_FOR_ISSUE_PROPERTY_MIGRATION = String.format("(summary ~ \"Alert \" OR comment ~ \"This issue was automatically created by Alert.\") AND issue.property[%s].topicName IS EMPTY ORDER BY created DESC", JiraConstants.JIRA_ISSUE_PROPERTY_KEY);
     protected static final int JQL_QUERY_MAX_RESULTS = 100;
     private final TaskManager taskManager;
     private final String taskName;
