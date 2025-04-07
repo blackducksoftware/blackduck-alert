@@ -9,7 +9,6 @@ import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGloba
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.config.Task;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
