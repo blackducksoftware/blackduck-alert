@@ -1,19 +1,26 @@
 package com.blackduck.integration.alert.api.channel.jira.lifecycle;
 
 import com.blackduck.integration.alert.api.channel.jira.JiraConstants;
+import com.blackduck.integration.alert.api.channel.jira.JiraIssueSearchProperties;
 import com.blackduck.integration.alert.api.task.ScheduledTask;
 import com.blackduck.integration.alert.api.task.TaskManager;
 import com.blackduck.integration.alert.api.task.TaskMetaData;
 import com.blackduck.integration.alert.api.task.TaskMetaDataProperty;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.TaskScheduler;
 
 import java.util.List;
 
 public abstract class JiraTask extends ScheduledTask {
-    //protected static final String JQL_QUERY_FOR_ISSUE_PROPERTY_MIGRATION = String.format("issue.property[%s].topicName IS NOT EMPTY AND issue.property[%s].topicName IS EMPTY ORDER BY createdDate DESC", JiraConstants.JIRA_ISSUE_PROPERTY_OLD_KEY, JiraConstants.JIRA_ISSUE_PROPERTY_KEY);
-    // summary ~ "Alert " OR comment ~ "This issue was automatically created by Alert." ORDER BY  created DESC
-    protected static final String JQL_QUERY_FOR_ISSUE_PROPERTY_MIGRATION = String.format("(summary ~ \"Alert \" OR comment ~ \"This issue was automatically created by Alert.\") AND issue.property[%s].topicName IS EMPTY ORDER BY created DESC", JiraConstants.JIRA_ISSUE_PROPERTY_KEY);
+    // find tickets created by alert first:
+    // 1. A summary that starts with "Alert - Black Duck"
+    // 2. A summary that isn't an Alert test message and have a comment "This issue was automatically created by Alert."
+    // 3. Then check if the new property key exists on that issue. Only works because the new property key is indexed with the new plugin.
+    protected static final String JQL_QUERY_FOR_ISSUE_PROPERTY_MIGRATION = String.format("(summary ~ \"Alert - Black Duck\" OR (summary !~ \"Alert Test Message\" AND comment ~ \"This issue was automatically created by Alert.\")) AND issue.property[%s].topicName IS EMPTY ORDER BY created DESC", JiraConstants.JIRA_ISSUE_PROPERTY_KEY);
     protected static final int JQL_QUERY_MAX_RESULTS = 100;
+    protected static final JiraIssueSearchProperties EMPTY_SEARCH_PROPERTIES = new JiraIssueSearchProperties(StringUtils.EMPTY,
+            StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY,
+            StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY);
     private final TaskManager taskManager;
     private final String taskName;
     private final String configId;
@@ -59,7 +66,7 @@ public abstract class JiraTask extends ScheduledTask {
 
     public void unScheduleTask() {
         taskManager.unScheduleTask(taskName);
-        scheduleExecutionAtFixedRate(0);
+        taskManager.unregisterTask(taskName);
     }
 
     private String computeTaskName(String taskNameSuffix) {

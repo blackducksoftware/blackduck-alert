@@ -21,6 +21,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class JiraPropertyMigratorTask extends JiraTask {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -42,32 +45,58 @@ public class JiraPropertyMigratorTask extends JiraTask {
             IssueSearchService issueSearchService = serviceFactory.createIssueSearchService();
             IssuePropertyService issuePropertyService = serviceFactory.createIssuePropertyService();
 
-            int startOffset = 0;
-            IssueSearchResponseModel responseModel = issueSearchService.queryForIssuePage(JQL_QUERY_FOR_ISSUE_PROPERTY_MIGRATION, startOffset, JQL_QUERY_MAX_RESULTS);
-            while(startOffset <= responseModel.getTotal()) {
+            IssueSearchResponseModel responseModel = issueSearchService.queryForIssuePage(JQL_QUERY_FOR_ISSUE_PROPERTY_MIGRATION, 0, JQL_QUERY_MAX_RESULTS);
+            if(responseModel.getTotal() > 0) {
                 List<IssueResponseModel> issueList = responseModel.getIssues();
+                ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
                 for (IssueResponseModel issue : issueList) {
                     String issueKey = issue.getKey();
-                    IssuePropertyResponseModel issuePropertyResponse = issuePropertyService.getProperty(issueKey, JiraConstants.JIRA_ISSUE_PROPERTY_OLD_KEY);
-                    issuePropertyService.setProperty(issueKey, JiraConstants.JIRA_ISSUE_PROPERTY_KEY, gson.toJson(issuePropertyResponse.getValue()));
+                    executorService.submit(() -> setIssueProperty(issueKey, issuePropertyService));
                 }
-                startOffset += JQL_QUERY_MAX_RESULTS;
-                responseModel = issueSearchService.queryForIssuePage(JQL_QUERY_FOR_ISSUE_PROPERTY_MIGRATION, startOffset, JQL_QUERY_MAX_RESULTS);
-            }
-
-            responseModel = issueSearchService.queryForIssuePage(JQL_QUERY_FOR_ISSUE_PROPERTY_MIGRATION, 0, 1);
-            if(responseModel.getTotal() <= 0) {
+                executorService.shutdown();
+                boolean success = executorService.awaitTermination(1, TimeUnit.MINUTES);
+                if (success) {
+                    logger.info("Jira Cloud property migrator task remaining issues {} ", responseModel.getTotal());
+                } else {
+                    logger.info("Jira Cloud property migrator task timed out updating issues; will resume with the next iteration.");
+                }
+            } else {
                 unScheduleTask();
             }
-
             logger.info("Jira Cloud property migrator task ended.");
         } catch (IntegrationException e) {
             logger.error("Error getting Jira Server Configuration.", e);
+        } catch (InterruptedException e) {
+            logger.error("Error updating Jira Server issues with new property.", e);
+            Thread.currentThread().interrupt();
         }
+    }
+
+    private void setIssueProperty(String issueKey, IssuePropertyService issuePropertyService) {
+        try {
+            String propertyValue = getCurrentPropertyValue(issueKey, issuePropertyService);
+            issuePropertyService.setProperty(issueKey, JiraConstants.JIRA_ISSUE_PROPERTY_KEY, propertyValue);
+        } catch (IntegrationException ex) {
+            logger.error("Error migrating issue property for issue: {} cause: {}", issueKey, ex.getMessage());
+            logger.debug("Caused by: ", ex);
+        }
+    }
+
+    private String getCurrentPropertyValue(String issueKey, IssuePropertyService issuePropertyService) {
+        // empty property value
+        String jsonPropertyValue = gson.toJson(EMPTY_SEARCH_PROPERTIES);
+        try {
+            IssuePropertyResponseModel issuePropertyResponse = issuePropertyService.getProperty(issueKey, JiraConstants.JIRA_ISSUE_PROPERTY_OLD_KEY);
+            jsonPropertyValue = gson.toJson(issuePropertyResponse.getValue());
+        } catch (IntegrationException ex) {
+            logger.debug("Error old issue property for issue: {} cause: {}", issueKey, ex.getMessage());
+            logger.debug("Caused by: ", ex);
+        }
+        return jsonPropertyValue;
     }
 
     @Override
     public String scheduleCronExpression() {
-        return ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION;
+        return ScheduledTask.EVERY_30_SECONDS_CRON_EXPRESSION;
     }
 }
