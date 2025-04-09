@@ -4,6 +4,7 @@ import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraScheduling
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.blackduck.integration.alert.channel.jira.cloud.task.JiraCloudSchedulingManager;
+import com.blackduck.integration.alert.channel.jira.server.JiraServerProperties;
 import com.blackduck.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.blackduck.integration.alert.channel.jira.server.task.JiraServerSchedulingManager;
@@ -11,6 +12,7 @@ import com.blackduck.integration.alert.common.persistence.accessor.Configuration
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
 import com.blackduck.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
+import io.micrometer.common.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,9 +47,12 @@ public class JiraTaskInitializer extends StartupComponent{
     }
     private void startJiraCloudTasks() {
         logger.info("Starting Jira Cloud Tasks");
+        // Jira Cloud still uses FieldModels.  There is a default configuration with an empty URL.
+        // Need to filter out any FieldModel that doesn't have a valid URL.
         List<ConfigurationModel> configurationModelList = configurationModelConfigurationAccessor.getConfigurationsByDescriptorKey(ChannelKeys.JIRA_CLOUD);
         configurationModelList.stream()
                 .map(configurationFieldModelConverter::convertToFieldModel)
+                .filter(fieldModel -> StringUtils.isNotBlank(fieldModel.getFieldValue(JiraCloudDescriptor.KEY_JIRA_URL).orElse(null)))
                 .forEach(jiraCloudSchedulingManager::scheduleTasks);
     }
 
