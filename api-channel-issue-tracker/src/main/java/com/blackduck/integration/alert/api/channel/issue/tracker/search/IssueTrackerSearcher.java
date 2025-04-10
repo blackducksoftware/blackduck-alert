@@ -9,6 +9,7 @@ package com.blackduck.integration.alert.api.channel.issue.tracker.search;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -86,11 +87,14 @@ public class IssueTrackerSearcher<T extends Serializable> {
 
         List<ActionableIssueSearchResult<T>> projectIssueSearchResults = new LinkedList<>();
         for (ProjectIssueModel projectIssueModel : projectIssueModels) {
-            ActionableIssueSearchResult<T> searchResult = findIssueByProjectIssueModel(projectIssueModel);
-            if (searchResult.getExistingIssueDetails().isEmpty() && isOnlyDeleteOperation(projectIssueModel)) {
+            List<ActionableIssueSearchResult<T>> searchResult = findIssueByProjectIssueModel(projectIssueModel);
+            boolean noIssuesFound = searchResult.stream()
+                    .map(ActionableIssueSearchResult::getExistingIssueDetails)
+                    .allMatch(Optional::isEmpty);
+            if (noIssuesFound && isOnlyDeleteOperation(projectIssueModel)) {
                 logger.debug("Ignoring component-level notification for issue-tracker because no matching issue(s) existed and it only contained DELETE operations");
             } else {
-                projectIssueSearchResults.add(searchResult);
+                projectIssueSearchResults.addAll(searchResult);
             }
         }
         return projectIssueSearchResults;
@@ -109,39 +113,42 @@ public class IssueTrackerSearcher<T extends Serializable> {
             .collect(Collectors.toList());
     }
 
-    private ActionableIssueSearchResult<T> findIssueByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException {
-        ExistingIssueDetails<T> existingIssue = null;
-        ItemOperation searchResultOperation = ItemOperation.UPDATE;
+    private List<ActionableIssueSearchResult<T>> findIssueByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException {
+        List<ActionableIssueSearchResult<T>> searchResults = new LinkedList<>();
+
 
         IssueTrackerSearchResult<T> searchResponse = exactIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel);
         List<ProjectIssueSearchResult<T>> existingIssues = searchResponse.getSearchResults();
         int foundIssuesCount = existingIssues.size();
 
-        if (foundIssuesCount == 1) {
-            existingIssue = existingIssues.get(0).getExistingIssueDetails();
-
-            Optional<ItemOperation> policyOperation = projectIssueModel.getPolicyDetails().map(IssuePolicyDetails::getOperation);
-            Optional<IssueVulnerabilityDetails> optionalVulnerabilityDetails = projectIssueModel.getVulnerabilityDetails();
-            Optional<ItemOperation> componentUnknownOperation = projectIssueModel.getComponentUnknownVersionDetails().map(IssueComponentUnknownVersionDetails::getItemOperation);
-            if (policyOperation.isPresent()) {
-                searchResultOperation = policyOperation.get();
-            } else if (optionalVulnerabilityDetails.isPresent()) {
-                IssueVulnerabilityDetails issueVulnerabilityDetails = optionalVulnerabilityDetails.get();
-                searchResultOperation = findVulnerabilitySearchResultOperation(existingIssue, issueVulnerabilityDetails);
-            } else if (componentUnknownOperation.isPresent()) {
-                searchResultOperation = componentUnknownOperation.get();
+        if (foundIssuesCount >= 1) {
+            Set<String> issueKeys = new HashSet<>();
+            for(ProjectIssueSearchResult<T> searchResult : existingIssues) {
+                ExistingIssueDetails<T> existingIssue = searchResult.getExistingIssueDetails();
+                issueKeys.add(existingIssue.getIssueKey());
+                ItemOperation searchResultOperation = ItemOperation.UPDATE;
+                Optional<ItemOperation> policyOperation = projectIssueModel.getPolicyDetails().map(IssuePolicyDetails::getOperation);
+                Optional<IssueVulnerabilityDetails> optionalVulnerabilityDetails = projectIssueModel.getVulnerabilityDetails();
+                Optional<ItemOperation> componentUnknownOperation = projectIssueModel.getComponentUnknownVersionDetails().map(IssueComponentUnknownVersionDetails::getItemOperation);
+                if (policyOperation.isPresent()) {
+                    searchResultOperation = policyOperation.get();
+                } else if (optionalVulnerabilityDetails.isPresent()) {
+                    IssueVulnerabilityDetails issueVulnerabilityDetails = optionalVulnerabilityDetails.get();
+                    searchResultOperation = findVulnerabilitySearchResultOperation(existingIssue, issueVulnerabilityDetails);
+                } else if (componentUnknownOperation.isPresent()) {
+                    searchResultOperation = componentUnknownOperation.get();
+                }
+                searchResults.add(new ActionableIssueSearchResult<>(existingIssue, projectIssueModel, searchResponse.getSearchQuery(), searchResultOperation));
             }
-        } else if (foundIssuesCount > 1) {
-            Set<String> issueKeys = existingIssues.stream()
-                .map(ProjectIssueSearchResult::getExistingIssueDetails)
-                .map(ExistingIssueDetails::getIssueKey)
-                .collect(Collectors.toSet());
-            String issueKeyString = StringUtils.join(issueKeys, ", ");
-            throw new AlertException("Expected to find a unique issue, but more than one was found. " + issueKeyString);
-        } else {
-            searchResultOperation = ItemOperation.ADD;
+
+            if (foundIssuesCount > 1) {
+                String issueKeyString = StringUtils.join(issueKeys, ", ");
+                logger.warn("Found duplicate issue(s)[{}]: {}", foundIssuesCount, issueKeyString);
+            }
+        }  else {
+            searchResults.add(new ActionableIssueSearchResult<>(null, projectIssueModel, searchResponse.getSearchQuery(), ItemOperation.ADD));
         }
-        return new ActionableIssueSearchResult<>(existingIssue, projectIssueModel, searchResponse.getSearchQuery(), searchResultOperation);
+        return searchResults;
     }
 
     private ItemOperation findVulnerabilitySearchResultOperation(ExistingIssueDetails<T> existingIssue, IssueVulnerabilityDetails issueVulnerabilityDetails) {
