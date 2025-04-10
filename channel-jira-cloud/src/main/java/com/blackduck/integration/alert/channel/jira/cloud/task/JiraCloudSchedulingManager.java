@@ -4,7 +4,7 @@ import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraScheduling
 import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraTask;
 import com.blackduck.integration.alert.api.task.TaskManager;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudPropertiesFactory;
-import com.blackduck.integration.alert.channel.jira.cloud.action.JiraPropertyMigratorTask;
+import com.blackduck.integration.alert.channel.jira.cloud.action.JiraPropertyUpdateTask;
 import com.blackduck.integration.alert.common.descriptor.ChannelDescriptor;
 import com.blackduck.integration.alert.common.rest.model.FieldModel;
 import com.google.gson.Gson;
@@ -42,7 +42,7 @@ public class JiraCloudSchedulingManager {
     private List<JiraTask> createTasks(FieldModel fieldModel) {
         String configId = fieldModel.getId();
         String configName = fieldModel.getFieldValue(ChannelDescriptor.KEY_NAME).orElse("");
-        JiraPropertyMigratorTask task = new JiraPropertyMigratorTask(taskScheduler, taskManager, jiraPropertiesFactory, gson, configId, configName, "JiraCloud");
+        JiraPropertyUpdateTask task = new JiraPropertyUpdateTask(taskScheduler, taskManager, jiraPropertiesFactory, gson, configId, configName, "JiraCloud");
         return List.of(task);
     }
 }

@@ -2,12 +2,10 @@ package com.blackduck.integration.alert.channel.jira.cloud.action;
 
 import com.blackduck.integration.alert.api.channel.jira.JiraConstants;
 import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraTask;
-import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.api.task.ScheduledTask;
 import com.blackduck.integration.alert.api.task.TaskManager;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudPropertiesFactory;
-import com.blackduck.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.cloud.model.IssueSearchResponseModel;
 import com.blackduck.integration.jira.common.cloud.service.IssueSearchService;
@@ -25,12 +23,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class JiraPropertyMigratorTask extends JiraTask {
+public class JiraPropertyUpdateTask extends JiraTask {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final JiraCloudPropertiesFactory jiraPropertiesFactory;
     private final Gson gson;
 
-    public JiraPropertyMigratorTask(TaskScheduler taskScheduler, TaskManager taskManager, JiraCloudPropertiesFactory jiraPropertiesFactory, Gson gson, String configId, String configName, String taskNameSuffix) {
+    public JiraPropertyUpdateTask(TaskScheduler taskScheduler, TaskManager taskManager, JiraCloudPropertiesFactory jiraPropertiesFactory, Gson gson, String configId, String configName, String taskNameSuffix) {
         super(taskScheduler, taskManager, configId, configName, taskNameSuffix);
         this.jiraPropertiesFactory = jiraPropertiesFactory;
         this.gson = gson;

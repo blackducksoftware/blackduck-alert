@@ -24,12 +24,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class JiraPropertyMigratorTask extends JiraTask {
+public class JiraPropertyUpdateTask extends JiraTask {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final JiraServerPropertiesFactory jiraPropertiesFactory;
     private final Gson gson;
 
-    public JiraPropertyMigratorTask(TaskScheduler taskScheduler, TaskManager taskManager, JiraServerPropertiesFactory jiraPropertiesFactory, Gson gson, String configId, String configName, String taskNameSuffix) {
+    public JiraPropertyUpdateTask(TaskScheduler taskScheduler, TaskManager taskManager, JiraServerPropertiesFactory jiraPropertiesFactory, Gson gson, String configId, String configName, String taskNameSuffix) {
         super(taskScheduler, taskManager, configId, configName, taskNameSuffix);
         this.jiraPropertiesFactory = jiraPropertiesFactory;
         this.gson = gson;

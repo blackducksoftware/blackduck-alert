@@ -4,7 +4,7 @@ import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraScheduling
 import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraTask;
 import com.blackduck.integration.alert.api.task.TaskManager;
 import com.blackduck.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
-import com.blackduck.integration.alert.channel.jira.server.action.JiraPropertyMigratorTask;
+import com.blackduck.integration.alert.channel.jira.server.action.JiraPropertyUpdateTask;
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ public class JiraServerSchedulingManager {
     }
 
     private List<JiraTask> createTasks(JiraServerGlobalConfigModel configModel) {
-        JiraPropertyMigratorTask task = new JiraPropertyMigratorTask(taskScheduler, taskManager, jiraPropertiesFactory, gson, configModel.getId(), configModel.getName(), "JiraServer");
+        JiraPropertyUpdateTask task = new JiraPropertyUpdateTask(taskScheduler, taskManager, jiraPropertiesFactory, gson, configModel.getId(), configModel.getName(), "JiraServer");
         return List.of(task);
     }
 }
