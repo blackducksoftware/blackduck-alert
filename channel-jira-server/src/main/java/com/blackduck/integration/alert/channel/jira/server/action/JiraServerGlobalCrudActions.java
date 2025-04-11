@@ -7,14 +7,10 @@
  */
 package com.blackduck.integration.alert.channel.jira.server.action;
 
-import java.util.List;
 import java.util.UUID;
 
-import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraSchedulingManager;
-import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraTask;
 import com.blackduck.integration.alert.channel.jira.server.task.JiraServerSchedulingManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;

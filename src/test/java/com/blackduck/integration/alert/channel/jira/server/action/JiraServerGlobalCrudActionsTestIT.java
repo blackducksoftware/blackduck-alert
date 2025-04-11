@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraSchedulingManager;
 import com.blackduck.integration.alert.channel.jira.server.task.JiraServerSchedulingManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +37,6 @@ import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
 import com.blackduck.integration.alert.util.AlertIntegrationTest;
-import org.springframework.scheduling.TaskScheduler;
 
 @AlertIntegrationTest
 class JiraServerGlobalCrudActionsTestIT {

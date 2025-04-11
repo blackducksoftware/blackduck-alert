@@ -1,10 +1,8 @@
 package com.blackduck.integration.alert.startup.component;
 
-import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraSchedulingManager;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.blackduck.integration.alert.channel.jira.cloud.task.JiraCloudSchedulingManager;
-import com.blackduck.integration.alert.channel.jira.server.JiraServerProperties;
 import com.blackduck.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.blackduck.integration.alert.channel.jira.server.task.JiraServerSchedulingManager;

@@ -8,7 +8,6 @@
 package com.blackduck.integration.alert.channel.jira.server.distribution;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraSearcherResponseModel;
 import com.blackduck.integration.alert.api.channel.jira.distribution.search.JqlQueryExecutor;
