@@ -41,6 +41,11 @@ public class JiraExactIssueFinder implements ExactIssueFinder<String> {
 
     @Override
     public IssueTrackerSearchResult<String> findExistingIssuesByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException {
+        return findExistingIssuesByProjectIssueModel(projectIssueModel, Integer.MAX_VALUE);
+    }
+
+    @Override
+    public IssueTrackerSearchResult<String> findExistingIssuesByProjectIssueModel(ProjectIssueModel projectIssueModel, Integer maxResults) throws AlertException {
         LinkableItem provider = projectIssueModel.getProvider();
         LinkableItem project = projectIssueModel.getProject();
         IssueBomComponentDetails bomComponent = projectIssueModel.getBomComponentDetails();
@@ -70,10 +75,18 @@ public class JiraExactIssueFinder implements ExactIssueFinder<String> {
             policyName
         );
         logger.debug("Searching for Jira issues with this Query: {}", jqlString);
-        List<ProjectIssueSearchResult<String>> searchResults = jqlQueryExecutor.executeQuery(jqlString)
-            .stream()
-            .map(jiraSearcherResponseModel -> searchResultCreator.createIssueResult(jiraSearcherResponseModel, projectIssueModel))
-            .collect(Collectors.toList());
+        List<ProjectIssueSearchResult<String>> searchResults;
+        if(maxResults == Integer.MAX_VALUE) {
+            searchResults = jqlQueryExecutor.executeQuery(jqlString)
+                    .stream()
+                    .map(jiraSearcherResponseModel -> searchResultCreator.createIssueResult(jiraSearcherResponseModel, projectIssueModel))
+                    .toList();
+        } else {
+            searchResults = jqlQueryExecutor.executeQuery(jqlString, maxResults)
+                    .stream()
+                    .map(jiraSearcherResponseModel -> searchResultCreator.createIssueResult(jiraSearcherResponseModel, projectIssueModel))
+                    .toList();
+        }
         return new IssueTrackerSearchResult<>(jqlString, searchResults);
     }
 

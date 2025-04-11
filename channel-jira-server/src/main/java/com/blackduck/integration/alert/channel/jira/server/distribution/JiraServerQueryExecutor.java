@@ -31,12 +31,29 @@ public class JiraServerQueryExecutor implements JqlQueryExecutor {
         return issueSearchResponseModel.getIssues()
                    .stream()
                    .map(this::convertModel)
-                   .collect(Collectors.toList());
+                   .toList();
+    }
+
+    @Override
+    public List<JiraSearcherResponseModel> executeQuery(String jql, Integer maxResults) throws AlertException {
+        IssueSearchResponseModel issueSearchResponseModel = queryForIssues(jql, maxResults);
+        return issueSearchResponseModel.getIssues()
+                .stream()
+                .map(this::convertModel)
+                .toList();
     }
 
     private IssueSearchResponseModel queryForIssues(String jql) throws AlertException {
         try {
             return issueSearchService.queryForIssues(jql);
+        } catch (IntegrationException e) {
+            throw new AlertException("Failed to query for Jira Server issues", e);
+        }
+    }
+
+    private IssueSearchResponseModel queryForIssues(String jql, Integer maxResults) throws AlertException {
+        try {
+            return issueSearchService.queryForIssuePage(jql, 0, maxResults);
         } catch (IntegrationException e) {
             throw new AlertException("Failed to query for Jira Server issues", e);
         }

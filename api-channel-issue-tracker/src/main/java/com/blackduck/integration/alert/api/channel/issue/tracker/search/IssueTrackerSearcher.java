@@ -39,6 +39,7 @@ import com.blackduck.integration.function.ThrowingSupplier;
 
 public class IssueTrackerSearcher<T extends Serializable> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    public static final Integer DEFAULT_MAX_RESULTS = 100;
 
     private final ProjectIssueFinder<T> projectIssueFinder;
     private final ProjectVersionIssueFinder<T> projectVersionIssueFinder;
@@ -117,7 +118,7 @@ public class IssueTrackerSearcher<T extends Serializable> {
         List<ActionableIssueSearchResult<T>> searchResults = new LinkedList<>();
 
 
-        IssueTrackerSearchResult<T> searchResponse = exactIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel);
+        IssueTrackerSearchResult<T> searchResponse = exactIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel,DEFAULT_MAX_RESULTS);
         List<ProjectIssueSearchResult<T>> existingIssues = searchResponse.getSearchResults();
         int foundIssuesCount = existingIssues.size();
 
