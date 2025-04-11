@@ -50,9 +50,8 @@ public abstract class JiraTask extends ScheduledTask {
     public TaskMetaData createTaskMetaData() {
         String fullyQualifiedName = ScheduledTask.computeFullyQualifiedName(getClass());
         String nextRunTime = getFormatedNextRunTime().orElse("");
-        TaskMetaDataProperty configIdProperty = new TaskMetaDataProperty("configId", "Configuration Id", getConfigId().toString());
         TaskMetaDataProperty configNameProperty = new TaskMetaDataProperty("configurationName", "Configuration Name", getConfigName());
-        List<TaskMetaDataProperty> properties = List.of(configIdProperty, configNameProperty);
+        List<TaskMetaDataProperty> properties = List.of(configNameProperty);
         return new TaskMetaData(getTaskName(), getClass().getSimpleName(), fullyQualifiedName, nextRunTime, properties);
     }
 
