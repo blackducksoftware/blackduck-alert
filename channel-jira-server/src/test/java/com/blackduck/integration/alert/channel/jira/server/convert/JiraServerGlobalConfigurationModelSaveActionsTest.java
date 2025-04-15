@@ -60,7 +60,7 @@ class JiraServerGlobalConfigurationModelSaveActionsTest {
     private final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, filePersistenceUtil);
     private final AuthorizationManager authorizationManager = createAuthorizationManager();
     private final JiraSchedulingManager jiraSchedulingManager = new JiraSchedulingManager(new TaskManager());
-    private final TaskScheduler taskScheduler = Mockito.mock(TaskScheduler .class);
+    private final TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
     private final TaskManager taskManager = new TaskManager();
     private final JiraServerPropertiesFactory jiraPropertiesFactory = Mockito.mock(JiraServerPropertiesFactory.class);
     private final JiraServerSchedulingManager jiraServerSchedulingManager = new JiraServerSchedulingManager(gson, jiraSchedulingManager, taskScheduler, taskManager, jiraPropertiesFactory);

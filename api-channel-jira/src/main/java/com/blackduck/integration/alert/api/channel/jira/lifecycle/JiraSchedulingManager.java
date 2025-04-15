@@ -22,8 +22,8 @@ public class JiraSchedulingManager {
     public List<JiraTask> scheduleTasks(List<JiraTask> tasks) {
         List<JiraTask> acceptedTasks = new ArrayList<>();
         for (JiraTask task : tasks) {
-            logger.debug("Perform scheduling jira tasks for config with id {} and name {}", task.getConfigId(), task.getConfigName());
             unscheduleTasks(task.getConfigId());
+            logger.debug("Perform scheduling jira tasks for config with id {} and name {}", task.getConfigId(), task.getConfigName());
             if (taskManager.getNextRunTime(task.getTaskName()).isEmpty()) {
                 scheduleTask(task);
                 acceptedTasks.add(task);

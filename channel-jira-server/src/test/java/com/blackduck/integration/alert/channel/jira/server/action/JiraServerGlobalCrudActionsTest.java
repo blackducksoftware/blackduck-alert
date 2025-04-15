@@ -66,7 +66,7 @@ class JiraServerGlobalCrudActionsTest {
 
     private final TaskManager taskManager = new TaskManager();
     private final JiraSchedulingManager jiraSchedulingManager = new JiraSchedulingManager(taskManager);
-    private final TaskScheduler taskScheduler = Mockito.mock(TaskScheduler .class);
+    private final TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
     private final JiraServerPropertiesFactory jiraPropertiesFactory = Mockito.mock(JiraServerPropertiesFactory.class);
     private final JiraServerSchedulingManager jiraServerSchedulingManager = new JiraServerSchedulingManager(gson, jiraSchedulingManager, taskScheduler, taskManager, jiraPropertiesFactory);
 
