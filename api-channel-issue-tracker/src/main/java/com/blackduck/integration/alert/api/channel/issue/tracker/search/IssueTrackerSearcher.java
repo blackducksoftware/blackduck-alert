@@ -117,7 +117,9 @@ public class IssueTrackerSearcher<T extends Serializable> {
     private List<ActionableIssueSearchResult<T>> findIssueByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException {
         List<ActionableIssueSearchResult<T>> searchResults = new LinkedList<>();
 
-
+        // Get a bounded list of results to avoid loading too many issues into memory causing issues. If we find duplicates it should be a small set of issues
+        // given that we are looking for a specific component in a project. Previously we only expected 1 unique issue per ProjectIssueModel.
+        // Now introducing the new alert indexer plugin it is possible to have duplicates so make sure all the issues have the updates.
         IssueTrackerSearchResult<T> searchResponse = exactIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel,DEFAULT_MAX_RESULTS);
         List<ProjectIssueSearchResult<T>> existingIssues = searchResponse.getSearchResults();
         int foundIssuesCount = existingIssues.size();

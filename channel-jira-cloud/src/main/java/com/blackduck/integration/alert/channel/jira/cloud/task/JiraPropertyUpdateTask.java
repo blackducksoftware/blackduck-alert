@@ -64,9 +64,9 @@ public class JiraPropertyUpdateTask extends JiraTask {
             }
             logger.info("Jira Cloud property migrator task ended.");
         } catch (IntegrationException e) {
-            logger.error("Error getting Jira Server Configuration.", e);
+            logger.error("Error getting Jira Cloud Configuration.", e);
         } catch (InterruptedException e) {
-            logger.error("Error updating Jira Server issues with new property.", e);
+            logger.error("Error updating Jira Cloud issues with new property.", e);
             Thread.currentThread().interrupt();
         }
     }
