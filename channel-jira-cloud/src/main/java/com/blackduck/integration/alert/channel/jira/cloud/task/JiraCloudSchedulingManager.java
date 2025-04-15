@@ -4,7 +4,6 @@ import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraScheduling
 import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraTask;
 import com.blackduck.integration.alert.api.task.TaskManager;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudPropertiesFactory;
-import com.blackduck.integration.alert.channel.jira.cloud.action.JiraPropertyUpdateTask;
 import com.blackduck.integration.alert.common.descriptor.ChannelDescriptor;
 import com.blackduck.integration.alert.common.rest.model.FieldModel;
 import com.google.gson.Gson;
@@ -13,6 +12,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class JiraCloudSchedulingManager {
@@ -32,17 +32,21 @@ public class JiraCloudSchedulingManager {
     }
 
     public List<JiraTask> scheduleTasks(FieldModel fieldModel) {
-        return jiraSchedulingManager.scheduleTasks(createTasks(fieldModel));
+        return scheduleTasks(fieldModel, Set.of());
+    }
+
+    public List<JiraTask> scheduleTasks(FieldModel fieldModel, Set<String> projectNameOrKeys) {
+        return jiraSchedulingManager.scheduleTasks(createTasks(fieldModel, projectNameOrKeys));
     }
 
     public void unscheduleTasks(String configId) {
         jiraSchedulingManager.unscheduleTasks(configId);
     }
 
-    private List<JiraTask> createTasks(FieldModel fieldModel) {
+    private List<JiraTask> createTasks(FieldModel fieldModel, Set<String> projectNameOrKeys) {
         String configId = fieldModel.getId();
         String configName = fieldModel.getFieldValue(ChannelDescriptor.KEY_NAME).orElse("");
-        JiraPropertyUpdateTask task = new JiraPropertyUpdateTask(taskScheduler, taskManager, jiraPropertiesFactory, gson, configId, configName, "JiraCloud");
+        JiraPropertyUpdateTask task = new JiraPropertyUpdateTask(taskScheduler, taskManager, jiraPropertiesFactory, gson, configId, configName, "JiraCloud", projectNameOrKeys);
         return List.of(task);
     }
 }
