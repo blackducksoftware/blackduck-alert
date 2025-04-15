@@ -16,6 +16,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraSchedulingManager;
+import com.blackduck.integration.alert.api.task.TaskManager;
+import com.blackduck.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
+import com.blackduck.integration.alert.channel.jira.server.task.JiraServerSchedulingManager;
+import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
@@ -36,6 +41,7 @@ import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
+import org.springframework.scheduling.TaskScheduler;
 
 class JiraServerGlobalCrudActionsTest {
     private final String CREATED_AT = String.valueOf(DateUtils.createCurrentDateTimestamp().minusMinutes(5L));
@@ -47,6 +53,7 @@ class JiraServerGlobalCrudActionsTest {
 
     private final UUID id = UUID.randomUUID();
 
+    private final Gson gson = new Gson();
     private final AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
     private final DescriptorKey descriptorKey = new JiraServerChannelKey();
     private final PermissionKey permissionKey = new PermissionKey(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey());
@@ -57,6 +64,12 @@ class JiraServerGlobalCrudActionsTest {
         () -> new PermissionMatrixModel(permissions)
     );
 
+    private final TaskManager taskManager = new TaskManager();
+    private final JiraSchedulingManager jiraSchedulingManager = new JiraSchedulingManager(taskManager);
+    private final TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
+    private final JiraServerPropertiesFactory jiraPropertiesFactory = Mockito.mock(JiraServerPropertiesFactory.class);
+    private final JiraServerSchedulingManager jiraServerSchedulingManager = new JiraServerSchedulingManager(gson, jiraSchedulingManager, taskScheduler, taskManager, jiraPropertiesFactory);
+
     @Test
     void getOneTest() {
         JiraServerGlobalConfigModel jiraServerGlobalConfigModel = createJiraServerGlobalConfigModel(id);
@@ -64,7 +77,7 @@ class JiraServerGlobalCrudActionsTest {
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(configAccessor.getConfiguration(id)).thenReturn(Optional.of(jiraServerGlobalConfigModel));
 
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator());
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator(), jiraServerSchedulingManager);
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.getOne(id);
 
         assertTrue(actionResponse.isSuccessful());
@@ -86,7 +99,7 @@ class JiraServerGlobalCrudActionsTest {
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(configAccessor.getConfigurationPage(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, null, null, null)).thenReturn(alertPagedModel);
 
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator());
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator(), jiraServerSchedulingManager);
         ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> actionResponse = crudActions.getPaged(
             AlertPagedModel.DEFAULT_PAGE_NUMBER,
             AlertPagedModel.DEFAULT_PAGE_SIZE,
@@ -118,7 +131,7 @@ class JiraServerGlobalCrudActionsTest {
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(configAccessor.getConfigurationPage(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, "", null, null)).thenReturn(alertPagedModel);
 
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator());
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator(), jiraServerSchedulingManager);
         ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> actionResponse = crudActions.getPaged(
             AlertPagedModel.DEFAULT_PAGE_NUMBER,
             AlertPagedModel.DEFAULT_PAGE_SIZE,
@@ -164,7 +177,7 @@ class JiraServerGlobalCrudActionsTest {
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(configAccessor.getConfigurationPage(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, "", "name", "asc")).thenReturn(alertPagedModel);
 
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator());
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator(), jiraServerSchedulingManager);
         ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> actionResponse = crudActions.getPaged(
             AlertPagedModel.DEFAULT_PAGE_NUMBER,
             AlertPagedModel.DEFAULT_PAGE_SIZE,
@@ -212,7 +225,7 @@ class JiraServerGlobalCrudActionsTest {
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(configAccessor.getConfigurationPage(AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE, "", "name", "desc")).thenReturn(alertPagedModel);
 
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator());
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator(), jiraServerSchedulingManager);
         ActionResponse<AlertPagedModel<JiraServerGlobalConfigModel>> actionResponse = crudActions.getPaged(
             AlertPagedModel.DEFAULT_PAGE_NUMBER,
             AlertPagedModel.DEFAULT_PAGE_SIZE,
@@ -238,7 +251,7 @@ class JiraServerGlobalCrudActionsTest {
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(configAccessor.createConfiguration(Mockito.any())).thenReturn(jiraServerGlobalConfigModel);
 
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator());
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator(), jiraServerSchedulingManager);
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.create(jiraServerGlobalConfigModel);
 
         assertTrue(actionResponse.isSuccessful());
@@ -253,7 +266,7 @@ class JiraServerGlobalCrudActionsTest {
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(configAccessor.createConfiguration(Mockito.any())).thenReturn(jiraServerGlobalConfigModel);
 
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator());
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator(), jiraServerSchedulingManager);
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.create(jiraServerGlobalConfigModel);
 
         assertTrue(actionResponse.isSuccessful());
@@ -269,7 +282,7 @@ class JiraServerGlobalCrudActionsTest {
         Mockito.when(configAccessor.existsConfigurationByName(Mockito.any())).thenReturn(true);
         Mockito.when(configAccessor.createConfiguration(Mockito.any())).thenReturn(jiraServerGlobalConfigModel);
 
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator());
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator(), jiraServerSchedulingManager);
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.create(jiraServerGlobalConfigModel);
 
         assertTrue(actionResponse.isError());
@@ -284,7 +297,7 @@ class JiraServerGlobalCrudActionsTest {
         Mockito.when(configAccessor.existsConfigurationById(id)).thenReturn(true);
         Mockito.when(configAccessor.updateConfiguration(Mockito.eq(id), Mockito.any())).thenReturn(jiraServerGlobalConfigModel);
 
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator());
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator(), jiraServerSchedulingManager);
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.update(id, jiraServerGlobalConfigModel);
 
         assertTrue(actionResponse.isSuccessful());
@@ -298,7 +311,7 @@ class JiraServerGlobalCrudActionsTest {
         JiraServerGlobalConfigAccessor configAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(configAccessor.existsConfigurationById(id)).thenReturn(true);
 
-        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator());
+        JiraServerGlobalCrudActions crudActions = new JiraServerGlobalCrudActions(authorizationManager, configAccessor, createValidator(), jiraServerSchedulingManager);
         ActionResponse<JiraServerGlobalConfigModel> actionResponse = crudActions.delete(id);
 
         Mockito.verify(configAccessor).deleteConfiguration(id);
