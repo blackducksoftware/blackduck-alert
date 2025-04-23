@@ -79,7 +79,7 @@ public class DefaultJiraServerJobDetailsAccessor implements JiraServerJobDetails
         List<JiraServerJobCustomFieldEntity> customFieldsToSave = jobDetails.getCustomFields()
             .stream()
             .map(model -> new JiraServerJobCustomFieldEntity(savedJobDetails.getJobId(), model.getFieldName(), model.getFieldValue(), model.isCreateJsonObject()))
-            .collect(Collectors.toList());
+            .toList();
         List<JiraServerJobCustomFieldEntity> savedJobCustomFields = jiraServerJobCustomFieldRepository.saveAll(customFieldsToSave);
         savedJobDetails.setJobCustomFields(savedJobCustomFields);
         return convertToModel(savedJobDetails);
@@ -88,8 +88,8 @@ public class DefaultJiraServerJobDetailsAccessor implements JiraServerJobDetails
     private JiraServerJobDetailsModel convertToModel(JiraServerJobDetailsEntity jobDetails) {
         List<JiraJobCustomFieldModel> customFields = jiraServerJobCustomFieldRepository.findByJobId(jobDetails.getJobId())
             .stream()
-            .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue()))
-            .collect(Collectors.toList());
+            .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue(), entity.isCreateJsonObject()))
+            .toList();
         return new JiraServerJobDetailsModel(
             jobDetails.getJobId(),
             jobDetails.getAddComments(),

@@ -30,7 +30,7 @@ public class JiraServerJobCustomFieldEntity {
     @Column(name = "field_value")
     private String fieldValue;
 
-    @Column(name = "create_object_json")
+    @Column(name = "create_json_object")
     private boolean createJsonObject;
 
     public JiraServerJobCustomFieldEntity() {

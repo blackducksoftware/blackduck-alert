@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import Modal from 'common/component/modal/Modal';
 import TextInput from 'common/component/input/TextInput';
+import Checkbox from "../../../../common/component/input/Checkbox";
+import CheckboxInput from "../../../../common/component/input/CheckboxInput";
 
 const FieldMappingModal = ({ tableData, selectedData, selectedIndex, isOpen, toggleModal, modalOptions, updateTableData }) => {
-    const [model, setModel] = useState(selectedData || { fieldName: '', fieldValue: '' });
+    const [model, setModel] = useState(selectedData || { fieldName: '', fieldValue: '', createJsonObject: false });
     const { title, type } = modalOptions;
 
     function handleClose() {
@@ -27,6 +29,10 @@ const FieldMappingModal = ({ tableData, selectedData, selectedIndex, isOpen, tog
     const handleChange = (e) => {
         setModel({ ...model, [e.target.name]: e.target.value });
     };
+
+    const handleCheckBoxChange = (e) => {
+        setModel({...model, [e.target.name]:e.target.checked});
+    }
 
     return (
         <Modal
@@ -51,6 +57,13 @@ const FieldMappingModal = ({ tableData, selectedData, selectedIndex, isOpen, tog
                 label="Value"
                 onChange={handleChange}
                 value={model.fieldValue}
+            />
+            <CheckboxInput
+                id="jira-value-json"
+                name="createJsonObject"
+                label="Always create JSON object"
+                onChange={handleCheckBoxChange}
+                isChecked={model.createJsonObject}
             />
         </Modal>
     );
