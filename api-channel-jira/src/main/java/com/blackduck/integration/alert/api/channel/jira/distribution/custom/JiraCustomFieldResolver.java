@@ -85,31 +85,36 @@ public class JiraCustomFieldResolver {
     protected Object convertValueToRequestObject(CustomFieldDefinitionModel fieldDefinition, JiraCustomFieldConfig jiraCustomFieldConfig) {
         String fieldType = fieldDefinition.getFieldType();
         String innerFieldValue = extractUsableInnerValue(jiraCustomFieldConfig);
-        switch (fieldType) {
-            case CUSTOM_FIELD_TYPE_STRING_VALUE:
-                return innerFieldValue;
-            case CUSTOM_FIELD_TYPE_ARRAY_VALUE:
-                return createJsonArray(innerFieldValue, fieldDefinition.getFieldArrayItems());
-            case CUSTOM_FIELD_TYPE_OPTION_VALUE:
-                return createJsonObject("value", innerFieldValue);
-            case CUSTOM_FIELD_TYPE_PRIORITY_VALUE:
-                return createJsonObject("name", innerFieldValue);
-            case CUSTOM_FIELD_TYPE_USER_VALUE:
-                // "name" is used for Jira Server (ignored on Jira Cloud)
-                JsonObject createUserObject = createJsonObject("name", innerFieldValue);
-                // "accountId" is used for Jira Cloud (ignored on Jira Server)
-                createUserObject.addProperty("accountId", innerFieldValue);
-                // TODO consider separating this functionality depending on which Jira channel is being used
-                return createUserObject;
-            case CUSTOM_FIELD_TYPE_OBJECT_VALUE:
-                // This is a Jira Cloud custom field type.  It is possible to create a JSON object
-                return createJsonObjectFromString(innerFieldValue, jiraCustomFieldConfig.getFieldName());
-            case CUSTOM_FIELD_TYPE_ANY_VALUE:
-                // Write the string value as is for any custom field of type any.
-                // custom fields are written to the Jira Server database as a string.
-                return innerFieldValue;
-            default:
-                throw new AlertRuntimeException(String.format("Unsupported field type '%s' for field: %s", fieldType, jiraCustomFieldConfig.getFieldName()));
+
+        if(jiraCustomFieldConfig.isCreateJsonObject()) {
+            return JsonParser.parseString(innerFieldValue);
+        } else {
+            switch (fieldType) {
+                case CUSTOM_FIELD_TYPE_STRING_VALUE:
+                    return innerFieldValue;
+                case CUSTOM_FIELD_TYPE_ARRAY_VALUE:
+                    return createJsonArray(innerFieldValue, fieldDefinition.getFieldArrayItems());
+                case CUSTOM_FIELD_TYPE_OPTION_VALUE:
+                    return createJsonObject("value", innerFieldValue);
+                case CUSTOM_FIELD_TYPE_PRIORITY_VALUE:
+                    return createJsonObject("name", innerFieldValue);
+                case CUSTOM_FIELD_TYPE_USER_VALUE:
+                    // "name" is used for Jira Server (ignored on Jira Cloud)
+                    JsonObject createUserObject = createJsonObject("name", innerFieldValue);
+                    // "accountId" is used for Jira Cloud (ignored on Jira Server)
+                    createUserObject.addProperty("accountId", innerFieldValue);
+                    // TODO consider separating this functionality depending on which Jira channel is being used
+                    return createUserObject;
+                case CUSTOM_FIELD_TYPE_OBJECT_VALUE:
+                    // This is a Jira Cloud custom field type.  It is possible to create a JSON object
+                    return createJsonObjectFromString(innerFieldValue, jiraCustomFieldConfig.getFieldName());
+                case CUSTOM_FIELD_TYPE_ANY_VALUE:
+                    // Write the string value as is for any custom field of type any.
+                    // custom fields are written to the Jira Server database as a string.
+                    return innerFieldValue;
+                default:
+                    throw new AlertRuntimeException(String.format("Unsupported field type '%s' for field: %s", fieldType, jiraCustomFieldConfig.getFieldName()));
+            }
         }
     }
 

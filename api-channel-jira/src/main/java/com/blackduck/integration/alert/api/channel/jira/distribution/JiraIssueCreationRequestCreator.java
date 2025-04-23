@@ -36,8 +36,8 @@ public class JiraIssueCreationRequestCreator {
     ) {
         List<JiraCustomFieldConfig> customFieldConfigs = customFields
                                                              .stream()
-                                                             .map(customField -> new JiraCustomFieldConfig(customField.getFieldName(), customField.getFieldValue()))
-                                                             .collect(Collectors.toList());
+                                                             .map(customField -> new JiraCustomFieldConfig(customField.getFieldName(), customField.getFieldValue(), customField.isCreateJsonObject()))
+                                                             .toList();
         return createIssueRequestModel(summary, description, projectId, issueType, customFieldConfigs, customFieldReplacementValues);
     }
 
