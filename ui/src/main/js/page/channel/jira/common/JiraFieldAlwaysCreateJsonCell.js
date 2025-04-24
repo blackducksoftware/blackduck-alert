@@ -14,11 +14,11 @@ const useStyles = createUseStyles({
 
 const JiraFieldAlwaysCreateJsonCell = ({ data }) => {
     const classes = useStyles();
-    const { createJsonObject } = data;
+    const { treatValueAsJson } = data;
 
     return (
-        <div className={createJsonObject ? classes.enabled : classes.disabled}>
-            <FontAwesomeIcon icon={createJsonObject ? 'check' : 'times'} />
+        <div className={treatValueAsJson ? classes.enabled : classes.disabled}>
+            <FontAwesomeIcon icon={treatValueAsJson ? 'check' : 'times'} />
         </div>
 
     );
@@ -26,7 +26,7 @@ const JiraFieldAlwaysCreateJsonCell = ({ data }) => {
 
 JiraFieldAlwaysCreateJsonCell.propTypes = {
     data: PropTypes.shape({
-        createJsonObject: PropTypes.bool
+        treatValueAsJson: PropTypes.bool
     })
 };
 

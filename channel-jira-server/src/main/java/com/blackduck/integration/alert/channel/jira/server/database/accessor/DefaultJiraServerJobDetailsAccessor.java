@@ -10,7 +10,6 @@ package com.blackduck.integration.alert.channel.jira.server.database.accessor;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -78,7 +77,7 @@ public class DefaultJiraServerJobDetailsAccessor implements JiraServerJobDetails
         jiraServerJobCustomFieldRepository.bulkDeleteByJobId(jobId);
         List<JiraServerJobCustomFieldEntity> customFieldsToSave = jobDetails.getCustomFields()
             .stream()
-            .map(model -> new JiraServerJobCustomFieldEntity(savedJobDetails.getJobId(), model.getFieldName(), model.getFieldValue(), model.isCreateJsonObject()))
+            .map(model -> new JiraServerJobCustomFieldEntity(savedJobDetails.getJobId(), model.getFieldName(), model.getFieldValue(), model.isTreatValueAsJson()))
             .toList();
         List<JiraServerJobCustomFieldEntity> savedJobCustomFields = jiraServerJobCustomFieldRepository.saveAll(customFieldsToSave);
         savedJobDetails.setJobCustomFields(savedJobCustomFields);
@@ -88,7 +87,7 @@ public class DefaultJiraServerJobDetailsAccessor implements JiraServerJobDetails
     private JiraServerJobDetailsModel convertToModel(JiraServerJobDetailsEntity jobDetails) {
         List<JiraJobCustomFieldModel> customFields = jiraServerJobCustomFieldRepository.findByJobId(jobDetails.getJobId())
             .stream()
-            .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue(), entity.isCreateJsonObject()))
+            .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue(), entity.isTreatValueAsJson()))
             .toList();
         return new JiraServerJobDetailsModel(
             jobDetails.getJobId(),

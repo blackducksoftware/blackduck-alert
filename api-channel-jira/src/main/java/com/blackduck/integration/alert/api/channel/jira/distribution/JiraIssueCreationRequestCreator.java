@@ -9,7 +9,6 @@ package com.blackduck.integration.alert.api.channel.jira.distribution;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.blackduck.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldConfig;
 import com.blackduck.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
@@ -36,7 +35,7 @@ public class JiraIssueCreationRequestCreator {
     ) {
         List<JiraCustomFieldConfig> customFieldConfigs = customFields
                                                              .stream()
-                                                             .map(customField -> new JiraCustomFieldConfig(customField.getFieldName(), customField.getFieldValue(), customField.isCreateJsonObject()))
+                                                             .map(customField -> new JiraCustomFieldConfig(customField.getFieldName(), customField.getFieldValue(), customField.isTreatValueAsJson()))
                                                              .toList();
         return createIssueRequestModel(summary, description, projectId, issueType, customFieldConfigs, customFieldReplacementValues);
     }

@@ -56,7 +56,7 @@ public class DefaultJiraCloudJobDetailsAccessor implements JiraCloudJobDetailsAc
         jiraCloudJobCustomFieldRepository.bulkDeleteByJobId(jobId);
         List<JiraCloudJobCustomFieldEntity> customFieldsToSave = jiraCloudJobDetails.getCustomFields()
                                                                      .stream()
-                                                                     .map(model -> new JiraCloudJobCustomFieldEntity(savedJobDetails.getJobId(), model.getFieldName(), model.getFieldValue(), model.isCreateJsonObject()))
+                                                                     .map(model -> new JiraCloudJobCustomFieldEntity(savedJobDetails.getJobId(), model.getFieldName(), model.getFieldValue(), model.isTreatValueAsJson()))
                                                                      .toList();
         List<JiraCloudJobCustomFieldEntity> savedCustomFields = jiraCloudJobCustomFieldRepository.saveAll(customFieldsToSave);
         savedJobDetails.setJobCustomFields(savedCustomFields);

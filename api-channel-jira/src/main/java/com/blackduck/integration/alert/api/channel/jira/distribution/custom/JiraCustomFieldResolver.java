@@ -86,7 +86,7 @@ public class JiraCustomFieldResolver {
         String fieldType = fieldDefinition.getFieldType();
         String innerFieldValue = extractUsableInnerValue(jiraCustomFieldConfig);
 
-        if(jiraCustomFieldConfig.isCreateJsonObject()) {
+        if(jiraCustomFieldConfig.isTreatValueAsJson()) {
             return JsonParser.parseString(innerFieldValue);
         } else {
             switch (fieldType) {

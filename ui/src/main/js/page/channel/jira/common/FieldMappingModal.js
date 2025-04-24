@@ -6,7 +6,7 @@ import Checkbox from "../../../../common/component/input/Checkbox";
 import CheckboxInput from "../../../../common/component/input/CheckboxInput";
 
 const FieldMappingModal = ({ tableData, selectedData, selectedIndex, isOpen, toggleModal, modalOptions, updateTableData }) => {
-    const [model, setModel] = useState(selectedData || { fieldName: '', fieldValue: '', createJsonObject: false });
+    const [model, setModel] = useState(selectedData || { fieldName: '', fieldValue: '', treatValueAsJson: false });
     const { title, type } = modalOptions;
 
     function handleClose() {
@@ -60,10 +60,11 @@ const FieldMappingModal = ({ tableData, selectedData, selectedIndex, isOpen, tog
             />
             <CheckboxInput
                 id="jira-value-json"
-                name="createJsonObject"
-                label="Always create JSON object"
+                name="treatValueAsJson"
+                label="Treat value as JSON"
+                description="If checked, Alert will treat the value as a JSON object or JSON Array.  This overrides any custom field processing that Alert does by inspecting the custom field type.  Alert will parse the value as JSON and send the JSON as the value for the custom field. "
                 onChange={handleCheckBoxChange}
-                isChecked={model.createJsonObject}
+                isChecked={model.treatValueAsJson}
             />
         </Modal>
     );

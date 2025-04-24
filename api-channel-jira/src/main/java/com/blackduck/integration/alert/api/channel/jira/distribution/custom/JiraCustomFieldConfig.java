@@ -18,16 +18,16 @@ public class JiraCustomFieldConfig extends AlertSerializableModel {
     private final String fieldName;
     private final String fieldOriginalValue;
     private @Nullable String fieldReplacementValue;
-    private boolean createJsonObject;
+    private boolean treatValueAsJson;
 
     public JiraCustomFieldConfig(String fieldName, String fieldOriginalValue) {
         this(fieldName, fieldOriginalValue, false);
     }
 
-    public JiraCustomFieldConfig(String fieldName, String fieldOriginalValue, boolean createJsonObject) {
+    public JiraCustomFieldConfig(String fieldName, String fieldOriginalValue, boolean treatValueAsJson) {
         this.fieldName = fieldName;
         this.fieldOriginalValue = fieldOriginalValue;
-        this.createJsonObject = createJsonObject;
+        this.treatValueAsJson = treatValueAsJson;
     }
 
     public String getFieldName() {
@@ -38,8 +38,8 @@ public class JiraCustomFieldConfig extends AlertSerializableModel {
         return fieldOriginalValue;
     }
 
-    public boolean isCreateJsonObject() {
-        return createJsonObject;
+    public boolean isTreatValueAsJson() {
+        return treatValueAsJson;
     }
 
     public Optional<String> getFieldReplacementValue() {

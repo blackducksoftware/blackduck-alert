@@ -12,7 +12,7 @@ import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 public class JiraJobCustomFieldModel extends AlertSerializableModel {
     private String fieldName;
     private String fieldValue;
-    private boolean createJsonObject;
+    private boolean treatValueAsJson;
 
     public JiraJobCustomFieldModel() {
     }
@@ -21,10 +21,10 @@ public class JiraJobCustomFieldModel extends AlertSerializableModel {
         this(fieldName, fieldValue, false);
     }
 
-    public JiraJobCustomFieldModel(String fieldName, String fieldValue, boolean createJsonObject) {
+    public JiraJobCustomFieldModel(String fieldName, String fieldValue, boolean treatValueAsJson) {
         this.fieldName = fieldName;
         this.fieldValue = fieldValue;
-        this.createJsonObject = createJsonObject;
+        this.treatValueAsJson = treatValueAsJson;
     }
 
     public String getFieldName() {
@@ -35,8 +35,8 @@ public class JiraJobCustomFieldModel extends AlertSerializableModel {
         return fieldValue;
     }
 
-    public boolean isCreateJsonObject() {
-        return createJsonObject;
+    public boolean isTreatValueAsJson() {
+        return treatValueAsJson;
     }
 
 }
