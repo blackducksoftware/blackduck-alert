@@ -12,14 +12,13 @@ const emptyTableConfig = {
 const JiraFieldMapDistributionTable = ({ initialData, onFieldMappingUpdate }) => {
     const [tableData, setTableData] = useState(initialData);
     const [selected, setSelected] = useState([]);
-    const [data, setData] = useState();
 
     useEffect(() => {
         onFieldMappingUpdate(tableData);
     }, [tableData]);
 
     function handleEditData(editedData) {
-        setData(editedData);
+        onFieldMappingUpdate(editedData)
     }
 
     const COLUMNS = [{
