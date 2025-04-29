@@ -332,6 +332,17 @@ validateAlertDBExists() {
     checkStatus $? "Validate database '${alertDatabaseName}' exists"
 }
 
+## In some flavors of Postgres, the DB functions created with releases 6.0.0, 6.4.0, and 6.9.0
+## of Alert were not being created. Liquibase was, however, reporting them as being run successfully.
+## In order to address this, the function creation logic was copied from those releases and put into
+## the sql script below. This will allow for the creation of these functions, but only if they don't
+## already exist.
+createPostgresFunctions() {
+  logIt "Creating Alert DB functions for database: ${alertDatabaseName}"
+  psql "${alertDatabaseConfig}" -f ${upgradeResourcesDir}/init_alert_functions.sql
+  checkStatus $? "Creating Alert DB functions for database: ${alertDatabaseName}"
+}
+
 createPostgresDatabase() {
     # Since the database is now external to the alert container check if the database, schema, and tables have been created for alert.
     # https://stackoverflow.com/a/58784528/6921621
@@ -545,6 +556,7 @@ trustProxyCertificate
 createKeystore
 importBlackDuckSystemCertificateIntoKeystore
 importDockerHubServerCertificate
+createPostgresFunctions
 createPostgresDatabase
 validatePostgresDatabase
 postgresPrepare600Upgrade
