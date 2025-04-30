@@ -87,7 +87,11 @@ public class JiraCustomFieldResolver {
         String innerFieldValue = extractUsableInnerValue(jiraCustomFieldConfig);
 
         if(jiraCustomFieldConfig.isTreatValueAsJson()) {
-            return JsonParser.parseString(innerFieldValue);
+            try {
+                return JsonParser.parseString(innerFieldValue);
+            } catch (JsonSyntaxException ex) {
+                throw new AlertRuntimeException(String.format("Invalid JSON value for field: %s error: %s", jiraCustomFieldConfig.getFieldName(), ex.getMessage()));
+            }
         } else {
             switch (fieldType) {
                 case CUSTOM_FIELD_TYPE_STRING_VALUE:
