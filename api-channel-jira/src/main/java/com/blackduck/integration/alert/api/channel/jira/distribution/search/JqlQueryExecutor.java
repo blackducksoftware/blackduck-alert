@@ -13,5 +13,6 @@ import com.blackduck.integration.alert.api.common.model.exception.AlertException
 
 public interface JqlQueryExecutor {
     List<JiraSearcherResponseModel> executeQuery(String jql) throws AlertException;
+    List<JiraSearcherResponseModel> executeQuery(String jql, Integer maxResults) throws AlertException;
 
 }

@@ -65,6 +65,11 @@ public class AzureBoardsComponentIssueFinder implements ProjectVersionComponentI
     }
 
     @Override
+    public IssueTrackerSearchResult<Integer> findExistingIssuesByProjectIssueModel(ProjectIssueModel projectIssueModel, Integer maxResults) throws AlertException {
+        return findExistingIssuesByProjectIssueModel(projectIssueModel);
+    }
+
+    @Override
     public IssueTrackerSearchResult<Integer> findExistingIssuesByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException {
         LinkableItem projectVersion = projectIssueModel.getProjectVersion()
             .orElseThrow(() -> new AlertRuntimeException("Missing project-version"));
