@@ -30,13 +30,17 @@ public class JiraServerJobCustomFieldEntity {
     @Column(name = "field_value")
     private String fieldValue;
 
+    @Column(name = "treat_value_as_json")
+    private boolean treatValueAsJson;
+
     public JiraServerJobCustomFieldEntity() {
     }
 
-    public JiraServerJobCustomFieldEntity(UUID jobId, String fieldName, String fieldValue) {
+    public JiraServerJobCustomFieldEntity(UUID jobId, String fieldName, String fieldValue, boolean treatValueAsJson) {
         this.jobId = jobId;
         this.fieldName = fieldName;
         this.fieldValue = fieldValue;
+        this.treatValueAsJson = treatValueAsJson;
     }
 
     public UUID getJobId() {
@@ -49,6 +53,10 @@ public class JiraServerJobCustomFieldEntity {
 
     public String getFieldValue() {
         return fieldValue;
+    }
+
+    public boolean isTreatValueAsJson() {
+        return treatValueAsJson;
     }
 
 }

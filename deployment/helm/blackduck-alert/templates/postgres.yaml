@@ -196,8 +196,13 @@ spec:
 {{ toYaml . | indent 10 }}
         {{- end }}
         volumeMounts:
-          - mountPath: /var/lib/postgresql/data
-            name: alert-postgres-data-volume
+        {{- range .Values.postgres.volumeMounts }}
+        - mountPath: {{ .mountPath }}
+          {{- if .subPath }}
+          subPath: {{ .subPath }}
+          {{- end }}
+          name: {{ .name }}
+        {{- end }}
       dnsPolicy: ClusterFirst
       {{- include "alert.imagePullSecrets" . | nindent 6 -}}
       {{- with .Values.postgres.nodeSelector }}
