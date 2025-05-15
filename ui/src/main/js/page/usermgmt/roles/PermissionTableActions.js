@@ -31,7 +31,7 @@ const useStyles = createUseStyles({
     }
 });
 
-const PermissionTableActions = ({ handleValidatePermission }) => {
+const PermissionTableActions = ({ data, handleValidatePermission, setCustomValidationMessage }) => {
     const classes = useStyles();
     const CONTEXT = 'context';
     const DESCRIPTOR = 'descriptorName';
@@ -90,8 +90,18 @@ const PermissionTableActions = ({ handleValidatePermission }) => {
         setNewPermission((permission) => ({ ...permission, [name]: selectedValue.name, label: value[0] }));
     }
 
+    function checkIfDescriptorExists(descriptorName, existingPermissions) {
+        return existingPermissions.some((permission) => permission.descriptorName === descriptorName);
+    }
+    
     function handleSave(permission) {
-        if (!permission[DESCRIPTOR] && !permission[CONTEXT]) {
+        setCustomValidationMessage();
+
+        if (checkIfDescriptorExists(permission.descriptorName, data.permissions)) {
+            setCustomValidationMessage({
+                message: 'Cannot have duplicate descriptors. Please select a different \'Descriptor Name\'.',
+            })
+        } else if (!permission[DESCRIPTOR] && !permission[CONTEXT]) {
             setFieldErrors({
                 descriptorName: {
                     fieldMessage: 'Descriptor is required',
@@ -207,7 +217,13 @@ const PermissionTableActions = ({ handleValidatePermission }) => {
 };
 
 PermissionTableActions.propTypes = {
-    handleValidatePermission: PropTypes.func
+    data: PropTypes.shape({
+        permissions: PropTypes.arrayOf(PropTypes.shape({
+            descriptorName: PropTypes.string
+        }))
+    }),
+    handleValidatePermission: PropTypes.func,
+    setCustomValidationMessage: PropTypes.func,
 };
 
 export default PermissionTableActions;
