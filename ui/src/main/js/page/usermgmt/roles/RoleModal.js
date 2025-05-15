@@ -7,6 +7,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Modal from 'common/component/modal/Modal';
 import TextInput from 'common/component/input/TextInput';
 import PermissionTable from 'page/usermgmt/roles/PermissionTable';
+import Alert from 'react-bootstrap/Alert';
+import MessageFormatter from 'common/component/MessageFormatter';
 
 const useStyles = createUseStyles({
     descriptorContainer: {
@@ -31,6 +33,7 @@ const RoleModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
     const { copyDescription, type, title, submitText } = modalOptions;
     const [role, setRole] = useState(type === 'CREATE' ? { permissions: [] } : data);
     const [showLoader, setShowLoader] = useState(false);
+    const [customValidationMessage, setCustomValidationMessage] = useState();
 
     const ROLE_NAME_KEY = 'roleName';
 
@@ -123,6 +126,14 @@ const RoleModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
             submitText={submitText}
             showLoader={showLoader}
         >
+            { customValidationMessage && (
+                <Alert
+                    bsPrefix="alert"
+                    variant="danger"
+                >
+                    <MessageFormatter message={customValidationMessage.message} />
+                </Alert>
+            )}
             { type === 'COPY' && (
                 <div className={classes.descriptorContainer}>
                     <FontAwesomeIcon icon="exclamation-circle" size="2x" />
@@ -143,7 +154,12 @@ const RoleModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
                 errorValue={error.fieldErrors[ROLE_NAME_KEY]}
             />
             <div className={classes.permissionTable}>
-                <PermissionTable role={role} sendPermissionArray={getPermissionArray} handleFilterPermission={handleFilterPermission} />
+                <PermissionTable
+                    role={role}
+                    handleFilterPermission={handleFilterPermission} 
+                    sendPermissionArray={getPermissionArray}
+                    setCustomValidationMessage={setCustomValidationMessage}
+                />
             </div>
         </Modal>
     );
