@@ -105,6 +105,6 @@ class JiraServerJobDetailsAccessorTest {
     }
 
     private List<JiraServerJobCustomFieldEntity> createCustomFieldEntities(UUID jobID) {
-        return List.of(new JiraServerJobCustomFieldEntity(jobID, "customField", "customFieldValue"));
+        return List.of(new JiraServerJobCustomFieldEntity(jobID, "customField", "customFieldValue", false));
     }
 }

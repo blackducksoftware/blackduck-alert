@@ -18,10 +18,16 @@ public class JiraCustomFieldConfig extends AlertSerializableModel {
     private final String fieldName;
     private final String fieldOriginalValue;
     private @Nullable String fieldReplacementValue;
+    private boolean treatValueAsJson;
 
     public JiraCustomFieldConfig(String fieldName, String fieldOriginalValue) {
+        this(fieldName, fieldOriginalValue, false);
+    }
+
+    public JiraCustomFieldConfig(String fieldName, String fieldOriginalValue, boolean treatValueAsJson) {
         this.fieldName = fieldName;
         this.fieldOriginalValue = fieldOriginalValue;
+        this.treatValueAsJson = treatValueAsJson;
     }
 
     public String getFieldName() {
@@ -30,6 +36,10 @@ public class JiraCustomFieldConfig extends AlertSerializableModel {
 
     public String getFieldOriginalValue() {
         return fieldOriginalValue;
+    }
+
+    public boolean isTreatValueAsJson() {
+        return treatValueAsJson;
     }
 
     public Optional<String> getFieldReplacementValue() {
