@@ -50,9 +50,12 @@ public class AlertClientCertificateManager {
         validateClientCertificateHasValues(clientCertificateModel);
         PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate(clientCertificateModel.getClientCertificateContent())
             .withPrivateKey(clientCertificateModel.getKeyContent())
-            .withPrivateKeyPassword(clientCertificateModel.getKeyPassword());
-        PemSslStoreDetails trustStoreDetails = PemSslStoreDetails.forCertificate(null);
-        return new PemSslStoreBundle(keyStoreDetails, trustStoreDetails, AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS);
+            .withPrivateKeyPassword(clientCertificateModel.getKeyPassword())
+            .withAlias(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS);
+        PemSslStoreDetails trustStoreDetails = PemSslStoreDetails.forCertificate(null)
+            .withAlias(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS);
+
+        return new PemSslStoreBundle(keyStoreDetails, trustStoreDetails);
     }
 
     public synchronized void removeCertificate() throws AlertException {
