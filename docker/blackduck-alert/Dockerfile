@@ -1,4 +1,4 @@
-FROM blackducksoftware/hub-docker-common:1.0.7 as docker-common
+FROM blackducksoftware/hub-docker-common:1.0.7 AS docker-common
 FROM alpine:3.20
 
 ARG VERSION
@@ -8,19 +8,19 @@ LABEL com.blackducksoftware.integration.alert.vendor="Black Duck Software, Inc."
       com.blackducksoftware.integration.alert.version="$VERSION" \
       com.blackducksoftware.integration.alert.commitHash="$COMMITHASH"
 
-ENV ALERT_HOME /opt/blackduck/alert
-ENV ALERT_TAR_HOME $ALERT_HOME/alert-tar
-ENV ALERT_IMAGES_DIR $ALERT_TAR_HOME/images
-ENV ALERT_CONFIG_HOME $ALERT_HOME/alert-config
-ENV ALERT_DATA_DIR $ALERT_CONFIG_HOME/data
-ENV ALERT_MAX_HEAP_SIZE 2048m
+ENV ALERT_HOME=/opt/blackduck/alert
+ENV ALERT_TAR_HOME=$ALERT_HOME/alert-tar
+ENV ALERT_IMAGES_DIR=$ALERT_TAR_HOME/images
+ENV ALERT_CONFIG_HOME=$ALERT_HOME/alert-config
+ENV ALERT_DATA_DIR=$ALERT_CONFIG_HOME/data
+ENV ALERT_MAX_HEAP_SIZE=2048m
 
-ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk
-ENV PATH $JAVA_HOME/bin:$ALERT_TAR_HOME/bin:$PATH
-ENV CERTIFICATE_MANAGER_DIR $ALERT_HOME/bin
-ENV SECURITY_DIR $ALERT_HOME/security
-ENV DEFAULT_BLACKDUCK_ALERT_OPTS -Djava.security.properties=${SECURITY_DIR}/java.security
-ENV APPLICATION_NAME blackduck-alert
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+ENV PATH=$JAVA_HOME/bin:$ALERT_TAR_HOME/bin:$PATH
+ENV CERTIFICATE_MANAGER_DIR=$ALERT_HOME/bin
+ENV SECURITY_DIR=$ALERT_HOME/security
+ENV DEFAULT_BLACKDUCK_ALERT_OPTS=-Djava.security.properties=${SECURITY_DIR}/java.security
+ENV APPLICATION_NAME=blackduck-alert
 
 RUN set -ex \
     && mkdir -p -m 775 $ALERT_CONFIG_HOME $ALERT_TAR_HOME $ALERT_DATA_DIR $CERTIFICATE_MANAGER_DIR \
