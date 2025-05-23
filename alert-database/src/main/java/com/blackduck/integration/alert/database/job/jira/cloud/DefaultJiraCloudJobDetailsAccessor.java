@@ -67,14 +67,14 @@ public class DefaultJiraCloudJobDetailsAccessor implements JiraCloudJobDetailsAc
         return jiraCloudJobCustomFieldRepository.findByJobId(jobId)
                    .stream()
                    .map(customFieldEntity -> new JiraJobCustomFieldModel(customFieldEntity.getFieldName(), customFieldEntity.getFieldValue()))
-                   .collect(Collectors.toList());
+                   .toList();
     }
 
     private JiraCloudJobDetailsModel convertToModel(JiraCloudJobDetailsEntity jobDetails) {
         List<JiraJobCustomFieldModel> customFields = jiraCloudJobCustomFieldRepository.findByJobId(jobDetails.getJobId())
                                                          .stream()
-                                                         .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue()))
-                                                         .collect(Collectors.toList());
+                                                         .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue(), entity.isTreatValueAsJson()))
+                                                         .toList();
         return new JiraCloudJobDetailsModel(
             jobDetails.getJobId(),
             jobDetails.getAddComments(),
