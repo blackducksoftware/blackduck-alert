@@ -79,8 +79,7 @@ postgres:
   storageClass: "" # PVC storage class name
   volumeName: "" # existing persistent volume name backing the PVC
   volumeMounts:
-    - mountPath: /var/lib/postgresql
-      subPath: data
+    - mountPath: /var/lib/postgresql/data
       name: alert-postgres-data-volume
   nodeSelector: {}
   tolerations: []
