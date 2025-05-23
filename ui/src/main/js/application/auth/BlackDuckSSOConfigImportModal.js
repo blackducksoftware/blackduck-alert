@@ -1,27 +1,33 @@
 import React, { useState } from 'react';
+import { createUseStyles } from 'react-jss';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
-import PopUp from 'common/component/PopUp';
 import EndpointSelectField from 'common/component/input/EndpointSelectField';
 import { DISTRIBUTION_COMMON_FIELD_KEYS, DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
-import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
-import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
 import { createReadRequest } from 'common/util/configurationRequestBuilder';
 import * as PropTypes from 'prop-types';
 import StatusMessage from 'common/component/StatusMessage';
+import Modal from 'common/component/modal/Modal';
+
+const useStyles = createUseStyles({
+    configModalContent: {
+        height: '100px'
+    }
+});
 
 const BlackDuckSSOConfigImportModal = ({
-    csrfToken, readOnly, label, show, onHide, initialSSOFieldData, updateSSOFieldData
+    csrfToken, readOnly = false, initialSSOFieldData, updateSSOFieldData,
+    isOpen, toggleModal, providerModel, setProviderModel
 }) => {
+    const classes = useStyles();
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState();
-    const [providerModel, setProviderModel] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.DISTRIBUTION, BLACKDUCK_INFO.key));
 
     const blackDuckConfigId = FieldModelUtilities.getFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId);
 
     const hideAndClearModal = () => {
         setErrorMessage(undefined);
         setLoading(false);
-        onHide();
+        toggleModal(false);
     };
 
     const retrieveBlackDuckSSOConfig = () => {
@@ -52,63 +58,61 @@ const BlackDuckSSOConfigImportModal = ({
         });
     };
 
+    function handleClose() {
+        toggleModal(false);
+    }
+
+    function handleSubmit() {
+        setLoading(true);
+        retrieveBlackDuckSSOConfig();
+    }
+
     return (
-        <PopUp
-            id={label}
-            onKeyDown={(e) => e.stopPropagation()}
-            onClick={(e) => e.stopPropagation()}
-            onFocus={(e) => e.stopPropagation()}
-            onMouseOver={(e) => e.stopPropagation()}
-            onCancel={hideAndClearModal}
-            includeSave={false}
-            handleTest={() => {
-                setLoading(true);
-                retrieveBlackDuckSSOConfig();
-            }}
-            testLabel="Import"
-            includeTest
-            show={show}
-            title={label}
-            performingAction={loading}
+        <Modal
+            isOpen={isOpen}
+            size="md"
+            title="Retrieve Black Duck SAML Configuration"
+            closeModal={handleClose}
+            handleCancel={handleClose}
+            handleSubmit={handleSubmit}
+            submitText="Import"
+            showLoader={loading}
         >
-            <EndpointSelectField
-                id={DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId}
-                csrfToken={csrfToken}
-                endpoint={DISTRIBUTION_URLS.endpointSelectPath}
-                fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId}
-                label="Black Duck Configuration"
-                description="The Black Duck configuration from which to retrieve the SAML configuration."
-                clearable={false}
-                readOnly={readOnly}
-                required
-                createRequestBody={() => providerModel}
-                onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
-                value={blackDuckConfigId}
-                errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)}
-            />
-            <StatusMessage
-                id="import-status-message"
-                errorMessage={errorMessage}
-                errorIsDetailed={false}
-            />
-        </PopUp>
+            <div className={classes.configModalContent}>
+                <EndpointSelectField
+                    id={DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId}
+                    csrfToken={csrfToken}
+                    endpoint={DISTRIBUTION_URLS.endpointSelectPath}
+                    fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId}
+                    label="Black Duck Configuration"
+                    description="The Black Duck configuration from which to retrieve the SAML configuration."
+                    clearable={false}
+                    readOnly={readOnly} 
+                    required
+                    createRequestBody={() => providerModel}
+                    onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                    value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)}
+                />
+                <StatusMessage
+                    id="import-status-message"
+                    errorMessage={errorMessage}
+                    errorIsDetailed={false}
+                />
+            </div>
+        </Modal>
     );
 };
 
 BlackDuckSSOConfigImportModal.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     readOnly: PropTypes.bool,
-    label: PropTypes.string,
-    show: PropTypes.bool,
-    onHide: PropTypes.func.isRequired,
     initialSSOFieldData: PropTypes.object.isRequired,
+    isOpen: PropTypes.bool.isRequired,
+    providerModel: PropTypes.object.isRequired,
+    setProviderModel: PropTypes.func.isRequired,
+    toggleModal: PropTypes.func.isRequired,
     updateSSOFieldData: PropTypes.func.isRequired
-};
-
-BlackDuckSSOConfigImportModal.defaultProps = {
-    readOnly: false,
-    label: 'BlackDuck SSO Config Import',
-    show: false
 };
 
 export default BlackDuckSSOConfigImportModal;
