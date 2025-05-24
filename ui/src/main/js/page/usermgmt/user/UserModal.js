@@ -41,7 +41,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
     const messageContainerClass = classNames(classes.messageContainer, {
         [classes.warningStyle]: type === 'EDIT'
     });
-    const [confirmPassword, setConfirmPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState();
     const [confirmPasswordError, setConfirmPasswordError] = useState({});
 
     const fieldErrors = useSelector((state) => state.users.error.fieldErrors);
@@ -84,7 +84,6 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
     }
 
     useEffect(() => {
-        console.log(saveStatus);
         if (saveStatus === 'VALIDATING' || saveStatus === 'SAVING') {
             setShowLoader(true);
         }
@@ -129,6 +128,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
             closeModal={handleClose}
             handleCancel={handleClose}
             handleSubmit={handleSubmit}
+            disableSubmit={!userModel[USER_INPUT_FIELD_KEYS.PASSWORD_KEY] || !confirmPassword}
             submitText={submitText}
             showLoader={showLoader}
             noOverflow
