@@ -1,4 +1,4 @@
-FROM blackducksoftware/hub-docker-common:1.0.7 as docker-common
+FROM blackducksoftware/hub-docker-common:1.0.7 AS docker-common
 FROM rabbitmq:3.13-alpine
 
 ARG VERSION
@@ -12,8 +12,8 @@ ENV BLACKDUCK_HOME="/opt/blackduck"
 ENV APPLICATION_NAME="rabbitmq"
 ENV APPLICATION_HOME="$BLACKDUCK_HOME/$APPLICATION_NAME"
 ENV RABBITMQ_HOME="/etc/rabbitmq"
-ENV SECURITY_DIR $APPLICATION_HOME/security
-ENV CERTIFICATE_MANAGER_DIR $APPLICATION_HOME/bin
+ENV SECURITY_DIR=$APPLICATION_HOME/security
+ENV CERTIFICATE_MANAGER_DIR=$APPLICATION_HOME/bin
 
 RUN set -ex \
     && mkdir -p -m 775 "$APPLICATION_HOME/bin" "$APPLICATION_HOME/security" "$APPLICATION_HOME/logs" \
