@@ -36,9 +36,11 @@ public class AlertClientCertificateManager {
     public synchronized boolean validateCertificate(ClientCertificateModel clientCertificateModel) {
         try {
             logger.debug("Validating client certificate.");
-            // Validate a PemSslStoreBundle can be created. If an exception is thrown, the certificate is invalid.
-            // The returned result is ignored and not saved to the clientSslStoreBundle.
-            createPemSslStoreBundle(clientCertificateModel);
+            // Validate a certificate can be added and then retrieved from a PemSslStoreBundle.
+            // If an exception is thrown, the certificate is invalid.
+            // The returned result is not saved to the clientSslStoreBundle.
+            PemSslStoreBundle pemSslStoreBundle = createPemSslStoreBundle(clientCertificateModel);
+            pemSslStoreBundle.getKeyStore().getCertificate(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS);
             return true;
         } catch (Exception e) {
             logger.error(e.getMessage());
