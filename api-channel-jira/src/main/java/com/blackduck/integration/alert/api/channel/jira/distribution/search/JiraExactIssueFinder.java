@@ -10,6 +10,7 @@ package com.blackduck.integration.alert.api.channel.jira.distribution.search;
 import java.util.List;
 import java.util.Optional;
 
+import com.blackduck.integration.alert.common.enumeration.ItemOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +49,7 @@ public class JiraExactIssueFinder implements ExactIssueFinder<String> {
         LinkableItem provider = projectIssueModel.getProvider();
         LinkableItem project = projectIssueModel.getProject();
         IssueBomComponentDetails bomComponent = projectIssueModel.getBomComponentDetails();
+        LinkableItem componentVersion = bomComponent.getComponentVersion().orElse(null);
 
         ComponentConcernType concernType = ComponentConcernType.VULNERABILITY;
         String policyName = null;
@@ -57,6 +59,12 @@ public class JiraExactIssueFinder implements ExactIssueFinder<String> {
         if (optionalPolicyName.isPresent()) {
             concernType = ComponentConcernType.POLICY;
             policyName = optionalPolicyName.get();
+
+            if(policyDetails.map(IssuePolicyDetails::getOperation).filter(ItemOperation.DELETE::equals).isPresent()) {
+                // policy cleared notification or override.  The component version doesn't matter just component
+                // and policy name.
+                componentVersion = null;
+            }
         }
 
         if (projectIssueModel.getComponentUnknownVersionDetails().isPresent()) {
@@ -69,7 +77,7 @@ public class JiraExactIssueFinder implements ExactIssueFinder<String> {
             project,
             projectIssueModel.getProjectVersion().orElse(null),
             bomComponent.getComponent(),
-            bomComponent.getComponentVersion().orElse(null),
+            componentVersion,
             concernType,
             policyName
         );
