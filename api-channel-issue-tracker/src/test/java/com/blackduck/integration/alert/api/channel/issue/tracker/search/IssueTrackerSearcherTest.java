@@ -118,10 +118,10 @@ class IssueTrackerSearcherTest {
         Mockito.when(projectIssueModel3.getVulnerabilityDetails()).thenReturn(Optional.of(vulnerabilityDetails));
 
         ExactIssueFinder<String> exactIssueFinder = Mockito.mock(ExactIssueFinder.class);
-        Mockito.when(exactIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel1))
+        Mockito.when(exactIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel1, IssueTrackerSearcher.DEFAULT_MAX_RESULTS))
             .thenReturn(new IssueTrackerSearchResult<>("", List.of(new ProjectIssueSearchResult<>(issue1, projectIssueModel1))));
-        Mockito.when(exactIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel2)).thenReturn(new IssueTrackerSearchResult<>("", List.of()));
-        Mockito.when(exactIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel3)).thenReturn(new IssueTrackerSearchResult<>("", List.of()));
+        Mockito.when(exactIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel2,IssueTrackerSearcher.DEFAULT_MAX_RESULTS)).thenReturn(new IssueTrackerSearchResult<>("", List.of()));
+        Mockito.when(exactIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel3,IssueTrackerSearcher.DEFAULT_MAX_RESULTS)).thenReturn(new IssueTrackerSearchResult<>("", List.of()));
 
         ProjectMessageToIssueModelTransformer mockModelTransformer = Mockito.mock(ProjectMessageToIssueModelTransformer.class);
         Mockito.when(mockModelTransformer.convertToIssueModels(projectMessage)).thenReturn(List.of(projectIssueModel1, projectIssueModel2, projectIssueModel3));

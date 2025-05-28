@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Table from 'common/component/table/Table';
 import JiraFieldMapEditCell from 'page/channel/jira/common/JiraFieldMapEditCell';
 import JiraFieldMapTableActions from 'page/channel/jira/common/JiraFieldMapTableActions';
+import JiraFieldAlwaysCreateJsonCell from "./JiraFieldAlwaysCreateJsonCell";
 
 const emptyTableConfig = {
     message: 'There are no records to display for this table.  Please add a Jira field mapping to use this table.'
@@ -11,14 +12,13 @@ const emptyTableConfig = {
 const JiraFieldMapDistributionTable = ({ initialData, onFieldMappingUpdate }) => {
     const [tableData, setTableData] = useState(initialData);
     const [selected, setSelected] = useState([]);
-    const [data, setData] = useState();
 
     useEffect(() => {
         onFieldMappingUpdate(tableData);
     }, [tableData]);
 
     function handleEditData(editedData) {
-        setData(editedData);
+        onFieldMappingUpdate(editedData)
     }
 
     const COLUMNS = [{
@@ -29,6 +29,12 @@ const JiraFieldMapDistributionTable = ({ initialData, onFieldMappingUpdate }) =>
         key: 'fieldValue',
         label: 'Value',
         sortable: true
+    }, {
+        key: 'createJsonObject',
+        label: 'Treat Value as JSON',
+        sortable: false,
+        customCell: JiraFieldAlwaysCreateJsonCell,
+        settings: { alignment: 'center' }
     }, {
         key: 'editJiraCloudFieldMapping',
         label: 'Edit',

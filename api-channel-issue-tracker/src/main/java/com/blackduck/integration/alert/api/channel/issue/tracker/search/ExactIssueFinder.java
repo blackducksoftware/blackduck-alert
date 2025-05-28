@@ -14,5 +14,5 @@ import com.blackduck.integration.alert.api.common.model.exception.AlertException
 
 public interface ExactIssueFinder<T extends Serializable> {
     IssueTrackerSearchResult<T> findExistingIssuesByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException;
-
+    IssueTrackerSearchResult<T> findExistingIssuesByProjectIssueModel(ProjectIssueModel projectIssueModel, Integer maxResults) throws AlertException;
 }

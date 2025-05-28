@@ -23,6 +23,7 @@ public class JiraCustomFieldConfigTest {
 
         assertEquals(fieldName, jiraCustomFieldConfig.getFieldName());
         assertEquals(fieldOriginalValue, jiraCustomFieldConfig.getFieldOriginalValue());
+        assertFalse(jiraCustomFieldConfig.isTreatValueAsJson());
     }
 
     @Test
@@ -41,5 +42,11 @@ public class JiraCustomFieldConfigTest {
         jiraCustomFieldConfig.setFieldReplacementValue(null);
 
         assertFalse(jiraCustomFieldConfig.getFieldReplacementValue().isPresent());
+    }
+
+    @Test
+    public void treatValueAsJsonTest() {
+        JiraCustomFieldConfig jiraCustomFieldConfig = new JiraCustomFieldConfig(fieldName, fieldOriginalValue, true);
+        assertTrue(jiraCustomFieldConfig.isTreatValueAsJson());
     }
 }
