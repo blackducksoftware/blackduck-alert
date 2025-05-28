@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 
 import { AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS } from 'application/auth/AuthenticationModel';
+import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
+import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 
 import CollapsiblePane from 'common/component/CollapsiblePane';
 import ConcreteConfigurationForm from 'common/configuration/global/concrete/ConcreteConfigurationForm';
@@ -49,6 +51,8 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
     const [formData, setFormData] = useState({});
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
     const [showBlackDuckSSOImportModal, setShowBlackDuckSSOImportModal] = useState(false);
+    const [providerModel, setProviderModel] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.DISTRIBUTION, BLACKDUCK_INFO.key));
+
     const [triggerClearUploaded, setTriggerClearUploaded] = useState(false);
     const samlRequestUrl = `${ConfigurationRequestBuilder.AUTHENTICATION_SAML_API_URL}`;
 
@@ -84,6 +88,10 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
 
     function clearUploadedButtonsPostDelete() {
         setTriggerClearUploaded(!triggerClearUploaded);
+    }
+
+    function handleShowModal() {
+        setShowBlackDuckSSOImportModal(true);
     }
 
     return (
@@ -148,20 +156,23 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                             <div className={classes.fillForm}>
                                 <Button
                                     id="blackduck-sso-import-button"
-                                    onClick={() => setShowBlackDuckSSOImportModal(true)}
+                                    onClick={handleShowModal}
                                     text="Fill Form"
                                 />
                             </div>
                         </LabeledField>
-                        <BlackDuckSSOConfigImportModal
-                            label={importBlackDuckSSOConfigLabel}
-                            csrfToken={csrfToken}
-                            readOnly={readonly}
-                            show={showBlackDuckSSOImportModal}
-                            onHide={() => setShowBlackDuckSSOImportModal(false)}
-                            initialSSOFieldData={formData}
-                            updateSSOFieldData={(data) => setFormData(data)}
-                        />
+                        {showBlackDuckSSOImportModal && (
+                            <BlackDuckSSOConfigImportModal
+                                csrfToken={csrfToken}
+                                initialSSOFieldData={formData}
+                                isOpen={showBlackDuckSSOImportModal}
+                                providerModel={providerModel}
+                                readOnly={readonly}
+                                setProviderModel={setProviderModel}
+                                toggleModal={setShowBlackDuckSSOImportModal}
+                                updateSSOFieldData={(data) => setFormData(data)}
+                            />
+                        )}
                     </>
                 )}
 
