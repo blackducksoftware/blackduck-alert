@@ -36,9 +36,11 @@ public class AlertClientCertificateManager {
     public synchronized boolean validateCertificate(ClientCertificateModel clientCertificateModel) {
         try {
             logger.debug("Validating client certificate.");
-            // Validate a PemSslStoreBundle can be created. If an exception is thrown, the certificate is invalid.
-            // The returned result is ignored and not saved to the clientSslStoreBundle.
-            createPemSslStoreBundle(clientCertificateModel);
+            // Validate a certificate can be added and then retrieved from a PemSslStoreBundle.
+            // If an exception is thrown, the certificate is invalid.
+            // The returned result is not saved to the clientSslStoreBundle.
+            PemSslStoreBundle pemSslStoreBundle = createPemSslStoreBundle(clientCertificateModel);
+            pemSslStoreBundle.getKeyStore().getCertificate(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS);
             return true;
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -50,9 +52,12 @@ public class AlertClientCertificateManager {
         validateClientCertificateHasValues(clientCertificateModel);
         PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate(clientCertificateModel.getClientCertificateContent())
             .withPrivateKey(clientCertificateModel.getKeyContent())
-            .withPrivateKeyPassword(clientCertificateModel.getKeyPassword());
-        PemSslStoreDetails trustStoreDetails = PemSslStoreDetails.forCertificate(null);
-        return new PemSslStoreBundle(keyStoreDetails, trustStoreDetails, AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS);
+            .withPrivateKeyPassword(clientCertificateModel.getKeyPassword())
+            .withAlias(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS);
+        PemSslStoreDetails trustStoreDetails = PemSslStoreDetails.forCertificate(null)
+            .withAlias(AlertRestConstants.DEFAULT_CLIENT_CERTIFICATE_ALIAS);
+
+        return new PemSslStoreBundle(keyStoreDetails, trustStoreDetails);
     }
 
     public synchronized void removeCertificate() throws AlertException {
