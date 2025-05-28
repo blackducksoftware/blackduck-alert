@@ -35,6 +35,9 @@ project.tasks.create(name: copyDeploymentFilesTaskName, type: Copy, group: 'Depl
     from('deployment/blackduck-alert.env') {
         into "docker-swarm/standalone"
     }
+    from('deployment/sql/init_alert_functions.sql') {
+        into "sql"
+    }
     into "${project.buildDir}/deployment"
 
     doLast {

@@ -242,7 +242,6 @@ distributions {
             from('src/main/resources/db/changelog/') { into 'upgradeResources/changelog/' }
             from('alert-database/src/main/resources/liquibase/release-locks-changelog.xml') { into 'upgradeResources' }
             from('alert-database/src/main/resources/scripts/init_alert_db.sql') { into 'upgradeResources' }
-            from('alert-database/src/main/resources/scripts/init_alert_functions.sql') { into 'upgradeResources' }
             from('docker/blackduck-alert-db') {
                 into 'upgradeResources'
                 include '**/*.sql'
