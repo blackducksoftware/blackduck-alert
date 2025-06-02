@@ -260,7 +260,7 @@ public class StaticJobAccessor implements JobAccessor {
             JiraCloudJobDetailsEntity jobDetails = jobEntity.getJiraCloudJobDetails();
             List<JiraJobCustomFieldModel> customFields = jobDetails.getJobCustomFields()
                 .stream()
-                .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue()))
+                .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue(), entity.isTreatValueAsJson()))
                 .collect(Collectors.toList());
             distributionJobDetailsModel = new JiraCloudJobDetailsModel(
                 jobId,

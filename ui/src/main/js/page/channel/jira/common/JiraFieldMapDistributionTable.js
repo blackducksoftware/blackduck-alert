@@ -30,7 +30,7 @@ const JiraFieldMapDistributionTable = ({ initialData, onFieldMappingUpdate }) =>
         label: 'Value',
         sortable: true
     }, {
-        key: 'createJsonObject',
+        key: 'treatValueAsJson',
         label: 'Treat Value as JSON',
         sortable: false,
         customCell: JiraFieldAlwaysCreateJsonCell,
