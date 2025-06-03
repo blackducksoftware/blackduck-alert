@@ -33,8 +33,8 @@ ext {
     moduleName = 'com.blackduck.integration.alert.main'
 
     // This version is also in src/test/resources/spring-test.properties for the test jdbc connection
-    postgresContainerVersionMigration = '14.10'
-    postgresContainerVersionCurrent = '15.8'
+    postgresContainerVersionMigration = '15.8'
+    postgresContainerVersionCurrent = '16.9'
 
     // Docker Variables
     dockerBuildParam_POSTGRESIMAGEVERSION_MIGRATION = 'postgres:' + postgresContainerVersionMigration + '-alpine'
