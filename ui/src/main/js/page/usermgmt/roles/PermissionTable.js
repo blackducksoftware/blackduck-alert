@@ -12,7 +12,7 @@ const emptyTableConfig = {
     message: 'There are no records to display for this table.  Please create a Permission above to use this table.'
 };
 
-const PermissionTable = ({ role, sendPermissionArray, handleFilterPermission, setCustomValidationMessage }) => {
+const PermissionTable = ({ role, sendPermissionArray, handleFilterPermission }) => {
     const permissionData = role.permissions;
 
     const descriptors = useSelector((state) => state.descriptors.items);
@@ -60,7 +60,6 @@ const PermissionTable = ({ role, sendPermissionArray, handleFilterPermission, se
                 data={role}
                 canDelete={canDelete}
                 handleValidatePermission={handleValidatePermission}
-                setCustomValidationMessage={setCustomValidationMessage}
             />}
         />
     );
@@ -99,7 +98,6 @@ PermissionTable.propTypes = {
         })
     }),
     sendPermissionArray: PropTypes.func,
-    setCustomValidationMessage: PropTypes.func,
     handleFilterPermission: PropTypes.func
 };
 
