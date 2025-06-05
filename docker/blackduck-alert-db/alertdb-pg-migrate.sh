@@ -112,11 +112,11 @@ function _configure_ICU74() {
       _checkStatus 1 "Verifying environment variable: ICU74"
     fi
 
-    if [ -x "${ICU74}/bin/icu-config" ]; then
+    if [ ! -x "${ICU74}/bin/icu-config" ]; then
       _checkStatus 1 "Unable to find ${ICU74}/bin/icu-config"
     fi
 
-    "${ICU74}"/bin/icu-config > /dev/null
+    "${ICU74}"/bin/icu-config --version > /dev/null
     _checkStatus $? "Executing ${ICU74}/bin/icu-config"
 
     export PATH=/opt/icu74/bin/:${PATH}
