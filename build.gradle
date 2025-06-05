@@ -37,6 +37,7 @@ ext {
     postgresContainerVersionCurrent = '16.9'
 
     // Docker Variables
+    dockerBuildParam_POSTGRES_MIGRATION_VERSION = postgresContainerVersionMigration
     dockerBuildParam_POSTGRESIMAGEVERSION_MIGRATION = 'postgres:' + postgresContainerVersionMigration + '-alpine'
     dockerBuildParam_POSTGRESIMAGEVERSION = 'postgres:' + postgresContainerVersionCurrent + '-alpine'
     dockerStagingDirectory = project.buildDir.toString() + '/docker-staging'

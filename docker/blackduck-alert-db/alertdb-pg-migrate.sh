@@ -50,6 +50,9 @@ function _validate_environment() {
   if [ -z "${PGBINNEW}" ]; then
     _checkStatus 1 "Verifying environment variable: PGBINNEW"
   fi
+  if [ -z "${POSTGRES_MIGRATION_VERSION}" ]; then
+    _checkStatus 1 "Verifying environment variable: POSTGRES_MIGRATION_VERSION"
+  fi
   _logEnd
 }
 
@@ -88,8 +91,9 @@ function _validate_migration_viability() {
     exit 0
   fi
 
-  if [[ ! "${pgVersionFileValue}" =~ ^(14)$ ]]; then
-    _checkStatus 1 "Invalid Postgres data version. Migration is only supported from Postgres-14"
+  pgMajorVersionSupported=$(echo "${POSTGRES_MIGRATION_VERSION}" | cut -d. -f1)
+  if [[ ! "${pgVersionFileValue}" =~ ^("${pgMajorVersionSupported}")$ ]]; then
+    _checkStatus 1 "Invalid Postgres data version. Migration is only supported from Postgres-${pgMajorVersionSupported}"
   fi
 
   _logIt "Image is running PG version ${environmentPostgresVersion} and data is from PG version ${pgVersionFileValue}. PG migration needs to run."

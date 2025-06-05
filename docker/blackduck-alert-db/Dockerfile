@@ -7,13 +7,15 @@ FROM ${POSTGRESIMAGEVERSION_MIGRATION} AS old
 
 FROM ${POSTGRESIMAGEVERSION}
 
+ARG VERSION
+ARG COMMITHASH
+ARG POSTGRES_MIGRATION_VERSION
+
 COPY --from=old /usr/local /usr/local-old
 
 ENV PGBINOLD=/usr/local-old/bin
 ENV PGBINNEW=/usr/local/bin
-
-ARG VERSION
-ARG COMMITHASH
+ENV POSTGRES_MIGRATION_VERSION=${POSTGRES_MIGRATION_VERSION}
 
 LABEL com.blackducksoftware.integration.alert.vendor="Black Duck Software, Inc." \
       com.blackducksoftware.integration.alert.version="$VERSION" \
