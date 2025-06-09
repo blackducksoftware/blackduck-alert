@@ -31,7 +31,7 @@ const useStyles = createUseStyles({
     }
 });
 
-const PermissionTableActions = ({ data, handleValidatePermission, setCustomValidationMessage }) => {
+const PermissionTableActions = ({ data, handleValidatePermission }) => {
     const classes = useStyles();
     const CONTEXT = 'context';
     const DESCRIPTOR = 'descriptorName';
@@ -58,19 +58,22 @@ const PermissionTableActions = ({ data, handleValidatePermission, setCustomValid
         return descriptorOptions;
     }
 
-    function createContextOptions(descriptorOptions, selectedPermission) {
-        const availableContexts = [];
-        if (selectedPermission.descriptorName) {
-            descriptorOptions.forEach((descriptor) => {
-                if (descriptor.name === selectedPermission.descriptorName) {
-                    availableContexts.push(descriptor.context);
-                }
-            });
-        }
+    function createContextOptions(descriptorOptions, selectedPermission, existingPermissions) {
+        // Find all descriptorOptions items matching the selected permissions' descriptorName
+        const matching = descriptorOptions.filter(item => item.name === selectedPermission.descriptorName);
 
-        return availableContexts.map((context) => ({
-            label: context,
-            value: context
+        // Filter out any of the above matching objects whose (name, context) exists in exisitingPermissions
+        const available = matching.filter(item =>
+            !existingPermissions.some(
+                permission =>
+                    permission.descriptorName === item.name &&
+                    permission.context === item.context
+            )
+        );
+
+        return available.map((permission) => ({
+            label: permission.context,
+            value: permission.context
         }));
     }
 
@@ -89,19 +92,9 @@ const PermissionTableActions = ({ data, handleValidatePermission, setCustomValid
         const selectedValue = descriptors.find((descriptor) => descriptor.label === value[0]);
         setNewPermission((permission) => ({ ...permission, [name]: selectedValue.name, label: value[0] }));
     }
-
-    function checkIfDescriptorExists(descriptorName, existingPermissions) {
-        return existingPermissions.some((permission) => permission.descriptorName === descriptorName);
-    }
     
     function handleSave(permission) {
-        setCustomValidationMessage();
-
-        if (checkIfDescriptorExists(permission.descriptorName, data.permissions)) {
-            setCustomValidationMessage({
-                message: 'Cannot have duplicate descriptors. Please select a different \'Descriptor Name\'.',
-            })
-        } else if (!permission[DESCRIPTOR] && !permission[CONTEXT]) {
+        if (!permission[DESCRIPTOR] && !permission[CONTEXT]) {
             setFieldErrors({
                 descriptorName: {
                     fieldMessage: 'Descriptor is required',
@@ -155,7 +148,7 @@ const PermissionTableActions = ({ data, handleValidatePermission, setCustomValid
                     name={CONTEXT}
                     id={CONTEXT}
                     label="Context"
-                    options={createContextOptions(descriptors, newPermission)}
+                    options={createContextOptions(descriptors, newPermission, data.permissions)}
                     clearable={false}
                     onChange={handleDropdownChange}
                     value={[newPermission.context]}
@@ -223,7 +216,6 @@ PermissionTableActions.propTypes = {
         }))
     }),
     handleValidatePermission: PropTypes.func,
-    setCustomValidationMessage: PropTypes.func,
 };
 
 export default PermissionTableActions;
