@@ -171,6 +171,21 @@ class HelmDatabaseUtilitiesScriptTest {
     }
 
     @ParameterizedTest
+    @ValueSource(strings = { "binary", "BINARY", "plain", "PLAIN" })
+    void testBackupAndRestoreWithoutPodName(String formatType) throws ExecutableRunnerException {
+        File backupFile = makeTempFile();
+        List<String> backupArguments = List.of("-b", "-n", TEST_NAMESPACE, "-t", formatType, "-f", backupFile.getAbsolutePath());
+        Executable scriptRestoreExecutable = Executable.create(workingDirectory, scriptFile, backupArguments);
+        ExecutableOutput restoreOutput = processBuilderRunner.execute(scriptRestoreExecutable);
+        assertEquals(0, restoreOutput.getReturnCode());
+
+        List<String> restoreArguments = List.of("-r", "-n", TEST_NAMESPACE, "-k", podName, "-t", formatType, "-f", backupFile.getAbsolutePath());
+        Executable scriptBackupExecutable = Executable.create(workingDirectory, scriptFile, restoreArguments);
+        ExecutableOutput backupOutput = processBuilderRunner.execute(scriptBackupExecutable);
+        assertEquals(0, backupOutput.getReturnCode());
+    }
+
+    @ParameterizedTest
     @ValueSource(strings = { "Binary", "bINARY", "Plain", "pLAIN", "bad", "unknown", "", "  ", "''", "'    '" })
     void testBackupAndRestoreInvalidFormat(String formatType) throws ExecutableRunnerException {
         File backupFile = makeTempFile();
