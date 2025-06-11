@@ -63,9 +63,9 @@ echo "____________________________"
 if [ -z $volume_path ]
   then
       echo "Volume Path not set."
-      docker run -d --name "$container_name" -e POSTGRES_PASSWORD=$postgres_password --mount type=volume,source=$container_name-volume,destination=/var/lib/postgresql/data -p $exposed_port:5432 postgres:15.7-alpine
+      docker run -d --name "$container_name" -e POSTGRES_PASSWORD=$postgres_password --mount type=volume,source=$container_name-volume,destination=/var/lib/postgresql/data -p $exposed_port:5432 postgres:16.9-alpine
   else 
-    docker run -d --name "$container_name" -e POSTGRES_PASSWORD=$postgres_password --mount type=bind,source=$volume_path,destination=/var/lib/postgresql/data -p $exposed_port:5432 postgres:15.7-alpine
+    docker run -d --name "$container_name" -e POSTGRES_PASSWORD=$postgres_password --mount type=bind,source=$volume_path,destination=/var/lib/postgresql/data -p $exposed_port:5432 postgres:16.9-alpine
 fi
 
 echo -n "Waiting for postgres "

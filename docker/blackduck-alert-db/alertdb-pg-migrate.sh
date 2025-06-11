@@ -50,6 +50,9 @@ function _validate_environment() {
   if [ -z "${PGBINNEW}" ]; then
     _checkStatus 1 "Verifying environment variable: PGBINNEW"
   fi
+  if [ -z "${POSTGRES_MIGRATION_VERSION}" ]; then
+    _checkStatus 1 "Verifying environment variable: POSTGRES_MIGRATION_VERSION"
+  fi
   _logEnd
 }
 
@@ -88,11 +91,40 @@ function _validate_migration_viability() {
     exit 0
   fi
 
-  if [[ ! "${pgVersionFileValue}" =~ ^(14)$ ]]; then
-    _checkStatus 1 "Invalid Postgres data version. Migration is only supported from Postgres-14"
+  pgMajorVersionSupported=$(echo "${POSTGRES_MIGRATION_VERSION}" | cut -d. -f1)
+  if [[ ! "${pgVersionFileValue}" =~ ^("${pgMajorVersionSupported}")$ ]]; then
+    _checkStatus 1 "Invalid Postgres data version. Migration is only supported from Postgres-${pgMajorVersionSupported}"
+  fi
+
+  if [[ "${pgMajorVersionSupported}" == "15" ]]; then
+    _logIt "Migrating from PG version 15. ICU74 is required."
+    _configure_ICU74
   fi
 
   _logIt "Image is running PG version ${environmentPostgresVersion} and data is from PG version ${pgVersionFileValue}. PG migration needs to run."
+  _logEnd
+}
+
+function _configure_ICU74() {
+  _logStart
+  if [[ "${pgMajorVersionSupported}" == "15" ]]; then
+    if [ -z "${ICU74}" ]; then
+      _checkStatus 1 "Verifying environment variable: ICU74"
+    fi
+
+    if [ ! -x "${ICU74}/bin/icu-config" ]; then
+      _checkStatus 1 "Unable to find ${ICU74}/bin/icu-config"
+    fi
+
+    "${ICU74}"/bin/icu-config --version > /dev/null
+    _checkStatus $? "Executing ${ICU74}/bin/icu-config"
+
+    export PATH=/opt/icu74/bin/:${PATH}
+    _logIt "PATH now set as: ${PATH}"
+
+    export LD_LIBRARY_PATH=/opt/icu74/lib:$LD_LIBRARY_PATH
+    _logIt "LD_LIBRARY_PATH now set as: ${LD_LIBRARY_PATH}"
+  fi
   _logEnd
 }
 
