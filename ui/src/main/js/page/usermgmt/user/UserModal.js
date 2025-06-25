@@ -139,7 +139,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
             };
         });
     }
-    console.log(Boolean(confirmPassword))
+
     return (
         <Modal
             isOpen={isOpen}
