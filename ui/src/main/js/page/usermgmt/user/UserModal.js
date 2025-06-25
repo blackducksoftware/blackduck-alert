@@ -139,7 +139,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
             };
         });
     }
-
+    console.log(Boolean(confirmPassword))
     return (
         <Modal
             isOpen={isOpen}
@@ -206,7 +206,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
                         placeholder="Confirm password..."
                         readOnly={false}
                         required
-                        isSet={Boolean(confirmPassword)}
+                        isSet={userModel[USER_INPUT_FIELD_KEYS.IS_PASSWORD_SET]}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         value={confirmPassword || undefined}
                         errorName="confirmPasswordError"
