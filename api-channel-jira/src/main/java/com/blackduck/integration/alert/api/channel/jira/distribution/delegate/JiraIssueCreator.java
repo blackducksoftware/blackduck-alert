@@ -10,6 +10,7 @@ package com.blackduck.integration.alert.api.channel.jira.distribution.delegate;
 import java.util.List;
 import java.util.Optional;
 
+import io.opencensus.trace.Link;
 import org.apache.commons.lang3.StringUtils;
 
 import com.blackduck.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
@@ -232,4 +233,28 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
         );
     }
 
+    @Override
+    protected Optional<String> getAlertSearchKeys(ExistingIssueDetails<String> existingIssueDetails, ProjectIssueModel alertIssueSource) {
+        StringBuilder keyBuilder = new StringBuilder();
+        // the uuid for project and project version is the last uuid
+        // use the component and version name
+        // category and if policy include the policy name
+
+        LinkableItem provider = alertIssueSource.getProvider();
+        LinkableItem project = alertIssueSource.getProject();
+
+        LinkableItem projectVersion = alertIssueSource.getProjectVersion()
+                .orElseThrow(() -> new AlertRuntimeException("Missing project version"));
+
+        IssueBomComponentDetails bomComponent = alertIssueSource.getBomComponentDetails();
+
+        String projectId = StringUtils.substringAfterLast(project.getUrl().orElse(""), "/");
+        int versionUUIDStart = StringUtils.lastIndexOf(projectVersion.getUrl().orElse(""), "versions/") +"versions/".length();
+        int versionUUIDEnd = StringUtils.lastIndexOf(projectVersion.getUrl().orElse(""), "/");
+        String projectVersionId = StringUtils.substring(projectVersion.getUrl().orElse(""), versionUUIDStart, versionUUIDEnd);
+        String componentName = bomComponent.getComponent().getValue();
+        String componentVersionName = bomComponent.getComponentVersion().map(LinkableItem::getValue).orElse(null);
+
+        return Optional.of(keyBuilder.toString());
+    }
 }
