@@ -222,6 +222,26 @@ class UserActionsTest {
     }
 
     @Test
+    void testUpdateWithoutChecksNoRoles() {
+        UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, false, true, lastLogin, null, failedLoginCount);
+
+        Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
+
+        UserConfig userConfig = new UserConfig(id.toString(), name, password, "newEmailAddress", Set.of(), false, false, false, true, false, authenticationType.name(), false);
+        UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator, userCredentialValidator);
+        ActionResponse<UserConfig> userConfigActionResponse = userActions.updateWithoutChecks(id, userConfig);
+
+        assertFalse(userConfigActionResponse.isError());
+        assertEquals(HttpStatus.NO_CONTENT, userConfigActionResponse.getHttpStatus());
+        assertFalse(userConfigActionResponse.hasContent());
+
+        ActionResponse<UserConfig> returnConfigActionResponse = userActions.getOne(id);
+        assertTrue(returnConfigActionResponse.getContent().isPresent());
+        UserConfig returnUserConfig = returnConfigActionResponse.getContent().get();
+        assertTrue(returnUserConfig.getRoleNames().isEmpty());
+    }
+
+    @Test
     void testUpdateWithoutChecksDatabaseError() throws Exception {
         UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, false, true, lastLogin, null, failedLoginCount);
 
