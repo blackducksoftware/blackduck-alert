@@ -82,6 +82,54 @@ public final class JqlStringCreator {
 
     // Helper methods
 
+    private static void appendBlackDuckCommentSearchStrings(
+        StringBuilder jqlBuilder,
+        String jiraProjectKey,
+        LinkableItem project,
+        @Nullable LinkableItem projectVersion,
+        @Nullable LinkableItem component,
+        @Nullable LinkableItem componentVersion,
+        @Nullable ComponentConcernType concernType,
+        @Nullable String policyName) {
+        jqlBuilder.append("(");
+        jqlBuilder.append(StringUtils.SPACE);
+        appendProjectKey(jqlBuilder, jiraProjectKey);
+        jqlBuilder.append(StringUtils.SPACE);
+        jqlBuilder.append(SEARCH_CONJUNCTION);
+        jqlBuilder.append(String.format("comment ~\"%s\"", JiraIssuePropertyKeys.JIRA_ISSUE_KEY_START_HEADER));
+        jqlBuilder.append(StringUtils.SPACE);
+        appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_PROJECT_ID, "");
+
+        if(projectVersion != null) {
+            jqlBuilder.append(StringUtils.SPACE);
+            appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_PROJECT_VERSION_ID, "");
+        }
+
+        if(component != null) {
+            jqlBuilder.append(StringUtils.SPACE);
+            appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_COMPONENT_NAME, component.getValue());
+        }
+
+        if(componentVersion != null) {
+            jqlBuilder.append(StringUtils.SPACE);
+            appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_COMPONENT_VERSION_NAME, componentVersion.getValue());
+        }
+
+        if(concernType != null) {
+            jqlBuilder.append(StringUtils.SPACE);
+            appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_CATEGORY, concernType.name());
+        }
+
+        if(StringUtils.isNotBlank(policyName)) {
+            String escapedPolicyName = JiraIssueSearchPropertyStringCompatibilityUtils.createPolicyAdditionalKey(policyName);
+            jqlBuilder.append(StringUtils.SPACE);
+            appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_POLICY_NAME, escapedPolicyName);
+        }
+        jqlBuilder.append(StringUtils.SPACE);
+        jqlBuilder.append(")");
+    }
+
+
     private static void appendBlackDuckComponentSearchStrings(
         StringBuilder jqlBuilder,
         String jiraProjectKey,
@@ -130,6 +178,14 @@ public final class JqlStringCreator {
         jqlBuilder.append(" = '");
         jqlBuilder.append(escapeSearchString(jiraProjectKey));
         jqlBuilder.append("' ");
+    }
+
+    private static void appendCommentSearchString(StringBuilder jqlBuilder, String key, String value) {
+        jqlBuilder.append(SEARCH_CONJUNCTION);
+        jqlBuilder.append(" comment ~ \"");
+        jqlBuilder.append(String.format("%s%s %s", key,JiraIssuePropertyKeys.JIRA_ISSUE_KEY_SEPARATOR, escapeSearchString(value)));
+        jqlBuilder.append("\"");
+        jqlBuilder.append(StringUtils.SPACE);
     }
 
     private static void appendPropertySearchString(StringBuilder jqlBuilder, String key, String value) {

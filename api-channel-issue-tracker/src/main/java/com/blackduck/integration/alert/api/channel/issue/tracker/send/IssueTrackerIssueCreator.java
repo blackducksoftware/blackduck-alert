@@ -89,9 +89,7 @@ public abstract class IssueTrackerIssueCreator<T extends Serializable> {
         Optional<String> searchKeys = getAlertSearchKeys(issueDetails, projectSource);
         postCreateComments.add("This issue was automatically created by Alert.");
         // if the issue tracker creates a comment with search keys then add it here.
-        if(searchKeys.isPresent()) {
-            postCreateComments.add(searchKeys.get());
-        }
+        searchKeys.ifPresent(postCreateComments::add);
         postCreateComments.addAll(creationModel.getPostCreateComments());
 
         IssueCommentModel<T> commentRequestModel = new IssueCommentModel<>(issueDetails, postCreateComments, projectSource);
