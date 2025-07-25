@@ -80,7 +80,7 @@ public abstract class IssueTrackerIssueCreator<T extends Serializable> {
     protected abstract ExistingIssueDetails<T> createIssueAndExtractDetails(IssueCreationModel alertIssueCreationModel) throws AlertException;
 
     protected abstract void assignAlertSearchProperties(ExistingIssueDetails<T> createdIssueDetails, ProjectIssueModel alertIssueSource) throws AlertException;
-    protected Optional<String> getAlertSearchKeys(ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel alertIssueSource) {
+    protected Optional<String> getAlertSearchKeys(ExistingIssueDetails<T> existingIssueDetails, @Nullable ProjectIssueModel alertIssueSource) {
         return Optional.empty();
     }
 

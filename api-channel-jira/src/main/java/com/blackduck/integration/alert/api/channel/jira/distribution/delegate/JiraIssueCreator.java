@@ -49,6 +49,7 @@ import com.blackduck.integration.jira.common.model.components.IssueFieldsCompone
 import com.blackduck.integration.jira.common.model.response.IssueCreationResponseModel;
 import com.blackduck.integration.jira.common.model.response.IssueResponseModel;
 import com.blackduck.integration.rest.exception.IntegrationRestException;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<String> {
     private static final String FAILED_TO_CREATE_ISSUE_MESSAGE = "Failed to create an issue in Jira.";
@@ -237,8 +238,12 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
     }
 
     @Override
-    protected Optional<String> getAlertSearchKeys(ExistingIssueDetails<String> existingIssueDetails, ProjectIssueModel alertIssueSource) {
+    protected Optional<String> getAlertSearchKeys(ExistingIssueDetails<String> existingIssueDetails, @Nullable ProjectIssueModel alertIssueSource) {
         StringBuilder keyBuilder = new StringBuilder();
+
+        if(alertIssueSource == null) {
+            return Optional.empty();
+        }
         // the uuid for project and project version is the last uuid
         // use the component and version name
         // category and if policy include the policy name
