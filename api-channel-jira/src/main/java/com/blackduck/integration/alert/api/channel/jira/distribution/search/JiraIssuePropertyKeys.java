@@ -29,10 +29,10 @@ public final class JiraIssuePropertyKeys {
     public static final String JIRA_ISSUE_KEY_END_HEADER = "=== END JIRA ISSUE KEYS ===";
     public static final String JIRA_ISSUE_KEY_PROJECT_ID = "projectId";
     public static final String JIRA_ISSUE_KEY_PROJECT_VERSION_ID = "projectVersionId";
-    public static final String JIRA_ISSUE_KEY_COMPONENT_NAME = "projectVersionId";
-    public static final String JIRA_ISSUE_KEY_COMPONENT_VERSION_NAME = "projectVersionId";
+    public static final String JIRA_ISSUE_KEY_COMPONENT_NAME = "componentName";
+    public static final String JIRA_ISSUE_KEY_COMPONENT_VERSION_NAME = "componentVersionName";
     public static final String JIRA_ISSUE_KEY_CATEGORY = "category";
-    public static final String JIRA_ISSUE_KEY_POLICY_NAME = "projectVersionId";
+    public static final String JIRA_ISSUE_KEY_POLICY_NAME = "policyName";
 
     private JiraIssuePropertyKeys() {
     }
