@@ -25,7 +25,7 @@ class JqlStringCreatorTest {
     private final LinkableItem projectVersion = new LinkableItem(
         "Project Version",
         "v1.0 \\& v2.0",
-        "http://projectVersionUrl/api/projects/project-uuid/versions/project-version-uuid"
+        "http://projectVersionUrl/api/projects/project-uuid/versions/project-version-uuid/components"
     );
     private final LinkableItem component = new LinkableItem(
         "Component",

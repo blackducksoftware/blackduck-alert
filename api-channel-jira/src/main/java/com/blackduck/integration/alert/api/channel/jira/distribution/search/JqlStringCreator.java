@@ -149,7 +149,7 @@ public final class JqlStringCreator {
     private static @NotNull String extractUuid(String url, String pathSearchToken) {
         int searchTokenStart = StringUtils.indexOf(url, pathSearchToken);
         int startIndex = searchTokenStart + pathSearchToken.length();
-        int endSlashIndex = StringUtils.lastIndexOf(url, '/', startIndex);
+        int endSlashIndex = StringUtils.indexOf(url, '/', startIndex);
         String uuid;
         if(endSlashIndex > startIndex) {
             uuid = StringUtils.substring(url, startIndex, endSlashIndex);

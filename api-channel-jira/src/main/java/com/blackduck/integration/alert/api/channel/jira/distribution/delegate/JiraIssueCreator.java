@@ -257,7 +257,7 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
 
         String projectId = StringUtils.substringAfterLast(project.getUrl().orElse(""), "/");
         int versionUUIDStart = StringUtils.lastIndexOf(projectVersion.getUrl().orElse(""), "versions/") +"versions/".length();
-        int versionUUIDEnd = StringUtils.lastIndexOf(projectVersion.getUrl().orElse(""), "/");
+        int versionUUIDEnd = StringUtils.indexOf(projectVersion.getUrl().orElse(""), "/", versionUUIDStart);
         String projectVersionId = StringUtils.substring(projectVersion.getUrl().orElse(""), versionUUIDStart, versionUUIDEnd);
         String componentName = bomComponent.getComponent().getValue();
         String componentVersionName = bomComponent.getComponentVersion().map(LinkableItem::getValue).orElse(null);
