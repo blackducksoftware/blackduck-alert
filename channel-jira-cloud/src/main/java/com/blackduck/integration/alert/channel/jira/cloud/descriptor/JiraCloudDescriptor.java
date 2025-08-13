@@ -45,7 +45,6 @@ public class JiraCloudDescriptor extends ChannelDescriptor {
     public static final String JIRA_URL = "jira";
     public static final String JIRA_DESCRIPTION = "Configure the Jira Cloud instance that Alert will send issue updates to.";
 
-    public static final String LABEL_ADD_COMMENTS = "Add Comments";
     public static final String LABEL_ISSUE_CREATOR = "Issue Creator";
     public static final String LABEL_JIRA_PROJECT = "Jira Project";
     public static final String LABEL_ISSUE_TYPE = "Issue Type";
