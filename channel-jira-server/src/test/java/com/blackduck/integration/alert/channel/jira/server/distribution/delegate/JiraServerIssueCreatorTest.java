@@ -54,7 +54,6 @@ public class JiraServerIssueCreatorTest {
     final String TEST_TITLE = "title";
     final JiraServerJobDetailsModel distributionDetails = new JiraServerJobDetailsModel(
         UUID.randomUUID(),
-        true,
         TEST_ISSUE_CREATOR_NAME,
         TEST_PROJECT_NAME_OR_KEY,
         TEST_ISSUE_TYPE,
@@ -121,7 +120,6 @@ public class JiraServerIssueCreatorTest {
     void createRequestReturnsCorrectModelUsingTitle() throws AlertException {
         JiraServerJobDetailsModel distDetailsEmptyIssueSummary = new JiraServerJobDetailsModel(
             UUID.randomUUID(),
-            true,
             TEST_ISSUE_CREATOR_NAME,
             TEST_PROJECT_NAME_OR_KEY,
             TEST_ISSUE_TYPE,

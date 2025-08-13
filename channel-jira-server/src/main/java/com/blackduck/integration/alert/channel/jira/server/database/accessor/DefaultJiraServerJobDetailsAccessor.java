@@ -64,7 +64,6 @@ public class DefaultJiraServerJobDetailsAccessor implements JiraServerJobDetails
     public JiraServerJobDetailsModel saveConcreteJobDetails(UUID jobId, JiraServerJobDetailsModel jobDetails) {
         JiraServerJobDetailsEntity jiraServerJobDetailsToSave = new JiraServerJobDetailsEntity(
             jobId,
-            true,
             jobDetails.getIssueCreatorUsername(),
             jobDetails.getProjectNameOrKey(),
             jobDetails.getIssueType(),
@@ -91,7 +90,6 @@ public class DefaultJiraServerJobDetailsAccessor implements JiraServerJobDetails
             .toList();
         return new JiraServerJobDetailsModel(
             jobDetails.getJobId(),
-            true,
             jobDetails.getIssueCreatorUsername(),
             jobDetails.getProjectNameOrKey(),
             jobDetails.getIssueType(),

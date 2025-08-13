@@ -146,7 +146,6 @@ class JiraServerExternalConnectionTest {
 
         return new JiraServerJobDetailsModel(
             uuid,
-            Boolean.parseBoolean(testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_ADD_COMMENTS)),
             testProperties.getOptionalProperty(TestPropertyKey.TEST_JIRA_SERVER_ISSUE_CREATOR).orElse(null),
             testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_PROJECT_NAME),
             testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_ISSUE_TYPE),

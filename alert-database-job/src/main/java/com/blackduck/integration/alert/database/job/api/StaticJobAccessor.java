@@ -264,7 +264,6 @@ public class StaticJobAccessor implements JobAccessor {
                 .collect(Collectors.toList());
             distributionJobDetailsModel = new JiraCloudJobDetailsModel(
                 jobId,
-                jobDetails.getAddComments(),
                 jobDetails.getIssueCreatorEmail(),
                 jobDetails.getProjectNameOrKey(),
                 jobDetails.getIssueType(),

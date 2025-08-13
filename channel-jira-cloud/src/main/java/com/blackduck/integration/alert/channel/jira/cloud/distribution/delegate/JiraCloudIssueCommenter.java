@@ -26,7 +26,7 @@ public class JiraCloudIssueCommenter extends JiraIssueCommenter {
 
     @Override
     protected boolean isCommentingEnabled() {
-        return distributionDetails.isAddComments();
+        return true;
     }
 
     @Override

@@ -156,7 +156,6 @@ public final class JobFieldModelPopulationUtils {
 
     private static void populateJiraCloudFields(FieldModel channelFieldModel, JiraCloudJobDetailsModel jiraCloudJobDetails) {
         if (null != jiraCloudJobDetails) {
-            putField(channelFieldModel, JiraCloudDescriptor.KEY_ADD_COMMENTS, Boolean.toString(jiraCloudJobDetails.isAddComments()));
             putField(channelFieldModel, JiraCloudDescriptor.KEY_ISSUE_CREATOR, jiraCloudJobDetails.getIssueCreatorEmail());
             putField(channelFieldModel, JiraCloudDescriptor.KEY_JIRA_PROJECT_NAME, jiraCloudJobDetails.getProjectNameOrKey());
             putField(channelFieldModel, JiraCloudDescriptor.KEY_ISSUE_TYPE, jiraCloudJobDetails.getIssueType());
@@ -169,7 +168,6 @@ public final class JobFieldModelPopulationUtils {
 
     private static void populateJiraServerFields(FieldModel channelFieldModel, JiraServerJobDetailsModel jiraServerJobDetails) {
         if (null != jiraServerJobDetails) {
-            putField(channelFieldModel, JiraServerDescriptor.KEY_ADD_COMMENTS, Boolean.toString(jiraServerJobDetails.isAddComments()));
             putField(channelFieldModel, JiraServerDescriptor.KEY_ISSUE_CREATOR, jiraServerJobDetails.getIssueCreatorUsername());
             putField(channelFieldModel, JiraServerDescriptor.KEY_JIRA_PROJECT_NAME, jiraServerJobDetails.getProjectNameOrKey());
             putField(channelFieldModel, JiraServerDescriptor.KEY_ISSUE_TYPE, jiraServerJobDetails.getIssueType());
