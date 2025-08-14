@@ -278,6 +278,13 @@ export const handleTestChange = (testData, setTestData) => ({ target }) => {
     setTestData(newState);
 };
 
+export const createBooleanInputChangeHandler = (testData, setTestData) => ({ target }) => {
+    const { type, name, value } = target;
+    const updatedValue = type === 'checkbox' ? target.checked : value;
+    const newState = { ...testData, [name]: updatedValue };
+    setTestData(newState);
+};
+
 export const handleConcreteModelChange = (data, setData) => ({ target }) => {
     const { type, name, value } = target;
     let updatedValue = type === 'checkbox' ? target.checked : value;
