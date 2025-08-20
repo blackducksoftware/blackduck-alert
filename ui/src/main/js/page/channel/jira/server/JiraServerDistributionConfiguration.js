@@ -60,17 +60,6 @@ const JiraServerDistributionConfiguration = ({
                 errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId)}
                 errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.channelGlobalConfigId]}
             />
-            <CheckboxInput
-                id={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.comment}
-                name={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.comment}
-                label="Add Comments"
-                description="If true, this will add comments to the Jira ticket with data describing the latest change."
-                readOnly={readonly}
-                onChange={FieldModelUtilities.handleChange(data, setData)}
-                isChecked={FieldModelUtilities.getFieldModelBooleanValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.comment)}
-                errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.comment)}
-                errorValue={errors.fieldErrors[JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.comment]}
-            />
             <TextInput
                 id={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueCreator}
                 label="Issue Creator"

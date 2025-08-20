@@ -65,7 +65,7 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     @Test
     public void serializeJiraCloudJobDetailsModelTest() {
         UUID jobId = UUID.randomUUID();
-        JiraCloudJobDetailsModel baseModel = new JiraCloudJobDetailsModel(jobId, true, "unknown", "JIRA-X", "bug", "done", "undone", List.of(), null);
+        JiraCloudJobDetailsModel baseModel = new JiraCloudJobDetailsModel(jobId, "unknown", "JIRA-X", "bug", "done", "undone", List.of(), null);
         JsonElement baseJson = gson.toJsonTree(baseModel);
         serializeAndAssert(baseModel, baseJson);
     }
@@ -73,7 +73,7 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     @Test
     public void serializeJiraServerJobDetailsModelTest() {
         UUID jobId = UUID.randomUUID();
-        JiraServerJobDetailsModel baseModel = new JiraServerJobDetailsModel(jobId, true, "user_name01", "JIRA-Y", "other", "finished", "unfinished", List.of(), "issueSummary");
+        JiraServerJobDetailsModel baseModel = new JiraServerJobDetailsModel(jobId, "user_name01", "JIRA-Y", "other", "finished", "unfinished", List.of(), "issueSummary");
         JsonElement baseJson = gson.toJsonTree(baseModel);
         serializeAndAssert(baseModel, baseJson);
     }
@@ -144,13 +144,12 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     @Test
     public void deserializeJiraCloudJobDetailsModelTest() {
         UUID jobId = UUID.randomUUID();
-        JiraCloudJobDetailsModel baseModel = new JiraCloudJobDetailsModel(jobId, true, "unknown", "JIRA-X", "bug", "done", "undone", List.of(), null);
+        JiraCloudJobDetailsModel baseModel = new JiraCloudJobDetailsModel(jobId, "unknown", "JIRA-X", "bug", "done", "undone", List.of(), null);
 
         DistributionJobDetailsModel deserializedModel = runDeserializerAndAssert(baseModel, (distributionJobDetailsModel -> distributionJobDetailsModel.isA(ChannelKeys.JIRA_CLOUD)));
 
         JiraCloudJobDetailsModel jobDetails = deserializedModel.getAs(DistributionJobDetailsModel.JIRA_CLOUD);
         assertEquals(baseModel.getJobId(), jobDetails.getJobId());
-        assertEquals(baseModel.isAddComments(), jobDetails.isAddComments());
         assertEquals(baseModel.getIssueCreatorEmail(), jobDetails.getIssueCreatorEmail());
         assertEquals(baseModel.getProjectNameOrKey(), jobDetails.getProjectNameOrKey());
         assertEquals(baseModel.getIssueType(), jobDetails.getIssueType());
@@ -161,13 +160,12 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     @Test
     public void deserializeJiraServerJobDetailsModelTest() {
         UUID jobId = UUID.randomUUID();
-        JiraServerJobDetailsModel baseModel = new JiraServerJobDetailsModel(jobId, true, "user_name01", "JIRA-Y", "other", "finished", "unfinished", List.of(), "issueSummary");
+        JiraServerJobDetailsModel baseModel = new JiraServerJobDetailsModel(jobId, "user_name01", "JIRA-Y", "other", "finished", "unfinished", List.of(), "issueSummary");
 
         DistributionJobDetailsModel deserializedModel = runDeserializerAndAssert(baseModel, (distributionJobDetailsModel -> distributionJobDetailsModel.isA(ChannelKeys.JIRA_SERVER)));
 
         JiraServerJobDetailsModel jobDetails = deserializedModel.getAs(DistributionJobDetailsModel.JIRA_SERVER);
         assertEquals(baseModel.getJobId(), jobDetails.getJobId());
-        assertEquals(baseModel.isAddComments(), jobDetails.isAddComments());
         assertEquals(baseModel.getIssueCreatorUsername(), jobDetails.getIssueCreatorUsername());
         assertEquals(baseModel.getProjectNameOrKey(), jobDetails.getProjectNameOrKey());
         assertEquals(baseModel.getIssueType(), jobDetails.getIssueType());

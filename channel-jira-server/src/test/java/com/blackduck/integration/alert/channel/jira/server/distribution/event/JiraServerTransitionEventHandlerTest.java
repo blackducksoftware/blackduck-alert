@@ -189,7 +189,6 @@ class JiraServerTransitionEventHandlerTest {
     private JiraServerJobDetailsModel createJobDetails(UUID jobId) {
         return new JiraServerJobDetailsModel(
             jobId,
-            true,
             "user",
             "jiraProject",
             "Task",

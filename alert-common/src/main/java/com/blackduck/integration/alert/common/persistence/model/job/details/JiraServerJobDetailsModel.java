@@ -13,7 +13,6 @@ import java.util.UUID;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 
 public class JiraServerJobDetailsModel extends DistributionJobDetailsModel {
-    private final boolean addComments;
     private final String issueCreatorUsername;
     private final String projectNameOrKey;
     private final String issueType;
@@ -24,7 +23,6 @@ public class JiraServerJobDetailsModel extends DistributionJobDetailsModel {
 
     public JiraServerJobDetailsModel(
         UUID jobId,
-        boolean addComments,
         String issueCreatorUsername,
         String projectNameOrKey,
         String issueType,
@@ -34,7 +32,6 @@ public class JiraServerJobDetailsModel extends DistributionJobDetailsModel {
         String issueSummary
     ) {
         super(ChannelKeys.JIRA_SERVER, jobId);
-        this.addComments = addComments;
         this.issueCreatorUsername = issueCreatorUsername;
         this.projectNameOrKey = projectNameOrKey;
         this.issueType = issueType;
@@ -42,10 +39,6 @@ public class JiraServerJobDetailsModel extends DistributionJobDetailsModel {
         this.reopenTransition = reopenTransition;
         this.customFields = customFields;
         this.issueSummary = issueSummary;
-    }
-
-    public boolean isAddComments() {
-        return addComments;
     }
 
     public String getIssueCreatorUsername() {

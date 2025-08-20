@@ -23,17 +23,6 @@ const JiraCloudDistributionConfiguration = ({
 
     return (
         <>
-            <CheckboxInput
-                id={JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.comment}
-                name={JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.comment}
-                label="Add Comments"
-                description="If true, this will add comments to the Jira ticket with data describing the latest change."
-                readOnly={readonly}
-                onChange={FieldModelUtilities.handleChange(data, setData)}
-                isChecked={FieldModelUtilities.getFieldModelBooleanValue(data, JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.comment)}
-                errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.comment)}
-                errorValue={errors.fieldErrors[JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.comment]}
-            />
             <TextInput
                 id={JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueCreator}
                 label="Issue Creator"

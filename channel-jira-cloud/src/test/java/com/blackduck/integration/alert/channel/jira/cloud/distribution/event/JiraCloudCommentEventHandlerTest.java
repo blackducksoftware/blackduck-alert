@@ -167,7 +167,6 @@ class JiraCloudCommentEventHandlerTest {
     private JiraCloudJobDetailsModel createJobDetails(UUID jobId) {
         return new JiraCloudJobDetailsModel(
             jobId,
-            true,
             "user",
             "jiraProject",
             "Task",

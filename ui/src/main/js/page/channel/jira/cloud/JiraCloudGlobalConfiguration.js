@@ -15,13 +15,23 @@ import * as GlobalRequestHelper from 'common/configuration/global/GlobalRequestH
 const JiraCloudGlobalConfiguration = ({
     csrfToken, errorHandler, readonly, displayTest, displaySave, displayDelete
 }) => {
-    const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, JIRA_CLOUD_INFO.key));
+    const initModelFunction = () => {
+        let initModel = FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, JIRA_CLOUD_INFO.key);
+        initModel = FieldModelUtilities.updateFieldModelSingleValue(initModel, JIRA_CLOUD_GLOBAL_FIELD_KEYS.disablePluginCheck, 'true');
+        return initModel;
+    };
+    const [formData, setFormData] = useState(initModelFunction());
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
 
     const retrieveData = async () => {
         const data = await GlobalRequestHelper.getDataFindFirst(JIRA_CLOUD_INFO.key, csrfToken);
         if (data) {
-            setFormData(data);
+            let updateData = { ...data };
+            // if the Jira cloud configuration isn't set then keyToValues will be empty and have no keys. Add the default value in this case.
+            if (data.keyToValues && Object.keys(data.keyToValues).length <= 0) {
+                updateData = FieldModelUtilities.updateFieldModelSingleValue(data, JIRA_CLOUD_GLOBAL_FIELD_KEYS.disablePluginCheck, 'true');
+            }
+            setFormData(updateData);
         }
     };
 

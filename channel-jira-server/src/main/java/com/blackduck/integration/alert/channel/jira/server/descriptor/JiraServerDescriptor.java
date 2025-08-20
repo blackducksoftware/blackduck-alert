@@ -46,7 +46,6 @@ public class JiraServerDescriptor extends ChannelDescriptor {
     public static final String JIRA_DESCRIPTION = "Configure the Jira Server instance that Alert will send issue updates to.";
 
     public static final String LABEL_FIELD_MAPPING = "Field Mapping";
-    public static final String LABEL_ADD_COMMENTS = "Add comments";
     public static final String LABEL_ISSUE_CREATOR = "Issue Creator";
     public static final String LABEL_JIRA_PROJECT = "Jira Project";
     public static final String LABEL_ISSUE_TYPE = "Issue Type";
