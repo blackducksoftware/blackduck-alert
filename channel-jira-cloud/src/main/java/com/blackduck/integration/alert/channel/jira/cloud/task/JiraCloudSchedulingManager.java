@@ -46,7 +46,8 @@ public class JiraCloudSchedulingManager {
     private List<JiraTask> createTasks(FieldModel fieldModel, Set<String> projectNameOrKeys) {
         String configId = fieldModel.getId();
         String configName = fieldModel.getFieldValue(ChannelDescriptor.KEY_NAME).orElse("");
-        JiraPropertyUpdateTask task = new JiraPropertyUpdateTask(taskScheduler, taskManager, jiraPropertiesFactory, gson, configId, configName, "JiraCloud", projectNameOrKeys);
-        return List.of(task);
+        JiraPropertyUpdateTask propertyTask = new JiraPropertyUpdateTask(taskScheduler, taskManager, jiraPropertiesFactory, gson, configId, configName, "JiraCloud", projectNameOrKeys);
+        JiraSearchCommentUpdateTask searchCommentTask = new JiraSearchCommentUpdateTask(taskScheduler, taskManager, jiraPropertiesFactory, gson, configId, configName, "JiraCloud", projectNameOrKeys);
+        return List.of(propertyTask, searchCommentTask);
     }
 }
