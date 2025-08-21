@@ -9,6 +9,7 @@ package com.blackduck.integration.alert.api.channel.issue.tracker.send;
 
 import java.io.Serializable;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
@@ -65,6 +66,7 @@ public abstract class IssueTrackerIssueCreator<T extends Serializable> {
         }
         addPostCreateComments(createdIssueDetails, alertIssueCreationModel, optionalSource.orElse(null));
 
+
         return new IssueTrackerIssueResponseModel<>(
             createdIssueDetails.getIssueId(),
             createdIssueDetails.getIssueKey(),
@@ -78,10 +80,17 @@ public abstract class IssueTrackerIssueCreator<T extends Serializable> {
     protected abstract ExistingIssueDetails<T> createIssueAndExtractDetails(IssueCreationModel alertIssueCreationModel) throws AlertException;
 
     protected abstract void assignAlertSearchProperties(ExistingIssueDetails<T> createdIssueDetails, ProjectIssueModel alertIssueSource) throws AlertException;
+    protected Optional<String> getAlertSearchKeys(ExistingIssueDetails<T> existingIssueDetails, @Nullable ProjectIssueModel alertIssueSource) {
+        return Optional.empty();
+    }
 
     private void addPostCreateComments(ExistingIssueDetails<T> issueDetails, IssueCreationModel creationModel, @Nullable ProjectIssueModel projectSource) throws AlertException {
-        LinkedList<String> postCreateComments = new LinkedList<>(creationModel.getPostCreateComments());
-        postCreateComments.addFirst("This issue was automatically created by Alert.");
+        LinkedList<String> postCreateComments = new LinkedList<>();
+        Optional<String> searchKeys = getAlertSearchKeys(issueDetails, projectSource);
+        postCreateComments.add("This issue was automatically created by Alert.");
+        // if the issue tracker creates a comment with search keys then add it here.
+        searchKeys.ifPresent(postCreateComments::add);
+        postCreateComments.addAll(creationModel.getPostCreateComments());
 
         IssueCommentModel<T> commentRequestModel = new IssueCommentModel<>(issueDetails, postCreateComments, projectSource);
         commenter.commentOnIssue(commentRequestModel);

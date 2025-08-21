@@ -7,9 +7,13 @@
  */
 package com.blackduck.integration.alert.api.channel.jira.distribution.delegate;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
+import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraIssuePropertyKeys;
+import io.opencensus.trace.Link;
 import org.apache.commons.lang3.StringUtils;
 
 import com.blackduck.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
@@ -45,6 +49,7 @@ import com.blackduck.integration.jira.common.model.components.IssueFieldsCompone
 import com.blackduck.integration.jira.common.model.response.IssueCreationResponseModel;
 import com.blackduck.integration.jira.common.model.response.IssueResponseModel;
 import com.blackduck.integration.rest.exception.IntegrationRestException;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<String> {
     private static final String FAILED_TO_CREATE_ISSUE_MESSAGE = "Failed to create an issue in Jira.";
@@ -232,4 +237,77 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
         );
     }
 
+    @Override
+    protected Optional<String> getAlertSearchKeys(ExistingIssueDetails<String> existingIssueDetails, @Nullable ProjectIssueModel alertIssueSource) {
+        StringBuilder keyBuilder = new StringBuilder();
+
+        if(alertIssueSource == null) {
+            return Optional.empty();
+        }
+        // the uuid for project and project version is the last uuid
+        // use the component and version name
+        // category and if policy include the policy name
+
+        LinkableItem project = alertIssueSource.getProject();
+
+        LinkableItem projectVersion = alertIssueSource.getProjectVersion()
+                .orElseThrow(() -> new AlertRuntimeException("Missing project version"));
+
+        IssueBomComponentDetails bomComponent = alertIssueSource.getBomComponentDetails();
+
+        String projectId = StringUtils.substringAfterLast(project.getUrl().orElse(""), "/");
+        int versionUUIDStart = StringUtils.lastIndexOf(projectVersion.getUrl().orElse(""), "versions/") +"versions/".length();
+        int versionUUIDEnd = StringUtils.indexOf(projectVersion.getUrl().orElse(""), "/", versionUUIDStart);
+        String projectVersionId = StringUtils.substring(projectVersion.getUrl().orElse(""), versionUUIDStart, versionUUIDEnd);
+        String componentName = bomComponent.getComponent().getValue();
+        Optional<LinkableItem> componentVersionName = bomComponent.getComponentVersion();
+        keyBuilder.append("This comment was automatically created by Alert. DO NOT REMOVE.");
+        keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_START_HEADER);
+        keyBuilder.append(StringUtils.SPACE);
+        keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_PROJECT_ID);
+        keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_SEPARATOR);
+        keyBuilder.append(projectId);
+        keyBuilder.append(StringUtils.SPACE);
+        keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_PROJECT_VERSION_ID);
+        keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_SEPARATOR);
+        keyBuilder.append(projectVersionId);
+        keyBuilder.append(StringUtils.SPACE);
+        keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_COMPONENT_NAME);
+        keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_SEPARATOR);
+        keyBuilder.append(componentName);
+        keyBuilder.append(StringUtils.SPACE);
+        if(componentVersionName.isPresent()) {
+            keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_COMPONENT_VERSION_NAME);
+            keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_SEPARATOR);
+            keyBuilder.append(componentVersionName.get().getValue());
+            keyBuilder.append(StringUtils.SPACE);
+        }
+        Optional<IssuePolicyDetails> policyDetails = alertIssueSource.getPolicyDetails();
+        Optional<ComponentConcernType> category = Optional.empty();
+        if (alertIssueSource.getVulnerabilityDetails().isPresent()) {
+          category = Optional.of(ComponentConcernType.VULNERABILITY);
+        } else if(policyDetails.isPresent()) {
+            category = Optional.of(ComponentConcernType.POLICY);
+        } else if(alertIssueSource.getComponentUnknownVersionDetails().isPresent()) {
+            category = Optional.of(ComponentConcernType.UNKNOWN_VERSION);
+        }
+        if(category.isPresent()) {
+            keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_CATEGORY);
+            keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_SEPARATOR);
+            keyBuilder.append(category.get().name());
+            keyBuilder.append(StringUtils.SPACE);
+        }
+
+        if(policyDetails.isPresent()) {
+            // add policy name
+            keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_POLICY_NAME);
+            keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_SEPARATOR);
+            keyBuilder.append(JiraIssueSearchPropertyStringCompatibilityUtils.createPolicyAdditionalKey(policyDetails.get().getName()));
+            keyBuilder.append(StringUtils.SPACE);
+        }
+        keyBuilder.append(StringUtils.SPACE);
+        keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_END_HEADER);
+
+        return Optional.of(keyBuilder.toString());
+    }
 }
