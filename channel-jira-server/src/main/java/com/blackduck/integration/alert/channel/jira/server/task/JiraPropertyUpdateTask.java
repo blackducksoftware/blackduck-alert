@@ -73,11 +73,6 @@ public class JiraPropertyUpdateTask extends JiraPropertyTask {
         logger.info("Jira Server property migrator task ended.");
     }
 
-    @Override
-    protected Runnable createUpdateRunnable(String issueKey, IssuePropertyService issuePropertyService) {
-        return () -> setIssueProperty(issueKey, issuePropertyService);
-    }
-
     private boolean updateIssues(IssueSearchResponseModel responseModel, IssuePropertyService issuePropertyService) throws InterruptedException {
         int totalIssues = responseModel.getTotal();
         boolean foundIssues = totalIssues > 0;
@@ -86,7 +81,7 @@ public class JiraPropertyUpdateTask extends JiraPropertyTask {
             List<String> issueKeys = responseModel.getIssues().stream()
                     .map(IssueSearchIssueComponent::getKey)
                     .toList();
-            updateIssues(issueKeys, totalIssues, issuePropertyService, "property migrator");
+            updateIssues(issueKeys, totalIssues, issuePropertyService);
         }
         return foundIssues;
     }

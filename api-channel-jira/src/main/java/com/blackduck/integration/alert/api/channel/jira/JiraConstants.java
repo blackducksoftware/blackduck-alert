@@ -7,6 +7,8 @@
  */
 package com.blackduck.integration.alert.api.channel.jira;
 
+import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraIssuePropertyKeys;
+
 public final class JiraConstants {
     public static final String DEFAULT_ISSUE_TYPE = "Task";
     // This String must always match the String found in the atlassian-connect.json file under key.
@@ -18,6 +20,12 @@ public final class JiraConstants {
     public static final String JIRA_ISSUE_PROPERTY_OLD_KEY = "com-synopsys-integration-alert";
 
     public static final String JIRA_SEARCH_KEY_JIRA_PROJECT = "project";
+
+    // find tickets created by alert first:
+    // 1. A summary that starts with "Alert - Black Duck"
+    // 2. A summary that isn't an Alert test message and does not have a comment "=== BEGIN JIRA ISSUE KEYS ==="
+    // 3. Then check if the new property key exists on that issue or if the old property key is on the issue.
+    public static final String JQL_QUERY_FOR_ISSUE_SEARCH_COMMENT_MIGRATION = String.format("(summary ~ \"Alert - Black Duck\" OR (summary !~ \"Alert Test Message\" AND NOT comment ~\"%s\")) AND (issue.property[%s].topicName IS NOT EMPTY OR issue.property[%s].topicName IS NOT EMPTY) ORDER BY created DESC", JiraIssuePropertyKeys.JIRA_ISSUE_KEY_START_HEADER, JiraConstants.JIRA_ISSUE_PROPERTY_KEY, JiraConstants.JIRA_ISSUE_PROPERTY_OLD_KEY);
 
     // These Strings must always match the Strings found in the atlassian-connect.json file under modules.jiraEntityProperties.keyConfigurations.propertyKey["com-blackduck-integration-alert"].extractions.objectName.
     public static final String JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER = "provider";

@@ -19,9 +19,9 @@ public class JiraSchedulingManager {
         this.taskManager = taskManager;
     }
 
-    public List<JiraPropertyTask> scheduleTasks(List<JiraPropertyTask> tasks) {
-        List<JiraPropertyTask> acceptedTasks = new ArrayList<>();
-        for (JiraPropertyTask task : tasks) {
+    public List<JiraTask> scheduleTasks(List<JiraTask> tasks) {
+        List<JiraTask> acceptedTasks = new ArrayList<>();
+        for (JiraTask task : tasks) {
             unscheduleTasks(task.getConfigId());
             logger.debug("Perform scheduling jira tasks for config with id {} and name {}", task.getConfigId(), task.getConfigName());
             if (taskManager.getNextRunTime(task.getTaskName()).isEmpty()) {
@@ -48,12 +48,12 @@ public class JiraSchedulingManager {
         logger.debug("Finished unscheduling jira tasks for config: id={}", configId);
     }
 
-    private void scheduleTask(JiraPropertyTask task) {
+    private void scheduleTask(JiraTask task) {
         taskManager.registerTask(task);
         taskManager.scheduleCronTask(task.scheduleCronExpression(), task.getTaskName());
     }
 
-    private void unscheduleTask(JiraPropertyTask task) {
+    private void unscheduleTask(JiraTask task) {
         taskManager.unregisterTask(task.getTaskName());
     }
 }

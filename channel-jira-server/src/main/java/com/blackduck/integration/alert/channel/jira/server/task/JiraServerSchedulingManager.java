@@ -1,7 +1,7 @@
 package com.blackduck.integration.alert.channel.jira.server.task;
 
 import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraSchedulingManager;
-import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraPropertyTask;
+import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraTask;
 import com.blackduck.integration.alert.api.task.TaskManager;
 import com.blackduck.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
@@ -31,11 +31,11 @@ public class JiraServerSchedulingManager {
         this.jiraPropertiesFactory = jiraPropertiesFactory;
     }
 
-    public List<JiraPropertyTask> scheduleTasks(JiraServerGlobalConfigModel configModel) {
+    public List<JiraTask> scheduleTasks(JiraServerGlobalConfigModel configModel) {
         return scheduleTasks(configModel, Set.of());
     }
 
-    public List<JiraPropertyTask> scheduleTasks(JiraServerGlobalConfigModel configModel, Set<String> projectNameOrKeys) {
+    public List<JiraTask> scheduleTasks(JiraServerGlobalConfigModel configModel, Set<String> projectNameOrKeys) {
         return jiraSchedulingManager.scheduleTasks(createTasks(configModel, projectNameOrKeys));
     }
 
@@ -43,9 +43,9 @@ public class JiraServerSchedulingManager {
         jiraSchedulingManager.unscheduleTasks(configId.toString());
     }
 
-    private List<JiraPropertyTask> createTasks(JiraServerGlobalConfigModel configModel, Set<String> projectNameOrKeys) {
+    private List<JiraTask> createTasks(JiraServerGlobalConfigModel configModel, Set<String> projectNameOrKeys) {
         JiraPropertyUpdateTask propertyTask = new JiraPropertyUpdateTask(taskScheduler, taskManager, jiraPropertiesFactory, gson, configModel.getId(), configModel.getName(), "JiraServer", projectNameOrKeys);
-        JiraSearchCommentUpdateTask searchCommentTask = new JiraSearchCommentUpdateTask(taskScheduler, taskManager, jiraPropertiesFactory, gson, configModel.getId(), configModel.getName(), "JiraServer", projectNameOrKeys);
+        JiraSearchCommentUpdateTask searchCommentTask = new JiraSearchCommentUpdateTask(taskScheduler, taskManager, jiraPropertiesFactory, gson, configModel.getId(), configModel.getName(), "JiraServer");
         return List.of(propertyTask, searchCommentTask);
     }
 }

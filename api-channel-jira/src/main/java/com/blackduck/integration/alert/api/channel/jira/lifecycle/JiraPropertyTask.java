@@ -17,17 +17,15 @@ import org.springframework.scheduling.TaskScheduler;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public abstract class JiraPropertyTask extends ScheduledTask {
+public abstract class JiraPropertyTask extends JiraTask {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     // find tickets created by alert first:
     // 1. A summary that starts with "Alert - Black Duck"
     // 2. A summary that isn't an Alert test message and have a comment "This issue was automatically created by Alert."
     // 3. Then check if the new property key exists on that issue. Only works because the new property key is indexed with the new plugin.
     protected static final String JQL_QUERY_FOR_ISSUE_PROPERTY_MIGRATION = String.format("(summary ~ \"Alert - Black Duck\" OR (summary !~ \"Alert Test Message\" AND comment ~ \"This issue was automatically created by Alert.\")) AND issue.property[%s].topicName IS EMPTY ORDER BY created DESC", JiraConstants.JIRA_ISSUE_PROPERTY_KEY);
-    protected static final int JQL_QUERY_MAX_RESULTS = 100;
     protected static final JiraIssueSearchProperties EMPTY_SEARCH_PROPERTIES = new JiraIssueSearchProperties(StringUtils.EMPTY,
             StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY,
             StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY);
@@ -37,20 +35,8 @@ public abstract class JiraPropertyTask extends ScheduledTask {
         return String.format("project = %s AND issue.property[%s].topicName IS EMPTY ORDER BY created DESC", projectQueryValue, JiraConstants.JIRA_ISSUE_PROPERTY_KEY);
     }
 
-
-    private final TaskManager taskManager;
-    private final String taskName;
-    private final String configId;
-    private final String configName;
-    private final Gson gson;
-
     protected JiraPropertyTask(TaskScheduler taskScheduler, TaskManager taskManager, String configId, String configName, String taskNameSuffix, Gson gson) {
-        super(taskScheduler);
-        this.taskManager = taskManager;
-        this.configId = configId;
-        this.configName = configName;
-        this.taskName = computeTaskName(taskNameSuffix);
-        this.gson = gson;
+        super(taskScheduler, taskManager, configId, configName, taskNameSuffix, gson);
     }
 
     @Override
@@ -60,21 +46,19 @@ public abstract class JiraPropertyTask extends ScheduledTask {
 
     protected abstract void executeTaskImplementation();
 
-    protected void updateIssues(List<String> issueKeys,Integer totalIssues, IssuePropertyService issuePropertyService, String loggingTaskName) throws InterruptedException {
+    protected void updateIssues(List<String> issueKeys,Integer totalIssues, IssuePropertyService issuePropertyService) throws InterruptedException {
         ExecutorService executorService = getExecutorService();
         for (String issueKey : issueKeys) {
-            executorService.submit(createUpdateRunnable(issueKey, issuePropertyService));
+            executorService.submit(() -> setIssueProperty(issueKey, issuePropertyService));
         }
         executorService.shutdown();
         boolean success = executorService.awaitTermination(1, TimeUnit.MINUTES);
         if (success) {
-            logger.info("Jira {} task remaining issues {} ", loggingTaskName, totalIssues);
+            logger.info("Jira property migrator task remaining issues {} ", totalIssues);
         } else {
-            logger.info("Jira {} task timed out updating issues; will resume with the next iteration.", loggingTaskName);
+            logger.info("Jira property migrator task timed out updating issues; will resume with the next iteration.");
         }
     }
-
-    protected abstract Runnable createUpdateRunnable(String issueKey, IssuePropertyService issuePropertyService);
 
     protected void setIssueProperty(String issueKey, IssuePropertyService issuePropertyService) {
         try {
@@ -88,54 +72,14 @@ public abstract class JiraPropertyTask extends ScheduledTask {
 
     protected String getCurrentPropertyValue(String issueKey, IssuePropertyService issuePropertyService) {
         // empty property value
-        String jsonPropertyValue = gson.toJson(EMPTY_SEARCH_PROPERTIES);
+        String jsonPropertyValue = getGson().toJson(EMPTY_SEARCH_PROPERTIES);
         try {
             IssuePropertyResponseModel issuePropertyResponse = issuePropertyService.getProperty(issueKey, JiraConstants.JIRA_ISSUE_PROPERTY_OLD_KEY);
-            jsonPropertyValue = gson.toJson(issuePropertyResponse.getValue());
+            jsonPropertyValue = getGson().toJson(issuePropertyResponse.getValue());
         } catch (IntegrationException ex) {
             logger.debug("Error old issue property for issue: {} cause: {}", issueKey, ex.getMessage());
             logger.debug("Caused by: ", ex);
         }
         return jsonPropertyValue;
-    }
-
-    @Override
-    public String getTaskName() {
-        return taskName;
-    }
-
-    @Override
-    public TaskMetaData createTaskMetaData() {
-        String fullyQualifiedName = ScheduledTask.computeFullyQualifiedName(getClass());
-        String nextRunTime = getFormatedNextRunTime().orElse("");
-        TaskMetaDataProperty configNameProperty = new TaskMetaDataProperty("configurationName", "Configuration Name", getConfigName());
-        List<TaskMetaDataProperty> properties = List.of(configNameProperty);
-        return new TaskMetaData(getTaskName(), getClass().getSimpleName(), fullyQualifiedName, nextRunTime, properties);
-    }
-
-    public String getConfigId() {
-        return configId;
-    }
-
-    public String getConfigName() {
-        return configName;
-    }
-
-    protected Gson getGson() {
-        return gson;
-    }
-
-    protected ExecutorService getExecutorService() {
-        return Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-    }
-
-    public void unScheduleTask() {
-        taskManager.unScheduleTask(taskName);
-        taskManager.unregisterTask(taskName);
-    }
-
-    private String computeTaskName(String taskNameSuffix) {
-        String superTaskName = ScheduledTask.computeTaskName(getClass());
-        return String.format("%s::%s[id:%s]", superTaskName, taskNameSuffix,getConfigId());
     }
 }
