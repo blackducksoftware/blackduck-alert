@@ -20,7 +20,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public abstract class JiraTask extends ScheduledTask {
+public abstract class JiraPropertyTask extends ScheduledTask {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     // find tickets created by alert first:
     // 1. A summary that starts with "Alert - Black Duck"
@@ -44,7 +44,7 @@ public abstract class JiraTask extends ScheduledTask {
     private final String configName;
     private final Gson gson;
 
-    protected JiraTask(TaskScheduler taskScheduler, TaskManager taskManager, String configId, String configName, String taskNameSuffix, Gson gson) {
+    protected JiraPropertyTask(TaskScheduler taskScheduler, TaskManager taskManager, String configId, String configName, String taskNameSuffix, Gson gson) {
         super(taskScheduler);
         this.taskManager = taskManager;
         this.configId = configId;
@@ -60,19 +60,21 @@ public abstract class JiraTask extends ScheduledTask {
 
     protected abstract void executeTaskImplementation();
 
-    protected void updateIssues(List<String> issueKeys,Integer totalIssues, IssuePropertyService issuePropertyService) throws InterruptedException {
+    protected void updateIssues(List<String> issueKeys,Integer totalIssues, IssuePropertyService issuePropertyService, String loggingTaskName) throws InterruptedException {
         ExecutorService executorService = getExecutorService();
         for (String issueKey : issueKeys) {
-            executorService.submit(() -> setIssueProperty(issueKey, issuePropertyService));
+            executorService.submit(createUpdateRunnable(issueKey, issuePropertyService));
         }
         executorService.shutdown();
         boolean success = executorService.awaitTermination(1, TimeUnit.MINUTES);
         if (success) {
-            logger.info("Jira property migrator task remaining issues {} ", totalIssues);
+            logger.info("Jira {} task remaining issues {} ", loggingTaskName, totalIssues);
         } else {
-            logger.info("Jira property migrator task timed out updating issues; will resume with the next iteration.");
+            logger.info("Jira {} task timed out updating issues; will resume with the next iteration.", loggingTaskName);
         }
     }
+
+    protected abstract Runnable createUpdateRunnable(String issueKey, IssuePropertyService issuePropertyService);
 
     protected void setIssueProperty(String issueKey, IssuePropertyService issuePropertyService) {
         try {

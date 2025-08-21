@@ -1,6 +1,6 @@
 package com.blackduck.integration.alert.channel.jira.server.task;
 
-import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraTask;
+import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraPropertyTask;
 import com.blackduck.integration.alert.api.task.ScheduledTask;
 import com.blackduck.integration.alert.api.task.TaskManager;
 import com.blackduck.integration.alert.channel.jira.server.JiraServerProperties;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-public class JiraPropertyUpdateTask extends JiraTask {
+public class JiraPropertyUpdateTask extends JiraPropertyTask {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final JiraServerPropertiesFactory jiraPropertiesFactory;
     private final Set<String> projectNamesOrKeys;
@@ -73,6 +73,11 @@ public class JiraPropertyUpdateTask extends JiraTask {
         logger.info("Jira Server property migrator task ended.");
     }
 
+    @Override
+    protected Runnable createUpdateRunnable(String issueKey, IssuePropertyService issuePropertyService) {
+        return () -> setIssueProperty(issueKey, issuePropertyService);
+    }
+
     private boolean updateIssues(IssueSearchResponseModel responseModel, IssuePropertyService issuePropertyService) throws InterruptedException {
         int totalIssues = responseModel.getTotal();
         boolean foundIssues = totalIssues > 0;
@@ -81,7 +86,7 @@ public class JiraPropertyUpdateTask extends JiraTask {
             List<String> issueKeys = responseModel.getIssues().stream()
                     .map(IssueSearchIssueComponent::getKey)
                     .toList();
-            updateIssues(issueKeys, totalIssues, issuePropertyService);
+            updateIssues(issueKeys, totalIssues, issuePropertyService, "property migrator");
         }
         return foundIssues;
     }
