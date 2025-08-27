@@ -26,9 +26,6 @@ public abstract class JiraPropertyTask extends JiraTask {
     // 2. A summary that isn't an Alert test message and have a comment "This issue was automatically created by Alert."
     // 3. Then check if the new property key exists on that issue. Only works because the new property key is indexed with the new plugin.
     protected static final String JQL_QUERY_FOR_ISSUE_PROPERTY_MIGRATION = String.format("(summary ~ \"Alert - Black Duck\" OR (summary !~ \"Alert Test Message\" AND comment ~ \"This issue was automatically created by Alert.\")) AND issue.property[%s].topicName IS EMPTY ORDER BY created DESC", JiraConstants.JIRA_ISSUE_PROPERTY_KEY);
-    protected static final JiraIssueSearchProperties EMPTY_SEARCH_PROPERTIES = new JiraIssueSearchProperties(StringUtils.EMPTY,
-            StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY,
-            StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY);
 
     public static String createProjectSpecificQuery(String projectName) {
         String projectQueryValue = String.format("\"%s\"", projectName);
@@ -72,7 +69,7 @@ public abstract class JiraPropertyTask extends JiraTask {
 
     protected String getCurrentPropertyValue(String issueKey, IssuePropertyService issuePropertyService) {
         // empty property value
-        String jsonPropertyValue = getGson().toJson(EMPTY_SEARCH_PROPERTIES);
+        String jsonPropertyValue = getGson().toJson(JiraTask.EMPTY_SEARCH_PROPERTIES);
         try {
             IssuePropertyResponseModel issuePropertyResponse = issuePropertyService.getProperty(issueKey, JiraConstants.JIRA_ISSUE_PROPERTY_OLD_KEY);
             jsonPropertyValue = getGson().toJson(issuePropertyResponse.getValue());

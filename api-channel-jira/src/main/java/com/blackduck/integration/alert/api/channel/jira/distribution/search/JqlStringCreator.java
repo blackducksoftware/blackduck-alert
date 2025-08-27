@@ -119,28 +119,46 @@ public final class JqlStringCreator {
 
         if(project != null && project.getUrl().isPresent()) {
             String projectId = extractUuid(project.getUrl().get(), "/api/projects/");
+            jqlBuilder.append(SEARCH_CONJUNCTION);
+            jqlBuilder.append(" (");
             appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_PROJECT_ID, projectId);
+            jqlBuilder.append("OR ");
+            appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_PROJECT_ID, project.getValue());
+            jqlBuilder.append(") ");
         }
 
         if(projectVersion != null && projectVersion.getUrl().isPresent()) {
             String projectVersionId = extractUuid(projectVersion.getUrl().get(), "/versions/");
+            jqlBuilder.append(SEARCH_CONJUNCTION);
+            jqlBuilder.append(" (");
             appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_PROJECT_VERSION_ID, projectVersionId);
+            jqlBuilder.append("OR ");
+            appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_PROJECT_VERSION_ID, projectVersion.getValue());
+            jqlBuilder.append(") ");
         }
 
         if(component != null) {
+            jqlBuilder.append(SEARCH_CONJUNCTION);
+            jqlBuilder.append(StringUtils.SPACE);
             appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_COMPONENT_NAME, component.getValue());
         }
 
         if(componentVersion != null) {
+            jqlBuilder.append(SEARCH_CONJUNCTION);
+            jqlBuilder.append(StringUtils.SPACE);
             appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_COMPONENT_VERSION_NAME, componentVersion.getValue());
         }
 
         if(concernType != null) {
+            jqlBuilder.append(SEARCH_CONJUNCTION);
+            jqlBuilder.append(StringUtils.SPACE);
             appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_CATEGORY, concernType.name());
         }
 
         if(StringUtils.isNotBlank(policyName)) {
             String escapedPolicyName = JiraIssueSearchPropertyStringCompatibilityUtils.createPolicyAdditionalKey(policyName);
+            jqlBuilder.append(SEARCH_CONJUNCTION);
+            jqlBuilder.append(StringUtils.SPACE);
             appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_POLICY_NAME, escapedPolicyName);
         }
         jqlBuilder.append(")");
@@ -212,8 +230,7 @@ public final class JqlStringCreator {
     }
 
     private static void appendCommentSearchString(StringBuilder jqlBuilder, String key, String value) {
-        jqlBuilder.append(SEARCH_CONJUNCTION);
-        jqlBuilder.append(" comment ~ \"");
+        jqlBuilder.append("comment ~ \"");
         jqlBuilder.append(String.format("%s%s%s", key,JiraIssuePropertyKeys.JIRA_ISSUE_KEY_SEPARATOR, escapeSearchString(value)));
         jqlBuilder.append("\"");
         jqlBuilder.append(StringUtils.SPACE);

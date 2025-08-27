@@ -1,10 +1,12 @@
 package com.blackduck.integration.alert.api.channel.jira.lifecycle;
 
+import com.blackduck.integration.alert.api.channel.jira.JiraIssueSearchProperties;
 import com.blackduck.integration.alert.api.task.ScheduledTask;
 import com.blackduck.integration.alert.api.task.TaskManager;
 import com.blackduck.integration.alert.api.task.TaskMetaData;
 import com.blackduck.integration.alert.api.task.TaskMetaDataProperty;
 import com.google.gson.Gson;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.TaskScheduler;
 
 import java.util.List;
@@ -13,6 +15,9 @@ import java.util.concurrent.Executors;
 
 public abstract class JiraTask extends ScheduledTask {
     protected static final int JQL_QUERY_MAX_RESULTS = 100;
+    protected static final JiraIssueSearchProperties EMPTY_SEARCH_PROPERTIES = new JiraIssueSearchProperties(StringUtils.EMPTY,
+            StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY,
+            StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY);
     private final TaskManager taskManager;
     private final String taskName;
     private final String configId;

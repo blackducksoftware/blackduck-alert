@@ -7,10 +7,13 @@ import com.blackduck.integration.alert.api.task.TaskManager;
 import com.blackduck.integration.alert.channel.jira.server.JiraServerProperties;
 import com.blackduck.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.model.request.IssueCommentRequestModel;
+import com.blackduck.integration.jira.common.model.response.IssuePropertyResponseModel;
 import com.blackduck.integration.jira.common.rest.service.IssuePropertyService;
 import com.blackduck.integration.jira.common.server.model.IssueSearchIssueComponent;
 import com.blackduck.integration.jira.common.server.model.IssueSearchResponseModel;
 import com.blackduck.integration.jira.common.server.service.IssueSearchService;
+import com.blackduck.integration.jira.common.server.service.IssueService;
 import com.blackduck.integration.jira.common.server.service.JiraServerServiceFactory;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
@@ -18,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -41,6 +45,7 @@ public class JiraSearchCommentUpdateTask extends JiraTask {
             IssueSearchService issueSearchService = serviceFactory.createIssueSearchService();
             IssuePropertyService issuePropertyService = serviceFactory.createIssuePropertyService();
             IssueSearchResponseModel responseModel = issueSearchService.queryForIssuePage(JiraConstants.JQL_QUERY_FOR_ISSUE_SEARCH_COMMENT_MIGRATION, 0, JQL_QUERY_MAX_RESULTS);
+            IssueService issueService = serviceFactory.createIssueService();
 
             int totalIssues = responseModel.getTotal();
             boolean foundIssues = totalIssues > 0;
@@ -51,7 +56,7 @@ public class JiraSearchCommentUpdateTask extends JiraTask {
                         .toList();
                 ExecutorService executorService = getExecutorService();
                 for (String issueKey : issueKeys) {
-                    executorService.submit(createUpdateRunnable(issueKey, issuePropertyService));
+                    executorService.submit(createUpdateRunnable(issueKey, issuePropertyService, issueService));
                 }
                 executorService.shutdown();
                 boolean success = executorService.awaitTermination(1, TimeUnit.MINUTES);
@@ -75,8 +80,39 @@ public class JiraSearchCommentUpdateTask extends JiraTask {
         logger.info("Jira Server search comment task ended.");
     }
 
-    private Runnable createUpdateRunnable(String issueKey, IssuePropertyService issuePropertyService) {
-        return () -> {};
+    private Runnable createUpdateRunnable(String issueKey, IssuePropertyService issuePropertyService, IssueService issueService) {
+        return () -> {
+            Optional<IssuePropertyResponseModel> propertyValue = getPropertyValue(issueKey, issuePropertyService, JiraConstants.JIRA_ISSUE_PROPERTY_KEY);
+            if (propertyValue.isEmpty()) {
+                // try the old key
+                propertyValue = getPropertyValue(issueKey, issuePropertyService, JiraConstants.JIRA_ISSUE_PROPERTY_OLD_KEY);
+            }
+            if(propertyValue.isPresent()) {
+                try {
+                    IssueCommentRequestModel comment = createSearchKeyComment(issueKey, propertyValue.get());
+                    issueService.addComment(comment);
+                } catch (IntegrationException ex) {
+                    logger.debug("Error updating issue {} with search key comment.", issueKey);
+                    logger.debug("Caused by: ", ex);
+                }
+            }
+        };
+    }
+
+    private IssueCommentRequestModel createSearchKeyComment(String issueKey, IssuePropertyResponseModel propertyValue) {
+        return null;
+    }
+
+    protected Optional<IssuePropertyResponseModel> getPropertyValue(String issueKey, IssuePropertyService issuePropertyService, String propertyKey) {
+        // empty property value
+        Optional<IssuePropertyResponseModel> responseModel = Optional.empty();
+        try {
+            responseModel = Optional.ofNullable(issuePropertyService.getProperty(issueKey, propertyKey));
+        } catch (IntegrationException ex) {
+            logger.debug("Error finding issue property {} for issue: {} cause: {}", propertyKey, issueKey, ex.getMessage());
+            logger.debug("Caused by: ", ex);
+        }
+        return responseModel;
     }
 
     @Override
