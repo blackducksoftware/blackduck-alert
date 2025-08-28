@@ -5,6 +5,7 @@ import com.blackduck.integration.alert.common.message.model.LinkableItem;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 public final class SearchCommentCreator {
 
@@ -15,13 +16,14 @@ public final class SearchCommentCreator {
         String projectVersionId = StringUtils.substring(projectVersion.getUrl().orElse(""), versionUUIDStart, versionUUIDEnd);
         String componentName = component.getValue();
         String componentVersionName = null;
+        String category = Optional.ofNullable(componentConcernType).map(ComponentConcernType::name).orElse(null);
         if(null != componentVersion) {
             componentVersionName = componentVersion.getValue();
         }
-        return createSearchComment(projectId, projectVersionId, componentName, componentVersionName, componentConcernType, policyName);
+        return createSearchComment(projectId, projectVersionId, componentName, componentVersionName, category, policyName);
     }
 
-    public static String createSearchComment(String projectId, String projectVersionId, String componentName, @Nullable String componentVersion, @Nullable ComponentConcernType componentConcernType, @Nullable String policyName) {
+    public static String createSearchComment(String projectId, String projectVersionId, String componentName, @Nullable String componentVersion, @Nullable String category, @Nullable String policyName) {
             StringBuilder keyBuilder = new StringBuilder();
 
         keyBuilder.append("This comment was automatically created by Alert. DO NOT REMOVE.");
@@ -46,10 +48,10 @@ public final class SearchCommentCreator {
             keyBuilder.append(StringUtils.SPACE);
         }
 
-        if(null != componentConcernType) {
+        if(StringUtils.isNotBlank(category)) {
             keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_CATEGORY);
             keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_SEPARATOR);
-            keyBuilder.append(componentConcernType.name());
+            keyBuilder.append(category);
             keyBuilder.append(StringUtils.SPACE);
         }
 
