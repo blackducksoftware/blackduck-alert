@@ -10,6 +10,7 @@ package com.blackduck.integration.alert.api.channel.jira.distribution.delegate;
 import java.util.List;
 import java.util.Optional;
 
+import com.blackduck.integration.alert.api.channel.jira.JiraConstants;
 import com.blackduck.integration.alert.api.channel.jira.distribution.search.SearchCommentCreator;
 import org.apache.commons.lang3.StringUtils;
 
@@ -204,7 +205,7 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
         String componentVersionLabel = bomComponent.getComponentVersion().map(LinkableItem::getLabel).orElse(null);
         String componentVersionName = bomComponent.getComponentVersion().map(LinkableItem::getValue).orElse(null);
 
-        String additionalKey = null;
+        String additionalKey = "";
         ComponentConcernType concernType = ComponentConcernType.VULNERABILITY;
 
         Optional<String> optionalPolicyName = alertIssueSource.getPolicyDetails().map(IssuePolicyDetails::getName);
@@ -230,7 +231,7 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
             component.getValue(),
             componentVersionLabel,
             componentVersionName,
-            additionalKey
+            additionalKey + JiraConstants.JIRA_ISSUE_PROPERTY_SEARCH_COMMENT_MIGRATION_TOKEN
         );
     }
 

@@ -19,6 +19,7 @@ import com.blackduck.integration.jira.common.server.service.IssueService;
 import com.blackduck.integration.jira.common.server.service.JiraServerServiceFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import io.micrometer.common.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
@@ -47,7 +48,7 @@ public class JiraSearchCommentUpdateTask extends JiraTask {
             JiraServerServiceFactory serviceFactory = jiraProperties.createJiraServicesServerFactory(logger,getGson());
             IssueSearchService issueSearchService = serviceFactory.createIssueSearchService();
             IssuePropertyService issuePropertyService = serviceFactory.createIssuePropertyService();
-            IssueSearchResponseModel responseModel = issueSearchService.queryForIssuePage(JiraConstants.JQL_QUERY_FOR_ISSUE_SEARCH_COMMENT_MIGRATION, 0, JQL_QUERY_MAX_RESULTS);
+            IssueSearchResponseModel responseModel = issueSearchService.queryForIssuePage(JiraConstants.createCommentMigrationJQL(), 0, JQL_QUERY_MAX_RESULTS);
             IssueService issueService = serviceFactory.createIssueService();
 
             int totalIssues = responseModel.getTotal();
@@ -92,7 +93,30 @@ public class JiraSearchCommentUpdateTask extends JiraTask {
             }
             if(propertyValue.isPresent()) {
                 try {
-                    IssueCommentRequestModel comment = createSearchKeyComment(issueKey, propertyValue.get());
+                    JsonObject jsonObject = propertyValue.get().getValue();
+                    // projectName, projectVersionName, and componentName should all be populated but since an optional is returned use orElse(null)
+                    String projectName = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROJECT_NAME).orElse(null);
+                    String projectVersionName = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROJECT_VERSION_NAME).orElse(null);
+                    String componentName = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_COMPONENT_VALUE).orElse(null);
+                    String componentVersionName = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_SUB_COMPONENT_VALUE).orElse(null);
+                    String category = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_CATEGORY).orElse(null);
+                    String policyName = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY).orElse(null);
+
+                    String migratedAdditionalKeyValue;
+                    if(StringUtils.isNotBlank(policyName)) {
+                        // append jira 9 migration property
+                        migratedAdditionalKeyValue = policyName + JiraConstants.JIRA_ISSUE_PROPERTY_SEARCH_COMMENT_MIGRATION_TOKEN;
+                    } else {
+                        // add jira 9 migration property
+                        migratedAdditionalKeyValue = JiraConstants.JIRA_ISSUE_PROPERTY_SEARCH_COMMENT_MIGRATION_TOKEN;
+                    }
+
+                    jsonObject.addProperty(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY, migratedAdditionalKeyValue);
+                    String migratedPropertyValue = getGson().toJson(jsonObject);
+                    issuePropertyService.setProperty(issueKey, JiraConstants.JIRA_ISSUE_PROPERTY_KEY, migratedPropertyValue);
+
+                    String commentString = SearchCommentCreator.createSearchComment(projectName, projectVersionName, componentName, componentVersionName, category, policyName);
+                    IssueCommentRequestModel comment = new IssueCommentRequestModel(issueKey, commentString);
                     issueService.addComment(comment);
                 } catch (IntegrationException ex) {
                     logger.debug("Error updating issue {} with search key comment.", issueKey);
@@ -100,19 +124,6 @@ public class JiraSearchCommentUpdateTask extends JiraTask {
                 }
             }
         };
-    }
-
-    private IssueCommentRequestModel createSearchKeyComment(String issueKey, IssuePropertyResponseModel propertyValue) {
-        JsonObject jsonObject = propertyValue.getValue();
-        // projectName, projectVersionName, and componentName should all be populated but since an optional is returned use orElse(null)
-        String projectName = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROJECT_NAME).orElse(null);
-        String projectVersionName = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROJECT_VERSION_NAME).orElse(null);
-        String componentName = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_COMPONENT_VALUE).orElse(null);
-        String componentVersionName = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_SUB_COMPONENT_VALUE).orElse(null);
-        String category = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_CATEGORY).orElse(null);
-        String policyName = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY).orElse(null);
-        String commentString = SearchCommentCreator.createSearchComment(projectName, projectVersionName, componentName, componentVersionName, category, policyName);
-        return new IssueCommentRequestModel(issueKey, commentString);
     }
 
     public Optional<String> getPropertyValue(JsonObject jsonObject, String propertyKey) {

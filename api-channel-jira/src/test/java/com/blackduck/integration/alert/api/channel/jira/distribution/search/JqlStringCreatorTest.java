@@ -74,7 +74,7 @@ class JqlStringCreatorTest {
                 + "AND (issue.property[com-blackduck-integration-alert].subComponentName = 'Component Version' OR issue.property[com-synopsys-integration-alert].subComponentName = 'Component Version') "
                 + "AND (issue.property[com-blackduck-integration-alert].subComponentValue = '1.1.2' OR issue.property[com-synopsys-integration-alert].subComponentValue = '1.1.2') "
                 + "AND (issue.property[com-blackduck-integration-alert].category = 'Policy' OR issue.property[com-synopsys-integration-alert].category = 'Policy') "
-                + "AND (issue.property[com-blackduck-integration-alert].additionalKey = 'Policy ViolatedMyPolicy' OR issue.property[com-synopsys-integration-alert].additionalKey = 'Policy ViolatedMyPolicy') "
+                + "AND (issue.property[com-blackduck-integration-alert].additionalKey = 'Policy ViolatedMyPolicy' OR issue.property[com-synopsys-integration-alert].additionalKey = 'Policy ViolatedMyPolicy' OR issue.property[com-blackduck-integration-alert].additionalKey = 'Policy ViolatedMyPolicy_alert_9_migrated') "
                 + ")";
 
         assertEquals(expectedSearchString, jqlString);

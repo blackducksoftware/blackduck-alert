@@ -27,6 +27,8 @@ public final class JiraConstants {
     // 3. Then check if the new property key exists on that issue or if the old property key is on the issue.
     public static final String JQL_QUERY_FOR_ISSUE_SEARCH_COMMENT_MIGRATION = String.format("(summary ~ \"Alert - Black Duck\" OR (summary !~ \"Alert Test Message\" AND NOT comment ~\"%s\")) AND (issue.property[%s].topicName IS NOT EMPTY OR issue.property[%s].topicName IS NOT EMPTY) ORDER BY created DESC", JiraIssuePropertyKeys.JIRA_ISSUE_KEY_START_HEADER, JiraConstants.JIRA_ISSUE_PROPERTY_KEY, JiraConstants.JIRA_ISSUE_PROPERTY_OLD_KEY);
 
+    public static final String JIRA_ISSUE_PROPERTY_SEARCH_COMMENT_MIGRATION_TOKEN = "_alert_9_migrated";
+
     // These Strings must always match the Strings found in the atlassian-connect.json file under modules.jiraEntityProperties.keyConfigurations.propertyKey["com-blackduck-integration-alert"].extractions.objectName.
     public static final String JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER = "provider";
     public static final String JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER_URL = "providerUrl";
@@ -42,6 +44,31 @@ public final class JiraConstants {
     public static final String JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY = "additionalKey";
 
     public static final String JIRA_ISSUE_VALIDATION_ERROR_MESSAGE = "There are issues with the configuration.";
+
+
+    public static String createCommentMigrationJQL() {
+        // find tickets created by alert first:
+        // 1. A summary that starts with "Alert - Black Duck"
+        // 2. A summary that isn't an Alert test message
+        // 3. Then check if the new property key exists on that issue
+        // 4. Then check if the new property additionalKey is empty or has the text "_alert_9_migrated".
+
+        // TODO we may be able to add a net new field to the properties and that may work better to key off of.
+         return "(summary ~ \"Alert - Black Duck\" OR summary !~ \"Alert Test Message\")"
+                 + " AND "
+                 + "(issue.property["
+                 + JiraConstants.JIRA_ISSUE_PROPERTY_KEY
+                 + "].topicName IS NOT EMPTY "
+                 + "AND "
+                 + "(issue.property["
+                 + JiraConstants.JIRA_ISSUE_PROPERTY_KEY
+                 + "].additionalKey IS EMPTY "
+                 + "OR issue.property["
+                 + JiraConstants.JIRA_ISSUE_PROPERTY_KEY
+                 + "].additionalKey !~ '"
+                 + JiraConstants.JIRA_ISSUE_PROPERTY_SEARCH_COMMENT_MIGRATION_TOKEN
+                 + "'))";
+    }
 
     private JiraConstants() {
     }
