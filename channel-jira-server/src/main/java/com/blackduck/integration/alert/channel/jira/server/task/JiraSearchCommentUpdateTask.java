@@ -102,22 +102,21 @@ public class JiraSearchCommentUpdateTask extends JiraTask {
                     String category = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_CATEGORY).orElse(null);
                     String policyName = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY).orElse(null);
 
-                    String migratedAdditionalKeyValue;
-                    if(StringUtils.isNotBlank(policyName)) {
-                        // append jira 9 migration property
-                        migratedAdditionalKeyValue = policyName + JiraConstants.JIRA_ISSUE_PROPERTY_SEARCH_COMMENT_MIGRATION_TOKEN;
-                    } else {
-                        // add jira 9 migration property
-                        migratedAdditionalKeyValue = JiraConstants.JIRA_ISSUE_PROPERTY_SEARCH_COMMENT_MIGRATION_TOKEN;
-                    }
-
-                    jsonObject.addProperty(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY, migratedAdditionalKeyValue);
-                    String migratedPropertyValue = getGson().toJson(jsonObject);
-                    issuePropertyService.setProperty(issueKey, JiraConstants.JIRA_ISSUE_PROPERTY_KEY, migratedPropertyValue);
-
                     String commentString = SearchCommentCreator.createSearchComment(projectName, projectVersionName, componentName, componentVersionName, category, policyName);
                     IssueCommentRequestModel comment = new IssueCommentRequestModel(issueKey, commentString);
                     issueService.addComment(comment);
+
+                    // mark the issue as migrated
+                    JsonObject migratedProperty = new JsonObject();
+                    migratedProperty.addProperty(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROJECT_NAME, projectName);
+                    migratedProperty.addProperty(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROJECT_VERSION_NAME, projectVersionName);
+                    migratedProperty.addProperty(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_COMPONENT_VALUE, componentName);
+                    migratedProperty.addProperty(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_SUB_COMPONENT_VALUE, componentVersionName);
+                    migratedProperty.addProperty(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_CATEGORY, category);
+                    migratedProperty.addProperty(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY, policyName);
+                    migratedProperty.addProperty(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_ALERT_9_MIGRATED, "true");
+                    String migratedPropertyValue = getGson().toJson(migratedProperty);
+                    issuePropertyService.setProperty(issueKey, JiraConstants.JIRA_ISSUE_PROPERTY_KEY, migratedPropertyValue);
                 } catch (IntegrationException ex) {
                     logger.debug("Error updating issue {} with search key comment.", issueKey);
                     logger.debug("Caused by: ", ex);

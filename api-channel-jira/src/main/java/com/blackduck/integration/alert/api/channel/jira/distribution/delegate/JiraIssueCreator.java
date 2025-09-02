@@ -205,7 +205,7 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
         String componentVersionLabel = bomComponent.getComponentVersion().map(LinkableItem::getLabel).orElse(null);
         String componentVersionName = bomComponent.getComponentVersion().map(LinkableItem::getValue).orElse(null);
 
-        String additionalKey = "";
+        String additionalKey = null;
         ComponentConcernType concernType = ComponentConcernType.VULNERABILITY;
 
         Optional<String> optionalPolicyName = alertIssueSource.getPolicyDetails().map(IssuePolicyDetails::getName);
@@ -231,7 +231,7 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
             component.getValue(),
             componentVersionLabel,
             componentVersionName,
-            additionalKey + JiraConstants.JIRA_ISSUE_PROPERTY_SEARCH_COMMENT_MIGRATION_TOKEN
+            additionalKey
         );
     }
 

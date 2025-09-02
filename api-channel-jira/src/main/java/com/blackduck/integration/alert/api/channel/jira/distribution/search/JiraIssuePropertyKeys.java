@@ -23,6 +23,7 @@ public final class JiraIssuePropertyKeys {
     public static final String JIRA_ISSUE_PROPERTY_OBJECT_KEY_SUB_COMPONENT_NAME = "subComponentName";
     public static final String JIRA_ISSUE_PROPERTY_OBJECT_KEY_SUB_COMPONENT_VALUE = "subComponentValue";
     public static final String JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY = "additionalKey";
+    public static final String JIRA_ISSUE_PROPERTY_OBJECT_KEY_ALERT_9_MIGRATED = "alert9Migrated";
 
     public static final String JIRA_ISSUE_KEY_SEPARATOR = ": ";
     public static final String JIRA_ISSUE_KEY_START_HEADER = "=== BEGIN JIRA ISSUE KEYS ===";

@@ -91,36 +91,7 @@ public final class JqlStringCreator {
 
         if (ComponentConcernType.POLICY.equals(concernType) && null != policyName) {
             String additionalKey = JiraIssueSearchPropertyStringCompatibilityUtils.createPolicyAdditionalKey(policyName);
-            String escapedValue = escapeSearchString(additionalKey);
-
-            jqlBuilder.append(SEARCH_CONJUNCTION);
-            jqlBuilder.append(StringUtils.SPACE);
-            jqlBuilder.append("(issue.property[")
-                    .append(JiraConstants.JIRA_ISSUE_PROPERTY_KEY)
-                    .append("].")
-                    .append(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY)
-                    .append(" = '")
-                    .append(escapedValue)
-                    .append("'");
-            jqlBuilder.append(" OR ");
-            jqlBuilder.append("issue.property[")
-                    .append(JiraConstants.JIRA_ISSUE_PROPERTY_OLD_KEY)
-                    .append("].")
-                    .append(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY)
-                    .append(" = '")
-                    .append(escapedValue)
-                    .append("'");
-            jqlBuilder.append(" OR ");
-            jqlBuilder.append("issue.property[")
-                    .append(JiraConstants.JIRA_ISSUE_PROPERTY_KEY)
-                    .append("].")
-                    .append(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY)
-                    .append(" = '")
-                    .append(escapedValue)
-                    .append(JiraConstants.JIRA_ISSUE_PROPERTY_SEARCH_COMMENT_MIGRATION_TOKEN)
-                    .append("'");
-            jqlBuilder.append(")");
-            jqlBuilder.append(StringUtils.SPACE);
+            appendPropertySearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY, additionalKey);
         }
         jqlBuilder.append(")");
 
