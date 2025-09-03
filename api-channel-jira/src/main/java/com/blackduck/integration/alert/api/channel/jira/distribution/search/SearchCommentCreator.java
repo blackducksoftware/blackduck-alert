@@ -9,25 +9,28 @@ import java.util.Optional;
 
 public final class SearchCommentCreator {
 
-    public static String createSearchComment(LinkableItem project, LinkableItem projectVersion, LinkableItem component, @Nullable LinkableItem componentVersion, @Nullable ComponentConcernType componentConcernType, @Nullable String policyName) {
-        String projectId = StringUtils.substringAfterLast(project.getUrl().orElse(""), "/");
-        int versionUUIDStart = StringUtils.lastIndexOf(projectVersion.getUrl().orElse(""), "versions/") + "versions/".length();
-        int versionUUIDEnd = StringUtils.indexOf(projectVersion.getUrl().orElse(""), "/", versionUUIDStart);
-        String projectVersionId = StringUtils.substring(projectVersion.getUrl().orElse(""), versionUUIDStart, versionUUIDEnd);
+    public static String createSearchComment(LinkableItem provider, LinkableItem project, LinkableItem projectVersion, LinkableItem component, @Nullable LinkableItem componentVersion, @Nullable ComponentConcernType componentConcernType, @Nullable String policyName) {
+        String providerUrl = provider.getUrl().orElse("");
+        String projectId = project.getValue();
+        String projectVersionId = projectVersion.getValue();
         String componentName = component.getValue();
         String componentVersionName = null;
         String category = Optional.ofNullable(componentConcernType).map(ComponentConcernType::name).orElse(null);
         if(null != componentVersion) {
             componentVersionName = componentVersion.getValue();
         }
-        return createSearchComment(projectId, projectVersionId, componentName, componentVersionName, category, policyName);
+        return createSearchComment(providerUrl, projectId, projectVersionId, componentName, componentVersionName, category, policyName);
     }
 
-    public static String createSearchComment(String projectId, String projectVersionId, String componentName, @Nullable String componentVersion, @Nullable String category, @Nullable String policyName) {
+    public static String createSearchComment(String providerId, String projectId, String projectVersionId, String componentName, @Nullable String componentVersion, @Nullable String category, @Nullable String policyName) {
             StringBuilder keyBuilder = new StringBuilder();
 
         keyBuilder.append("This comment was automatically created by Alert. DO NOT REMOVE.");
         keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_START_HEADER);
+        keyBuilder.append(StringUtils.SPACE);
+        keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_PROVIDER);
+        keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_SEPARATOR);
+        keyBuilder.append(providerId);
         keyBuilder.append(StringUtils.SPACE);
         keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_PROJECT_ID);
         keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_SEPARATOR);

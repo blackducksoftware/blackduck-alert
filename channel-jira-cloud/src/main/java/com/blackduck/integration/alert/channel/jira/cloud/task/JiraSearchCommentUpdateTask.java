@@ -92,22 +92,33 @@ public class JiraSearchCommentUpdateTask extends JiraTask {
                 try {
                     JsonObject jsonObject = propertyValue.get().getValue();
                     // projectName, projectVersionName, and componentName should all be populated but since an optional is returned use orElse(null)
+                    String provider = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER).orElse(null);
+                    String providerUrl = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER_URL).orElse(null);
+                    String projectLabel = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROJECT_LABEL).orElse(null);
                     String projectName = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROJECT_NAME).orElse(null);
+                    String projectVersionLabel = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROJECT_VERSION_LABEL).orElse(null);
                     String projectVersionName = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROJECT_VERSION_NAME).orElse(null);
+                    String componentLabel = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_COMPONENT_LABEL).orElse(null);
                     String componentName = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_COMPONENT_VALUE).orElse(null);
+                    String componentVersionLabel = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_SUB_COMPONENT_NAME).orElse(null);
                     String componentVersionName = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_SUB_COMPONENT_VALUE).orElse(null);
                     String category = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_CATEGORY).orElse(null);
                     String policyName = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY).orElse(null);
-
-                    String commentString = SearchCommentCreator.createSearchComment(projectName, projectVersionName, componentName, componentVersionName, category, policyName);
+                    String commentString = SearchCommentCreator.createSearchComment(provider, projectName, projectVersionName, componentName, componentVersionName, category, policyName);
                     IssueCommentRequestModel comment = new IssueCommentRequestModel(issueKey, commentString);
                     issueService.addComment(comment);
 
                     // mark the issue as migrated
                     JsonObject migratedProperty = new JsonObject();
+                    migratedProperty.addProperty(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER, provider);
+                    migratedProperty.addProperty(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER_URL, providerUrl);
+                    migratedProperty.addProperty(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROJECT_LABEL, projectLabel);
                     migratedProperty.addProperty(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROJECT_NAME, projectName);
+                    migratedProperty.addProperty(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROJECT_VERSION_LABEL, projectVersionLabel);
                     migratedProperty.addProperty(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROJECT_VERSION_NAME, projectVersionName);
+                    migratedProperty.addProperty(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_COMPONENT_LABEL, componentLabel);
                     migratedProperty.addProperty(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_COMPONENT_VALUE, componentName);
+                    migratedProperty.addProperty(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_SUB_COMPONENT_NAME, componentVersionLabel);
                     migratedProperty.addProperty(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_SUB_COMPONENT_VALUE, componentVersionName);
                     migratedProperty.addProperty(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_CATEGORY, category);
                     migratedProperty.addProperty(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY, policyName);

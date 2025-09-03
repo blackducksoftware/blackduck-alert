@@ -241,10 +241,10 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
         if(alertIssueSource == null) {
             return Optional.empty();
         }
+        LinkableItem provider = alertIssueSource.getProvider();
         // the uuid for project and project version is the last uuid
         // use the component and version name
         // category and if policy include the policy name
-
         LinkableItem project = alertIssueSource.getProject();
 
         LinkableItem projectVersion = alertIssueSource.getProjectVersion()
@@ -263,6 +263,6 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
         } else if(alertIssueSource.getComponentUnknownVersionDetails().isPresent()) {
             category = ComponentConcernType.UNKNOWN_VERSION;
         }
-        return Optional.of(SearchCommentCreator.createSearchComment(project, projectVersion, bomComponent.getComponent(), componentVersion.orElse(null),category, policyName));
+        return Optional.of(SearchCommentCreator.createSearchComment(provider, project, projectVersion, bomComponent.getComponent(), componentVersion.orElse(null),category, policyName));
     }
 }

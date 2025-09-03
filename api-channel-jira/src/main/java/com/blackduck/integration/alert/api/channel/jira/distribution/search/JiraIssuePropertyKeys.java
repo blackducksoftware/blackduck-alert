@@ -28,6 +28,7 @@ public final class JiraIssuePropertyKeys {
     public static final String JIRA_ISSUE_KEY_SEPARATOR = ": ";
     public static final String JIRA_ISSUE_KEY_START_HEADER = "=== BEGIN JIRA ISSUE KEYS ===";
     public static final String JIRA_ISSUE_KEY_END_HEADER = "=== END JIRA ISSUE KEYS ===";
+    public static final String JIRA_ISSUE_KEY_PROVIDER = "provider";
     public static final String JIRA_ISSUE_KEY_PROJECT_ID = "projectId";
     public static final String JIRA_ISSUE_KEY_PROJECT_VERSION_ID = "projectVersionId";
     public static final String JIRA_ISSUE_KEY_COMPONENT_NAME = "componentName";
