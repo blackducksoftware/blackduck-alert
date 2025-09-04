@@ -24,7 +24,7 @@ public abstract class JiraTask extends ScheduledTask {
     private final String configName;
     private final Gson gson;
 
-    public JiraTask(TaskScheduler taskScheduler, TaskManager taskManager, String configId, String configName, String taskNameSuffix, Gson gson) {
+    protected JiraTask(TaskScheduler taskScheduler, TaskManager taskManager, String configId, String configName, String taskNameSuffix, Gson gson) {
         super(taskScheduler);
         this.taskManager = taskManager;
         this.configId = configId;
