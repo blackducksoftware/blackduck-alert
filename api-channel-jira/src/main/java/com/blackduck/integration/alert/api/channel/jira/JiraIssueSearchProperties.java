@@ -24,6 +24,7 @@ public class JiraIssueSearchProperties extends Stringable implements Serializabl
     private String subComponentName;
     private String subComponentValue;
     private String additionalKey;
+    private String alert9Migrated;
 
     public JiraIssueSearchProperties() {
         // For serialization
@@ -55,6 +56,7 @@ public class JiraIssueSearchProperties extends Stringable implements Serializabl
         this.subComponentName = subComponentName;
         this.subComponentValue = subComponentValue;
         this.additionalKey = additionalKey;
+        this.alert9Migrated = "true";
     }
 
     public String getProvider() {
@@ -104,5 +106,7 @@ public class JiraIssueSearchProperties extends Stringable implements Serializabl
     public String getAdditionalKey() {
         return additionalKey;
     }
+
+    public String getAlert9Migrated() { return alert9Migrated; }
 
 }
