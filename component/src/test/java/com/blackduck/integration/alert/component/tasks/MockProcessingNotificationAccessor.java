@@ -159,6 +159,44 @@ public class MockProcessingNotificationAccessor implements NotificationAccessor 
             .count();
     }
 
+    @Override
+    public AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotMapped(long providerConfigId, int pageSize) {
+        List<AlertNotificationModel> notificationsNotMapped = alertNotificationModels
+                .stream()
+                .filter(model -> model.getProviderConfigId().equals(providerConfigId))
+                .filter(Predicate.not(AlertNotificationModel::isMappingToProjects))
+                .toList();
+
+        Page<AlertNotificationModel> pageOfNotifications;
+        if (!notificationsNotMapped.isEmpty()) {
+            pageOfNotifications = new PageImpl<>(notificationsNotMapped);
+        } else {
+            pageOfNotifications = Page.empty();
+        }
+        return new AlertPagedModel<>(pageOfNotifications.getTotalPages(), pageOfNotifications.getNumber(), pageOfNotifications.getSize(), pageOfNotifications.getContent());
+
+    }
+
+    @Override
+    public void setNotificationsMapping(List<AlertNotificationModel> notifications) {
+        for (AlertNotificationModel notification : notifications) {
+            AlertNotificationModel updatedNotification = createProcessedAlertNotificationModel(notification);
+            int index = alertNotificationModels.indexOf(notification);
+            alertNotificationModels.set(index, updatedNotification);
+        }
+    }
+
+    @Override
+    public void setNotificationsMappingById(Set<Long> notificationIds) {
+
+    }
+
+    @Override
+    public boolean hasMoreNotificationsToMap(long providerConfigId) {
+        return alertNotificationModels.stream()
+                .anyMatch(AlertNotificationModel::isMappingToProjects);
+    }
+
     //AlertNotificationModel is immutable, this is a workaround for the unit test to set "processed" to true.
     private AlertNotificationModel createProcessedAlertNotificationModel(AlertNotificationModel alertNotificationModel) {
         return new AlertNotificationModel(

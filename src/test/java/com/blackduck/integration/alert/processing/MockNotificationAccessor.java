@@ -55,7 +55,7 @@ public class MockNotificationAccessor implements NotificationAccessor {
         List<AlertNotificationModel> notifications = alertNotificationModels.stream()
             .sorted(Comparator.comparing(AlertNotificationModel::getCreatedAt))
             .filter(withinRange)
-            .collect(Collectors.toList());
+            .toList();
         List<List<AlertNotificationModel>> partitionedLists = ListUtils.partition(notifications, pageSize);
         int totalPages = partitionedLists.size();
         if (partitionedLists.size() >= pageNumber) {
@@ -81,10 +81,10 @@ public class MockNotificationAccessor implements NotificationAccessor {
         List<AlertNotificationModel> notificationsNotProcessed = alertNotificationModels
             .stream()
             .filter(Predicate.not(AlertNotificationModel::getProcessed))
-            .collect(Collectors.toList());
+            .toList();
 
         Page<AlertNotificationModel> pageOfNotifications;
-        if (notificationsNotProcessed.size() > 0) {
+        if (!notificationsNotProcessed.isEmpty()) {
             pageOfNotifications = new PageImpl<>(notificationsNotProcessed);
         } else {
             pageOfNotifications = Page.empty();
@@ -98,10 +98,10 @@ public class MockNotificationAccessor implements NotificationAccessor {
             .stream()
             .filter(model -> model.getProviderConfigId().equals(providerConfigId))
             .filter(Predicate.not(AlertNotificationModel::getProcessed))
-            .collect(Collectors.toList());
+            .toList();
 
         Page<AlertNotificationModel> pageOfNotifications;
-        if (notificationsNotProcessed.size() > 0) {
+        if (!notificationsNotProcessed.isEmpty()) {
             pageOfNotifications = new PageImpl<>(notificationsNotProcessed);
         } else {
             pageOfNotifications = Page.empty();
@@ -155,6 +155,44 @@ public class MockNotificationAccessor implements NotificationAccessor {
             .stream()
             .filter(providerEqual.and(notificationTypeEqual))
             .count();
+    }
+
+    @Override
+    public boolean hasMoreNotificationsToMap(long providerConfigId) {
+        return alertNotificationModels.stream()
+                .filter(model -> model.getProviderConfigId().equals(providerConfigId))
+                .anyMatch(AlertNotificationModel::isMappingToProjects);
+    }
+
+    @Override
+    public void setNotificationsMappingById(Set<Long> notificationIds) {
+
+    }
+
+    @Override
+    public void setNotificationsMapping(List<AlertNotificationModel> notifications) {
+        for (AlertNotificationModel notification : notifications) {
+            AlertNotificationModel updatedNotification = createProcessedAlertNotificationModel(notification);
+            int index = alertNotificationModels.indexOf(notification);
+            alertNotificationModels.set(index, updatedNotification);
+        }
+    }
+
+    @Override
+    public AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotMapped(long providerConfigId, int pageSize) {
+        List<AlertNotificationModel> notificationsNotMapped = alertNotificationModels
+                .stream()
+                .filter(model -> model.getProviderConfigId().equals(providerConfigId))
+                .filter(Predicate.not(AlertNotificationModel::isMappingToProjects))
+                .toList();
+
+        Page<AlertNotificationModel> pageOfNotifications;
+        if (!notificationsNotMapped.isEmpty()) {
+            pageOfNotifications = new PageImpl<>(notificationsNotMapped);
+        } else {
+            pageOfNotifications = Page.empty();
+        }
+        return new AlertPagedModel<>(pageOfNotifications.getTotalPages(), pageOfNotifications.getNumber(), pageOfNotifications.getSize(), pageOfNotifications.getContent());
     }
 
     //AlertNotificationModel is immutable, this is a workaround for the unit test to set "processed" to true.

@@ -165,7 +165,7 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
         return mappingToJobs;
     }
 
-    public void setMappingToJobs(boolean mappingToJobs) {
-        this.mappingToJobs = mappingToJobs;
+    public void setMappingToJobsToTrue() {
+        this.mappingToJobs = true;
     }
 }
