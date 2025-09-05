@@ -64,7 +64,8 @@ class ProcessingTaskTest {
             DateUtils.createCurrentDateTimestamp(),
             DateUtils.createCurrentDateTimestamp(),
             false,
-            String.format("content-id-%s", UUID.randomUUID())
+            String.format("content-id-%s", UUID.randomUUID()),
+            false
         );
         modelList = List.of(model);
     }
@@ -117,7 +118,8 @@ class ProcessingTaskTest {
                 DateUtils.createCurrentDateTimestamp(),
                 DateUtils.createCurrentDateTimestamp(),
                 false,
-                String.format("content-id-%s", UUID.randomUUID())
+                String.format("content-id-%s", UUID.randomUUID()),
+                false
             );
             allModels.add(model);
         }
@@ -210,7 +212,8 @@ class ProcessingTaskTest {
                 DateUtils.createCurrentDateTimestamp(),
                 DateUtils.createCurrentDateTimestamp(),
                 false,
-                String.format("content-id-%s", UUID.randomUUID())
+                String.format("content-id-%s", UUID.randomUUID()),
+                false
             );
             allModels.add(model);
         }

@@ -49,4 +49,12 @@ public interface NotificationAccessor {
 
     long countNotificationsByProviderAndType(long providerConfigId, String notificationType);
 
+    AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotMapped(long providerConfigId, int pageSize);
+
+    void setNotificationsMapping(List<AlertNotificationModel> notifications);
+
+    void setNotificationsMappingById(Set<Long> notificationIds);
+
+    boolean hasMoreNotificationsToMap(long providerConfigId);
+
 }

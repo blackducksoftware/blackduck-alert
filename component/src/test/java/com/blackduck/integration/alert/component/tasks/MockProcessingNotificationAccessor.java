@@ -171,7 +171,8 @@ public class MockProcessingNotificationAccessor implements NotificationAccessor 
             alertNotificationModel.getCreatedAt(),
             alertNotificationModel.getProviderCreationTime(),
             true,
-            alertNotificationModel.getContentId()
+            alertNotificationModel.getContentId(),
+                true
         );
     }
 }

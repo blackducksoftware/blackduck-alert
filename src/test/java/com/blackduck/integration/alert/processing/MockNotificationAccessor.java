@@ -169,7 +169,8 @@ public class MockNotificationAccessor implements NotificationAccessor {
             alertNotificationModel.getCreatedAt(),
             alertNotificationModel.getProviderCreationTime(),
             true,
-            alertNotificationModel.getContentId()
+            alertNotificationModel.getContentId(),
+            true
         );
     }
 

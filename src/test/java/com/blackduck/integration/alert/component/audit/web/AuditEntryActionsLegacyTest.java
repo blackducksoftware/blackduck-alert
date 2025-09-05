@@ -165,7 +165,8 @@ public class AuditEntryActionsLegacyTest {
             createdAt,
             createdAt,
             false,
-            String.format("content-id-%s", UUID.randomUUID())
+            String.format("content-id-%s", UUID.randomUUID()),
+            false
         );
         entity_1.setId(1L);
         AlertNotificationModel entity_2 = new AlertNotificationModel(
@@ -178,7 +179,8 @@ public class AuditEntryActionsLegacyTest {
             createdAt,
             createdAt,
             false,
-            String.format("content-id-%s", UUID.randomUUID())
+            String.format("content-id-%s", UUID.randomUUID()),
+            false
         );
         entity_2.setId(2L);
         List<AlertNotificationModel> pagedEntryList = Arrays.asList(entity_1, entity_2);

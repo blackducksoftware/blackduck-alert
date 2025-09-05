@@ -91,4 +91,15 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
     boolean existsByContentId(String contentId);
 
     long countByProviderConfigIdAndNotificationType(long providerConfigId, String notificationType);
+
+    Page<NotificationEntity> findByProviderConfigIdAndMappingToJobsFalseOrderByProviderCreationTimeAsc(long providerConfigId, Pageable pageable);
+
+    boolean existsByProviderConfigIdAndMappingToJobsFalse(long providerConfigId);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE NotificationEntity entity "
+            + "SET entity.mappingToJobs = true "
+            + "WHERE entity.id IN :notificationIds"
+    )
+    void setMappingToJobsByIds(@Param("notificationIds") Set<Long> notificationIds);
 }

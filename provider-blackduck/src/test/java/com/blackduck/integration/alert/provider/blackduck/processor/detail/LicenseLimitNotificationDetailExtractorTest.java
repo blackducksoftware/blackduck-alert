@@ -39,7 +39,8 @@ public class LicenseLimitNotificationDetailExtractorTest {
             null,
             null,
             false,
-            String.format("content-id-%s", UUID.randomUUID())
+            String.format("content-id-%s", UUID.randomUUID()),
+            false
         );
 
         List<DetailedNotificationContent> detailedNotificationContents = extractor.extractDetailedContent(notification, notificationView);

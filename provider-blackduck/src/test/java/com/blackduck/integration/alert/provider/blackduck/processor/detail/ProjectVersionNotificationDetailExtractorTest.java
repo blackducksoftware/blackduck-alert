@@ -46,7 +46,8 @@ public class ProjectVersionNotificationDetailExtractorTest {
             null,
             null,
             false,
-            String.format("content-id-%s", UUID.randomUUID())
+            String.format("content-id-%s", UUID.randomUUID()),
+            false
         );
 
         ProjectVersionNotificationDetailExtractor extractor = new ProjectVersionNotificationDetailExtractor();

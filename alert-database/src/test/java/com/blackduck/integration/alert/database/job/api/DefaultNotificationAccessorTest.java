@@ -62,7 +62,8 @@ class DefaultNotificationAccessorTest {
         DateUtils.createCurrentDateTimestamp(),
         DateUtils.createCurrentDateTimestamp(),
         false,
-        contentId
+        contentId,
+        false
     );
 
     @Test
@@ -80,7 +81,8 @@ class DefaultNotificationAccessorTest {
             createdAt,
             providerCreationTime,
             false,
-            contentId
+            contentId,
+            false
         );
         NotificationEntity notificationEntity = new NotificationEntity(
             id,
@@ -91,7 +93,8 @@ class DefaultNotificationAccessorTest {
             notificationType,
             content,
             false,
-            contentId
+            contentId,
+            false
         );
         ConfigurationModel configurationModel = createConfigurationModel();
 
@@ -134,7 +137,8 @@ class DefaultNotificationAccessorTest {
             notificationType,
             content,
             false,
-            contentId
+            contentId,
+            false
         );
         Page<NotificationEntity> allSentNotifications = new PageImpl<>(List.of(notificationEntity));
         ConfigurationModel configurationModel = createConfigurationModel();
@@ -166,7 +170,8 @@ class DefaultNotificationAccessorTest {
             notificationType,
             content,
             false,
-            contentId
+            contentId,
+            false
         );
         Page<NotificationEntity> allSentNotifications = new PageImpl<>(List.of(notificationEntity));
         ConfigurationModel configurationModel = createConfigurationModel();
@@ -199,7 +204,8 @@ class DefaultNotificationAccessorTest {
             notificationType,
             content,
             false,
-            contentId
+            contentId,
+            false
         );
         Page<NotificationEntity> notificationEntityPage = new PageImpl<>(List.of(notificationEntity));
         ConfigurationModel configurationModel = createConfigurationModel();
@@ -235,7 +241,8 @@ class DefaultNotificationAccessorTest {
             notificationType,
             content,
             false,
-            contentId
+            contentId,
+            false
         );
         ConfigurationModel configurationModel = createConfigurationModel();
 
@@ -264,7 +271,8 @@ class DefaultNotificationAccessorTest {
             notificationType,
             content,
             false,
-            contentId
+            contentId,
+            false
         );
         ConfigurationModel configurationModel = createConfigurationModel();
 
@@ -292,7 +300,8 @@ class DefaultNotificationAccessorTest {
             notificationType,
             content,
             false,
-            contentId
+            contentId,
+            false
         );
         ConfigurationModel configurationModel = createConfigurationModel();
 
@@ -325,7 +334,8 @@ class DefaultNotificationAccessorTest {
             notificationType,
             content,
             false,
-            contentId
+            contentId,
+            false
         );
         ConfigurationModel configurationModel = createConfigurationModel();
 
@@ -354,7 +364,8 @@ class DefaultNotificationAccessorTest {
             notificationType,
             content,
             false,
-            contentId
+            contentId,
+            false
         );
         ConfigurationModel configurationModel = createConfigurationModel();
 
@@ -402,7 +413,8 @@ class DefaultNotificationAccessorTest {
             notificationType,
             content,
             false,
-            contentId
+            contentId,
+            false
         );
         Page<NotificationEntity> pageOfNotificationEntities = new PageImpl<>(List.of(notificationEntity));
         ConfigurationModel configurationModel = createConfigurationModel();
@@ -432,7 +444,8 @@ class DefaultNotificationAccessorTest {
             DateUtils.createCurrentDateTimestamp(),
             DateUtils.createCurrentDateTimestamp(),
             false,
-            contentId
+            contentId,
+            false
         );
 
         NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
@@ -455,7 +468,8 @@ class DefaultNotificationAccessorTest {
             notificationType,
             content,
             false,
-            contentId
+            contentId,
+            false
         );
         ConfigurationModel configurationModel = createConfigurationModel();
         Set<Long> notificationIds = Set.of(1L);

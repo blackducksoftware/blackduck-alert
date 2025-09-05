@@ -156,7 +156,8 @@ class JobNotificationProcessorTest {
             OffsetDateTime.now(),
             OffsetDateTime.now(),
             false,
-            String.format("content-id-%s", UUID.randomUUID())
+            String.format("content-id-%s", UUID.randomUUID()),
+            false
         );
     }
 }

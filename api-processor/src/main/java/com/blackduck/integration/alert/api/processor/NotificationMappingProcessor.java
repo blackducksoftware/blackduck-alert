@@ -47,6 +47,7 @@ public class NotificationMappingProcessor {
 
     public void processNotifications(UUID correlationID, List<AlertNotificationModel> notifications, List<FrequencyType> frequencies) {
         logNotifications("Start mapping notifications: {}", notifications);
+        notificationAccessor.setNotificationsMapping(notifications);
         List<DetailedNotificationContent> filterableNotifications = notifications
             .stream()
             .map(notificationDetailExtractionDelegator::wrapNotification)

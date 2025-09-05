@@ -64,7 +64,8 @@ class NotificationReceivedEventHandlerTest {
             DateUtils.createCurrentDateTimestamp(),
             DateUtils.createCurrentDateTimestamp(),
             processed,
-            contentId
+            contentId,
+            processed
         );
     }
 

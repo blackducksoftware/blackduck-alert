@@ -66,7 +66,8 @@ public class NotificationDetailExtractionDelegatorTest {
             OffsetDateTime.now(),
             OffsetDateTime.now().minusHours(1L),
             false,
-            String.format("content-id-%s", UUID.randomUUID())
+            String.format("content-id-%s", UUID.randomUUID()),
+            false
         );
     }
 

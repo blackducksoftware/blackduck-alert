@@ -129,7 +129,8 @@ class NotificationContentRepositoryTestIT {
             NotificationType.VULNERABILITY.name(),
             "{\"content\": {}}",
             processed,
-            String.format("content-id-%s", UUID.randomUUID())
+            String.format("content-id-%s", UUID.randomUUID()),
+            false
         );
     }
 
