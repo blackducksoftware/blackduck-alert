@@ -208,7 +208,7 @@ class NotificationReceivedEventHandlerTestIT {
             entity.getProviderCreationTime(),
             processed,
             String.format("content-id-%s", UUID.randomUUID()),
-            false
+            processed
         );
     }
 
