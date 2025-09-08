@@ -126,7 +126,9 @@ const Navigation = ({ confirmLogoutPressed, cancelLogout, globalDescriptorMap })
                 
                 <SideNavItem href="/alert/jobs/distribution" icon="archive" id="archive" label="Jobs" type="link" />
 
-                <SideNavItem hasSubMenu subMenuItems={manageGroup} label="Manage" id="manage" icon="toolbox" />
+                { hasType(DESCRIPTOR_TYPE.CHANNEL) ? (
+                    <SideNavItem hasSubMenu subMenuItems={manageGroup} label="Manage" id="manage" icon="toolbox" />
+                ) : null }
                 
                 { doesDescriptorExist(globalDescriptorMap, SETTINGS_INFO.key) ? (
                     <SideNavItem href="/alert/components/settings" label="Settings" id="settings" icon="cog" type="link" />
