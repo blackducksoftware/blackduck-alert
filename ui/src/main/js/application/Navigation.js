@@ -46,7 +46,7 @@ const Navigation = ({ confirmLogoutPressed, cancelLogout, globalDescriptorMap })
     const classes = useStyles();
 
     const hasType = (descriptorType) => Object.values(globalDescriptorMap).some((descriptor) => descriptorType === descriptor.type);
-
+    console.log(globalDescriptorMap)
     const channelGroup = [{
         id: 'azure_boards',
         label: 'Azure Boards',
@@ -126,7 +126,7 @@ const Navigation = ({ confirmLogoutPressed, cancelLogout, globalDescriptorMap })
                 
                 <SideNavItem href="/alert/jobs/distribution" icon="archive" id="archive" label="Jobs" type="link" />
 
-                { hasType(DESCRIPTOR_TYPE.CHANNEL) ? (
+                { hasType(DESCRIPTOR_TYPE.COMPONENT) ? (
                     <SideNavItem hasSubMenu subMenuItems={manageGroup} label="Manage" id="manage" icon="toolbox" />
                 ) : null }
                 
