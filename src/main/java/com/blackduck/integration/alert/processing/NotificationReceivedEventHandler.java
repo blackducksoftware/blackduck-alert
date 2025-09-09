@@ -63,8 +63,8 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
             List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getModels();
             logger.info("Starting to process batch for provider({}): {} = {} notifications.", providerConfigId, correlationID, notifications.size());
             notificationMappingProcessor.processNotifications(correlationID, notifications, List.of(FrequencyType.REAL_TIME));
-            boolean hasMoreNotificationsToProcess = notificationAccessor.hasMoreNotificationsToMap(providerConfigId);
-            if (hasMoreNotificationsToProcess) {
+            boolean hasMoreNotificationsToMap = notificationAccessor.hasMoreNotificationsToMap(providerConfigId);
+            if (hasMoreNotificationsToMap) {
                 NotificationReceivedEvent continueProcessingEvent;
                 if (notificationMappingProcessor.hasExceededBatchLimit(correlationID)) {
                     eventManager.sendEvent(new JobNotificationMappedEvent(correlationID));
