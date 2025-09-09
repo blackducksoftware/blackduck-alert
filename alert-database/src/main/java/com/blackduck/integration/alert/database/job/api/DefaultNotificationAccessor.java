@@ -275,6 +275,12 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         return notificationContentRepository.existsByProviderConfigIdAndMappingToJobsFalse(providerConfigId);
     }
 
+    @Override
+    @Transactional
+    public void setNotificationsMappingFalseWhenProcessedFalse(long providerConfigId) {
+        notificationContentRepository.setMappingToJobsFalseWhenProcessedFalse(providerConfigId);
+    }
+
     private List<AlertNotificationModel> toModels(List<NotificationEntity> notificationEntities) {
         return notificationEntities
             .stream()

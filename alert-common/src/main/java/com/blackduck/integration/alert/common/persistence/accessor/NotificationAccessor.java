@@ -57,4 +57,6 @@ public interface NotificationAccessor {
 
     boolean hasMoreNotificationsToMap(long providerConfigId);
 
+    void setNotificationsMappingFalseWhenProcessedFalse(long providerConfigId);
+
 }

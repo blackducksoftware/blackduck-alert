@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.data.domain.Page;
@@ -207,5 +206,36 @@ public class MockNotificationContentRepository extends MockRepositoryContainer<L
     public void setMappingToJobsByIds(Set<Long> notificationIds) {
         findAllById(notificationIds)
                 .forEach(NotificationEntity::setMappingToJobsToTrue);
+    }
+
+    @Override
+    public void setMappingToJobsFalseWhenProcessedFalse(long providerConfigId) {
+        Predicate<NotificationEntity> providerConfigIdEqual = notificationEntity -> notificationEntity.getProviderConfigId().equals(providerConfigId);
+        Predicate<NotificationEntity> notProcessed = Predicate.not(NotificationEntity::getProcessed);
+        Predicate<NotificationEntity> notMapped = Predicate.not(NotificationEntity::isMappingToJobs);
+        Predicate<NotificationEntity> providerMappingAndProcessedFalse = providerConfigIdEqual.and(notMapped).and(notProcessed);
+
+        List<NotificationEntity> entities = findAll().stream()
+                .filter(providerMappingAndProcessedFalse)
+                .toList();
+
+        List<NotificationEntity> updatedEntities = entities.stream()
+                .map(this::setMappingAndProcessedToFalse)
+                .toList();
+
+        saveAll(updatedEntities);
+    }
+
+    private NotificationEntity setMappingAndProcessedToFalse(NotificationEntity entity) {
+        return new NotificationEntity(entity.getId(),
+                entity.getCreatedAt(),
+                entity.getProvider(),
+                entity.getProviderConfigId(),
+                entity.getProviderCreationTime(),
+                entity.getNotificationType(),
+                entity.getContent(),
+                false,
+                entity.getContentId(),
+                false);
     }
 }

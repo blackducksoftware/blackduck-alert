@@ -102,4 +102,12 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
             + "WHERE entity.id IN :notificationIds"
     )
     void setMappingToJobsByIds(@Param("notificationIds") Set<Long> notificationIds);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE NotificationEntity entity "
+            + "SET entity.mappingToJobs = false "
+            + "WHERE entity.providerConfigId = :providerConfigId "
+            + "AND entity.processed = false"
+    )
+    void setMappingToJobsFalseWhenProcessedFalse(@Param("providerConfigId") long providerConfigId);
 }

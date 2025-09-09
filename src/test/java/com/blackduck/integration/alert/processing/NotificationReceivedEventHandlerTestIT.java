@@ -68,7 +68,7 @@ class NotificationReceivedEventHandlerTestIT {
     int pageSize = 10;
 
     @BeforeEach
-    public void init() {
+    void init() {
         properties = new TestProperties();
         ConfigurationFieldModel providerConfigEnabled = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED);
         providerConfigEnabled.setFieldValue("TRUE");
@@ -92,7 +92,7 @@ class NotificationReceivedEventHandlerTestIT {
     }
 
     @AfterEach
-    public void cleanUpDB() {
+    void cleanUpDB() {
         PageRequest pageRequest = defaultNotificationAccessor.getPageRequestForNotifications(0, pageSize, null, null);
         Page<AlertNotificationModel> notifications = defaultNotificationAccessor.findAll(pageRequest, false);
         notifications.get().forEach(defaultNotificationAccessor::deleteNotification);

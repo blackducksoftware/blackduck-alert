@@ -195,6 +195,21 @@ public class MockNotificationAccessor implements NotificationAccessor {
         return new AlertPagedModel<>(pageOfNotifications.getTotalPages(), pageOfNotifications.getNumber(), pageOfNotifications.getSize(), pageOfNotifications.getContent());
     }
 
+    @Override
+    public void setNotificationsMappingFalseWhenProcessedFalse(long providerConfigId) {
+        List<AlertNotificationModel> notificationsNotProcessed = alertNotificationModels
+                .stream()
+                .filter(model -> model.getProviderConfigId().equals(providerConfigId))
+                .filter(Predicate.not(AlertNotificationModel::getProcessed))
+                .toList();
+
+        for (AlertNotificationModel notification : notificationsNotProcessed) {
+            AlertNotificationModel updatedNotification = createProcessedAlertNotificationModel(notification);
+            int index = alertNotificationModels.indexOf(notification);
+            alertNotificationModels.set(index, updatedNotification);
+        }
+    }
+
     //AlertNotificationModel is immutable, this is a workaround for the unit test to set "processed" to true.
     private AlertNotificationModel createProcessedAlertNotificationModel(AlertNotificationModel alertNotificationModel) {
         return new AlertNotificationModel(
