@@ -299,7 +299,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
             model.getContent(),
             model.getProcessed(),
             model.getContentId(),
-            model.isMappingToProjects()
+            model.isMappingToJobs()
         );
     }
 

@@ -24,7 +24,7 @@ public class AlertNotificationModel extends AlertSerializableModel {
     private final OffsetDateTime createdAt;
     private final OffsetDateTime providerCreationTime;
     private final String contentId;
-    private final boolean mappingToProjects;
+    private final boolean mappingToJobs;
 
     public AlertNotificationModel(
         Long id,
@@ -37,7 +37,7 @@ public class AlertNotificationModel extends AlertSerializableModel {
         OffsetDateTime providerCreationTime,
         boolean processed,
         String contentId,
-        boolean mappingToProjects
+        boolean mappingToJobs
     ) {
         this.id = id;
         this.providerConfigId = providerConfigId;
@@ -49,7 +49,7 @@ public class AlertNotificationModel extends AlertSerializableModel {
         this.providerCreationTime = providerCreationTime;
         this.processed = processed;
         this.contentId = contentId;
-        this.mappingToProjects = mappingToProjects;
+        this.mappingToJobs = mappingToJobs;
     }
 
     public Long getId() {
@@ -96,7 +96,7 @@ public class AlertNotificationModel extends AlertSerializableModel {
         return contentId;
     }
 
-    public boolean isMappingToProjects() {
-        return mappingToProjects;
+    public boolean isMappingToJobs() {
+        return mappingToJobs;
     }
 }

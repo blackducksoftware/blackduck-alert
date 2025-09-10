@@ -28,7 +28,7 @@ import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 
 @Component
 public class NotificationReceivedEventHandler implements AlertEventHandler<NotificationReceivedEvent> {
-    private static final int PAGE_SIZE = 200;
+    public static final int PAGE_SIZE = 200;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

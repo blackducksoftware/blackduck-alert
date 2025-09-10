@@ -164,7 +164,7 @@ public class MockProcessingNotificationAccessor implements NotificationAccessor 
         List<AlertNotificationModel> notificationsNotMapped = alertNotificationModels
                 .stream()
                 .filter(model -> model.getProviderConfigId().equals(providerConfigId))
-                .filter(Predicate.not(AlertNotificationModel::isMappingToProjects))
+                .filter(Predicate.not(AlertNotificationModel::isMappingToJobs))
                 .toList();
 
         Page<AlertNotificationModel> pageOfNotifications;
@@ -194,7 +194,7 @@ public class MockProcessingNotificationAccessor implements NotificationAccessor 
     @Override
     public boolean hasMoreNotificationsToMap(long providerConfigId) {
         return alertNotificationModels.stream()
-                .anyMatch(AlertNotificationModel::isMappingToProjects);
+                .anyMatch(AlertNotificationModel::isMappingToJobs);
     }
 
     @Override

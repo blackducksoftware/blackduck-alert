@@ -8,14 +8,14 @@
 package com.blackduck.integration.alert.processing;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.data.domain.Page;
@@ -26,10 +26,12 @@ import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 
 public class MockNotificationAccessor implements NotificationAccessor {
-    ArrayList<AlertNotificationModel> alertNotificationModels;
+    private final Map<Long,AlertNotificationModel> alertNotificationModels;
 
     public MockNotificationAccessor(List<AlertNotificationModel> alertNotificationModels) {
-        this.alertNotificationModels = new ArrayList<>(alertNotificationModels);
+        this.alertNotificationModels = new LinkedHashMap<>();
+        alertNotificationModels.forEach(item ->
+                this.alertNotificationModels.put(item.getId(), item));
     }
 
     @Override
@@ -39,12 +41,19 @@ public class MockNotificationAccessor implements NotificationAccessor {
 
     @Override
     public List<AlertNotificationModel> findByIds(List<Long> notificationIds) {
-        return null;
+        return alertNotificationModels.values().stream()
+                .filter(item -> notificationIds.contains(item.getId()))
+                .toList();
     }
 
     @Override
     public Optional<AlertNotificationModel> findById(Long notificationId) {
-        return Optional.empty();
+        Optional<AlertNotificationModel> value = Optional.empty();
+
+        if (alertNotificationModels.containsKey(notificationId)) {
+           value = Optional.of(alertNotificationModels.get(notificationId));
+        }
+        return value;
     }
 
     @Override
@@ -52,7 +61,7 @@ public class MockNotificationAccessor implements NotificationAccessor {
         Predicate<AlertNotificationModel> beforePredicate = notification -> notification.getCreatedAt().isBefore(endDate) || notification.getCreatedAt().isEqual(endDate);
         Predicate<AlertNotificationModel> afterPredicate = notification -> notification.getCreatedAt().isAfter(startDate) || notification.getCreatedAt().isEqual(startDate);
         Predicate<AlertNotificationModel> withinRange = beforePredicate.and(afterPredicate);
-        List<AlertNotificationModel> notifications = alertNotificationModels.stream()
+        List<AlertNotificationModel> notifications = alertNotificationModels.values().stream()
             .sorted(Comparator.comparing(AlertNotificationModel::getCreatedAt))
             .filter(withinRange)
             .toList();
@@ -78,7 +87,7 @@ public class MockNotificationAccessor implements NotificationAccessor {
     @Override
     @Deprecated(since = "6.13.0")
     public AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotProcessed(int pageSize) {
-        List<AlertNotificationModel> notificationsNotProcessed = alertNotificationModels
+        List<AlertNotificationModel> notificationsNotProcessed = alertNotificationModels.values()
             .stream()
             .filter(Predicate.not(AlertNotificationModel::getProcessed))
             .toList();
@@ -94,12 +103,12 @@ public class MockNotificationAccessor implements NotificationAccessor {
 
     @Override
     public AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotProcessed(long providerConfigId, int pageSize) {
-        List<AlertNotificationModel> notificationsNotProcessed = alertNotificationModels
+        List<AlertNotificationModel> notificationsNotProcessed = alertNotificationModels.values()
             .stream()
             .filter(model -> model.getProviderConfigId().equals(providerConfigId))
             .filter(Predicate.not(AlertNotificationModel::getProcessed))
+            .limit(pageSize)
             .toList();
-
         Page<AlertNotificationModel> pageOfNotifications;
         if (!notificationsNotProcessed.isEmpty()) {
             pageOfNotifications = new PageImpl<>(notificationsNotProcessed);
@@ -112,9 +121,10 @@ public class MockNotificationAccessor implements NotificationAccessor {
     @Override
     public void setNotificationsProcessed(List<AlertNotificationModel> notifications) {
         for (AlertNotificationModel notification : notifications) {
-            AlertNotificationModel updatedNotification = createProcessedAlertNotificationModel(notification);
-            int index = alertNotificationModels.indexOf(notification);
-            alertNotificationModels.set(index, updatedNotification);
+            findById(notification.getId()).ifPresent(item -> {
+                AlertNotificationModel updatedNotification = createProcessedAlertNotificationModel(item, true, item.isMappingToJobs());
+                alertNotificationModels.put(updatedNotification.getId(), updatedNotification);
+            });
         }
     }
 
@@ -136,22 +146,22 @@ public class MockNotificationAccessor implements NotificationAccessor {
     @Override
     @Deprecated(since = "6.13.0")
     public boolean hasMoreNotificationsToProcess() {
-        return alertNotificationModels.stream()
+        return alertNotificationModels.values().stream()
             .anyMatch(AlertNotificationModel::getProcessed);
     }
 
     @Override
     public boolean hasMoreNotificationsToProcess(long providerConfigId) {
-        return alertNotificationModels.stream()
+        return alertNotificationModels.values().stream()
             .filter(model -> model.getProviderConfigId().equals(providerConfigId))
-            .anyMatch(AlertNotificationModel::getProcessed);
+            .anyMatch(Predicate.not(AlertNotificationModel::getProcessed));
     }
 
     @Override
     public long countNotificationsByProviderAndType(long providerConfigId, String notificationType) {
         Predicate<AlertNotificationModel> providerEqual = model -> model.getProviderConfigId().equals(providerConfigId);
         Predicate<AlertNotificationModel> notificationTypeEqual = model -> model.getNotificationType().equals(notificationType);
-        return alertNotificationModels
+        return alertNotificationModels.values()
             .stream()
             .filter(providerEqual.and(notificationTypeEqual))
             .count();
@@ -159,9 +169,10 @@ public class MockNotificationAccessor implements NotificationAccessor {
 
     @Override
     public boolean hasMoreNotificationsToMap(long providerConfigId) {
-        return alertNotificationModels.stream()
+        return alertNotificationModels.values()
+                .stream()
                 .filter(model -> model.getProviderConfigId().equals(providerConfigId))
-                .anyMatch(AlertNotificationModel::isMappingToProjects);
+                .anyMatch(Predicate.not(AlertNotificationModel::isMappingToJobs));
     }
 
     @Override
@@ -172,20 +183,22 @@ public class MockNotificationAccessor implements NotificationAccessor {
     @Override
     public void setNotificationsMapping(List<AlertNotificationModel> notifications) {
         for (AlertNotificationModel notification : notifications) {
-            AlertNotificationModel updatedNotification = createProcessedAlertNotificationModel(notification);
-            int index = alertNotificationModels.indexOf(notification);
-            alertNotificationModels.set(index, updatedNotification);
+            findById(notification.getId()).ifPresent(item -> {
+                AlertNotificationModel updatedNotification = createProcessedAlertNotificationModel(item, item.getProcessed(), true);
+                alertNotificationModels.put(updatedNotification.getId(), updatedNotification);
+            });
+
         }
     }
 
     @Override
     public AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotMapped(long providerConfigId, int pageSize) {
-        List<AlertNotificationModel> notificationsNotMapped = alertNotificationModels
+        List<AlertNotificationModel> notificationsNotMapped = alertNotificationModels.values()
                 .stream()
                 .filter(model -> model.getProviderConfigId().equals(providerConfigId))
-                .filter(Predicate.not(AlertNotificationModel::isMappingToProjects))
+                .filter(Predicate.not(AlertNotificationModel::isMappingToJobs))
+                .limit(pageSize)
                 .toList();
-
         Page<AlertNotificationModel> pageOfNotifications;
         if (!notificationsNotMapped.isEmpty()) {
             pageOfNotifications = new PageImpl<>(notificationsNotMapped);
@@ -197,21 +210,20 @@ public class MockNotificationAccessor implements NotificationAccessor {
 
     @Override
     public void setNotificationsMappingFalseWhenProcessedFalse(long providerConfigId) {
-        List<AlertNotificationModel> notificationsNotProcessed = alertNotificationModels
+        List<AlertNotificationModel> notificationsNotProcessed = alertNotificationModels.values()
                 .stream()
                 .filter(model -> model.getProviderConfigId().equals(providerConfigId))
                 .filter(Predicate.not(AlertNotificationModel::getProcessed))
                 .toList();
 
         for (AlertNotificationModel notification : notificationsNotProcessed) {
-            AlertNotificationModel updatedNotification = createProcessedAlertNotificationModel(notification);
-            int index = alertNotificationModels.indexOf(notification);
-            alertNotificationModels.set(index, updatedNotification);
+            AlertNotificationModel updatedNotification = createProcessedAlertNotificationModel(notification, notification.getProcessed(), false);
+            alertNotificationModels.put(updatedNotification.getId(), updatedNotification);
         }
     }
 
     //AlertNotificationModel is immutable, this is a workaround for the unit test to set "processed" to true.
-    private AlertNotificationModel createProcessedAlertNotificationModel(AlertNotificationModel alertNotificationModel) {
+    private AlertNotificationModel createProcessedAlertNotificationModel(AlertNotificationModel alertNotificationModel, boolean processed, boolean mappingToProjects) {
         return new AlertNotificationModel(
             alertNotificationModel.getId(),
             alertNotificationModel.getProviderConfigId(),
@@ -221,9 +233,9 @@ public class MockNotificationAccessor implements NotificationAccessor {
             alertNotificationModel.getContent(),
             alertNotificationModel.getCreatedAt(),
             alertNotificationModel.getProviderCreationTime(),
-            true,
+            processed,
             alertNotificationModel.getContentId(),
-            true
+            mappingToProjects
         );
     }
 
