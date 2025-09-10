@@ -45,7 +45,7 @@ public class NotificationMappingInitializer extends StartupComponent {
             for (ConfigurationModel providerConfiguration : providerConfigurations) {
                 long providerConfigId  = providerConfiguration.getConfigurationId();
                 AlertPagedModel<AlertNotificationModel> incompleteMappingNotifications = notificationAccessor.getFirstPageOfNotificationsNotProcessed(providerConfigId, 1);
-                if (incompleteMappingNotifications.getTotalPages() > 0) {
+                if (!incompleteMappingNotifications.getModels().isEmpty()) {
                     // send event to start mapping notifications for provided
                     String providerName = providerConfiguration.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)
                             .flatMap(ConfigurationFieldModel::getFieldValue)
