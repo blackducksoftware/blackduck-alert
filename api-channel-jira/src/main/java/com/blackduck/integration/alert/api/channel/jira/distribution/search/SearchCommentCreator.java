@@ -10,7 +10,7 @@ import java.util.Optional;
 public final class SearchCommentCreator {
 
     public static String createSearchComment(LinkableItem provider, LinkableItem project, LinkableItem projectVersion, LinkableItem component, @Nullable LinkableItem componentVersion, @Nullable ComponentConcernType componentConcernType, @Nullable String policyName) {
-        String providerUrl = provider.getUrl().orElse("");
+        String providerName = provider.getLabel();
         String projectId = project.getValue();
         String projectVersionId = projectVersion.getValue();
         String componentName = component.getValue();
@@ -19,7 +19,7 @@ public final class SearchCommentCreator {
         if(null != componentVersion) {
             componentVersionName = componentVersion.getValue();
         }
-        return createSearchComment(providerUrl, projectId, projectVersionId, componentName, componentVersionName, category, policyName);
+        return createSearchComment(providerName, projectId, projectVersionId, componentName, componentVersionName, category, policyName);
     }
 
     public static String createSearchComment(String providerId, String projectId, String projectVersionId, String componentName, @Nullable String componentVersion, @Nullable String category, @Nullable String policyName) {
