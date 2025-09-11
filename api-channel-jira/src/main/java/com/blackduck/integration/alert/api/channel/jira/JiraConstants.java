@@ -26,7 +26,7 @@ public final class JiraConstants {
         // 1. A summary that starts with "Alert - Black Duck"
         // 2. A summary that isn't an Alert test message
         // 3. Then check if the new property key exists on that issue
-        // 4. Then check if the new property additionalKey is empty or has the text "_alert_9_migrated".
+        // 4. Then check if the new property alert9Migrated is empty or has the text "true".
 
          return "(summary ~ \"Alert - Black Duck\" OR summary !~ \"Alert Test Message\")"
                  + " AND "

@@ -81,7 +81,7 @@ public final class JqlStringCreator {
         @Nullable String policyName
     ) {
         StringBuilder jqlBuilder = new StringBuilder();
-        appendBlackDuckCommentSearchStrings(jqlBuilder, jiraProjectKey,provider, project, projectVersion, component, componentVersion, concernType, policyName);
+        appendBlackDuckCommentSearchStrings(jqlBuilder, jiraProjectKey, provider, project, projectVersion, component, componentVersion, concernType, policyName);
         jqlBuilder.append(" OR ");
         jqlBuilder.append("(");
         appendBlackDuckComponentSearchStrings(jqlBuilder, jiraProjectKey, provider, project, projectVersion, component, componentVersion);
