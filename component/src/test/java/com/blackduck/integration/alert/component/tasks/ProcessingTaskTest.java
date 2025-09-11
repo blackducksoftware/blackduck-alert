@@ -33,6 +33,7 @@ import com.blackduck.integration.alert.api.processor.NotificationMappingProcesso
 import com.blackduck.integration.alert.api.processor.detail.NotificationDetailExtractionDelegator;
 import com.blackduck.integration.alert.api.processor.filter.JobNotificationMapper;
 import com.blackduck.integration.alert.api.task.TaskManager;
+import com.blackduck.integration.alert.common.AlertProperties;
 import com.blackduck.integration.alert.common.enumeration.FrequencyType;
 import com.blackduck.integration.alert.common.message.model.DateRange;
 import com.blackduck.integration.alert.common.persistence.accessor.JobAccessor;
@@ -42,12 +43,15 @@ import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.database.job.api.DefaultNotificationAccessor;
 import com.blackduck.integration.alert.database.job.api.StaticJobAccessor;
+import com.blackduck.integration.alert.test.common.MockAlertProperties;
 import com.blackduck.integration.alert.test.common.TestResourceUtils;
 import com.blackduck.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 
 class ProcessingTaskTest {
     private final BlackDuckResponseResolver blackDuckResponseResolver = new BlackDuckResponseResolver(BlackDuckServicesFactory.createDefaultGson());
+
+    private final AlertProperties alertProperties = new MockAlertProperties();
 
     private List<AlertNotificationModel> modelList;
 
@@ -138,7 +142,7 @@ class ProcessingTaskTest {
         Mockito.when(jobAccessor.hasJobsByFrequency(Mockito.any())).thenReturn(true);
 
         NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
-        NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(extractionDelegator, null, null);
+        NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(extractionDelegator, null, null, alertProperties);
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationMappingProcessor, taskManager, jobAccessor);
         DateRange dateRange = task.getDateRange();
@@ -157,7 +161,7 @@ class ProcessingTaskTest {
         Mockito.when(jobAccessor.hasJobsByFrequency(Mockito.any())).thenReturn(false);
 
         NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
-        NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(extractionDelegator, null, null);
+        NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(extractionDelegator, null, null, alertProperties);
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationMappingProcessor, taskManager, jobAccessor);
         DateRange dateRange = task.getDateRange();
@@ -174,7 +178,7 @@ class ProcessingTaskTest {
         StaticJobAccessor jobAccessor = Mockito.mock(StaticJobAccessor.class);
 
         NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
-        NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(extractionDelegator, null, null);
+        NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(extractionDelegator, null, null, alertProperties);
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationMappingProcessor, taskManager, jobAccessor);
         DateRange dateRange = task.getDateRange();
@@ -194,7 +198,7 @@ class ProcessingTaskTest {
         Mockito.when(jobAccessor.hasJobsByFrequency(Mockito.any())).thenReturn(true);
 
         NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
-        NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(extractionDelegator, null, null);
+        NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(extractionDelegator, null, null, alertProperties);
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationMappingProcessor, taskManager, jobAccessor);
         int count = 20;

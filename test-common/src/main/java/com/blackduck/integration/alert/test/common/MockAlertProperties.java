@@ -40,6 +40,8 @@ public class MockAlertProperties extends AlertProperties {
     private Long loginLockoutThreshold = 10L;
     private Long loginLockoutMinutes = 10L;
 
+    private Integer notificationMappingBatchLimit;
+
     public MockAlertProperties() {
         alertImagesDir = computeImagesDirPath().toString();
 
@@ -157,6 +159,15 @@ public class MockAlertProperties extends AlertProperties {
 
     public void setTrustStoreFile(String trustStoreFile) {
         this.alertTrustStoreFile = trustStoreFile;
+    }
+
+    @Override
+    public Optional<Integer> getNotificationMappingBatchLimit() {
+        return Optional.ofNullable(notificationMappingBatchLimit);
+    }
+
+    public void setNotificationMappingBatchLimit(Integer notificationMappingBatchLimit) {
+        this.notificationMappingBatchLimit = notificationMappingBatchLimit;
     }
 
     private Path computeImagesDirPath() {

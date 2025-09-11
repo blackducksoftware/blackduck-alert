@@ -67,6 +67,7 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
             if (hasMoreNotificationsToProcess) {
                 NotificationReceivedEvent continueProcessingEvent;
                 if (notificationMappingProcessor.hasExceededBatchLimit(correlationID)) {
+                    logger.info("Mapping batch limit of {} exceeded for correlation id: {}. Continuing processing in next batch.", notificationMappingProcessor.getNotificationMappingBatchLimit(), correlationID);
                     eventManager.sendEvent(new JobNotificationMappedEvent(correlationID));
                     continueProcessingEvent = new NotificationReceivedEvent(providerConfigId);
                 } else {
