@@ -39,20 +39,26 @@ public class NotificationMappingInitializer extends StartupComponent {
 
     @Override
     protected void initialize() {
-
         for (Provider provider : providers) {
             List<ConfigurationModel> providerConfigurations = providerConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(provider.getKey(), ConfigContextEnum.GLOBAL);
             for (ConfigurationModel providerConfiguration : providerConfigurations) {
-                long providerConfigId  = providerConfiguration.getConfigurationId();
-                AlertPagedModel<AlertNotificationModel> incompleteMappingNotifications = notificationAccessor.getFirstPageOfNotificationsNotProcessed(providerConfigId, 1);
-                if (!incompleteMappingNotifications.getModels().isEmpty()) {
-                    // send event to start mapping notifications for provided
-                    String providerName = providerConfiguration.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)
-                            .flatMap(ConfigurationFieldModel::getFieldValue)
-                            .orElse(StringUtils.EMPTY);
-                    logger.info("Restarting notification mappings for provider: {}({})", providerName, providerConfigId);
-                    notificationAccessor.setNotificationsMappingFalseWhenProcessedFalse(providerConfigId);
-                    eventManager.sendEvent(new NotificationReceivedEvent(providerConfiguration.getConfigurationId()));
+                boolean providerEnabled = providerConfiguration.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED)
+                        .flatMap(ConfigurationFieldModel::getFieldValue)
+                        .map(Boolean::parseBoolean)
+                        .orElse(false);
+                // only start processing for enabled provider configurations.
+                if(providerEnabled) {
+                    long providerConfigId = providerConfiguration.getConfigurationId();
+                    AlertPagedModel<AlertNotificationModel> incompleteMappingNotifications = notificationAccessor.getFirstPageOfNotificationsNotProcessed(providerConfigId, 1);
+                    if (!incompleteMappingNotifications.getModels().isEmpty()) {
+                        // send event to start mapping notifications for provided
+                        String providerName = providerConfiguration.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)
+                                .flatMap(ConfigurationFieldModel::getFieldValue)
+                                .orElse(StringUtils.EMPTY);
+                        logger.info("Restarting notification mappings for provider: {}({})", providerName, providerConfigId);
+                        notificationAccessor.setNotificationsMappingFalseWhenProcessedFalse(providerConfigId);
+                        eventManager.sendEvent(new NotificationReceivedEvent(providerConfiguration.getConfigurationId()));
+                    }
                 }
             }
         }

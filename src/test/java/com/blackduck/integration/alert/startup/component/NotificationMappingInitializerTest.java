@@ -4,9 +4,11 @@ import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.api.event.AlertEvent;
 import com.blackduck.integration.alert.api.event.NotificationReceivedEvent;
 import com.blackduck.integration.alert.api.provider.Provider;
+import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
+import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
 import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.common.util.DateUtils;
@@ -23,6 +25,7 @@ import org.springframework.core.task.SyncTaskExecutor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -75,7 +78,42 @@ class NotificationMappingInitializerTest {
         List<AlertNotificationModel> alertNotificationModels = new  ArrayList<>(count);
         for(int index = 0; index < count; index++) {
             Long providerConfigId = configIdCounter.getAndIncrement();
-            ConfigurationModel configurationModel = new ConfigurationModel(0L, providerConfigId, "", "", ConfigContextEnum.GLOBAL);
+            ConfigurationFieldModel enabledField = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED);
+            enabledField.setFieldValue("true");
+            Map<String, ConfigurationFieldModel> configuredFields = Map.of(enabledField.getFieldKey(), enabledField);
+            ConfigurationModel configurationModel = new ConfigurationModel(0L, providerConfigId, "", "", ConfigContextEnum.GLOBAL, configuredFields);
+            providerConfigurations.add(configurationModel);
+            AlertNotificationModel alertNotificationModel = createAlertNotificationModel(providerConfigId, providerConfigId, true, true);
+            alertNotificationModels.add(alertNotificationModel);
+        }
+        Mockito.when(providerConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(blackDuckProviderKey, ConfigContextEnum.GLOBAL)).thenReturn(providerConfigurations);
+
+        NotificationAccessor notificationAccessor = new MockNotificationAccessor(alertNotificationModels);
+        RecordingEventManager eventManager = mockEventManager();
+
+        NotificationMappingInitializer mappingInitializer = new NotificationMappingInitializer(providers, providerConfigurationAccessor, notificationAccessor, eventManager);
+        mappingInitializer.initialize();
+
+        Assertions.assertTrue(eventManager.getEventList().isEmpty());
+    }
+
+    @Test
+    void noProvidersEnabledTest() {
+        BlackDuckProviderKey blackDuckProviderKey = new BlackDuckProviderKey();
+        Provider provider = new BlackDuckProvider(blackDuckProviderKey, null,null,null);
+        List<Provider> providers = List.of(provider);
+
+        ConfigurationModelConfigurationAccessor providerConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
+        int count = 5;
+        AtomicLong configIdCounter = new AtomicLong(1L);
+        List<ConfigurationModel> providerConfigurations = new ArrayList<>(count);
+        List<AlertNotificationModel> alertNotificationModels = new  ArrayList<>(count);
+        for(int index = 0; index < count; index++) {
+            Long providerConfigId = configIdCounter.getAndIncrement();
+            ConfigurationFieldModel enabledField = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED);
+            enabledField.setFieldValue("false");
+            Map<String, ConfigurationFieldModel> configuredFields = Map.of(enabledField.getFieldKey(), enabledField);
+            ConfigurationModel configurationModel = new ConfigurationModel(0L, providerConfigId, "", "", ConfigContextEnum.GLOBAL, configuredFields);
             providerConfigurations.add(configurationModel);
             AlertNotificationModel alertNotificationModel = createAlertNotificationModel(providerConfigId, providerConfigId, true, true);
             alertNotificationModels.add(alertNotificationModel);
@@ -104,7 +142,10 @@ class NotificationMappingInitializerTest {
         List<AlertNotificationModel> alertNotificationModels = new  ArrayList<>(count);
         for(int index = 0; index < count; index++) {
             Long providerConfigId = configIdCounter.getAndIncrement();
-            ConfigurationModel configurationModel = new ConfigurationModel(0L, providerConfigId, "", "", ConfigContextEnum.GLOBAL);
+            ConfigurationFieldModel enabledField = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED);
+            enabledField.setFieldValue("true");
+            Map<String, ConfigurationFieldModel> configuredFields = Map.of(enabledField.getFieldKey(), enabledField);
+            ConfigurationModel configurationModel = new ConfigurationModel(0L, providerConfigId, "", "", ConfigContextEnum.GLOBAL, configuredFields);
             providerConfigurations.add(configurationModel);
             AlertNotificationModel alertNotificationModel = createAlertNotificationModel(providerConfigId, providerConfigId, false, true);
             alertNotificationModels.add(alertNotificationModel);
