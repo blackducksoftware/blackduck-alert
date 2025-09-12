@@ -59,7 +59,8 @@ public class MockNotificationContent extends MockEntityUtil<NotificationEntity> 
             notificationType,
             content,
             false,
-            String.format("content-id-%s", UUID.randomUUID())
+            String.format("content-id-%s", UUID.randomUUID()),
+            false
         );
         notificationContent.setId(id);
         return notificationContent;

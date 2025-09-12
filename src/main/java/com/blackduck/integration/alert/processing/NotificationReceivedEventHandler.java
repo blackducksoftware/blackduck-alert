@@ -28,7 +28,7 @@ import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 
 @Component
 public class NotificationReceivedEventHandler implements AlertEventHandler<NotificationReceivedEvent> {
-    private static final int PAGE_SIZE = 200;
+    public static final int PAGE_SIZE = 200;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -58,13 +58,13 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
     private void processNotifications(NotificationReceivedEvent event) {
         UUID correlationID = event.getCorrelationId();
         long providerConfigId = event.getProviderConfigId();
-        AlertPagedModel<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed(providerConfigId, PAGE_SIZE);
+        AlertPagedModel<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotMapped(providerConfigId, PAGE_SIZE);
         if (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels())) {
             List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getModels();
             logger.info("Starting to process batch for provider({}): {} = {} notifications.", providerConfigId, correlationID, notifications.size());
             notificationMappingProcessor.processNotifications(correlationID, notifications, List.of(FrequencyType.REAL_TIME));
-            boolean hasMoreNotificationsToProcess = notificationAccessor.hasMoreNotificationsToProcess(providerConfigId);
-            if (hasMoreNotificationsToProcess) {
+            boolean hasMoreNotificationsToMap = notificationAccessor.hasMoreNotificationsToMap(providerConfigId);
+            if (hasMoreNotificationsToMap) {
                 NotificationReceivedEvent continueProcessingEvent;
                 if (notificationMappingProcessor.hasExceededBatchLimit(correlationID)) {
                     eventManager.sendEvent(new JobNotificationMappedEvent(correlationID));

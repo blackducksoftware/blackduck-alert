@@ -12,15 +12,15 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.blackduck.integration.alert.common.persistence.accessor.SystemStatusAccessor;
 import com.blackduck.integration.alert.startup.component.StartupComponent;
 
-import jakarta.annotation.PostConstruct;
-
-@Configuration
+@Component
 public class StartupManager {
     private final Logger logger = LoggerFactory.getLogger(StartupManager.class);
 
@@ -33,9 +33,9 @@ public class StartupManager {
         this.startupComponents = startupComponents;
     }
 
-    @PostConstruct
+    @EventListener(ApplicationReadyEvent.class)
     @Transactional
-    public void init() {
+    public void onApplicationReady() {
         startup();
     }
 
@@ -43,6 +43,6 @@ public class StartupManager {
         logger.info("Alert Starting...");
         systemStatusAccessor.startupOccurred();
         startupComponents.forEach(StartupComponent::initializeComponent);
+        logger.info("Alert Startup Complete!");
     }
-
 }

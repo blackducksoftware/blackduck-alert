@@ -59,7 +59,8 @@ class JobNotificationMapper2Test {
             OffsetDateTime.now(),
             OffsetDateTime.now(),
             false,
-            String.format("content-id-%s", UUID.randomUUID())
+            String.format("content-id-%s", UUID.randomUUID()),
+            false
         );
         ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
 
@@ -92,7 +93,8 @@ class JobNotificationMapper2Test {
             OffsetDateTime.now(),
             OffsetDateTime.now(),
             false,
-            String.format("content-id-%s", UUID.randomUUID())
+            String.format("content-id-%s", UUID.randomUUID()),
+            false
         );
         ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
 
@@ -126,7 +128,8 @@ class JobNotificationMapper2Test {
             OffsetDateTime.now(),
             OffsetDateTime.now(),
             false,
-            String.format("content-id-%s", UUID.randomUUID())
+            String.format("content-id-%s", UUID.randomUUID()),
+            false
         );
         ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
 
@@ -161,7 +164,8 @@ class JobNotificationMapper2Test {
             OffsetDateTime.now(),
             OffsetDateTime.now(),
             false,
-            String.format("content-id-%s", UUID.randomUUID())
+            String.format("content-id-%s", UUID.randomUUID()),
+            false
         );
         ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
 
@@ -196,7 +200,8 @@ class JobNotificationMapper2Test {
             OffsetDateTime.now(),
             OffsetDateTime.now(),
             false,
-            String.format("content-id-%s", UUID.randomUUID())
+            String.format("content-id-%s", UUID.randomUUID()),
+            false
         );
         ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
 
@@ -230,7 +235,8 @@ class JobNotificationMapper2Test {
             OffsetDateTime.now(),
             OffsetDateTime.now(),
             false,
-            String.format("content-id-%s", UUID.randomUUID())
+            String.format("content-id-%s", UUID.randomUUID()),
+            false
         );
         ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
 
