@@ -31,6 +31,7 @@ import com.blackduck.integration.alert.api.processor.NotificationMappingProcesso
 import com.blackduck.integration.alert.api.processor.detail.NotificationDetailExtractionDelegator;
 import com.blackduck.integration.alert.api.processor.mapping.JobNotificationMapper2;
 import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
+import com.blackduck.integration.alert.common.AlertProperties;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
@@ -61,6 +62,8 @@ class NotificationReceivedEventHandlerTestIT {
     private EventManager eventManager;
     @Autowired
     private JobNotificationMapper2 jobNotificationMapper2;
+    @Autowired
+    private AlertProperties alertProperties;
 
     private Long blackDuckGlobalConfigId;
     private TestProperties properties;
@@ -233,7 +236,8 @@ class NotificationReceivedEventHandlerTestIT {
         return new NotificationMappingProcessor(
             notificationDetailExtractionDelegator,
             jobNotificationMapper2,
-            defaultNotificationAccessor
+            defaultNotificationAccessor,
+            alertProperties
         );
     }
 
