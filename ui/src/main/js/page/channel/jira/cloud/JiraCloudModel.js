@@ -9,7 +9,8 @@ export const JIRA_CLOUD_GLOBAL_FIELD_KEYS = {
     emailAddress: 'jira.cloud.admin.email.address',
     accessToken: 'jira.cloud.admin.api.token',
     disablePluginCheck: 'jira.cloud.disable.plugin.check',
-    configurePlugin: 'jira.cloud.configure.plugin'
+    configurePlugin: 'jira.cloud.configure.plugin',
+    timeout: 'jira.cloud.timeout'
 };
 
 export const JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS = {
