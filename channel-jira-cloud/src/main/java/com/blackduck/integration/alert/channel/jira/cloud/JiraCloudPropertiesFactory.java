@@ -7,6 +7,7 @@
  */
 package com.blackduck.integration.alert.channel.jira.cloud;
 
+import com.blackduck.integration.jira.common.cloud.configuration.JiraCloudRestConfigBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -53,7 +54,7 @@ public class JiraCloudPropertiesFactory {
         boolean pluginCheckDisabled = fieldUtility.getBooleanOrFalse(JiraCloudDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK);
         ProxyInfo proxy = proxyManager.createProxyInfoForHost(url);
 
-        return new JiraCloudProperties(url, accessToken, username, pluginCheckDisabled, proxy, alertSSLContextManager.buildWithClientCertificate().orElse(null));
+        return new JiraCloudProperties(url, accessToken, username, pluginCheckDisabled, proxy, alertSSLContextManager.buildWithClientCertificate().orElse(null), JiraCloudRestConfigBuilder.DEFAULT_TIMEOUT_SECONDS);
     }
 
     public JiraCloudProperties createJiraProperties(FieldModel fieldModel) {
@@ -67,7 +68,7 @@ public class JiraCloudPropertiesFactory {
             .orElse(false);
 
         ProxyInfo proxy = proxyManager.createProxyInfoForHost(url);
-        return new JiraCloudProperties(url, accessToken, username, pluginCheckDisabled, proxy, alertSSLContextManager.buildWithClientCertificate().orElse(null));
+        return new JiraCloudProperties(url, accessToken, username, pluginCheckDisabled, proxy, alertSSLContextManager.buildWithClientCertificate().orElse(null), JiraCloudRestConfigBuilder.DEFAULT_TIMEOUT_SECONDS);
     }
 
     public JiraCloudProperties createJiraProperties() throws AlertConfigurationException {

@@ -27,6 +27,8 @@ public class JiraCloudGlobalConfigurationFieldModelValidator implements GlobalCo
         configurationFieldValidator.validateIsAURL(JiraCloudDescriptor.KEY_JIRA_URL);
         configurationFieldValidator.validateRequiredFieldIsNotBlank(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
         configurationFieldValidator.validateRequiredFieldIsNotBlank(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
+        configurationFieldValidator.validateRequiredFieldIsNotBlank(JiraCloudDescriptor.KEY_JIRA_TIMEOUT);
+        configurationFieldValidator.validateIsANumber(JiraCloudDescriptor.KEY_JIRA_TIMEOUT);
 
         return configurationFieldValidator.getValidationResults();
     }

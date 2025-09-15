@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import javax.net.ssl.SSLContext;
 
+import com.blackduck.integration.jira.common.cloud.configuration.JiraCloudRestConfigBuilder;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +30,7 @@ class JiraCloudPropertiesTest {
     @Test
     void testBuildConfigException() {
         try {
-            JiraCloudProperties properties = new JiraCloudProperties(null, null, null, false, ProxyInfo.NO_PROXY_INFO, null);
+            JiraCloudProperties properties = new JiraCloudProperties(null, null, null, false, ProxyInfo.NO_PROXY_INFO, null,  JiraCloudRestConfigBuilder.DEFAULT_TIMEOUT_SECONDS);
             assertNull(properties.getUrl());
             assertNull(properties.getAccessToken());
             assertNull(properties.getUsername());
@@ -48,7 +49,7 @@ class JiraCloudPropertiesTest {
             String token = "token";
             String user = "user";
             boolean pluginCheckDisabled = true;
-            JiraCloudProperties properties = new JiraCloudProperties(url, token, user, pluginCheckDisabled, ProxyInfo.NO_PROXY_INFO, null);
+            JiraCloudProperties properties = new JiraCloudProperties(url, token, user, pluginCheckDisabled, ProxyInfo.NO_PROXY_INFO, null, JiraCloudRestConfigBuilder.DEFAULT_TIMEOUT_SECONDS);
             assertEquals(url, properties.getUrl());
             assertEquals(token, properties.getAccessToken());
             assertEquals(user, properties.getUsername());
@@ -68,7 +69,7 @@ class JiraCloudPropertiesTest {
             String token = "token";
             String user = "user";
             boolean pluginCheckDisabled = true;
-            JiraCloudProperties properties = new JiraCloudProperties(url, token, user, pluginCheckDisabled, ProxyInfo.NO_PROXY_INFO, SSLContext.getDefault());
+            JiraCloudProperties properties = new JiraCloudProperties(url, token, user, pluginCheckDisabled, ProxyInfo.NO_PROXY_INFO, SSLContext.getDefault(), JiraCloudRestConfigBuilder.DEFAULT_TIMEOUT_SECONDS);
             assertEquals(url, properties.getUrl());
             assertEquals(token, properties.getAccessToken());
             assertEquals(user, properties.getUsername());
@@ -85,7 +86,7 @@ class JiraCloudPropertiesTest {
     @Test
     void testServerServiceFactory() {
         try {
-            JiraCloudProperties properties = new JiraCloudProperties("http://localhost:2990", "token", "user", false, ProxyInfo.NO_PROXY_INFO, null);
+            JiraCloudProperties properties = new JiraCloudProperties("http://localhost:2990", "token", "user", false, ProxyInfo.NO_PROXY_INFO, null, JiraCloudRestConfigBuilder.DEFAULT_TIMEOUT_SECONDS);
             JiraCloudServiceFactory serviceFactory = properties.createJiraServicesCloudFactory(LoggerFactory.getLogger(getClass()), BlackDuckServicesFactory.createDefaultGson());
             assertNotNull(serviceFactory);
         } catch (IssueTrackerException ex) {
