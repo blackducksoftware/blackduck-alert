@@ -46,7 +46,7 @@ const Navigation = ({ confirmLogoutPressed, cancelLogout, globalDescriptorMap })
     const classes = useStyles();
 
     const hasType = (descriptorType) => Object.values(globalDescriptorMap).some((descriptor) => descriptorType === descriptor.type);
-    console.log(globalDescriptorMap)
+
     const channelGroup = [{
         id: 'azure_boards',
         label: 'Azure Boards',
