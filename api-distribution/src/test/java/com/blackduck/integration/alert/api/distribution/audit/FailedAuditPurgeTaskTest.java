@@ -94,9 +94,9 @@ class FailedAuditPurgeTaskTest {
             3L
         ));
 
-        auditFailedNotificationRepository.save(new AuditFailedNotificationEntity(1L, "notification 1 content"));
-        auditFailedNotificationRepository.save(new AuditFailedNotificationEntity(2L, "notification 2 content"));
-        auditFailedNotificationRepository.save(new AuditFailedNotificationEntity(3L, "notification 3 content"));
+        auditFailedNotificationRepository.save(new AuditFailedNotificationEntity(1L, "notification 1 content", true));
+        auditFailedNotificationRepository.save(new AuditFailedNotificationEntity(2L, "notification 2 content", true));
+        auditFailedNotificationRepository.save(new AuditFailedNotificationEntity(3L, "notification 3 content", true));
 
         FailedAuditPurgeTask task = new FailedAuditPurgeTask(null, null, processingFailedAccessor, configurationAccessor);
         task.runTask();
@@ -176,9 +176,9 @@ class FailedAuditPurgeTaskTest {
             3L
         ));
 
-        auditFailedNotificationRepository.save(new AuditFailedNotificationEntity(1L, "notification 1 content"));
-        auditFailedNotificationRepository.save(new AuditFailedNotificationEntity(2L, "notification 2 content"));
-        auditFailedNotificationRepository.save(new AuditFailedNotificationEntity(3L, "notification 3 content"));
+        auditFailedNotificationRepository.save(new AuditFailedNotificationEntity(1L, "notification 1 content", true));
+        auditFailedNotificationRepository.save(new AuditFailedNotificationEntity(2L, "notification 2 content", true));
+        auditFailedNotificationRepository.save(new AuditFailedNotificationEntity(3L, "notification 3 content", true));
 
         FailedAuditPurgeTask task = new FailedAuditPurgeTask(null, null, processingFailedAccessor, configurationAccessor);
         task.runTask();
