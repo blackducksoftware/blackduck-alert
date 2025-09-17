@@ -30,11 +30,14 @@ import com.blackduck.integration.alert.api.processor.NotificationMappingProcesso
 import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.common.util.DateUtils;
+import com.blackduck.integration.alert.test.common.MockAlertProperties;
 import com.blackduck.integration.alert.test.common.TestResourceUtils;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.google.gson.Gson;
 
 class NotificationReceivedEventHandlerTest {
+
+    private final MockAlertProperties alertProperties = new MockAlertProperties();
 
     @Test
     void handleEventTest() throws IOException {
@@ -58,7 +61,7 @@ class NotificationReceivedEventHandlerTest {
         NotificationDetailExtractionDelegator notificationDetailExtractionDelegator = Mockito.mock(NotificationDetailExtractionDelegator.class);
         JobNotificationMapper2 jobNotificationMapper = Mockito.mock(JobNotificationMapper2.class);
 
-        NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(notificationDetailExtractionDelegator, jobNotificationMapper, notificationAccessor);
+        NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(notificationDetailExtractionDelegator, jobNotificationMapper, notificationAccessor, alertProperties);
         RecordingEventManager eventManager = mockEventManager();
 
         NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationMappingProcessor, eventManager);
@@ -82,7 +85,7 @@ class NotificationReceivedEventHandlerTest {
         // the batch limit has been exceeded
         Mockito.when(jobNotificationMapper.hasBatchReachedSizeLimit(Mockito.any(UUID.class), Mockito.anyInt())).thenReturn(true);
 
-        NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(notificationDetailExtractionDelegator, jobNotificationMapper, notificationAccessor);
+        NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(notificationDetailExtractionDelegator, jobNotificationMapper, notificationAccessor, alertProperties);
         RecordingEventManager eventManager = mockEventManager();
 
         NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationMappingProcessor, eventManager);
@@ -114,7 +117,7 @@ class NotificationReceivedEventHandlerTest {
         NotificationDetailExtractionDelegator notificationDetailExtractionDelegator = Mockito.mock(NotificationDetailExtractionDelegator.class);
         JobNotificationMapper2 jobNotificationMapper = Mockito.mock(JobNotificationMapper2.class);
 
-        NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(notificationDetailExtractionDelegator, jobNotificationMapper, notificationAccessor);
+        NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(notificationDetailExtractionDelegator, jobNotificationMapper, notificationAccessor, alertProperties);
         RecordingEventManager eventManager = mockEventManager();
 
         NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationMappingProcessor, eventManager);
@@ -149,7 +152,7 @@ class NotificationReceivedEventHandlerTest {
         // the batch limit has been exceeded
         Mockito.when(jobNotificationMapper.hasBatchReachedSizeLimit(Mockito.any(UUID.class), Mockito.anyInt())).thenReturn(true);
 
-        NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(notificationDetailExtractionDelegator, jobNotificationMapper, notificationAccessor);
+        NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(notificationDetailExtractionDelegator, jobNotificationMapper, notificationAccessor, alertProperties);
         RecordingEventManager eventManager = mockEventManager();
 
         NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationMappingProcessor, eventManager);
