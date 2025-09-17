@@ -33,6 +33,8 @@ public class JiraServerConfigurationEntity extends BaseEntity {
     private OffsetDateTime lastUpdated;
     @Column(name = "url")
     private String url;
+    @Column(name = "timeout")
+    private Integer timeout;
     @Column(name = "authorization_method")
     private JiraServerAuthorizationMethod authorizationMethod;
     @Column(name = "username")
@@ -48,7 +50,7 @@ public class JiraServerConfigurationEntity extends BaseEntity {
     }
 
     public JiraServerConfigurationEntity(
-        UUID configurationId, String name, OffsetDateTime createdAt, OffsetDateTime lastUpdated, String url, JiraServerAuthorizationMethod authorizationMethod,
+        UUID configurationId, String name, OffsetDateTime createdAt, OffsetDateTime lastUpdated, String url, Integer timeout, JiraServerAuthorizationMethod authorizationMethod,
         String username, String password, String accessToken, Boolean disablePluginCheck
     ) {
         this.configurationId = configurationId;
@@ -56,6 +58,7 @@ public class JiraServerConfigurationEntity extends BaseEntity {
         this.createdAt = createdAt;
         this.lastUpdated = lastUpdated;
         this.url = url;
+        this.timeout = timeout;
         this.authorizationMethod = authorizationMethod;
         this.username = username;
         this.password = password;
@@ -81,6 +84,10 @@ public class JiraServerConfigurationEntity extends BaseEntity {
 
     public String getUrl() {
         return url;
+    }
+
+    public Integer getTimeout() {
+        return timeout;
     }
 
     public JiraServerAuthorizationMethod getAuthorizationMethod() {

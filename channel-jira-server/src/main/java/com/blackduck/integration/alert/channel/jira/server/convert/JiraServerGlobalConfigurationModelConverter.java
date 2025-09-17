@@ -35,6 +35,8 @@ public class JiraServerGlobalConfigurationModelConverter extends GlobalConfigura
     public static final String PASSWORD_KEY = "jira.server.password";
     public static final String DISABLE_PLUGIN_CHECK_KEY = "jira.server.disable.plugin.check";
 
+    private static final Integer DEFAULT_JIRA_TIMEOUT_SECONDS = 300;
+
     private final JiraServerGlobalConfigurationValidator validator;
 
     @Autowired
@@ -64,6 +66,7 @@ public class JiraServerGlobalConfigurationModelConverter extends GlobalConfigura
             null,
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             url,
+            DEFAULT_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC
         );
         model.setUserName(username);

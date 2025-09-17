@@ -59,6 +59,7 @@ public class JiraServerPerformanceUtility {
     public JiraServerGlobalConfigModel createGlobalConfigModelFromProperties(TestProperties testProperties) {
         String createdAt = OffsetDateTime.now().toString();
         String url = testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_URL);
+        Integer timeout = Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_TIMEOUT));
         String userName = testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_USERNAME);
         String password = testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_PASSWORD);
         Boolean disablePluginCheck = testProperties.getOptionalProperty(TestPropertyKey.TEST_JIRA_SERVER_DISABLE_PLUGIN_CHECK)
@@ -71,6 +72,7 @@ public class JiraServerPerformanceUtility {
             createdAt,
             createdAt,
             url,
+            timeout,
             JiraServerAuthorizationMethod.BASIC,
             userName,
             password,
@@ -136,6 +138,7 @@ public class JiraServerPerformanceUtility {
     public JiraServerGlobalConfigModel createGlobalConfigModel(TestProperties testProperties) {
         String createdAt = OffsetDateTime.now().toString();
         String url = testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_URL);
+        Integer timeout = Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_TIMEOUT));
         String userName = testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_USERNAME);
         String password = testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_PASSWORD);
         Boolean disablePluginCheck = testProperties.getOptionalProperty(TestPropertyKey.TEST_JIRA_SERVER_DISABLE_PLUGIN_CHECK)
@@ -148,6 +151,7 @@ public class JiraServerPerformanceUtility {
             createdAt,
             createdAt,
             url,
+            timeout,
             JiraServerAuthorizationMethod.BASIC,
             userName,
             password,

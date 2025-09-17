@@ -31,6 +31,7 @@ import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 
 class JiraServerGlobalConfigurationModelConverterTest {
     public static final String TEST_URL = "http://test.jira.example.com";
+    public static final Integer TEST_JIRA_TIMEOUT_SECONDS = 300;
     public static final String TEST_USERNAME = "testuser";
     public static final String TEST_PASSWORD = "testpassword";
     public static final String TEST_DISABLE_PLUGIN_CHECK = "true";
@@ -69,6 +70,7 @@ class JiraServerGlobalConfigurationModelConverterTest {
             uuid,
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             TEST_URL,
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC
         );
         jiraServerGlobalConfigModelSaved.setUserName(TEST_USERNAME);

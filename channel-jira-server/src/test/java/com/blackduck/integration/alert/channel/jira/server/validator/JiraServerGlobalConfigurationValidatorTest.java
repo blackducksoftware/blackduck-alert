@@ -26,14 +26,15 @@ import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.common.util.DateUtils;
 
 class JiraServerGlobalConfigurationValidatorTest {
-    private final String ID = UUID.randomUUID().toString();
-    private final String NAME = AlertRestConstants.DEFAULT_CONFIGURATION_NAME;
-    private final String CREATED_AT = DateUtils.createCurrentDateTimestamp().toString();
-    private final String LAST_UPDATED = DateUtils.createCurrentDateTimestamp().toString();
-    private final String URL = "https://someUrl";
-    private final String USER_NAME = "username";
-    private final String PASSWORD = "password";
-    private final String PERSONAL_ACCESS_TOKEN = "personalAccessToken";
+    private static final String ID = UUID.randomUUID().toString();
+    private static final String NAME = AlertRestConstants.DEFAULT_CONFIGURATION_NAME;
+    private static final String CREATED_AT = DateUtils.createCurrentDateTimestamp().toString();
+    private static final String LAST_UPDATED = DateUtils.createCurrentDateTimestamp().toString();
+    private static final String URL = "https://someUrl";
+    private static final Integer TEST_JIRA_TIMEOUT_SECONDS = 300;
+    private static final String USER_NAME = "username";
+    private static final String PASSWORD = "password";
+    private static final String PERSONAL_ACCESS_TOKEN = "personalAccessToken";
 
     @Test
     void verifyValidBasicConfig() {
@@ -46,6 +47,7 @@ class JiraServerGlobalConfigurationValidatorTest {
             CREATED_AT,
             LAST_UPDATED,
             URL,
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC,
             USER_NAME,
             PASSWORD,
@@ -87,6 +89,7 @@ class JiraServerGlobalConfigurationValidatorTest {
             CREATED_AT,
             LAST_UPDATED,
             badUrl,
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC,
             USER_NAME,
             PASSWORD,
@@ -115,6 +118,7 @@ class JiraServerGlobalConfigurationValidatorTest {
             CREATED_AT,
             LAST_UPDATED,
             URL,
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC,
             USER_NAME,
             null,
@@ -134,7 +138,7 @@ class JiraServerGlobalConfigurationValidatorTest {
         JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.empty());
         JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
-        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(ID, NAME, URL, JiraServerAuthorizationMethod.BASIC);
+        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(ID, NAME, URL, TEST_JIRA_TIMEOUT_SECONDS, JiraServerAuthorizationMethod.BASIC);
         model.setUserName(USER_NAME);
 
         ValidationResponseModel validationResponseModel = validator.validate(model, null);
@@ -154,6 +158,7 @@ class JiraServerGlobalConfigurationValidatorTest {
             CREATED_AT,
             LAST_UPDATED,
             URL,
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC,
             USER_NAME,
             PASSWORD,
@@ -170,6 +175,7 @@ class JiraServerGlobalConfigurationValidatorTest {
             CREATED_AT,
             LAST_UPDATED,
             URL,
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC,
             USER_NAME,
             PASSWORD,
@@ -196,6 +202,7 @@ class JiraServerGlobalConfigurationValidatorTest {
             CREATED_AT,
             LAST_UPDATED,
             URL,
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC,
             USER_NAME,
             PASSWORD,
@@ -212,6 +219,7 @@ class JiraServerGlobalConfigurationValidatorTest {
             CREATED_AT,
             LAST_UPDATED,
             URL,
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC,
             "new" + USER_NAME,
             PASSWORD,
@@ -235,6 +243,7 @@ class JiraServerGlobalConfigurationValidatorTest {
             CREATED_AT,
             LAST_UPDATED,
             URL,
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC,
             USER_NAME,
             PASSWORD,
@@ -251,6 +260,7 @@ class JiraServerGlobalConfigurationValidatorTest {
             CREATED_AT,
             LAST_UPDATED,
             URL,
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC,
             USER_NAME,
             PASSWORD,
@@ -276,6 +286,7 @@ class JiraServerGlobalConfigurationValidatorTest {
             CREATED_AT,
             LAST_UPDATED,
             "",
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC,
             "",
             "",
@@ -301,6 +312,7 @@ class JiraServerGlobalConfigurationValidatorTest {
             CREATED_AT,
             LAST_UPDATED,
             URL,
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN,
             null,
             null,
@@ -326,6 +338,7 @@ class JiraServerGlobalConfigurationValidatorTest {
             CREATED_AT,
             LAST_UPDATED,
             URL,
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN,
             null,
             null,
@@ -345,7 +358,7 @@ class JiraServerGlobalConfigurationValidatorTest {
         JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
         Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.empty());
         JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
-        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(ID, NAME, URL, JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN);
+        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(ID, NAME, URL, TEST_JIRA_TIMEOUT_SECONDS, JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN);
 
         ValidationResponseModel validationResponseModel = validator.validate(model, null);
         Collection<AlertFieldStatus> alertFieldStatuses = validationResponseModel.getErrors().values();

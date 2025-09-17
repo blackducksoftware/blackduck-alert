@@ -68,6 +68,7 @@ public enum TestPropertyKey {
     TEST_JIRA_CLOUD_REOPEN_TRANSITION("alert.jira.cloud.reopen.transition"),
 
     TEST_JIRA_SERVER_URL("alert.jira.server.url"),
+    TEST_JIRA_SERVER_TIMEOUT("alert.jira.server.timeout"),
     TEST_JIRA_SERVER_USERNAME("alert.jira.server.username"),
     TEST_JIRA_SERVER_PASSWORD("alert.jira.server.password"),
     TEST_JIRA_SERVER_PERSONAL_ACCESS_TOKEN("alert.jira.server.personal.access.token"),

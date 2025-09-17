@@ -45,6 +45,8 @@ import com.blackduck.integration.exception.IntegrationException;
 import com.google.gson.Gson;
 
 class JiraServerGlobalTestActionTest {
+    private static final Integer TEST_JIRA_TIMEOUT_SECONDS = 300;
+
     private final Gson gson = new Gson();
     private final AlertProperties alertProperties = new MockAlertProperties();
     private final FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(alertProperties, gson);
@@ -101,6 +103,7 @@ class JiraServerGlobalTestActionTest {
             jiraServerGlobalConfigModel.getCreatedAt(),
             jiraServerGlobalConfigModel.getLastUpdated(),
             jiraServerGlobalConfigModel.getUrl(),
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC,
             jiraServerGlobalConfigModel.getUserName().orElse(null),
             null,
@@ -138,6 +141,7 @@ class JiraServerGlobalTestActionTest {
             jiraServerGlobalConfigModel.getCreatedAt(),
             jiraServerGlobalConfigModel.getLastUpdated(),
             jiraServerGlobalConfigModel.getUrl(),
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN,
             null,
             null,
@@ -313,6 +317,7 @@ class JiraServerGlobalTestActionTest {
             "createdAtTest",
             "lastUpdatedTest",
             "https://jiraServer",
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC,
             "jiraUser",
             "jiraPassword",

@@ -38,6 +38,8 @@ import com.blackduck.integration.alert.common.util.SortUtil;
 
 @Component
 public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<JiraServerGlobalConfigModel> {
+    private static final Integer DEFAULT_JIRA_TIMEOUT_SECONDS = 300;
+
     private final EncryptionUtility encryptionUtility;
     private final JiraServerConfigurationRepository jiraServerConfigurationRepository;
 
@@ -155,6 +157,7 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
             createdTime,
             lastUpdated,
             configuration.getUrl(),
+            configuration.getTimeout().orElse(DEFAULT_JIRA_TIMEOUT_SECONDS),
             configuration.getAuthorizationMethod(),
             configuration.getUserName().orElse(null),
             password,
@@ -172,6 +175,7 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
         String id = String.valueOf(jiraConfiguration.getConfigurationId());
         String name = jiraConfiguration.getName();
         String url = jiraConfiguration.getUrl();
+        Integer timeout = jiraConfiguration.getTimeout();
         String username = jiraConfiguration.getUsername();
         String password = jiraConfiguration.getPassword();
         String accessToken = jiraConfiguration.getAccessToken();
@@ -191,6 +195,7 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
             createdAtFormatted,
             lastUpdatedFormatted,
             url,
+            timeout,
             jiraConfiguration.getAuthorizationMethod(),
             username,
             password,
