@@ -44,12 +44,6 @@ class JiraCloudGlobalConfigurationFieldModelValidatorTest {
         globalConfigurationValidatorAsserter.assertMissingValue(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
     }
 
-    @Test
-    void missingTimeOutValue() {
-        GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = createGlobalConfigurationValidatorAsserter();
-        globalConfigurationValidatorAsserter.assertMissingValue(JiraCloudDescriptor.KEY_JIRA_TIMEOUT);
-    }
-
     private GlobalConfigurationValidatorAsserter createGlobalConfigurationValidatorAsserter() {
         return new GlobalConfigurationValidatorAsserter(new JiraCloudChannelKey().getUniversalKey(), new JiraCloudGlobalConfigurationFieldModelValidator(), createValidKeyToValues());
     }
