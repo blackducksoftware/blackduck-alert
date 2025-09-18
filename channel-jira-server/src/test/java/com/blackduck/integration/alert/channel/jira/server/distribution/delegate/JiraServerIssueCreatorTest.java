@@ -16,6 +16,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import java.util.List;
 import java.util.UUID;
 
+import com.blackduck.integration.jira.common.model.request.builder.IssueRequestModelFieldsMapBuilder;
+import com.blackduck.integration.jira.common.server.builder.IssueRequestModelFieldsBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,7 +41,6 @@ import com.blackduck.integration.alert.channel.jira.server.distribution.JiraServ
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.blackduck.integration.exception.IntegrationException;
-import com.blackduck.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
 import com.blackduck.integration.jira.common.model.components.ProjectComponent;
 import com.blackduck.integration.jira.common.server.model.IssueCreationRequestModel;
 import com.blackduck.integration.jira.common.server.service.IssueService;
@@ -66,7 +67,8 @@ public class JiraServerIssueCreatorTest {
     final IssueCreationModel simpleIssueCreationModel = IssueCreationModel.simple(TEST_TITLE, "description", List.of(), new LinkableItem("provider", "test-provider"));
 
 
-    @Mock IssueRequestModelFieldsBuilder mockFieldsBuilder;
+    @Mock
+    IssueRequestModelFieldsMapBuilder<IssueRequestModelFieldsBuilder> mockFieldsBuilder;
     @Mock IssueService mockIssueService;
     @Mock ProjectService mockProjectService;
     @Mock JiraIssueCreationRequestCreator mockJiraIssueCreationRequestCreator;
