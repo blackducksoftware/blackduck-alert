@@ -72,10 +72,10 @@ public class JiraPropertyUpdateTask extends JiraTask {
     }
 
     private boolean updateIssues(IssueSearchResponseModel responseModel, IssuePropertyService issuePropertyService) throws InterruptedException {
-        int totalIssues = responseModel.getTotal();
-        boolean foundIssues = totalIssues > 0;
+        boolean foundIssues = responseModel.getIssues() != null && responseModel.getIssues().isEmpty();
 
         if(foundIssues) {
+            int totalIssues = responseModel.getIssues().size();
             List<String> issueKeys = responseModel.getIssues().stream()
                     .map(IssueResponseModel::getKey)
                     .toList();

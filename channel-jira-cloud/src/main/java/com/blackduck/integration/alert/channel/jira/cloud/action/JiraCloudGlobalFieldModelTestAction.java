@@ -60,7 +60,9 @@ public class JiraCloudGlobalFieldModelTestAction extends JiraGlobalFieldModelTes
         JiraCloudProperties jiraProperties = jiraCloudPropertiesFactory.createJiraProperties(fieldUtility);
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
         IssueSearchService issueSearchService = jiraCloudServiceFactory.createIssueSearchService();
-        IssueSearchResponseModel issueSearchResponseModel = issueSearchService.queryForIssuePage("", null, 1);
+        // for jira cloud api v3 the jql query cannot be unbounded so use a JQL query with an or clause to guarantee
+        // returning results.
+        IssueSearchResponseModel issueSearchResponseModel = issueSearchService.queryForIssuePage("reporter IS NOT EMPTY OR reporter IS EMPTY order by created DESC", null, 1);
         return null != issueSearchResponseModel.getIssues();
     }
 
