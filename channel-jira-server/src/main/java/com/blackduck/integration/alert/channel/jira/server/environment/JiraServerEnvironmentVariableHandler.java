@@ -23,6 +23,7 @@ import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
 import com.blackduck.integration.alert.api.environment.EnvironmentProcessingResult;
 import com.blackduck.integration.alert.api.environment.EnvironmentVariableHandler;
 import com.blackduck.integration.alert.api.environment.EnvironmentVariableUtility;
+import com.blackduck.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.blackduck.integration.alert.channel.jira.server.database.accessor.JiraServerGlobalConfigAccessor;
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
@@ -44,7 +45,6 @@ public class JiraServerEnvironmentVariableHandler extends EnvironmentVariableHan
 
     public static final Set<String> VARIABLE_NAMES = Set.of(DISABLE_PLUGIN_KEY, URL_KEY, JIRA_TIMEOUT_KEY, AUTHORIZATION_METHOD_KEY, USERNAME_KEY, PASSWORD_KEY, ACCESS_TOKEN_KEY);
 
-    private static final Integer DEFAULT_JIRA_TIMEOUT_SECONDS = 300;
     private final JiraServerGlobalConfigAccessor configAccessor;
     private final EnvironmentVariableUtility environmentVariableUtility;
     private final JiraServerGlobalConfigurationValidator validator;
@@ -73,7 +73,7 @@ public class JiraServerEnvironmentVariableHandler extends EnvironmentVariableHan
         Integer timeout = environmentVariableUtility.getEnvironmentValue(JIRA_TIMEOUT_KEY)
             .filter(NumberUtils::isDigits)
             .map(NumberUtils::toInt)
-            .orElse(DEFAULT_JIRA_TIMEOUT_SECONDS);
+            .orElse(JiraServerPropertiesFactory.DEFAULT_JIRA_TIMEOUT_SECONDS);
         String userName = environmentVariableUtility.getEnvironmentValue(USERNAME_KEY).orElse(null);
         String password = environmentVariableUtility.getEnvironmentValue(PASSWORD_KEY).orElse(null);
         String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);

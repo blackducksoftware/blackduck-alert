@@ -15,6 +15,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.blackduck.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
@@ -34,8 +35,6 @@ public class JiraServerGlobalConfigurationModelConverter extends GlobalConfigura
     public static final String USERNAME_KEY = "jira.server.username";
     public static final String PASSWORD_KEY = "jira.server.password";
     public static final String DISABLE_PLUGIN_CHECK_KEY = "jira.server.disable.plugin.check";
-
-    private static final Integer DEFAULT_JIRA_TIMEOUT_SECONDS = 300;
 
     private final JiraServerGlobalConfigurationValidator validator;
 
@@ -66,7 +65,7 @@ public class JiraServerGlobalConfigurationModelConverter extends GlobalConfigura
             null,
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             url,
-            DEFAULT_JIRA_TIMEOUT_SECONDS,
+            JiraServerPropertiesFactory.DEFAULT_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC
         );
         model.setUserName(username);

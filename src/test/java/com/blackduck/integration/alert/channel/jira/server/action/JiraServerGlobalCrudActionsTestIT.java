@@ -48,7 +48,7 @@ class JiraServerGlobalCrudActionsTestIT {
     @Autowired
     private JiraServerSchedulingManager jiraSchedulingManager;
 
-    private static final Integer DEFAULT_JIRA_TIMEOUT_SECONDS = 300;
+    private static final Integer TEST_JIRA_TIMEOUT_SECONDS = 300;
 
     @BeforeEach
     public void init() {
@@ -261,7 +261,7 @@ class JiraServerGlobalCrudActionsTestIT {
             uuid.toString(),
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             "https://aNewURL",
-            DEFAULT_JIRA_TIMEOUT_SECONDS,
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC
         );
         updatedJiraServerGlobalConfigModel.setUserName("a-different-username");
@@ -288,7 +288,7 @@ class JiraServerGlobalCrudActionsTestIT {
             uuid.toString(),
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             "https://aNewURL",
-            DEFAULT_JIRA_TIMEOUT_SECONDS,
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN
         );
         updatedJiraServerGlobalConfigModel.setAccessToken("a-different-personal-access-token");
@@ -326,7 +326,7 @@ class JiraServerGlobalCrudActionsTestIT {
             null,
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             "https://aNewURL",
-            DEFAULT_JIRA_TIMEOUT_SECONDS,
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC
         );
         updatedJiraServerGlobalConfigModel.setUserName("a-different-username");
@@ -350,7 +350,7 @@ class JiraServerGlobalCrudActionsTestIT {
             uuid.toString(),
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             "https://aNewURL",
-            DEFAULT_JIRA_TIMEOUT_SECONDS,
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN
         );
         updatedJiraServerGlobalConfigModel.setAccessToken("a-different-personal-access-token");
@@ -402,7 +402,7 @@ class JiraServerGlobalCrudActionsTestIT {
             null,
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             "https://url",
-            DEFAULT_JIRA_TIMEOUT_SECONDS,
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC
         );
         jiraServerGlobalConfigModel.setUserName("name");
@@ -415,7 +415,7 @@ class JiraServerGlobalCrudActionsTestIT {
             null,
             name,
             "https://url",
-            DEFAULT_JIRA_TIMEOUT_SECONDS,
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC
         );
         jiraServerGlobalConfigModel.setUserName("name");
@@ -428,7 +428,7 @@ class JiraServerGlobalCrudActionsTestIT {
             null,
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             "https://url",
-            DEFAULT_JIRA_TIMEOUT_SECONDS,
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN
         );
         jiraServerGlobalConfigModel.setAccessToken("accessToken");

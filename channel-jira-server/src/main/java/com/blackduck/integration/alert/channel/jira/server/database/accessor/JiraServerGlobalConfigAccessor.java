@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.blackduck.integration.alert.channel.jira.server.database.configuration.JiraServerConfigurationEntity;
 import com.blackduck.integration.alert.channel.jira.server.database.configuration.JiraServerConfigurationRepository;
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
@@ -38,8 +39,6 @@ import com.blackduck.integration.alert.common.util.SortUtil;
 
 @Component
 public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<JiraServerGlobalConfigModel> {
-    private static final Integer DEFAULT_JIRA_TIMEOUT_SECONDS = 300;
-
     private final EncryptionUtility encryptionUtility;
     private final JiraServerConfigurationRepository jiraServerConfigurationRepository;
 
@@ -157,7 +156,7 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
             createdTime,
             lastUpdated,
             configuration.getUrl(),
-            configuration.getTimeout().orElse(DEFAULT_JIRA_TIMEOUT_SECONDS),
+            configuration.getTimeout().orElse(JiraServerPropertiesFactory.DEFAULT_JIRA_TIMEOUT_SECONDS),
             configuration.getAuthorizationMethod(),
             configuration.getUserName().orElse(null),
             password,

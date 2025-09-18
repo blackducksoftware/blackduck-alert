@@ -39,7 +39,7 @@ import com.google.gson.Gson;
 class JiraServerGlobalConfigControllerTestIT {
     private static final MediaType MEDIA_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), StandardCharsets.UTF_8);
     private static final String REQUEST_URL = AlertRestConstants.JIRA_SERVER_CONFIGURATION_PATH;
-    private static final Integer DEFAULT_JIRA_TIMEOUT_SECONDS = 300;
+    private static final Integer TEST_JIRA_TIMEOUT_SECONDS = 300;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -248,7 +248,7 @@ class JiraServerGlobalConfigControllerTestIT {
             (null != uuid) ? uuid.toString() : null,
             "Configuration name",
             url,
-            DEFAULT_JIRA_TIMEOUT_SECONDS,
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC
         );
         jiraServerGlobalConfigModel.setUserName("username");
@@ -261,7 +261,7 @@ class JiraServerGlobalConfigControllerTestIT {
             (null != uuid) ? uuid.toString() : null,
             "Configuration name",
             url,
-            DEFAULT_JIRA_TIMEOUT_SECONDS,
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN
         );
         jiraServerGlobalConfigModel.setAccessToken("accessToken");
