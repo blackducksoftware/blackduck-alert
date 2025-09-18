@@ -66,9 +66,7 @@ public class JiraCloudPropertiesFactory {
         String accessToken = fieldModel.getFieldValueModel(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN)
             .map(this::getAppropriateAccessToken)
             .orElse("");
-        int timeoutInSeconds = fieldModel.getFieldValueModel(JiraCloudDescriptor.KEY_JIRA_TIMEOUT)
-                .map(FieldValueModel::getValue)
-                .map(Object::toString)
+        int timeoutInSeconds = fieldModel.getFieldValue(JiraCloudDescriptor.KEY_JIRA_TIMEOUT)
                 .map(Integer::parseInt)
                 .orElse(300);
         boolean pluginCheckDisabled = fieldModel.getFieldValue(JiraCloudDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK)
