@@ -11,17 +11,27 @@ import CheckboxInput from 'common/component/input/CheckboxInput';
 import EndpointButtonField from 'common/component/input/field/EndpointButtonField';
 import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 import * as GlobalRequestHelper from 'common/configuration/global/GlobalRequestHelper';
+import NumberInput from 'common/component/input/NumberInput';
 
 const JiraCloudGlobalConfiguration = ({
     csrfToken, errorHandler, readonly, displayTest, displaySave, displayDelete
 }) => {
-    const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, JIRA_CLOUD_INFO.key));
+    const initModelFunction = () => {
+        let initModel = FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, JIRA_CLOUD_INFO.key);
+        initModel = FieldModelUtilities.updateFieldModelSingleValue(initModel, JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout, '300');
+        return initModel;
+    };
+    const [formData, setFormData] = useState(initModelFunction());
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
 
     const retrieveData = async () => {
         const data = await GlobalRequestHelper.getDataFindFirst(JIRA_CLOUD_INFO.key, csrfToken);
         if (data) {
-            setFormData(data);
+            let updatedFormData = data;
+            if (!FieldModelUtilities.hasValue(data, JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout)) {
+                updatedFormData = FieldModelUtilities.updateFieldModelSingleValue(data, JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout, '300');
+            }
+            setFormData(updatedFormData);
         }
     };
 
@@ -81,6 +91,18 @@ const JiraCloudGlobalConfiguration = ({
                     errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_GLOBAL_FIELD_KEYS.accessToken)}
                     errorValue={errors.fieldErrors[JIRA_CLOUD_GLOBAL_FIELD_KEYS.accessToken]}
                 />
+                <NumberInput
+                    id={JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout}
+                    name={JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout}
+                    label="Timeout"
+                    customDescription="The timeout in seconds for all connections to Jira Cloud.."
+                    required
+                    readOnly={readonly}
+                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
+                    value={FieldModelUtilities.getFieldModelNumberValue(formData, JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout)}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout)}
+                    errorValue={errors.fieldErrors[JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout]}
+                />
                 <CheckboxInput
                     id={JIRA_CLOUD_GLOBAL_FIELD_KEYS.disablePluginCheck}
                     name={JIRA_CLOUD_GLOBAL_FIELD_KEYS.disablePluginCheck}
@@ -103,7 +125,8 @@ const JiraCloudGlobalConfiguration = ({
                     requiredRelatedFields={[
                         JIRA_CLOUD_GLOBAL_FIELD_KEYS.url,
                         JIRA_CLOUD_GLOBAL_FIELD_KEYS.emailAddress,
-                        JIRA_CLOUD_GLOBAL_FIELD_KEYS.accessToken
+                        JIRA_CLOUD_GLOBAL_FIELD_KEYS.accessToken,
+                        JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout
                     ]}
                     csrfToken={csrfToken}
                     currentConfig={formData}
