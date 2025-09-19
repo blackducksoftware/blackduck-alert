@@ -7,6 +7,7 @@
  */
 package com.blackduck.integration.alert.channel.jira.cloud.validator;
 
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.stereotype.Component;
@@ -27,6 +28,17 @@ public class JiraCloudGlobalConfigurationFieldModelValidator implements GlobalCo
         configurationFieldValidator.validateIsAURL(JiraCloudDescriptor.KEY_JIRA_URL);
         configurationFieldValidator.validateRequiredFieldIsNotBlank(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
         configurationFieldValidator.validateRequiredFieldIsNotBlank(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
+        configurationFieldValidator.validateIsANumber(JiraCloudDescriptor.KEY_JIRA_TIMEOUT);
+
+        // validate the timeout is a positive integer.
+        Optional<Integer> timeoutValue = fieldModel.getFieldValue(JiraCloudDescriptor.KEY_JIRA_TIMEOUT)
+                .map(Integer::parseInt);
+        if (timeoutValue.isPresent()) {
+            Integer timeoutSeconds = timeoutValue.get();
+            if(timeoutSeconds < 1) {
+                configurationFieldValidator.addValidationResults(AlertFieldStatus.error(JiraCloudDescriptor.KEY_JIRA_TIMEOUT, "Jira cloud timeout must be a positive integer."));
+            }
+        }
 
         return configurationFieldValidator.getValidationResults();
     }

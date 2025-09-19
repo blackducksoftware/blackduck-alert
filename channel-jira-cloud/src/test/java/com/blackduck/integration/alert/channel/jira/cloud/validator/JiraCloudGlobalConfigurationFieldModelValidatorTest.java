@@ -44,6 +44,13 @@ class JiraCloudGlobalConfigurationFieldModelValidatorTest {
         globalConfigurationValidatorAsserter.assertMissingValue(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
     }
 
+    @Test
+    void invalidTimeout() {
+        GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = createGlobalConfigurationValidatorAsserter();
+        globalConfigurationValidatorAsserter.assertExceptionThrown(NumberFormatException.class, JiraCloudDescriptor.KEY_JIRA_TIMEOUT, "a string is invalid");
+        globalConfigurationValidatorAsserter.assertInvalidValue(JiraCloudDescriptor.KEY_JIRA_TIMEOUT, "-1");
+    }
+
     private GlobalConfigurationValidatorAsserter createGlobalConfigurationValidatorAsserter() {
         return new GlobalConfigurationValidatorAsserter(new JiraCloudChannelKey().getUniversalKey(), new JiraCloudGlobalConfigurationFieldModelValidator(), createValidKeyToValues());
     }
