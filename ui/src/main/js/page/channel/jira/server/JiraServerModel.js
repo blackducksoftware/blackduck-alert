@@ -7,6 +7,7 @@ export const JIRA_SERVER_INFO = {
 export const JIRA_SERVER_GLOBAL_FIELD_KEYS = {
     name: 'name',
     url: 'url',
+    timeout: 'timeout',
     username: 'userName',
     password: 'password',
     isPasswordSet: 'isPasswordSet',
