@@ -8,6 +8,8 @@
 package com.blackduck.integration.alert.channel.jira.server.validator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -365,6 +367,59 @@ class JiraServerGlobalConfigurationValidatorTest {
         assertEquals(1, alertFieldStatuses.size(), "There were errors in the configuration when none were expected.");
         for (AlertFieldStatus status : alertFieldStatuses) {
             assertEquals("accessToken", status.getFieldName(), "Validation reported an error for an unexpected field.");
+        }
+    }
+
+    @Test
+    void verifyTimeoutMissingFromModel() {
+        JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
+        Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.empty());
+        JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
+        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(
+            ID,
+            NAME,
+            CREATED_AT,
+            LAST_UPDATED,
+            URL,
+            null,
+            JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN,
+            null,
+            null,
+            Boolean.FALSE,
+            PERSONAL_ACCESS_TOKEN,
+            Boolean.FALSE,
+            Boolean.FALSE
+        );
+        ValidationResponseModel validationResponseModel = validator.validate(model, null);
+        assertFalse(validationResponseModel.hasErrors());
+    }
+
+    @Test
+    void verifyNegativeTimeoutError() {
+        JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor = Mockito.mock(JiraServerGlobalConfigAccessor.class);
+        Mockito.when(jiraServerGlobalConfigAccessor.getConfigurationByName(Mockito.anyString())).thenReturn(Optional.empty());
+        JiraServerGlobalConfigurationValidator validator = new JiraServerGlobalConfigurationValidator(jiraServerGlobalConfigAccessor);
+        JiraServerGlobalConfigModel model = new JiraServerGlobalConfigModel(
+            ID,
+            NAME,
+            CREATED_AT,
+            LAST_UPDATED,
+            URL,
+            -1,
+            JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN,
+            null,
+            null,
+            Boolean.FALSE,
+            PERSONAL_ACCESS_TOKEN,
+            Boolean.FALSE,
+            Boolean.FALSE
+        );
+        ValidationResponseModel validationResponseModel = validator.validate(model, null);
+        assertTrue(validationResponseModel.hasErrors());
+        Collection<AlertFieldStatus> alertFieldStatuses = validationResponseModel.getErrors().values();
+        assertEquals(1, alertFieldStatuses.size());
+        for (AlertFieldStatus status : alertFieldStatuses) {
+            assertEquals("timeout", status.getFieldName(), "Validation reported an error for an unexpected field.");
         }
     }
 }
