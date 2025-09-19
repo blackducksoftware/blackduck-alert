@@ -18,7 +18,7 @@ import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDe
 import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
 import com.blackduck.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
 
-public class JiraCloudGlobalConfigurationFieldModelValidatorTest {
+class JiraCloudGlobalConfigurationFieldModelValidatorTest {
 
     /*
      * Jira url: required, valid url
@@ -27,21 +27,28 @@ public class JiraCloudGlobalConfigurationFieldModelValidatorTest {
      */
 
     @Test
-    public void verifyValidConfig() {
+    void verifyValidConfig() {
         GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = createGlobalConfigurationValidatorAsserter();
         globalConfigurationValidatorAsserter.assertValid();
     }
 
     @Test
-    public void invalidUrl() {
+    void invalidUrl() {
         GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = createGlobalConfigurationValidatorAsserter();
         globalConfigurationValidatorAsserter.assertInvalidValue(JiraCloudDescriptor.KEY_JIRA_URL, "not_a_url");
     }
 
     @Test
-    public void missingApiToken() {
+    void missingApiToken() {
         GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = createGlobalConfigurationValidatorAsserter();
         globalConfigurationValidatorAsserter.assertMissingValue(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
+    }
+
+    @Test
+    void invalidTimeout() {
+        GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = createGlobalConfigurationValidatorAsserter();
+        globalConfigurationValidatorAsserter.assertExceptionThrown(NumberFormatException.class, JiraCloudDescriptor.KEY_JIRA_TIMEOUT, "a string is invalid");
+        globalConfigurationValidatorAsserter.assertInvalidValue(JiraCloudDescriptor.KEY_JIRA_TIMEOUT, "-1");
     }
 
     private GlobalConfigurationValidatorAsserter createGlobalConfigurationValidatorAsserter() {
@@ -53,10 +60,12 @@ public class JiraCloudGlobalConfigurationFieldModelValidatorTest {
         FieldValueModel url = new FieldValueModel(List.of("http://url.com"), true);
         FieldValueModel email = new FieldValueModel(List.of("email"), true);
         FieldValueModel apiToken = new FieldValueModel(List.of("apiToken"), true);
+        FieldValueModel timeoutInSeconds = new FieldValueModel(List.of("600"), true);
 
         keyToValues.put(JiraCloudDescriptor.KEY_JIRA_URL, url);
         keyToValues.put(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS, email);
         keyToValues.put(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN, apiToken);
+        keyToValues.put(JiraCloudDescriptor.KEY_JIRA_TIMEOUT, timeoutInSeconds);
 
         return keyToValues;
     }

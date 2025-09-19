@@ -7,6 +7,7 @@
  */
 package com.blackduck.integration.alert.channel.jira.cloud;
 
+import com.blackduck.integration.jira.common.cloud.configuration.JiraCloudRestConfigBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -51,9 +52,12 @@ public class JiraCloudPropertiesFactory {
         String username = fieldUtility.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
         String accessToken = fieldUtility.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
         boolean pluginCheckDisabled = fieldUtility.getBooleanOrFalse(JiraCloudDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK);
+        int timeoutInSeconds = fieldUtility.getString(JiraCloudDescriptor.KEY_JIRA_TIMEOUT)
+                .map(Integer::parseInt)
+                .orElse(300);
         ProxyInfo proxy = proxyManager.createProxyInfoForHost(url);
 
-        return new JiraCloudProperties(url, accessToken, username, pluginCheckDisabled, proxy, alertSSLContextManager.buildWithClientCertificate().orElse(null));
+        return new JiraCloudProperties(url, accessToken, username, pluginCheckDisabled, proxy, alertSSLContextManager.buildWithClientCertificate().orElse(null), timeoutInSeconds);
     }
 
     public JiraCloudProperties createJiraProperties(FieldModel fieldModel) {
@@ -62,12 +66,15 @@ public class JiraCloudPropertiesFactory {
         String accessToken = fieldModel.getFieldValueModel(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN)
             .map(this::getAppropriateAccessToken)
             .orElse("");
+        int timeoutInSeconds = fieldModel.getFieldValue(JiraCloudDescriptor.KEY_JIRA_TIMEOUT)
+                .map(Integer::parseInt)
+                .orElse(300);
         boolean pluginCheckDisabled = fieldModel.getFieldValue(JiraCloudDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK)
             .map(Boolean::parseBoolean)
             .orElse(false);
 
         ProxyInfo proxy = proxyManager.createProxyInfoForHost(url);
-        return new JiraCloudProperties(url, accessToken, username, pluginCheckDisabled, proxy, alertSSLContextManager.buildWithClientCertificate().orElse(null));
+        return new JiraCloudProperties(url, accessToken, username, pluginCheckDisabled, proxy, alertSSLContextManager.buildWithClientCertificate().orElse(null), timeoutInSeconds);
     }
 
     public JiraCloudProperties createJiraProperties() throws AlertConfigurationException {

@@ -54,7 +54,7 @@ public class JiraCloudQueryExecutor implements JqlQueryExecutor {
 
     private IssueSearchResponseModel queryForIssues(String jql, Integer maxResults) throws AlertException {
         try {
-            return issueSearchService.queryForIssuePage(jql, 0, maxResults);
+            return issueSearchService.queryForIssuePage(jql, null, maxResults);
         } catch (IntegrationException e) {
             throw new AlertException("Failed to query for Jira Cloud issues", e);
         }
