@@ -109,6 +109,9 @@ public class JiraServerEnvironmentVariableHandler extends EnvironmentVariableHan
             builder.addVariableValue(URL_KEY, obfuscatedConfigModel.getUrl());
         }
 
+        obfuscatedConfigModel.getTimeout()
+            .ifPresent(timeout -> builder.addVariableValue(JIRA_TIMEOUT_KEY, timeout.toString()));
+
         if (StringUtils.isNotBlank(obfuscatedConfigModel.getAuthorizationMethod().getDisplayName())) {
             builder.addVariableValue(AUTHORIZATION_METHOD_KEY, obfuscatedConfigModel.getAuthorizationMethod().name());
         }
