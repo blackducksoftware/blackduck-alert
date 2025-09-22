@@ -27,10 +27,12 @@ import com.blackduck.integration.jira.common.server.service.JiraServerServiceFac
 import com.blackduck.integration.rest.proxy.ProxyInfo;
 
 class JiraServerPropertiesTest {
+    private static final Integer TEST_JIRA_TIMEOUT_SECONDS = 300;
+
     @Test
     void testBuildConfigException() {
         try {
-            JiraServerProperties properties = new JiraServerProperties(null, null, null, null, null, false, ProxyInfo.NO_PROXY_INFO, null);
+            JiraServerProperties properties = new JiraServerProperties(null, TEST_JIRA_TIMEOUT_SECONDS, null, null, null, null, false, ProxyInfo.NO_PROXY_INFO, null);
             properties.createJiraServerConfig();
             assertNull(properties.getUrl());
             assertNull(properties.getPassword());
@@ -51,6 +53,7 @@ class JiraServerPropertiesTest {
             boolean pluginCheckDisabled = true;
             JiraServerProperties properties = new JiraServerProperties(
                 url,
+                TEST_JIRA_TIMEOUT_SECONDS,
                 JiraServerAuthorizationMethod.BASIC,
                 password,
                 user,
@@ -81,6 +84,7 @@ class JiraServerPropertiesTest {
             boolean pluginCheckDisabled = true;
             JiraServerProperties properties = new JiraServerProperties(
                 url,
+                TEST_JIRA_TIMEOUT_SECONDS,
                 JiraServerAuthorizationMethod.BASIC,
                 password,
                 user,
@@ -111,6 +115,7 @@ class JiraServerPropertiesTest {
             boolean pluginCheckDisabled = true;
             JiraServerProperties properties = new JiraServerProperties(
                 url,
+                TEST_JIRA_TIMEOUT_SECONDS,
                 JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN,
                 null,
                 null,
@@ -140,6 +145,7 @@ class JiraServerPropertiesTest {
             boolean pluginCheckDisabled = true;
             JiraServerProperties properties = new JiraServerProperties(
                 url,
+                TEST_JIRA_TIMEOUT_SECONDS,
                 JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN,
                 null,
                 null,
@@ -167,6 +173,7 @@ class JiraServerPropertiesTest {
         try {
             JiraServerProperties properties = new JiraServerProperties(
                 "http://localhost:2990",
+                TEST_JIRA_TIMEOUT_SECONDS,
                 JiraServerAuthorizationMethod.BASIC,
                 "password",
                 "user",

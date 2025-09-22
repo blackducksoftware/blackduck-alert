@@ -85,10 +85,12 @@ public class JiraServerGlobalFieldModelTestAction extends JiraGlobalFieldModelTe
 
     private JiraServerProperties createJiraProperties(FieldUtility fieldUtility) {
         String url = fieldUtility.getStringOrNull(JiraServerDescriptor.KEY_SERVER_URL);
+        // Legacy Jira Server endpoints do not support passing in timeouts. Usage of the old endpoints to create properties will set the timeout the default.
+        Integer timeout = JiraServerPropertiesFactory.DEFAULT_JIRA_TIMEOUT_SECONDS;
         String username = fieldUtility.getStringOrNull(JiraServerDescriptor.KEY_SERVER_USERNAME);
         String password = fieldUtility.getStringOrNull(JiraServerDescriptor.KEY_SERVER_PASSWORD);
         boolean pluginCheckDisabled = fieldUtility.getBooleanOrFalse(JiraServerDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK);
-        return jiraServerPropertiesFactory.createJiraProperties(url, JiraServerAuthorizationMethod.BASIC, password, username, null, pluginCheckDisabled);
+        return jiraServerPropertiesFactory.createJiraProperties(url, timeout, JiraServerAuthorizationMethod.BASIC, password, username, null, pluginCheckDisabled);
     }
 
 }

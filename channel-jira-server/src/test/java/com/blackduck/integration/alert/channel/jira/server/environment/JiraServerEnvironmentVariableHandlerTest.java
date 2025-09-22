@@ -29,6 +29,8 @@ import com.blackduck.integration.alert.channel.jira.server.validator.JiraServerG
 import com.blackduck.integration.alert.test.common.EnvironmentVariableMockingUtil;
 
 class JiraServerEnvironmentVariableHandlerTest {
+    private static final Integer TEST_JIRA_TIMEOUT_SECONDS = 300;
+
     @Test
     void testSetInEnvironmentBasicAuth() {
         Environment environment = Mockito.mock(Environment.class);
@@ -38,14 +40,16 @@ class JiraServerEnvironmentVariableHandlerTest {
 
         String disablePluginCheck = "true";
         String url = "http://test.jira.server.example.com";
+        String timeout = String.valueOf(TEST_JIRA_TIMEOUT_SECONDS);
         String passwordValue = "a test value";
         String username = "testuser";
         String authorizationMethod = JiraServerAuthorizationMethod.BASIC.name();
-        Predicate<String> hasEnvVarCheck = (variableName) -> !JiraServerEnvironmentVariableHandler.VARIABLE_NAMES.contains(variableName);
+        Predicate<String> hasEnvVarCheck = variableName -> !JiraServerEnvironmentVariableHandler.VARIABLE_NAMES.contains(variableName);
 
         Mockito.when(environment.containsProperty(Mockito.anyString())).thenReturn(Boolean.TRUE);
         EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandler.DISABLE_PLUGIN_KEY, disablePluginCheck);
         EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandler.URL_KEY, url);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandler.JIRA_TIMEOUT_KEY, timeout);
         EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandler.PASSWORD_KEY, passwordValue);
         EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandler.USERNAME_KEY, username);
         EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(
@@ -67,6 +71,7 @@ class JiraServerEnvironmentVariableHandlerTest {
 
         assertEquals(disablePluginCheck, result.getVariableValue(JiraServerEnvironmentVariableHandler.DISABLE_PLUGIN_KEY).orElse("Disable plugin check value missing"));
         assertEquals(url, result.getVariableValue(JiraServerEnvironmentVariableHandler.URL_KEY).orElse("Url value missing"));
+        assertEquals(timeout, result.getVariableValue(JiraServerEnvironmentVariableHandler.JIRA_TIMEOUT_KEY).orElse("Timeout value missing"));
         assertEquals(authorizationMethod, result.getVariableValue(JiraServerEnvironmentVariableHandler.AUTHORIZATION_METHOD_KEY).orElse("AuthorizationMethod is missing."));
         assertEquals(AlertConstants.MASKED_VALUE, result.getVariableValue(JiraServerEnvironmentVariableHandler.PASSWORD_KEY).orElse("Password value missing"));
         assertEquals(username, result.getVariableValue(JiraServerEnvironmentVariableHandler.USERNAME_KEY).orElse("Username value missing"));
@@ -82,6 +87,7 @@ class JiraServerEnvironmentVariableHandlerTest {
 
         String disablePluginCheck = "true";
         String url = "http://test.jira.server.example.com";
+        String timeout = String.valueOf(TEST_JIRA_TIMEOUT_SECONDS);
         String authorizationMethod = JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN.name();
         String accessToken = "testPersonalAccessToken";
         Predicate<String> hasEnvVarCheck = (variableName) -> !JiraServerEnvironmentVariableHandler.VARIABLE_NAMES.contains(variableName);
@@ -89,6 +95,8 @@ class JiraServerEnvironmentVariableHandlerTest {
         Mockito.when(environment.containsProperty(Mockito.anyString())).thenReturn(Boolean.TRUE);
         EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandler.DISABLE_PLUGIN_KEY, disablePluginCheck);
         EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandler.URL_KEY, url);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandler.JIRA_TIMEOUT_KEY, timeout);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandler.JIRA_TIMEOUT_KEY, timeout);
         EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(
             environment,
             hasEnvVarCheck,
@@ -109,6 +117,7 @@ class JiraServerEnvironmentVariableHandlerTest {
 
         assertEquals(disablePluginCheck, result.getVariableValue(JiraServerEnvironmentVariableHandler.DISABLE_PLUGIN_KEY).orElse("Disable plugin check value missing"));
         assertEquals(url, result.getVariableValue(JiraServerEnvironmentVariableHandler.URL_KEY).orElse("Url value missing"));
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandler.JIRA_TIMEOUT_KEY, timeout);
         assertEquals(authorizationMethod, result.getVariableValue(JiraServerEnvironmentVariableHandler.AUTHORIZATION_METHOD_KEY).orElse("AuthorizationMethod is missing."));
         assertEquals(AlertConstants.MASKED_VALUE, result.getVariableValue(JiraServerEnvironmentVariableHandler.ACCESS_TOKEN_KEY).orElse("Access token value missing"));
         assertTrue(result.getVariableValue(JiraServerEnvironmentVariableHandler.USERNAME_KEY).isEmpty());
@@ -125,6 +134,7 @@ class JiraServerEnvironmentVariableHandlerTest {
         String disablePluginCheck = "true";
         String passwordValue = "a test value";
         String username = "testuser";
+        String timeout = String.valueOf(TEST_JIRA_TIMEOUT_SECONDS);
         Predicate<String> hasEnvVarCheck = (variableName) -> !JiraServerEnvironmentVariableHandler.VARIABLE_NAMES.contains(variableName);
 
         Mockito.when(environment.containsProperty(Mockito.anyString())).thenReturn(Boolean.TRUE);
@@ -152,12 +162,14 @@ class JiraServerEnvironmentVariableHandlerTest {
 
         String disablePluginCheck = "true";
         String url = "http://test.jira.server.example.com";
+        String timeout = String.valueOf(TEST_JIRA_TIMEOUT_SECONDS);
         String passwordValue = "a test value";
         Predicate<String> hasEnvVarCheck = (variableName) -> !JiraServerEnvironmentVariableHandler.VARIABLE_NAMES.contains(variableName);
 
         Mockito.when(environment.containsProperty(Mockito.anyString())).thenReturn(Boolean.TRUE);
         EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandler.DISABLE_PLUGIN_KEY, disablePluginCheck);
         EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandler.URL_KEY, url);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandler.JIRA_TIMEOUT_KEY, timeout);
         EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandler.PASSWORD_KEY, passwordValue);
 
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
@@ -208,6 +220,7 @@ class JiraServerEnvironmentVariableHandlerTest {
         Mockito.when(configAccessor.getConfigurationCount()).thenReturn(0L);
         Set<String> expectedVariableNames = JiraServerEnvironmentVariableHandler.VARIABLE_NAMES;
         String url = "http://test.jira.server.example.com";
+        String timeout = String.valueOf(TEST_JIRA_TIMEOUT_SECONDS);
         String accessToken = "testPersonalAccessToken";
         String disablePluginCheck = "true";
         String authorizationMethod = JiraServerAuthorizationMethod.BASIC.name();
@@ -217,6 +230,7 @@ class JiraServerEnvironmentVariableHandlerTest {
         Mockito.when(environment.containsProperty(Mockito.anyString())).thenReturn(Boolean.TRUE);
         EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandler.DISABLE_PLUGIN_KEY, disablePluginCheck);
         EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandler.URL_KEY, url);
+        EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(environment, hasEnvVarCheck, JiraServerEnvironmentVariableHandler.JIRA_TIMEOUT_KEY, timeout);
         EnvironmentVariableMockingUtil.addEnvironmentVariableValueToMock(
             environment,
             hasEnvVarCheck,

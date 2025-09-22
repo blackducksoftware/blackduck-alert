@@ -50,6 +50,7 @@ class JiraServerGlobalTestActionTestIT {
     private final String testJiraServerUrl = testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_URL);
     private final String testJiraServerUsername = testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_USERNAME);
     private final String testJiraServerPassword = testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_PASSWORD);
+    private final Integer jiraTimeoutSeconds =  Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_TIMEOUT));
 
     @BeforeEach
     void init() {
@@ -99,6 +100,7 @@ class JiraServerGlobalTestActionTestIT {
             UUID.randomUUID().toString(),
             "testJiraGlobalConfig",
             testJiraServerUrl,
+            jiraTimeoutSeconds,
             JiraServerAuthorizationMethod.BASIC
         );
         jiraServerGlobalConfigModel.setUserName(testJiraServerUsername);
@@ -135,6 +137,7 @@ class JiraServerGlobalTestActionTestIT {
             UUID.randomUUID().toString(),
             "testJiraGlobalConfig",
             testJiraServerUrl,
+            jiraTimeoutSeconds,
             JiraServerAuthorizationMethod.BASIC
         );
         jiraServerGlobalConfigModel.setUserName(testJiraServerUsername);
