@@ -226,18 +226,6 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                     errorName={JIRA_SERVER_GLOBAL_FIELD_KEYS.url}
                     errorValue={error.fieldErrors.url}
                 />
-                <NumberInput
-                    id={JIRA_SERVER_GLOBAL_FIELD_KEYS.timeout}
-                    name={JIRA_SERVER_GLOBAL_FIELD_KEYS.timeout}
-                    label="Timeout"
-                    customDescription="The timeout in seconds for connections to the Jira server instance."
-                    required
-                    readOnly={readonly}
-                    onChange={FieldModelUtilities.handleTestChange(jiraServerModel, setJiraServerModel)}
-                    value={jiraServerModel[JIRA_SERVER_GLOBAL_FIELD_KEYS.timeout] || undefined}
-                    errorName={JIRA_SERVER_GLOBAL_FIELD_KEYS.timeout}
-                    errorValue={error.fieldErrors.timeout}
-                />
                 <RadioInput
                     id={JIRA_SERVER_GLOBAL_FIELD_KEYS.authorizationMethod}
                     name={JIRA_SERVER_GLOBAL_FIELD_KEYS.authorizationMethod}
@@ -296,6 +284,18 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                     />
                 )}
 
+                <NumberInput
+                    id={JIRA_SERVER_GLOBAL_FIELD_KEYS.timeout}
+                    name={JIRA_SERVER_GLOBAL_FIELD_KEYS.timeout}
+                    label="Timeout"
+                    customDescription="The timeout in seconds for connections to the Jira server instance."
+                    required
+                    readOnly={readonly}
+                    onChange={FieldModelUtilities.handleTestChange(jiraServerModel, setJiraServerModel)}
+                    value={jiraServerModel[JIRA_SERVER_GLOBAL_FIELD_KEYS.timeout] || undefined}
+                    errorName={JIRA_SERVER_GLOBAL_FIELD_KEYS.timeout}
+                    errorValue={error.fieldErrors.timeout}
+                />
                 <CheckboxInput
                     id={JIRA_SERVER_GLOBAL_FIELD_KEYS.disablePluginCheck}
                     name={JIRA_SERVER_GLOBAL_FIELD_KEYS.disablePluginCheck}
