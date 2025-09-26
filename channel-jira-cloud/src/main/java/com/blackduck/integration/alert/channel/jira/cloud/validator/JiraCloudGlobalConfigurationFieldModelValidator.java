@@ -30,7 +30,6 @@ public class JiraCloudGlobalConfigurationFieldModelValidator implements GlobalCo
         configurationFieldValidator.validateIsAURL(JiraCloudDescriptor.KEY_JIRA_URL);
         configurationFieldValidator.validateRequiredFieldIsNotBlank(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
         configurationFieldValidator.validateRequiredFieldIsNotBlank(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
-        configurationFieldValidator.validateIsANumber(JiraCloudDescriptor.KEY_JIRA_TIMEOUT);
 
         validateTimeout(configurationFieldValidator, fieldModel);
 
@@ -38,10 +37,13 @@ public class JiraCloudGlobalConfigurationFieldModelValidator implements GlobalCo
     }
 
     private void validateTimeout(ConfigurationFieldValidator configurationFieldValidator, FieldModel fieldModel) {
-        // validate the timeout is a positive integer.
         Optional<String> timeoutValue = fieldModel.getFieldValue(JiraCloudDescriptor.KEY_JIRA_TIMEOUT);
-        if (timeoutValue.isPresent()) {
-            Integer timeoutSeconds = timeoutValue.map(NumberUtils::toInt)
+        boolean isANumberOrEmpty = configurationFieldValidator.getStringValue(JiraCloudDescriptor.KEY_JIRA_TIMEOUT)
+            .map(NumberUtils::isCreatable)
+            .orElse(true);
+        if (isANumberOrEmpty) {
+            Integer timeoutSeconds = timeoutValue
+                .map(NumberUtils::toInt)
                 .orElse(DEFAULT_JIRA_CLOUD_TIMEOUT_SECONDS);
             if(timeoutSeconds < 1) {
                 configurationFieldValidator.addValidationResults(AlertFieldStatus.error(JiraCloudDescriptor.KEY_JIRA_TIMEOUT, "Jira Cloud timeout must be a positive integer."));

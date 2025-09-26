@@ -47,7 +47,7 @@ class JiraCloudGlobalConfigurationFieldModelValidatorTest {
     @Test
     void invalidTimeout() {
         GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = createGlobalConfigurationValidatorAsserter();
-        globalConfigurationValidatorAsserter.assertExceptionThrown(NumberFormatException.class, JiraCloudDescriptor.KEY_JIRA_TIMEOUT, "a string is invalid");
+        globalConfigurationValidatorAsserter.assertInvalidValue(JiraCloudDescriptor.KEY_JIRA_TIMEOUT, "a string is invalid");
         globalConfigurationValidatorAsserter.assertInvalidValue(JiraCloudDescriptor.KEY_JIRA_TIMEOUT, "-1");
     }
 
