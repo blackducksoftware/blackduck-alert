@@ -45,8 +45,8 @@ public class JiraCloudGlobalConfigurationFieldModelValidator implements GlobalCo
             Integer timeoutSeconds = timeoutValue
                 .map(NumberUtils::toInt)
                 .orElse(DEFAULT_JIRA_CLOUD_TIMEOUT_SECONDS);
-            if(timeoutSeconds < 1) {
-                configurationFieldValidator.addValidationResults(AlertFieldStatus.error(JiraCloudDescriptor.KEY_JIRA_TIMEOUT, "Jira Cloud timeout must be a positive integer."));
+            if (timeoutSeconds < 1) {
+                configurationFieldValidator.addValidationResults(AlertFieldStatus.error(JiraCloudDescriptor.KEY_JIRA_TIMEOUT, "Jira Cloud timeout value is invalid."));
             }
         } else {
             configurationFieldValidator.addValidationResults(AlertFieldStatus.error(JiraCloudDescriptor.KEY_JIRA_TIMEOUT, ConfigurationFieldValidator.NOT_AN_INTEGER_VALUE));

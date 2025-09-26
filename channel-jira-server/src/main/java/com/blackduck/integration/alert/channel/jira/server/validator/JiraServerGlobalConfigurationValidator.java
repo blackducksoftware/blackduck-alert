@@ -27,7 +27,7 @@ import com.blackduck.integration.alert.channel.jira.server.model.enumeration.Jir
 
 @Component
 public class JiraServerGlobalConfigurationValidator {
-    private static final String JIRA_TIMEOUT_INVALID_ERROR_MESSAGE = "Jira server timeout must be a positive integer.";
+    private static final String JIRA_TIMEOUT_INVALID_ERROR_MESSAGE = "Jira server timeout value is invalid.";
 
     private final JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor;
 
