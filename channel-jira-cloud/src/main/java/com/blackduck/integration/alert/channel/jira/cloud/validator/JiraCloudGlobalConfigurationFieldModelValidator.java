@@ -31,14 +31,14 @@ public class JiraCloudGlobalConfigurationFieldModelValidator implements GlobalCo
         configurationFieldValidator.validateRequiredFieldIsNotBlank(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
         configurationFieldValidator.validateRequiredFieldIsNotBlank(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
 
-        validateTimeout(configurationFieldValidator, fieldModel);
+        validateTimeout(configurationFieldValidator);
 
         return configurationFieldValidator.getValidationResults();
     }
 
-    private void validateTimeout(ConfigurationFieldValidator configurationFieldValidator, FieldModel fieldModel) {
-        Optional<String> timeoutValue = fieldModel.getFieldValue(JiraCloudDescriptor.KEY_JIRA_TIMEOUT);
-        boolean isANumberOrEmpty = configurationFieldValidator.getStringValue(JiraCloudDescriptor.KEY_JIRA_TIMEOUT)
+    private void validateTimeout(ConfigurationFieldValidator configurationFieldValidator) {
+        Optional<String> timeoutValue = configurationFieldValidator.getStringValue(JiraCloudDescriptor.KEY_JIRA_TIMEOUT);
+        boolean isANumberOrEmpty = timeoutValue
             .map(NumberUtils::isCreatable)
             .orElse(true);
         if (isANumberOrEmpty) {
