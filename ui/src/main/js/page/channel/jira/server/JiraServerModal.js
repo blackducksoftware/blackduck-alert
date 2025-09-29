@@ -173,7 +173,7 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
             dispatch(clearJiraServerFieldErrors());
         }
 
-        if (saveStatus === 'ERROR' && error.message.isBadRequest && requestType !== 'test') {
+        if (saveStatus === 'ERROR' && error.message.isBadRequest) {
             setNotificationConfig({
                 title: error.message.error,
                 message: error.message.message,
