@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.blackduck.integration.jira.common.server.builder.IssueRequestModelFieldsBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,7 +91,7 @@ public class JiraServerTransitionEventHandler extends IssueTrackerTransitionEven
                 FieldService fieldService = jiraServerServiceFactory.createFieldService();
 
                 JiraCustomFieldResolver customFieldResolver = new JiraCustomFieldResolver(fieldService::getUserVisibleFields);
-                JiraIssueCreationRequestCreator issueCreationRequestCreator = new JiraIssueCreationRequestCreator(customFieldResolver);
+                JiraIssueCreationRequestCreator issueCreationRequestCreator = new JiraIssueCreationRequestCreator(customFieldResolver, IssueRequestModelFieldsBuilder::new);
                 JiraErrorMessageUtility jiraErrorMessageUtility = new JiraErrorMessageUtility(gson, customFieldResolver);
 
                 IssueTrackerMessageSender<String> messageSender = jiraServerMessageSenderFactory.createMessageSender(

@@ -27,6 +27,7 @@ import com.google.gson.Gson;
 
 public class JiraServerProperties {
     private final String url;
+    private final Integer timeout;
     private final JiraServerAuthorizationMethod authorizationMethod;
     private final String password;
     private final String username;
@@ -37,6 +38,7 @@ public class JiraServerProperties {
 
     public JiraServerProperties(
         String url,
+        Integer timeout,
         JiraServerAuthorizationMethod authorizationMethod,
         String password,
         String username,
@@ -46,6 +48,7 @@ public class JiraServerProperties {
         @Nullable SSLContext sslContext
     ) {
         this.url = url;
+        this.timeout = timeout;
         this.authorizationMethod = authorizationMethod;
         this.password = password;
         this.username = username;
@@ -80,6 +83,7 @@ public class JiraServerProperties {
     public JiraServerRestConfig createJiraServerBasicAuthConfig() {
         JiraServerBasicAuthRestConfigBuilder builder = new JiraServerBasicAuthRestConfigBuilder();
         builder.setUrl(url)
+            .setTimeoutInSeconds(timeout)
             .setAuthPassword(password)
             .setAuthUsername(username)
             .setProxyInfo(proxyInfo);
@@ -93,6 +97,7 @@ public class JiraServerProperties {
     public JiraServerRestConfig createJiraServerBearerAuthConfig() {
         JiraServerBearerAuthRestConfigBuilder builder = new JiraServerBearerAuthRestConfigBuilder();
         builder.setUrl(url)
+            .setTimeoutInSeconds(timeout)
             .setAccessToken(accessToken)
             .setProxyInfo(proxyInfo);
         if (sslContext != null) {
@@ -111,6 +116,10 @@ public class JiraServerProperties {
 
     public String getUrl() {
         return url;
+    }
+
+    public Integer getTimeout() {
+        return timeout;
     }
 
     public Optional<String> getPassword() {

@@ -17,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.blackduck.integration.alert.api.processor.NotificationMappingProcessor;
 import com.blackduck.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.common.rest.model.SettingsProxyModel;
@@ -49,11 +50,14 @@ class StartupLogTest {
         SettingsUtility mockSettingsUtility = Mockito.mock(SettingsUtility.class);
         Mockito.when(mockSettingsUtility.getConfiguration()).thenReturn(Optional.of(settingsProxyModel));
         ProxyManager proxyManager = new ProxyManager(mockSettingsUtility);
+        NotificationMappingProcessor notificationMappingProcessor = Mockito.mock(NotificationMappingProcessor.class);
+        Mockito.when(notificationMappingProcessor.getNotificationMappingBatchLimit()).thenReturn(NotificationMappingProcessor.DEFAULT_BATCH_LIMIT_MAXIMUM);
 
         MockAlertProperties testAlertProperties = new MockAlertProperties();
-        ConfigurationLogger configurationLogger = new ConfigurationLogger(proxyManager, testAlertProperties);
+        ConfigurationLogger configurationLogger = new ConfigurationLogger(proxyManager, testAlertProperties, notificationMappingProcessor);
 
         configurationLogger.initializeComponent();
-        assertTrue(outputLogger.isLineContainingText("Alert Proxy Authenticated: true"));
+        assertTrue(outputLogger.isLineContainingText("Alert Proxy Authenticated:        true"));
+        assertTrue(outputLogger.isLineContainingText(String.valueOf(NotificationMappingProcessor.DEFAULT_BATCH_LIMIT_MAXIMUM)));
     }
 }

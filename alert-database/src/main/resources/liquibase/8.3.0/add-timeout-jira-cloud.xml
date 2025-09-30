@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="psantos" id="add_jira_cloud_timeout_to_defined_fields">
+        <preConditions onFail="MARK_RAN">
+                <sqlCheck expectedResult="0"> select count(*) FROM ALERT.DEFINED_FIELDS where source_key = 'jira.cloud.timeout' </sqlCheck>
+        </preConditions>
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">jira.cloud.timeout</column>
+            <column name="SENSITIVE">false</column>
+        </insert>
+    </changeSet>
+    <changeSet author="psantos" id="register_jira_timeout_field_to_descriptor">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="0"> select count(*) FROM ALERT.DEFINED_FIELDS where source_key = 'jira.cloud.timeout' </sqlCheck>
+            </not>
+        </preConditions>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('jira.cloud.timeout')"/>
+        </insert>
+    </changeSet>
+    <changeSet author="psantos" id="register_jira_timeout_field_to_context">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="0"> select count(*) FROM ALERT.DEFINED_FIELDS where source_key = 'jira.cloud.timeout' </sqlCheck>
+            </not>
+        </preConditions>
+        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('jira.cloud.timeout')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

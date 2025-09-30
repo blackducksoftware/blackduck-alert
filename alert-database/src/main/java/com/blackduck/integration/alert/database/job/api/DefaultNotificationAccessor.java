@@ -237,6 +237,50 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         return notificationContentRepository.countByProviderConfigIdAndNotificationType(providerConfigId, notificationType);
     }
 
+    @Override
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotMapped(long providerConfigId, int pageSize) {
+        int currentPage = 0;
+        Sort.Order sortingOrder = Sort.Order.asc(COLUMN_NAME_PROVIDER_CREATION_TIME);
+        PageRequest pageRequest = PageRequest.of(currentPage, pageSize, Sort.by(sortingOrder));
+        Page<AlertNotificationModel> pageOfNotifications = notificationContentRepository.findByProviderConfigIdAndMappingToJobsFalseAndProcessedFalseOrderByProviderCreationTimeAsc(
+                        providerConfigId,
+                        pageRequest
+                )
+                .map(this::toModel);
+        List<AlertNotificationModel> alertNotificationModels = pageOfNotifications.getContent();
+        return new AlertPagedModel<>(pageOfNotifications.getTotalPages(), currentPage, pageSize, alertNotificationModels);
+    }
+
+    @Override
+    @Transactional
+    public void setNotificationsMapping(List<AlertNotificationModel> notifications) {
+        Set<Long> notificationIds = notifications
+                .stream()
+                .map(AlertNotificationModel::getId)
+                .collect(Collectors.toSet());
+        setNotificationsMappingById(notificationIds);
+    }
+
+    @Override
+    @Transactional
+    public void setNotificationsMappingById(Set<Long> notificationIds) {
+        notificationContentRepository.setMappingToJobsByIds(notificationIds);
+        notificationContentRepository.flush();
+    }
+
+    @Override
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public boolean hasMoreNotificationsToMap(long providerConfigId) {
+        return notificationContentRepository.existsByProviderConfigIdAndMappingToJobsFalse(providerConfigId);
+    }
+
+    @Override
+    @Transactional
+    public void setNotificationsMappingFalseWhenProcessedFalse(long providerConfigId) {
+        notificationContentRepository.setMappingToJobsFalseWhenProcessedFalse(providerConfigId);
+    }
+
     private List<AlertNotificationModel> toModels(List<NotificationEntity> notificationEntities) {
         return notificationEntities
             .stream()
@@ -254,7 +298,8 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
             model.getNotificationType(),
             model.getContent(),
             model.getProcessed(),
-            model.getContentId()
+            model.getContentId(),
+            model.isMappingToJobs()
         );
     }
 
@@ -277,7 +322,8 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
             entity.getCreatedAt(),
             entity.getProviderCreationTime(),
             entity.getProcessed(),
-            entity.getContentId()
+            entity.getContentId(),
+            entity.isMappingToJobs()
         );
     }
 

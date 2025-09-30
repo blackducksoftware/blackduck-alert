@@ -55,6 +55,8 @@ class JiraServerCustomFunctionActionTest {
     private AuthenticationTestUtils authenticationTestUtils;
     private PermissionMatrixModel fullPermissions;
 
+    private static final Integer TEST_JIRA_TIMEOUT_SECONDS = 300;
+
     @BeforeEach
     public void initAuthManager() {
         authenticationTestUtils = new AuthenticationTestUtils();
@@ -74,6 +76,7 @@ class JiraServerCustomFunctionActionTest {
             jiraGlobalConfigId.toString(),
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             "http://jira.server.example.com/jira",
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC
         );
         configModel.setUserName("user");
@@ -129,6 +132,7 @@ class JiraServerCustomFunctionActionTest {
             jiraGlobalConfigId.toString(),
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             "http://jira.server.example.com/jira",
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC
         );
         configModel.setUserName("user");
@@ -185,6 +189,7 @@ class JiraServerCustomFunctionActionTest {
             jiraGlobalConfigId.toString(),
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             "http://jira.server.example.com/jira",
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC
         );
         configModel.setUserName("user");
@@ -241,6 +246,7 @@ class JiraServerCustomFunctionActionTest {
             jiraGlobalConfigId.toString(),
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             "http://jira.server.example.com/jira",
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC
         );
         configModel.setUserName("user");
@@ -298,6 +304,7 @@ class JiraServerCustomFunctionActionTest {
             jiraGlobalConfigId.toString(),
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             "http://jira.server.example.com/jira",
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC
         );
         configModel.setUserName("user");
@@ -355,6 +362,7 @@ class JiraServerCustomFunctionActionTest {
             jiraGlobalConfigId.toString(),
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             "http://jira.server.example.com/jira",
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC
         );
         configModel.setUserName("user");

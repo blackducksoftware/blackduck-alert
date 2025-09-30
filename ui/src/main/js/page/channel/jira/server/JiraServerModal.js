@@ -5,6 +5,7 @@ import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Modal from 'common/component/modal/Modal';
 import CheckboxInput from 'common/component/input/CheckboxInput';
+import NumberInput from "common/component/input/NumberInput";
 import PasswordInput from 'common/component/input/PasswordInput';
 import TextInput from 'common/component/input/TextInput';
 import ButtonField from 'common/component/input/field/ButtonField';
@@ -36,14 +37,18 @@ const radioOptions = [{
 }];
 
 function getInitialData(type, data) {
+    if (type === 'CREATE') {
+        return { authorizationMethod: 'BASIC', timeout: 300 }
+    }
     if (type === 'EDIT') {
         return data;
     }
     if (type === 'COPY') {
-        const { name, url, authorizationMethod, userName, disablePluginCheck } = data;
+        const { name, url, timeout, authorizationMethod, userName, disablePluginCheck } = data;
         return {
             name,
             url,
+            timeout,
             authorizationMethod,
             userName,
             disablePluginCheck
@@ -56,8 +61,7 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
     const classes = useStyles();
     const dispatch = useDispatch();
     const { copyDescription, submitText, title, type } = modalOptions;
-    const [jiraServerModel, setJiraServerModel] = useState(type === 'CREATE' ? { authorizationMethod: 'BASIC',
-        disablePluginCheck: true } : getInitialData(type, data));
+    const [jiraServerModel, setJiraServerModel] = useState(getInitialData(type, data));
     const [showLoader, setShowLoader] = useState(false);
     const [requestType, setRequestType] = useState();
     const [notificationConfig, setNotificationConfig] = useState();
@@ -167,6 +171,16 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
             });
             setShowNotification(true);
             dispatch(clearJiraServerFieldErrors());
+        }
+
+        if (saveStatus === 'ERROR' && error.message.isBadRequest) {
+            setNotificationConfig({
+                title: error.message.error,
+                message: error.message.message,
+                type: 'error'
+            });
+            setShowNotification(true);
+            setShowLoader(false);
         }
 
         if (saveStatus === 'ERROR') {
@@ -280,6 +294,18 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                     />
                 )}
 
+                <NumberInput
+                    id={JIRA_SERVER_GLOBAL_FIELD_KEYS.timeout}
+                    name={JIRA_SERVER_GLOBAL_FIELD_KEYS.timeout}
+                    label="Timeout"
+                    customDescription="The timeout in seconds for connections to the Jira server instance."
+                    required
+                    readOnly={readonly}
+                    onChange={FieldModelUtilities.handleTestChange(jiraServerModel, setJiraServerModel)}
+                    value={jiraServerModel[JIRA_SERVER_GLOBAL_FIELD_KEYS.timeout] || undefined}
+                    errorName={JIRA_SERVER_GLOBAL_FIELD_KEYS.timeout}
+                    errorValue={error.fieldErrors.timeout}
+                />
                 <CheckboxInput
                     id={JIRA_SERVER_GLOBAL_FIELD_KEYS.disablePluginCheck}
                     name={JIRA_SERVER_GLOBAL_FIELD_KEYS.disablePluginCheck}

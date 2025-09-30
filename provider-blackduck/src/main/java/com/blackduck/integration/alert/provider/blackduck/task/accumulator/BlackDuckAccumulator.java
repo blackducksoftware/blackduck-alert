@@ -208,7 +208,8 @@ public class BlackDuckAccumulator extends ProviderTask {
             createdAt,
             providerCreationTime,
             false,
-            hashOfUrl
+            hashOfUrl,
+            false
         );
     }
 

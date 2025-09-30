@@ -33,8 +33,8 @@ public class JiraCallbackUtilsTest {
 
     @Test
     void createUILinkFromIssueReturnsExpected() {
-        IssueFieldsComponent issueFieldsComponent = new IssueFieldsComponent(List.of(), null, null, "summary", "description", List.of(), null, List.of(), null, null, null, null);
-        IssueResponseModel responseModel = new IssueResponseModel("", "JP-1", ISSUE_URL, KEY, Map.of(), Map.of(), Map.of(), Map.of(), List.of(), null, null, null, null, null, issueFieldsComponent);
+        IssueFieldsComponent issueFieldsComponent = createIssueFieldsComponent("summary");
+        IssueResponseModel responseModel = createIssueResponseModel( "JP-1", KEY, ISSUE_URL, issueFieldsComponent);
         String output = JiraCallbackUtils.createUILink(responseModel);
 
         assertEquals(EXPECTED_UI_LINK, output);
@@ -46,5 +46,33 @@ public class JiraCallbackUtilsTest {
         String output = JiraCallbackUtils.createUILink(jiraSearcherResponseModel);
 
         assertEquals(EXPECTED_UI_LINK, output);
+    }
+
+    private IssueFieldsComponent createIssueFieldsComponent(String summary) {
+        return () -> summary;
+    }
+
+    private IssueResponseModel createIssueResponseModel(String id, String key, String self, IssueFieldsComponent issueFieldsComponent) {
+        return new IssueResponseModel() {
+            @Override
+            public String getId() {
+                return id;
+            }
+
+            @Override
+            public String getKey() {
+                return key;
+            }
+
+            @Override
+            public String getSelf() {
+                return self;
+            }
+
+            @Override
+            public IssueFieldsComponent getFields() {
+                return issueFieldsComponent;
+            }
+        };
     }
 }

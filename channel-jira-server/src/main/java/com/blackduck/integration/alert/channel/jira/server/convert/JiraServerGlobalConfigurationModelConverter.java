@@ -15,6 +15,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.common.model.ValidationResponseModel;
+import com.blackduck.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.blackduck.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
@@ -64,6 +65,7 @@ public class JiraServerGlobalConfigurationModelConverter extends GlobalConfigura
             null,
             AlertRestConstants.DEFAULT_CONFIGURATION_NAME,
             url,
+            JiraServerPropertiesFactory.DEFAULT_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC
         );
         model.setUserName(username);
