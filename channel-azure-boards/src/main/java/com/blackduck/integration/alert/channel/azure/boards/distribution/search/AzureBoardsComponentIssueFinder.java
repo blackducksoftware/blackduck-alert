@@ -27,6 +27,7 @@ import com.blackduck.integration.alert.api.processor.extract.model.project.Abstr
 import com.blackduck.integration.alert.api.processor.extract.model.project.BomComponentDetails;
 import com.blackduck.integration.alert.azure.boards.common.service.workitem.response.WorkItemResponseModel;
 import com.blackduck.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
+import com.blackduck.integration.alert.common.enumeration.ItemOperation;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
 import com.google.gson.Gson;
 
@@ -84,6 +85,12 @@ public class AzureBoardsComponentIssueFinder implements ProjectVersionComponentI
 
             String additionalInfoKey = AzureBoardsAlertIssuePropertiesManager.POLICY_ADDITIONAL_KEY_COMPATIBILITY_LABEL + optionalPolicyName.get();
             fieldRefNameToValue.addAdditionalInfoKey(additionalInfoKey);
+
+            if(policyDetails.map(IssuePolicyDetails::getOperation).filter(ItemOperation.DELETE::equals).isPresent()) {
+                // policy cleared notification or override.  The component version doesn't matter just component
+                // and policy name.
+                fieldRefNameToValue.removeSubComponentKey();
+            }
         }
 
         if (projectIssueModel.getComponentUnknownVersionDetails().isPresent()) {
