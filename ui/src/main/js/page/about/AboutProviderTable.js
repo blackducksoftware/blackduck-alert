@@ -22,7 +22,7 @@ const AboutProviderTable = ({ tableData }) => (
 );
 
 AboutProviderTable.propTypes = {
-    tableData: PropTypes.object
+    tableData: PropTypes.arrayOf(PropTypes.object)
 };
 
 export default AboutProviderTable;

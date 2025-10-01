@@ -33,15 +33,20 @@ class AboutInfoFooter extends React.Component {
         this.startAutoReload();
     }
 
-    // FIXME componentWillReceiveProps is deprecated
-    componentWillReceiveProps(nextProps) {
-        if (!nextProps.fetching) {
-            const { latestMessages } = nextProps;
+    componentDidUpdate(prevProps) {
+        const { latestMessages, fetching } = this.props;
+    
+        // Only update if fetching state changed from true to false
+        if (prevProps.fetching && !fetching) {
             const showOverlay = this.hasErrorMessages(latestMessages);
 
             if (!this.state.hideOverlayByUser) {
                 this.setState({ showOverlay });
             }
+        }
+        
+        // Only start auto-reload if messages actually changed
+        if (prevProps.latestMessages !== latestMessages) {
             this.startAutoReload();
         }
     }
