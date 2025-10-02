@@ -338,7 +338,7 @@ const DistributionConfigurationForm = ({
             {label: project.name, value: project.href}
         ))
     }
-    
+    console.log(!isOperationAssigned(descriptors[selectedChannel], OPERATIONS.EXECUTE));
     // TODO need to provide finer grain control with permissions.
     return (
         <>
@@ -355,8 +355,10 @@ const DistributionConfigurationForm = ({
                 testFormData={testFieldModel}
                 setTestFormData={setTestFieldModel}
                 csrfToken={csrfToken}
-                displaySave={!readonly || isOneOperationAssigned(descriptors[selectedChannel], [OPERATIONS.WRITE, OPERATIONS.CREATE])}
-                displayTest={!readonly || isOperationAssigned(descriptors[selectedChannel], OPERATIONS.EXECUTE)}
+                displaySave={!readonly}
+                isSaveDisabled={!isOneOperationAssigned(descriptors[selectedChannel], [OPERATIONS.WRITE, OPERATIONS.CREATE])}
+                displayTest={!readonly}
+                isTestDisabled={!isOperationAssigned(descriptors[selectedChannel], OPERATIONS.EXECUTE)}
                 displayDelete={false}
                 afterSuccessfulSave={() => history.push(DISTRIBUTION_URLS.distributionTableUrl)}
                 retrieveData={retrieveData}
