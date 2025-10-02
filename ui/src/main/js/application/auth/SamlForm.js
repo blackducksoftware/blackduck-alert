@@ -115,7 +115,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                 postDeleteAction={clearUploadedButtonsPostDelete}
             >
                 <CheckboxInput
-                    id={`saml-enabled${AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.enabled}`}
+                    id={`saml-enabled-${AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.enabled}`}
                     name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.enabled}
                     label="SAML Enabled"
                     description="If true, Alert will present a Login with SAML option using the SAML configuration."
@@ -203,7 +203,7 @@ const SamlForm = ({ csrfToken, errorHandler, readonly, fileDelete, fileRead, fil
                     />
                 )}
                 <CheckboxInput
-                    id={`saml-force-auth${AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.forceAuth}`}
+                    id={`saml-force-auth-${AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.forceAuth}`}
                     name={AUTHENTICATION_SAML_GLOBAL_FIELD_KEYS.forceAuth}
                     label="Force Auth"
                     description="If true, the forceAuthn flag is set to true in the SAML request to the IDP. Check the Identity Provider settings to see if this is supported."
