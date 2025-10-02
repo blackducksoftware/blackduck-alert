@@ -17,7 +17,7 @@ class ConfigButtons extends Component {
 
     createTestButton() {
         const {
-            includeTest, onTestClick, testLabel, testId
+            includeTest, onTestClick, testLabel, testId, isTestDisabled
         } = this.props;
         if (includeTest) {
             return (
@@ -28,7 +28,7 @@ class ConfigButtons extends Component {
                     borderRight: '1px solid #aaa'
                 }}
                 >
-                    <Button id={testId} onClick={onTestClick} text={testLabel} />
+                    <Button id={testId} onClick={onTestClick} text={testLabel} isDisabled={isTestDisabled} />
                 </div>
             );
         }
@@ -179,7 +179,8 @@ ConfigButtons.propTypes = {
     confirmDeleteTitle: PropTypes.string,
     confirmDeleteMessage: PropTypes.string,
     isSaveDisabled: PropTypes.bool,
-    isDeleteDisabled: PropTypes.bool
+    isDeleteDisabled: PropTypes.bool,
+    isTestDisabled: PropTypes.bool
 };
 
 ConfigButtons.defaultProps = {
