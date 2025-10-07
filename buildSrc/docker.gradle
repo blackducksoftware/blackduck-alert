@@ -27,11 +27,9 @@ ext.createDockerRemoveTask = { removeTaskName, removeGroupName, removeImageNames
         doLast {
             String stdErr = errorOutput.toString()
 
-            logger.lifecycle("Docker rm stdErr : " + stdErr)
-
             if (stdErr?.trim() && !stdErr.contains("Deleted: ")) {
                 if (stdErr.contains("No such image")) {
-                    logger.lifecycle("One or more images do not exist, continuing.")
+                    logger.lifecycle("One or more images did not need to be removed, continuing.")
                 } else {
                     throw new GradleException("${stdErr}")
                 }
