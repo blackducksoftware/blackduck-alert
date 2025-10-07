@@ -27,6 +27,8 @@ ext.createDockerRemoveTask = { removeTaskName, removeGroupName, removeImageNames
         doLast {
             String stdErr = errorOutput.toString()
 
+            logger.lifecycle("Docker rm stdErr : " + stdErr)
+
             if (stdErr?.trim() && !stdErr.contains("Deleted: ")) {
                 if (stdErr.contains("No such image")) {
                     logger.lifecycle("One or more images do not exist, continuing.")
