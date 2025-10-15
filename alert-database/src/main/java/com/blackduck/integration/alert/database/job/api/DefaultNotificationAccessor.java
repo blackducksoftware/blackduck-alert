@@ -63,15 +63,36 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     @Transactional(propagation = Propagation.REQUIRED)
     public List<AlertNotificationModel> saveAllNotifications(Collection<AlertNotificationModel> notifications) {
         List<NotificationEntity> entitiesToSave = new LinkedList<>();
+        AlertNotificationModel first = null;
+        AlertNotificationModel last = null;
 
         for (AlertNotificationModel model : notifications) {
+            last = model;
+            if (first == null) {
+                first = model;
+            }
+
             if (notificationContentRepository.existsByContentId(model.getContentId())) {
                 logger.info("Notification already exists for provider: {} contentId: {}", model.getProviderConfigId(), model.getContentId());
                 logger.debug("Content: {}", model.getContent());
+
+                logger.debug("DANA:: notification we are trying to save --> {}", model);
+                Optional<AlertNotificationModel> alertNotificationModel = notificationContentRepository.findByContentId(model.getContentId()).map(this::toModel);
+
+                if (alertNotificationModel.isPresent()) {
+                    logger.debug("DANA:: notification that already exists   --> {}", alertNotificationModel.get());
+                } else {
+                    logger.debug("DANA:: notification that already exists   --> NOT FOUND");
+                }
+
             } else {
                 entitiesToSave.add(fromModel(model));
             }
         }
+
+        logger.debug("DANA:: First notification being processing --> {}", first);
+        logger.debug("DANA:: Last notification being processing ---> {}", last);
+
         return notificationContentRepository.saveAllAndFlush(entitiesToSave)
             .stream()
             .map(this::toModel)

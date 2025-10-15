@@ -219,6 +219,7 @@ public class BlackDuckAccumulator extends ProviderTask {
         if (null != notification && null != notification.getHref()) {
             try {
                 String providerIdAndUrl = String.format("%s-%s", providerConfigId, notification.getHref().string());
+                logger.debug("DANA::Input tp create contentID:: providerConfigId --> {}, href --> {}", providerConfigId, notification.getHref().string());
                 contentId = new DigestUtils("SHA3-256").digestAsHex(providerIdAndUrl);
             } catch (RuntimeException ex) {
                 // do nothing use the URL
@@ -234,6 +235,7 @@ public class BlackDuckAccumulator extends ProviderTask {
         if (!sortedNotifications.isEmpty()) {
             int lastIndex = sortedNotifications.size() - 1;
             AlertNotificationModel lastNotification = sortedNotifications.get(lastIndex);
+            logger.debug("DANA:: Notification used to generate last time --> {}", lastNotification);
             return Optional.of(lastNotification.getProviderCreationTime());
         }
         return Optional.empty();

@@ -9,6 +9,7 @@ package com.blackduck.integration.alert.database.notification;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.domain.Page;
@@ -89,6 +90,9 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
     long countByProcessed(boolean processed);
 
     boolean existsByContentId(String contentId);
+
+    //DANA
+    Optional<NotificationEntity> findByContentId(String contentId);
 
     long countByProviderConfigIdAndNotificationType(long providerConfigId, String notificationType);
 
