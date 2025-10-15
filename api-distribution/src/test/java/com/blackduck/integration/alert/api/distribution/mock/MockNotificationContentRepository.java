@@ -10,6 +10,7 @@ package com.blackduck.integration.alert.api.distribution.mock;
 import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -160,6 +161,14 @@ public class MockNotificationContentRepository extends MockRepositoryContainer<L
             .stream()
             .map(NotificationEntity::getContentId)
             .anyMatch(contentId::equals);
+    }
+
+    @Override
+    public Optional<NotificationEntity> findByContentId(String contentId) {
+        return findAll()
+            .stream()
+            .filter(e -> contentId.equals(e.getContentId()))
+            .findFirst();
     }
 
     @Override
