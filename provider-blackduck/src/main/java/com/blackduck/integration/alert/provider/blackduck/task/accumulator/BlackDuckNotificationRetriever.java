@@ -10,6 +10,9 @@ package com.blackduck.integration.alert.provider.blackduck.task.accumulator;
 import java.util.List;
 import java.util.function.Predicate;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.blackduck.integration.alert.api.processor.filter.PageRetriever;
 import com.blackduck.integration.alert.api.processor.filter.StatefulAlertPage;
 import com.blackduck.integration.alert.common.message.model.DateRange;
@@ -24,8 +27,12 @@ import com.blackduck.integration.blackduck.service.BlackDuckApiClient;
 import com.blackduck.integration.blackduck.service.request.BlackDuckMultipleRequest;
 import com.blackduck.integration.blackduck.service.request.NotificationEditor;
 import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.rest.HttpUrl;
+import com.blackduck.integration.rest.request.Request;
 
 public class BlackDuckNotificationRetriever {
+    private final Logger logger = LoggerFactory.getLogger(BlackDuckNotificationRetriever.class);
+
     public static final String PAGE_SORT_FIELD = "notification.createdOn";
     public static final int DEFAULT_PAGE_SIZE = 200;
     public static final int INITIAL_PAGE_OFFSET = 0;
@@ -44,6 +51,15 @@ public class BlackDuckNotificationRetriever {
 
     public StatefulAlertPage<NotificationUserView, IntegrationException> retrievePageOfFilteredNotifications(DateRange dateRange, List<String> types) throws IntegrationException {
         BlackDuckMultipleRequest<NotificationUserView> spec = createNotificationsRequest(dateRange, types);
+        Request request = spec.getRequest();
+        logger.debug("DANA:: START REQUEST INFO");
+        logger.debug("DANA:: request --> {}", request);
+        logger.debug("DANA:: getUrl --> {}", request.getUrl().toString());
+        logger.debug("DANA:: getPopulatedQueryParameters --> {}", request.getPopulatedQueryParameters());
+        logger.debug("DANA:: getQueryParameters --> {}", request.getQueryParameters());
+        logger.debug("DANA:: getBodyContent --> {}", request.getBodyContent());
+        logger.debug("DANA:: END REQUEST INFO");
+
         NotificationPageRetriever notificationRetriever = new NotificationPageRetriever(spec);
         AlertPagedDetails<NotificationUserView> firstPage = notificationRetriever.retrievePage(INITIAL_PAGE_OFFSET, DEFAULT_PAGE_SIZE);
         return new StatefulAlertPage<>(firstPage, notificationRetriever, HAS_NEXT_PAGE);
