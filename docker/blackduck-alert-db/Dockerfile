@@ -1,11 +1,10 @@
-# The ARG for the FROM image comes from Gradle. It is based off of postgresContainerVersion,
+# The ARG's for the FROM images come from Gradle. Base image variables are set in the root build.gradle,
 # and used in buildSrc/docker.gradle
-ARG POSTGRESIMAGEVERSION_MIGRATION="default"
-ARG POSTGRESIMAGEVERSION="default"
+ARG BASEIMAGE_BLACKDUCK_ALERT_DB_MIGRATION="default"
+ARG BASEIMAGE_BLACKDUCK_ALERT_DB="default"
 
-FROM ${POSTGRESIMAGEVERSION_MIGRATION} AS old
-
-FROM ${POSTGRESIMAGEVERSION}
+FROM ${BASEIMAGE_BLACKDUCK_ALERT_DB_MIGRATION} AS old
+FROM ${BASEIMAGE_BLACKDUCK_ALERT_DB}
 
 ARG VERSION
 ARG COMMITHASH
