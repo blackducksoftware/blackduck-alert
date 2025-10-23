@@ -48,7 +48,7 @@ const RadioInput = ({
                     <div className={classes.optionContainer} key={option.name}>
                         <input
                             type="radio"
-                            id={id}
+                            id={`${id}-${option.value}`}
                             name={name}
                             value={option.value}
                             disabled={readOnly}
