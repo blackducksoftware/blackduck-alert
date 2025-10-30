@@ -9,17 +9,16 @@ import com.blackduck.integration.alert.api.task.TaskManager;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudPropertiesFactory;
 import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.cloud.model.IssueCommentRequestModel;
 import com.blackduck.integration.jira.common.cloud.model.IssueSearchResponseModel;
 import com.blackduck.integration.jira.common.cloud.service.IssueSearchService;
 import com.blackduck.integration.jira.common.cloud.service.IssueService;
 import com.blackduck.integration.jira.common.cloud.service.JiraCloudServiceFactory;
-import com.blackduck.integration.jira.common.model.request.IssueCommentRequestModel;
 import com.blackduck.integration.jira.common.model.response.IssuePropertyResponseModel;
 import com.blackduck.integration.jira.common.model.response.IssueResponseModel;
 import com.blackduck.integration.jira.common.rest.service.IssuePropertyService;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import io.micrometer.common.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
@@ -48,7 +47,7 @@ public class JiraSearchCommentUpdateTask extends JiraTask {
             IssuePropertyService issuePropertyService = serviceFactory.createIssuePropertyService();
             IssueService issueService = serviceFactory.createIssueService();
 
-            IssueSearchResponseModel responseModel = issueSearchService.queryForIssuePage(JiraConstants.createCommentMigrationJQL(), 0, JQL_QUERY_MAX_RESULTS);
+            IssueSearchResponseModel responseModel = issueSearchService.queryForIssuePage(JiraConstants.createCommentMigrationJQL(), null, JQL_QUERY_MAX_RESULTS);
 
             int totalIssues = responseModel.getTotal();
             boolean foundIssues = totalIssues > 0;
@@ -105,7 +104,7 @@ public class JiraSearchCommentUpdateTask extends JiraTask {
                     String category = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_CATEGORY).orElse(null);
                     String policyName = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY).orElse(null);
                     String commentString = SearchCommentCreator.createSearchComment(provider, projectName, projectVersionName, componentName, componentVersionName, category, policyName);
-                    IssueCommentRequestModel comment = new IssueCommentRequestModel(issueKey, commentString);
+                    IssueCommentRequestModel comment = IssueCommentRequestModel.commentForIssue(issueKey, commentString);
                     issueService.addComment(comment);
 
                     // mark the issue as migrated
