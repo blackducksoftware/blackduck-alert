@@ -27,6 +27,8 @@ import com.blackduck.integration.alert.channel.jira.server.model.enumeration.Jir
 
 @Component
 public class JiraServerGlobalConfigurationValidator {
+    private static final String JIRA_TIMEOUT_INVALID_ERROR_MESSAGE = "Jira server timeout value is invalid.";
+
     private final JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor;
 
     @Autowired
@@ -45,6 +47,11 @@ public class JiraServerGlobalConfigurationValidator {
         if (StringUtils.isBlank(model.getUrl())) {
             statuses.add(AlertFieldStatus.error("url", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
+        model.getTimeout().ifPresent(timeout -> {
+            if (timeout < 1) {
+                statuses.add(AlertFieldStatus.error("timeout", JIRA_TIMEOUT_INVALID_ERROR_MESSAGE));
+            }
+        });
         if (StringUtils.isNotBlank(model.getUrl())) {
             try {
                 new URL(model.getUrl());

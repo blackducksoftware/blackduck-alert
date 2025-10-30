@@ -40,7 +40,7 @@ public class JiraPropertyUpdateTask extends JiraPropertyTask {
             IssueSearchService issueSearchService = serviceFactory.createIssueSearchService();
             IssuePropertyService issuePropertyService = serviceFactory.createIssuePropertyService();
 
-            IssueSearchResponseModel responseModel = issueSearchService.queryForIssuePage(JQL_QUERY_FOR_ISSUE_PROPERTY_MIGRATION, 0, JQL_QUERY_MAX_RESULTS);
+            IssueSearchResponseModel responseModel = issueSearchService.queryForIssuePage(JQL_QUERY_FOR_ISSUE_PROPERTY_MIGRATION, null, JQL_QUERY_MAX_RESULTS);
             boolean foundIssuesForDefaultQuery = updateIssues(responseModel, issuePropertyService);
 
             if(!foundIssuesForDefaultQuery) {
@@ -49,7 +49,7 @@ public class JiraPropertyUpdateTask extends JiraPropertyTask {
                     if(StringUtils.isNotBlank(projectName)) {
                         logger.info("Querying issues for {} remaining project(s).  Querying issues for project: {}. ", projectNamesOrKeys.size(), projectName);
                         logger.debug("Remaining projects: {}", projectNamesOrKeys);
-                        responseModel = issueSearchService.queryForIssuePage(createProjectSpecificQuery(projectName), 0, JQL_QUERY_MAX_RESULTS);
+                        responseModel = issueSearchService.queryForIssuePage(createProjectSpecificQuery(projectName), null, JQL_QUERY_MAX_RESULTS);
                         boolean foundIssuesForProject = updateIssues(responseModel, issuePropertyService);
                         if (!foundIssuesForProject) {
                             // remove the key to no longer query for that project.
@@ -72,10 +72,10 @@ public class JiraPropertyUpdateTask extends JiraPropertyTask {
     }
 
     private boolean updateIssues(IssueSearchResponseModel responseModel, IssuePropertyService issuePropertyService) throws InterruptedException {
-        int totalIssues = responseModel.getTotal();
-        boolean foundIssues = totalIssues > 0;
+        boolean foundIssues = responseModel.getIssues() != null && responseModel.getIssues().isEmpty();
 
         if(foundIssues) {
+            int totalIssues = responseModel.getIssues().size();
             List<String> issueKeys = responseModel.getIssues().stream()
                     .map(IssueResponseModel::getKey)
                     .toList();

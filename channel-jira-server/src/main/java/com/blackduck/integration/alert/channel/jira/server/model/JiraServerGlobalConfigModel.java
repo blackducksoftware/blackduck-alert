@@ -17,6 +17,7 @@ import com.blackduck.integration.alert.common.rest.model.ConfigWithMetadata;
 
 public class JiraServerGlobalConfigModel extends ConfigWithMetadata implements Obfuscated<JiraServerGlobalConfigModel> {
     private String url;
+    private Integer timeout;
     private JiraServerAuthorizationMethod authorizationMethod;
     private String userName;
     private Boolean isPasswordSet;
@@ -29,9 +30,10 @@ public class JiraServerGlobalConfigModel extends ConfigWithMetadata implements O
         // For serialization
     }
 
-    public JiraServerGlobalConfigModel(String id, String name, String url, JiraServerAuthorizationMethod authorizationMethod) {
+    public JiraServerGlobalConfigModel(String id, String name, String url, Integer timeout, JiraServerAuthorizationMethod authorizationMethod) {
         super(id, name);
         this.url = url;
+        this.timeout = timeout;
         this.authorizationMethod = authorizationMethod;
     }
 
@@ -41,6 +43,7 @@ public class JiraServerGlobalConfigModel extends ConfigWithMetadata implements O
         String createdAt,
         String lastUpdated,
         String url,
+        Integer timeout,
         JiraServerAuthorizationMethod authorizationMethod,
         String userName,
         String password,
@@ -49,7 +52,7 @@ public class JiraServerGlobalConfigModel extends ConfigWithMetadata implements O
         Boolean isAccessTokenSet,
         Boolean disablePluginCheck
     ) {
-        this(id, name, url, authorizationMethod);
+        this(id, name, url, timeout, authorizationMethod);
         this.authorizationMethod = authorizationMethod;
         this.userName = userName;
         this.password = password;
@@ -57,6 +60,7 @@ public class JiraServerGlobalConfigModel extends ConfigWithMetadata implements O
         this.accessToken = accessToken;
         this.isAccessTokenSet = isAccessTokenSet;
         this.disablePluginCheck = disablePluginCheck;
+        this.timeout = timeout;
         setCreatedAt(createdAt);
         setLastUpdated(lastUpdated);
     }
@@ -69,6 +73,7 @@ public class JiraServerGlobalConfigModel extends ConfigWithMetadata implements O
             getCreatedAt(),
             getLastUpdated(),
             url,
+            timeout,
             authorizationMethod,
             userName,
             null,
@@ -81,6 +86,10 @@ public class JiraServerGlobalConfigModel extends ConfigWithMetadata implements O
 
     public String getUrl() {
         return url;
+    }
+
+    public Optional<Integer> getTimeout() {
+        return Optional.ofNullable(timeout);
     }
 
     public JiraServerAuthorizationMethod getAuthorizationMethod() {

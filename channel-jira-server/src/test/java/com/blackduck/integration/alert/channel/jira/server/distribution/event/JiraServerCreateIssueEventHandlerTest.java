@@ -15,6 +15,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.blackduck.integration.jira.common.server.model.JiraServerIssueResponseModel;
+import com.blackduck.integration.jira.common.server.model.component.JiraServerIssueFieldsComponent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -366,11 +368,11 @@ class JiraServerCreateIssueEventHandlerTest {
         return new ProjectComponent("", "JP", ISSUE_KEY, "jiraProject", null, null, true, "");
     }
 
-    private IssueResponseModel createIssueResponseModel() {
+    private JiraServerIssueResponseModel createIssueResponseModel() {
         String id = ISSUE_KEY;
-        IssueFieldsComponent issueFieldsComponent = new IssueFieldsComponent(List.of(), null, null, "summary", "description", List.of(), null, List.of(), null, null, null, null);
+        JiraServerIssueFieldsComponent issueFieldsComponent = new JiraServerIssueFieldsComponent(List.of(), null, null, "summary", "description", List.of(), null, List.of(), null, null, null, null);
 
-        return new IssueResponseModel("", id, "", id, Map.of(), Map.of(), Map.of(), Map.of(), List.of(), null, null, null, null, null, issueFieldsComponent);
+        return new JiraServerIssueResponseModel("", id, "", id, Map.of(), Map.of(), Map.of(), Map.of(), List.of(), null, null, null, null, null, issueFieldsComponent);
     }
 
     private IssueSearchResponseModel createIssueSearchResponseModel() {

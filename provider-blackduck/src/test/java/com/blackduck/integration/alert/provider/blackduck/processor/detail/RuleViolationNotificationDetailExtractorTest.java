@@ -100,7 +100,8 @@ public class RuleViolationNotificationDetailExtractorTest {
             null,
             null,
             false,
-            String.format("content-id-%s", UUID.randomUUID())
+            String.format("content-id-%s", UUID.randomUUID()),
+            false
         );
 
         RuleViolationNotificationDetailExtractor extractor = new RuleViolationNotificationDetailExtractor();

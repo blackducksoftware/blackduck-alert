@@ -86,6 +86,9 @@ public class AlertProperties {
     @Value("${alert.login.lockout.minutes:10}")
     private Long loginLockoutMinutes;
 
+    @Value("${alert.notification.mapping.batch.limit:10000}")
+    private Integer notificationMappingBatchLimit;
+
     public String getAlertConfigHome() {
         return StringUtils.trimToNull(alertConfigHome);
     }
@@ -181,6 +184,10 @@ public class AlertProperties {
 
     public Long getLoginLockoutMinutes() {
         return loginLockoutMinutes;
+    }
+
+    public Optional<Integer> getNotificationMappingBatchLimit() {
+        return Optional.ofNullable(notificationMappingBatchLimit);
     }
 
     private Optional<String> getOptionalString(String value) {

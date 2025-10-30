@@ -28,6 +28,7 @@ public class JiraCloudProperties {
     private final String url;
     private final String accessToken;
     private final String username;
+    private final int timeoutInSeconds;
     private final boolean pluginCheckDisabled;
     private final ProxyInfo proxyInfo;
     private final SSLContext sslContext;
@@ -38,16 +39,20 @@ public class JiraCloudProperties {
         String accessToken = fieldUtility.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
         String username = fieldUtility.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
         boolean pluginCheckDisabled = fieldUtility.getBooleanOrFalse(JiraCloudDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK);
-        return new JiraCloudProperties(url, accessToken, username, pluginCheckDisabled, proxyInfo, sslContext);
+        int timeoutInSeconds = fieldUtility.getString(JiraCloudDescriptor.KEY_JIRA_TIMEOUT)
+                .map(Integer::parseInt)
+                .orElse(300);
+        return new JiraCloudProperties(url, accessToken, username, pluginCheckDisabled, proxyInfo, sslContext, timeoutInSeconds);
     }
 
-    public JiraCloudProperties(String url, String accessToken, String username, boolean pluginCheckDisabled, ProxyInfo proxyInfo, @Nullable SSLContext sslContext) {
+    public JiraCloudProperties(String url, String accessToken, String username, boolean pluginCheckDisabled, ProxyInfo proxyInfo, @Nullable SSLContext sslContext, int timeoutInSeconds) {
         this.url = url;
         this.accessToken = accessToken;
         this.username = username;
         this.pluginCheckDisabled = pluginCheckDisabled;
         this.proxyInfo = proxyInfo;
         this.sslContext = sslContext;
+        this.timeoutInSeconds = timeoutInSeconds;
     }
 
     public JiraCloudRestConfig createJiraCloudConfig() throws IssueTrackerException {
@@ -57,6 +62,7 @@ public class JiraCloudProperties {
         jiraCloudConfigBuilder.setApiToken(accessToken);
         jiraCloudConfigBuilder.setAuthUserEmail(username);
         jiraCloudConfigBuilder.setProxyInfo(proxyInfo);
+        jiraCloudConfigBuilder.setTimeoutInSeconds(timeoutInSeconds);
         if (sslContext != null) {
             jiraCloudConfigBuilder.setSslContext(sslContext);
         }
@@ -89,5 +95,7 @@ public class JiraCloudProperties {
     public boolean isPluginCheckDisabled() {
         return pluginCheckDisabled;
     }
+
+    public int getTimeoutInSeconds() { return timeoutInSeconds; }
 
 }

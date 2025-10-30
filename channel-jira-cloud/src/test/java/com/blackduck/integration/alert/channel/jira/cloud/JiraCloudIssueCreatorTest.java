@@ -111,7 +111,7 @@ public class JiraCloudIssueCreatorTest {
             ))
         ));
         JiraCustomFieldResolver jiraCustomFieldResolver = new JiraCustomFieldResolver(() -> List.of());
-        JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator = new JiraIssueCreationRequestCreator(jiraCustomFieldResolver);
+        JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator = new JiraIssueCreationRequestCreator(jiraCustomFieldResolver, IssueRequestModelFieldsBuilder::new);
         IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();
 
         return new TestJiraCloudIssueCreator(jiraCloudJobDetailsModel, projectService, jiraIssueCreationRequestCreator, issueCategoryRetriever);

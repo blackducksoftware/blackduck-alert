@@ -157,7 +157,8 @@ public class DefaultRestApiAuditAccessorTest {
             DateUtils.createCurrentDateTimestamp(),
             DateUtils.createCurrentDateTimestamp(),
             false,
-            String.format("content-id-%s", UUID.randomUUID())
+            String.format("content-id-%s", UUID.randomUUID()),
+            false
         );
         AlertNotificationModel alertNotificationModel2 = new AlertNotificationModel(
             2L,
@@ -169,7 +170,8 @@ public class DefaultRestApiAuditAccessorTest {
             DateUtils.createCurrentDateTimestamp().minusSeconds(15),
             DateUtils.createCurrentDateTimestamp().minusSeconds(10),
             false,
-            String.format("content-id-%s", UUID.randomUUID())
+            String.format("content-id-%s", UUID.randomUUID()),
+            false
         );
 
         Pageable auditPageable = Mockito.mock(Pageable.class);
@@ -240,7 +242,8 @@ public class DefaultRestApiAuditAccessorTest {
             DateUtils.createCurrentDateTimestamp(),
             DateUtils.createCurrentDateTimestamp(),
             false,
-            String.format("content-id-%s", UUID.randomUUID())
+            String.format("content-id-%s", UUID.randomUUID()),
+            false
         );
         AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(auditEntryId, alertNotificationModel.getId());
         AuditEntryEntity auditEntryEntity = new AuditEntryEntity(UUID.randomUUID(), timeCreated, timeLastSent, AuditEntryStatus.SUCCESS.name(), null, null);
