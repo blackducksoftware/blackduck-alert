@@ -129,7 +129,7 @@ public class JiraSearchCommentUpdateTask extends JiraTask {
                     String migratedPropertyValue = getGson().toJson(migratedProperty);
                     issuePropertyService.setProperty(issueKey, JiraConstants.JIRA_ISSUE_PROPERTY_KEY, migratedPropertyValue);
                 } catch (IntegrationException ex) {
-                    logger.debug("Error updating issue {} with search key comment.", issueKey);
+                    logger.error("Error updating issue {} with search key comment.", issueKey);
                     logger.debug("Caused by: ", ex);
                 }
             }

@@ -5,6 +5,7 @@ import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraTask;
 import com.blackduck.integration.alert.api.task.TaskManager;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudPropertiesFactory;
 import com.blackduck.integration.alert.common.descriptor.ChannelDescriptor;
+import com.blackduck.integration.alert.common.rest.AlertRestConstants;
 import com.blackduck.integration.alert.common.rest.model.FieldModel;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,7 @@ public class JiraCloudSchedulingManager {
 
     private List<JiraTask> createTasks(FieldModel fieldModel, Set<String> projectNameOrKeys) {
         String configId = fieldModel.getId();
-        String configName = fieldModel.getFieldValue(ChannelDescriptor.KEY_NAME).orElse("");
+        String configName = fieldModel.getFieldValue(ChannelDescriptor.KEY_NAME).orElse(AlertRestConstants.DEFAULT_CONFIGURATION_NAME);
         JiraPropertyUpdateTask propertyTask = new JiraPropertyUpdateTask(taskScheduler, taskManager, jiraPropertiesFactory, gson, configId, configName, "JiraCloud", projectNameOrKeys);
         JiraSearchCommentUpdateTask searchCommentTask = new JiraSearchCommentUpdateTask(taskScheduler, taskManager, jiraPropertiesFactory, gson, configId, configName, "JiraCloud");
         return List.of(propertyTask, searchCommentTask);

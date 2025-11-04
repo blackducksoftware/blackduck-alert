@@ -49,8 +49,13 @@ public class JiraSearchCommentUpdateTask extends JiraTask {
 
             IssueSearchResponseModel responseModel = issueSearchService.queryForIssuePage(JiraConstants.createCommentMigrationJQL(), null, JQL_QUERY_MAX_RESULTS);
 
-            int totalIssues = responseModel.getTotal();
-            boolean foundIssues = totalIssues > 0;
+            // Jira cloud does not return the total count of items.  It just has an isLast attribute for the last page.
+            // use the response model api to extract the isLast to log the issue.
+            Gson gson = responseModel.getGson();
+            JsonObject jsonObject = gson.fromJson(responseModel.getJson(),JsonObject.class);
+            boolean isLast = jsonObject.get("isLast").getAsBoolean();
+            int totalUpdated = responseModel.getIssues().size();
+            boolean foundIssues = totalUpdated > 0;
 
             if(foundIssues) {
                 List<String> issueKeys = responseModel.getIssues().stream()
@@ -63,7 +68,7 @@ public class JiraSearchCommentUpdateTask extends JiraTask {
                 executorService.shutdown();
                 boolean success = executorService.awaitTermination(1, TimeUnit.MINUTES);
                 if (success) {
-                    logger.info("Jira search key comment update task remaining issues {} ", totalIssues);
+                    logger.info("Jira search key comment issues updated {}, more issues to update {} ", totalUpdated, !isLast);
                 } else {
                     logger.info("Jira search key comment update task timed out updating issues; will resume with the next iteration.");
                 }
@@ -125,7 +130,10 @@ public class JiraSearchCommentUpdateTask extends JiraTask {
                     String migratedPropertyValue = getGson().toJson(migratedProperty);
                     issuePropertyService.setProperty(issueKey, JiraConstants.JIRA_ISSUE_PROPERTY_KEY, migratedPropertyValue);
                 } catch (IntegrationException ex) {
-                    logger.debug("Error updating issue {} with search key comment.", issueKey);
+                    // if there are too many comments a 413 is returned. To resolve the 413 a user with access to delete comments needs to
+                    // remove comments.  Sometimes the issue will have a zip file attached to the ticket containing all of the comments.
+                    // If the zip file is deleted then the comment can be added.
+                    logger.error("Error updating issue {} with search key comment. Check if there are too many comments on the issue.", issueKey);
                     logger.debug("Caused by: ", ex);
                 }
             }
