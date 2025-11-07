@@ -338,7 +338,7 @@ const DistributionConfigurationForm = ({
             {label: project.name, value: project.href}
         ))
     }
-    console.log(!isOperationAssigned(descriptors[selectedChannel], OPERATIONS.EXECUTE));
+
     // TODO need to provide finer grain control with permissions.
     return (
         <>
