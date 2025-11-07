@@ -10,6 +10,8 @@ package com.blackduck.integration.alert.channel.jira.cloud.distribution;
 import java.util.Set;
 import java.util.UUID;
 
+import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerMessageProcessor;
+import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,6 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.certificates.AlertSSLContextManager;
 import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerModelExtractor;
-import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerProcessor;
 import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerProcessorFactory;
 import com.blackduck.integration.alert.api.channel.issue.tracker.convert.ProjectMessageToIssueModelTransformer;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
@@ -86,7 +87,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
     }
 
     @Override
-    public IssueTrackerProcessor<String> createProcessor(JiraCloudJobDetailsModel distributionDetails, UUID jobExecutionId, Set<Long> notificationIds)
+    public IssueTrackerMessageProcessor<String> createProcessor(JiraCloudJobDetailsModel distributionDetails, UUID jobExecutionId, Set<Long> notificationIds)
         throws AlertException {
         JiraCloudProperties jiraProperties = createJiraCloudProperties();
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
@@ -116,14 +117,13 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
         IssueTrackerSearcher<String> jiraSearcher = jiraSearcherFactory.createJiraSearcher(distributionDetails.getProjectNameOrKey(), jiraCloudQueryExecutor);
 
         IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(jiraMessageFormatter, jiraSearcher);
-
         IssueTrackerAsyncMessageSender<String> messageSender = messageSenderFactory.createAsyncMessageSender(
             distributionDetails,
             jobExecutionId,
             notificationIds
         );
 
-        return new IssueTrackerProcessor<>(extractor, messageSender);
+        return new JiraCloudProcessor(extractor, messageSender);
     }
 
     private JiraCloudProperties createJiraCloudProperties() throws AlertConfigurationException {

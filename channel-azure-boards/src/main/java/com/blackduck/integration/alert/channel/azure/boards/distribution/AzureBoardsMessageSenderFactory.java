@@ -10,6 +10,7 @@ package com.blackduck.integration.alert.channel.azure.boards.distribution;
 import java.util.Set;
 import java.util.UUID;
 
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -50,7 +51,7 @@ import com.blackduck.integration.rest.proxy.ProxyInfo;
 import com.google.gson.Gson;
 
 @Component
-public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSenderFactory<AzureBoardsJobDetailsModel, Integer> {
+public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSenderFactory<AzureBoardsJobDetailsModel, Integer, IssueTrackerModelHolder<Integer>> {
     private final Gson gson;
     private final IssueTrackerCallbackInfoCreator callbackInfoCreator;
     private final AzureBoardsChannelKey channelKey;

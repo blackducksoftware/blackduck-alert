@@ -10,6 +10,7 @@ package com.blackduck.integration.alert.channel.jira.cloud.distribution;
 import java.util.Set;
 import java.util.UUID;
 
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
 import com.blackduck.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +52,7 @@ import com.blackduck.integration.jira.common.rest.service.IssuePropertyService;
 import com.google.gson.Gson;
 
 @Component
-public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderFactory<JiraCloudJobDetailsModel, String> {
+public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderFactory<JiraCloudJobDetailsModel, String, IssueTrackerModelHolder<String>> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Gson gson;

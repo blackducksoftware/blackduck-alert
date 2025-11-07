@@ -12,7 +12,8 @@ import java.util.List;
 
 import org.apache.commons.collections4.ListUtils;
 
-public class IssueTrackerModelHolder<T extends Serializable> {
+public class IssueTrackerModelHolder<T extends Serializable> implements Serializable {
+
     private final List<IssueCreationModel> issueCreationModels;
     private final List<IssueTransitionModel<T>> issueTransitionModels;
     private final List<IssueCommentModel<T>> issueCommentModels;

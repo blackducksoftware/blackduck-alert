@@ -18,7 +18,7 @@ import com.blackduck.integration.alert.api.common.model.exception.AlertException
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderMessageHolder;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 
-public class IssueTrackerProcessor<T extends Serializable> {
+public class IssueTrackerProcessor<T extends Serializable> implements IssueTrackerMessageProcessor<T>{
     private final IssueTrackerModelExtractor<T> modelExtractor;
     private final IssueTrackerAsyncMessageSender<T> messageSender;
 
@@ -27,6 +27,7 @@ public class IssueTrackerProcessor<T extends Serializable> {
         this.messageSender = messageSender;
     }
 
+    @Override
     public final IssueTrackerResponse<T> processMessages(ProviderMessageHolder messages, String jobName) throws AlertException {
         List<IssueTrackerModelHolder<T>> issueTrackerModels = new LinkedList<>();
         IssueTrackerModelHolder<T> simpleMessageHolder = modelExtractor.extractSimpleMessageIssueModels(messages.getSimpleMessages(), jobName);

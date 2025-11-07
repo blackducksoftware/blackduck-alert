@@ -39,9 +39,9 @@ import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetai
 public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsModel, T extends Serializable> extends DistributionChannelTestAction {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final IssueTrackerMessageSenderFactory<D, T> messageSenderFactory;
+    private final IssueTrackerMessageSenderFactory<D, T, IssueTrackerModelHolder<T>> messageSenderFactory;
 
-    protected IssueTrackerTestAction(IssueTrackerChannelKey issueTrackerChannelKey, IssueTrackerMessageSenderFactory<D, T> messageSenderFactory) {
+    protected IssueTrackerTestAction(IssueTrackerChannelKey issueTrackerChannelKey, IssueTrackerMessageSenderFactory<D, T, IssueTrackerModelHolder<T>> messageSenderFactory) {
         super(issueTrackerChannelKey);
         this.messageSenderFactory = messageSenderFactory;
     }

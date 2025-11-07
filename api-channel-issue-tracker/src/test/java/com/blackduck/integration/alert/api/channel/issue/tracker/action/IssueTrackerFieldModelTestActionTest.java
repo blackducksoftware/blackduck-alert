@@ -50,7 +50,7 @@ class IssueTrackerFieldModelTestActionTest {
         IssueTrackerMessageSender<String> messageSender = Mockito.mock(IssueTrackerMessageSender.class);
         Mockito.when(messageSender.sendMessages(Mockito.any())).thenThrow(new AlertException(testExceptionMessage));
 
-        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = new IssueTrackerMessageSenderFactory<>() {
+        IssueTrackerMessageSenderFactory<TestJobDetails, String, IssueTrackerModelHolder<String>> messageSenderFactory = new IssueTrackerMessageSenderFactory<>() {
             @Override
             public IssueTrackerMessageSender<String> createMessageSender(TestJobDetails distributionDetails, UUID globalId) throws AlertException {
                 return messageSender;
@@ -78,7 +78,7 @@ class IssueTrackerFieldModelTestActionTest {
         IssueTrackerMessageSender<String> messageSender = Mockito.mock(IssueTrackerMessageSender.class);
         Mockito.when(messageSender.sendMessages(Mockito.any())).thenReturn(List.of());
 
-        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = new IssueTrackerMessageSenderFactory<>() {
+        IssueTrackerMessageSenderFactory<TestJobDetails, String,IssueTrackerModelHolder<String>> messageSenderFactory = new IssueTrackerMessageSenderFactory<>() {
             @Override
             public IssueTrackerMessageSender<String> createMessageSender(TestJobDetails distributionDetails, UUID globalId) throws AlertException {
                 return messageSender;
@@ -106,7 +106,7 @@ class IssueTrackerFieldModelTestActionTest {
         IssueTrackerMessageSender<String> messageSender = Mockito.mock(IssueTrackerMessageSender.class);
         Mockito.when(messageSender.sendMessages(Mockito.any())).thenReturn(List.of(TEST_ISSUE_RESPONSE_MODEL));
 
-        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = new IssueTrackerMessageSenderFactory<>() {
+        IssueTrackerMessageSenderFactory<TestJobDetails, String,IssueTrackerModelHolder<String>> messageSenderFactory = new IssueTrackerMessageSenderFactory<>() {
             @Override
             public IssueTrackerMessageSender<String> createMessageSender(TestJobDetails distributionDetails, UUID globalId) throws AlertException {
                 return messageSender;
@@ -141,7 +141,7 @@ class IssueTrackerFieldModelTestActionTest {
             return List.of();
         });
 
-        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = new IssueTrackerMessageSenderFactory<>() {
+        IssueTrackerMessageSenderFactory<TestJobDetails, String, IssueTrackerModelHolder<String>> messageSenderFactory = new IssueTrackerMessageSenderFactory<>() {
             @Override
             public IssueTrackerMessageSender<String> createMessageSender(TestJobDetails distributionDetails, UUID globalId) throws AlertException {
                 return messageSender;
@@ -169,7 +169,7 @@ class IssueTrackerFieldModelTestActionTest {
         IssueTrackerMessageSender<String> messageSender = Mockito.mock(IssueTrackerMessageSender.class);
         Mockito.when(messageSender.sendMessages(Mockito.any())).thenReturn(List.of(TEST_ISSUE_RESPONSE_MODEL));
 
-        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = new IssueTrackerMessageSenderFactory<>() {
+        IssueTrackerMessageSenderFactory<TestJobDetails, String, IssueTrackerModelHolder<String>> messageSenderFactory = new IssueTrackerMessageSenderFactory<>() {
             @Override
             public IssueTrackerMessageSender<String> createMessageSender(TestJobDetails distributionDetails, UUID globalId) throws AlertException {
                 return messageSender;
@@ -209,7 +209,7 @@ class IssueTrackerFieldModelTestActionTest {
             return List.of(TEST_ISSUE_RESPONSE_MODEL);
         });
 
-        IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = new IssueTrackerMessageSenderFactory<>() {
+        IssueTrackerMessageSenderFactory<TestJobDetails, String,IssueTrackerModelHolder<String>> messageSenderFactory = new IssueTrackerMessageSenderFactory<>() {
             @Override
             public IssueTrackerMessageSender<String> createMessageSender(TestJobDetails distributionDetails, UUID globalId) throws AlertException {
                 return messageSender;
@@ -254,11 +254,11 @@ class IssueTrackerFieldModelTestActionTest {
         private final boolean hasResolveTransition;
         private final boolean hasReopenTransition;
 
-        public TestIssueTrackerTestAction(IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory) {
+        public TestIssueTrackerTestAction(IssueTrackerMessageSenderFactory<TestJobDetails, String,IssueTrackerModelHolder<String>> messageSenderFactory) {
             this(messageSenderFactory, false, false);
         }
 
-        public TestIssueTrackerTestAction(IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory, boolean hasResolveTransition, boolean hasReopenTransition) {
+        public TestIssueTrackerTestAction(IssueTrackerMessageSenderFactory<TestJobDetails, String,IssueTrackerModelHolder<String>> messageSenderFactory, boolean hasResolveTransition, boolean hasReopenTransition) {
             super(ISSUE_TRACKER_KEY, messageSenderFactory);
             this.hasResolveTransition = hasResolveTransition;
             this.hasReopenTransition = hasReopenTransition;
