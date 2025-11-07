@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.AsyncMessageSender;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -57,7 +58,7 @@ class IssueTrackerFieldModelTestActionTest {
             }
 
             @Override
-            public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
+            public AsyncMessageSender<IssueTrackerModelHolder<String>> createAsyncMessageSender(
                 TestJobDetails distributionDetails,
                 UUID globalId,
                 UUID jobExecutionId,
@@ -85,7 +86,7 @@ class IssueTrackerFieldModelTestActionTest {
             }
 
             @Override
-            public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
+            public AsyncMessageSender<IssueTrackerModelHolder<String>> createAsyncMessageSender(
                 TestJobDetails distributionDetails,
                 UUID globalId,
                 UUID jobExecutionId,
@@ -113,7 +114,7 @@ class IssueTrackerFieldModelTestActionTest {
             }
 
             @Override
-            public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
+            public AsyncMessageSender<IssueTrackerModelHolder<String>> createAsyncMessageSender(
                 TestJobDetails distributionDetails,
                 UUID globalId,
                 UUID jobExecutionId,
@@ -148,7 +149,7 @@ class IssueTrackerFieldModelTestActionTest {
             }
 
             @Override
-            public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
+            public AsyncMessageSender<IssueTrackerModelHolder<String>> createAsyncMessageSender(
                 TestJobDetails distributionDetails,
                 UUID globalId,
                 UUID jobExecutionId,
@@ -176,7 +177,7 @@ class IssueTrackerFieldModelTestActionTest {
             }
 
             @Override
-            public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
+            public AsyncMessageSender<IssueTrackerModelHolder<String>> createAsyncMessageSender(
                 TestJobDetails distributionDetails,
                 UUID globalId,
                 UUID jobExecutionId,
@@ -216,7 +217,7 @@ class IssueTrackerFieldModelTestActionTest {
             }
 
             @Override
-            public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
+            public AsyncMessageSender<IssueTrackerModelHolder<String>> createAsyncMessageSender(
                 TestJobDetails distributionDetails,
                 UUID globalId,
                 UUID jobExecutionId,

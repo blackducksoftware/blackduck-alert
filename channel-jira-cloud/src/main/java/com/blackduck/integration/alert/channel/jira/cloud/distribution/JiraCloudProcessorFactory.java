@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerMessageProcessor;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.AsyncMessageSender;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudProcessor;
 import com.blackduck.integration.alert.channel.jira.cloud.convert.JiraCloudModelExtractor;
 import org.slf4j.Logger;
@@ -118,7 +120,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
         IssueTrackerSearcher<String> jiraSearcher = jiraSearcherFactory.createJiraSearcher(distributionDetails.getProjectNameOrKey(), jiraCloudQueryExecutor);
 
         JiraCloudModelExtractor extractor = new JiraCloudModelExtractor(jiraMessageFormatter, jiraSearcher);
-        IssueTrackerAsyncMessageSender<String> messageSender = messageSenderFactory.createAsyncMessageSender(
+        AsyncMessageSender<IssueTrackerModelHolder<String>> messageSender = messageSenderFactory.createAsyncMessageSender(
             distributionDetails,
             jobExecutionId,
             notificationIds

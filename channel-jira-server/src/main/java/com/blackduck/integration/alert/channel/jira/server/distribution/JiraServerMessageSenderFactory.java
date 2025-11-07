@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.DefaultIssueTrackerEventGenerator;
 import com.blackduck.integration.jira.common.server.builder.IssueRequestModelFieldsBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,7 +118,7 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
     }
 
     @Override
-    public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
+    public IssueTrackerAsyncMessageSender<IssueTrackerModelHolder<String>> createAsyncMessageSender(
         JiraServerJobDetailsModel distributionDetails,
         UUID globalId,
         UUID jobExecutionId,
@@ -162,7 +163,7 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
 
     }
 
-    public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
+    public IssueTrackerAsyncMessageSender<IssueTrackerModelHolder<String>> createAsyncMessageSender(
         JiraServerJobDetailsModel distributionDetails,
         UUID jobExecutionId,
         Set<Long> notificationIds
@@ -177,10 +178,10 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
             notificationIds
         );
 
+        DefaultIssueTrackerEventGenerator<String> eventGenerator = new DefaultIssueTrackerEventGenerator<>(createEventGenerator, transitionEventGenerator, commentEventGenerator);
+
         return new IssueTrackerAsyncMessageSender<>(
-            createEventGenerator,
-            transitionEventGenerator,
-            commentEventGenerator,
+            eventGenerator,
             eventManager,
             jobExecutionId,
             notificationIds,

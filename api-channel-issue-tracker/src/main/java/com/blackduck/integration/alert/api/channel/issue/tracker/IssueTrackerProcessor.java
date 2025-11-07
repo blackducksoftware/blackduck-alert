@@ -20,9 +20,9 @@ import com.blackduck.integration.alert.api.processor.extract.model.project.Proje
 
 public class IssueTrackerProcessor<T extends Serializable> implements IssueTrackerMessageProcessor<T>{
     private final IssueTrackerModelExtractor<T> modelExtractor;
-    private final IssueTrackerAsyncMessageSender<T> messageSender;
+    private final IssueTrackerAsyncMessageSender<IssueTrackerModelHolder<T>> messageSender;
 
-    public IssueTrackerProcessor(IssueTrackerModelExtractor<T> modelExtractor, IssueTrackerAsyncMessageSender<T> messageSender) {
+    public IssueTrackerProcessor(IssueTrackerModelExtractor<T> modelExtractor, IssueTrackerAsyncMessageSender<IssueTrackerModelHolder<T>> messageSender) {
         this.modelExtractor = modelExtractor;
         this.messageSender = messageSender;
     }

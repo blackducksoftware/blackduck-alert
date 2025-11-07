@@ -10,6 +10,7 @@ package com.blackduck.integration.alert.channel.jira.server.distribution;
 import java.util.Set;
 import java.util.UUID;
 
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,7 +101,7 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
 
         IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(jiraMessageFormatter, jiraSearcher);
         
-        IssueTrackerAsyncMessageSender<String> messageSender = jiraServerMessageSenderFactory.createAsyncMessageSender(
+        IssueTrackerAsyncMessageSender<IssueTrackerModelHolder<String>> messageSender = jiraServerMessageSenderFactory.createAsyncMessageSender(
             distributionDetails,
             jobExecutionId,
             notificationIds

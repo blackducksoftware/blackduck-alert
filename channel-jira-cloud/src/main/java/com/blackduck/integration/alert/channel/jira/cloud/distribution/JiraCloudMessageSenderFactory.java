@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.AsyncMessageSender;
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.DefaultIssueTrackerEventGenerator;
 import com.blackduck.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,7 +116,7 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
     }
 
     @Override
-    public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
+    public AsyncMessageSender<IssueTrackerModelHolder<String>> createAsyncMessageSender(
         JiraCloudJobDetailsModel distributionDetails,
         UUID globalId,
         UUID jobExecutionId,
@@ -159,7 +161,7 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
         );
     }
 
-    public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
+    public AsyncMessageSender<IssueTrackerModelHolder<String>> createAsyncMessageSender(
         JiraCloudJobDetailsModel distributionDetails,
         UUID jobExecutionId,
         Set<Long> notificationIds
@@ -168,11 +170,9 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
         IssueTrackerCommentEventGenerator<String> commentEventGenerator = new JiraCloudCommentGenerator(channelKey, jobExecutionId, jobId, notificationIds);
         IssueTrackerCreationEventGenerator createEventGenerator = new JiraCloudCreateEventGenerator(channelKey, jobExecutionId, jobId, notificationIds);
         IssueTrackerTransitionEventGenerator<String> transitionEventGenerator = new JiraCloudTransitionGenerator(channelKey, jobExecutionId, jobId, notificationIds);
-
+        DefaultIssueTrackerEventGenerator<String> eventGenerator = new DefaultIssueTrackerEventGenerator<>(createEventGenerator, transitionEventGenerator, commentEventGenerator);
         return new IssueTrackerAsyncMessageSender<>(
-            createEventGenerator,
-            transitionEventGenerator,
-            commentEventGenerator,
+            eventGenerator,
             eventManager,
             jobExecutionId,
             notificationIds,

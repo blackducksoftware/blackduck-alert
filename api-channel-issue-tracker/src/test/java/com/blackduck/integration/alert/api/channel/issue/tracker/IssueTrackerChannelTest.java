@@ -12,6 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Set;
 import java.util.UUID;
 
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.DefaultIssueTrackerEventGenerator;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -40,7 +42,7 @@ class IssueTrackerChannelTest {
             private static final long serialVersionUID = 5355069038110415471L;
         };
         IssueTrackerModelExtractor<String> modelExtractor = new IssueTrackerModelExtractor<>(createFormatter(), null);
-        IssueTrackerAsyncMessageSender<String> messageSender = createMessageSender();
+        IssueTrackerAsyncMessageSender<IssueTrackerModelHolder<String>> messageSender = createMessageSender();
         IssueTrackerProcessor<String> processor = new IssueTrackerProcessor<>(modelExtractor, messageSender);
 
         IssueTrackerProcessorFactory<DistributionJobDetailsModel, String> processorFactory = (x, y, z) -> processor;
@@ -60,17 +62,16 @@ class IssueTrackerChannelTest {
         assertEquals(processorResponse.getStatusMessage(), testResult.getStatusMessage());
     }
 
-    private IssueTrackerAsyncMessageSender<String> createMessageSender() {
+    private IssueTrackerAsyncMessageSender<IssueTrackerModelHolder<String>> createMessageSender() {
         IssueTrackerCommentEventGenerator<String> commenter = (model) -> null;
         IssueTrackerTransitionEventGenerator<String> transitioner = (model) -> null;
         IssueTrackerCreationEventGenerator creator = (model) -> null;
         RabbitTemplate rabbitTemplate = Mockito.mock(RabbitTemplate.class);
         EventManager eventManager = new EventManager(BlackDuckServicesFactory.createDefaultGson(), rabbitTemplate, new SyncTaskExecutor());
         ExecutingJobManager executingJobManager = Mockito.mock(ExecutingJobManager.class);
+        DefaultIssueTrackerEventGenerator<String> eventGenerator = new DefaultIssueTrackerEventGenerator<>(creator, transitioner, commenter);
         return new IssueTrackerAsyncMessageSender<>(
-            creator,
-            transitioner,
-            commenter,
+            eventGenerator,
             eventManager,
             UUID.randomUUID(),
             Set.of(1L, 2L, 3L),

@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,7 +135,7 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
 
         IssueTrackerModelExtractor<Integer> extractor = new IssueTrackerModelExtractor<>(formatter, azureBoardsSearcher);
 
-        IssueTrackerAsyncMessageSender<Integer> messageSender = azureBoardsMessageSenderFactory.createAsyncMessageSender(
+        IssueTrackerAsyncMessageSender<IssueTrackerModelHolder<Integer>> messageSender = azureBoardsMessageSenderFactory.createAsyncMessageSender(
             distributionDetails,
             null,
             jobExecutionId,
