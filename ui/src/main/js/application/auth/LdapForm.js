@@ -145,6 +145,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                 deleteLabel="Delete LDAP Configuration"
                 submitLabel="Save LDAP Configuration"
                 testLabel="Test LDAP Configuration"
+                buttonIdPrefix="ldap-config"
                 testFields={testFields}
                 testButtonClicked={testButtonClicked}
                 disableTestModalSubmit={!isTestFormComplete()}
