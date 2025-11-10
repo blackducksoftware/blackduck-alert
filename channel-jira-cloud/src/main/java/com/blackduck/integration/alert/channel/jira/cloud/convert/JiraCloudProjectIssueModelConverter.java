@@ -8,7 +8,6 @@
 package com.blackduck.integration.alert.channel.jira.cloud.convert;
 
 import com.blackduck.integration.alert.api.channel.convert.BomComponentDetailConverter;
-import com.blackduck.integration.alert.api.channel.convert.LinkableItemConverter;
 import com.blackduck.integration.alert.api.channel.issue.tracker.convert.IssueTrackerMessageFormatter;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueBomComponentDetails;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
@@ -28,15 +27,17 @@ import com.blackduck.integration.alert.common.channel.message.ChunkedStringBuild
 import com.blackduck.integration.alert.common.channel.message.RechunkedModel;
 import com.blackduck.integration.alert.common.enumeration.ItemOperation;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.jira.common.cloud.builder.AtlassianDocumentFormatModelBuilder;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-public class ProjectIssueModelConverter {
+public class JiraCloudProjectIssueModelConverter {
     public static final int COMPONENT_CONCERN_TITLE_SECTION_CHAR_COUNT = 20;
     public static final LinkableItem MISSING_PROJECT_VERSION_PLACEHOLDER = new LinkableItem("Project Version", "Unknown");
     public static final String DESCRIPTION_CONTINUED_TEXT = "(description continued...)";
@@ -49,39 +50,37 @@ public class ProjectIssueModelConverter {
     private final JiraCloudIssueVulnerabilityDetailsConverter issueVulnerabilityDetailsConverter;
     private final JiraCloudIssueComponentUnknownVersionDetailsConverter issueComponentUnknownVersionDetailsConverter;
     private final JiraCloudComponentVulnerabilitiesConverter componentVulnerabilitiesConverter;
-    private final LinkableItemConverter linkableItemConverter;
+    private final JiraCloudLinkableItemConverter linkableItemConverter;
 
-    public ProjectIssueModelConverter(IssueTrackerMessageFormatter formatter) {
+    public JiraCloudProjectIssueModelConverter(IssueTrackerMessageFormatter formatter) {
         this.formatter = formatter;
         this.bomComponentDetailConverter = new BomComponentDetailConverter(formatter);
         this.issuePolicyDetailsConverter = new JiraCloudIssuePolicyDetailsConverter(formatter);
         this.issueVulnerabilityDetailsConverter = new JiraCloudIssueVulnerabilityDetailsConverter(formatter);
         this.issueComponentUnknownVersionDetailsConverter = new JiraCloudIssueComponentUnknownVersionDetailsConverter(formatter);
         this.componentVulnerabilitiesConverter = new JiraCloudComponentVulnerabilitiesConverter(formatter);
-        this.linkableItemConverter = new LinkableItemConverter(formatter);
+        this.linkableItemConverter = new JiraCloudLinkableItemConverter(formatter);
     }
 
     public IssueCreationModel toIssueCreationModel(ProjectIssueModel projectIssueModel, String jobName, String queryString) {
         String title = createTruncatedTitle(projectIssueModel);
 
         ChunkedStringBuilder descriptionBuilder = new ChunkedStringBuilder(formatter.getMaxDescriptionLength());
+        AtlassianDocumentFormatModelBuilder atlassianModelBuilder = new AtlassianDocumentFormatModelBuilder();
 
         String nonBreakingSpace = formatter.getNonBreakingSpace();
         String jobLine = String.format("Job%sname:%s%s", nonBreakingSpace, nonBreakingSpace, jobName);
-        String formattedJobName = formatter.emphasize(jobLine);
-        descriptionBuilder.append(formattedJobName);
-        descriptionBuilder.append(formatter.getLineSeparator());
+        Map<String,Object> jobNodeContent = AtlassianDocumentFormatUtil.createTextNode(jobLine);
+        AtlassianDocumentFormatUtil.addBoldStylingToNode(jobNodeContent);
+        atlassianModelBuilder.addContentNode(AtlassianDocumentFormatModelBuilder.DOCUMENT_NODE_TYPE_PARAGRAPH, jobNodeContent);
 
-        String projectString = linkableItemConverter.convertToString(projectIssueModel.getProject(), true);
-        descriptionBuilder.append(projectString);
-        descriptionBuilder.append(formatter.getLineSeparator());
+        Pair<String,List<Map<String,Object>>> projectContentNode = linkableItemConverter.convertToString(projectIssueModel.getProject(), true);
+        atlassianModelBuilder.addContentNode(projectContentNode.getKey(), projectContentNode.getValue());
 
         LinkableItem projectVersion = projectIssueModel.getProjectVersion().orElse(MISSING_PROJECT_VERSION_PLACEHOLDER);
-        String projectVersionString = linkableItemConverter.convertToString(projectVersion, true);
-        descriptionBuilder.append(projectVersionString);
-        descriptionBuilder.append(formatter.getLineSeparator());
-        descriptionBuilder.append(formatter.getSectionSeparator());
-        descriptionBuilder.append(formatter.getLineSeparator());
+        Pair<String,List<Map<String,Object>>> projectVersionContentNode = linkableItemConverter.convertToString(projectVersion, true);
+        atlassianModelBuilder.addContentNode(projectVersionContentNode.getKey(), projectVersionContentNode.getValue());
+        atlassianModelBuilder.addSingleParagraphTextNode(formatter.getSectionSeparator());
 
         IssueBomComponentDetails bomComponent = projectIssueModel.getBomComponentDetails();
         List<String> bomComponentPieces = bomComponentDetailConverter.gatherAbstractBomComponentSectionPieces(bomComponent);
@@ -99,7 +98,7 @@ public class ProjectIssueModelConverter {
         List<String> postCreateComments = rechunkedDescription.getRemainingChunks()
             .stream()
             .map(comment -> String.format("%s%s%s", DESCRIPTION_CONTINUED_TEXT, formatter.getLineSeparator(), comment))
-            .collect(Collectors.toList());
+            .toList();
 
         return IssueCreationModel.project(title, rechunkedDescription.getFirstChunk(), postCreateComments, projectIssueModel, queryString);
     }

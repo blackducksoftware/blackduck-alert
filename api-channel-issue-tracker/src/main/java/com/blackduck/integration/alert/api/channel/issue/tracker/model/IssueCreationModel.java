@@ -10,6 +10,7 @@ package com.blackduck.integration.alert.api.channel.issue.tracker.model;
 import java.util.List;
 import java.util.Optional;
 
+import com.blackduck.integration.jira.common.cloud.model.AtlassianDocumentFormatModel;
 import org.jetbrains.annotations.Nullable;
 
 import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
@@ -24,22 +25,30 @@ public class IssueCreationModel extends AlertSerializableModel {
 
     private final LinkableItem provider;
     private final ProjectIssueModel source;
+    private final AtlassianDocumentFormatModel atlassianDocumentFormatDescriptionModel;
+    private final AtlassianDocumentFormatModel atlassianDocumentFormatCommentModel;
 
     public static IssueCreationModel simple(String title, String description, List<String> postCreateComments, LinkableItem provider) {
-        return new IssueCreationModel(title, description, postCreateComments, provider, null, null);
+        return new IssueCreationModel(title, description, postCreateComments, provider, null, null, null, null);
     }
 
     public static IssueCreationModel project(String title, String description, List<String> postCreateComments, ProjectIssueModel source, @Nullable String queryString) {
-        return new IssueCreationModel(title, description, postCreateComments, source.getProvider(), source, queryString);
+        return new IssueCreationModel(title, description, postCreateComments, source.getProvider(), source, queryString, null, null);
     }
 
-    private IssueCreationModel(
+    public static IssueCreationModel project(String title, String description, List<String> postCreateComments, ProjectIssueModel source, AtlassianDocumentFormatModel atlassianDocumentFormatDescriptionModel, AtlassianDocumentFormatModel atlassianDocumentFormatCommentModel, @Nullable String queryString) {
+        return new IssueCreationModel(title, description, postCreateComments, source.getProvider(), source, queryString, atlassianDocumentFormatDescriptionModel, atlassianDocumentFormatCommentModel);
+    }
+
+    protected IssueCreationModel(
         String title,
         String description,
         List<String> postCreateComments,
         LinkableItem provider,
         @Nullable ProjectIssueModel source,
-        @Nullable String queryString
+        @Nullable String queryString,
+        @Nullable AtlassianDocumentFormatModel atlassianDocumentFormatDescriptionModel,
+        @Nullable AtlassianDocumentFormatModel atlassianDocumentFormatCommentModel
     ) {
         this.title = title;
         this.description = description;
@@ -47,6 +56,8 @@ public class IssueCreationModel extends AlertSerializableModel {
         this.provider = provider;
         this.source = source;
         this.queryString = queryString;
+        this.atlassianDocumentFormatDescriptionModel = atlassianDocumentFormatDescriptionModel;
+        this.atlassianDocumentFormatCommentModel = atlassianDocumentFormatCommentModel;
     }
 
     public Optional<String> getQueryString() {
@@ -73,4 +84,11 @@ public class IssueCreationModel extends AlertSerializableModel {
         return Optional.ofNullable(source);
     }
 
+    public Optional<AtlassianDocumentFormatModel> getAtlassianDocumentFormatDescriptionModel() {
+        return Optional.ofNullable(atlassianDocumentFormatDescriptionModel);
+    }
+
+    public Optional<AtlassianDocumentFormatModel> getAtlassianDocumentFormatCommentModel() {
+        return Optional.ofNullable(atlassianDocumentFormatCommentModel);
+    }
 }

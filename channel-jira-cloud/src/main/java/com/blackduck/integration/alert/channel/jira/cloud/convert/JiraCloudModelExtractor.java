@@ -20,12 +20,12 @@ import java.util.Optional;
 
 public class JiraCloudModelExtractor {
     private final JiraCloudIssueTrackerSimpleMessageConverter issueTrackerSimpleMessageConverter;
-    private final ProjectIssueModelConverter projectIssueModelConverter;
+    private final JiraCloudProjectIssueModelConverter projectIssueModelConverter;
     private final IssueTrackerSearcher<String> issueTrackerSearcher;
 
     public JiraCloudModelExtractor(IssueTrackerMessageFormatter formatter, IssueTrackerSearcher<String> issueTrackerSearcher) {
         this.issueTrackerSimpleMessageConverter = new JiraCloudIssueTrackerSimpleMessageConverter(formatter);
-        this.projectIssueModelConverter = new ProjectIssueModelConverter(formatter);
+        this.projectIssueModelConverter = new JiraCloudProjectIssueModelConverter(formatter);
         this.issueTrackerSearcher = issueTrackerSearcher;
     }
 
