@@ -7,9 +7,18 @@
  */
 package com.blackduck.integration.alert.channel.jira.cloud.distribution.delegate;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
+import com.blackduck.integration.jira.common.cloud.builder.AtlassianDocumentFormatModelBuilder;
+import com.blackduck.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
+import com.blackduck.integration.jira.common.cloud.model.AtlassianDocumentFormatModel;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +55,7 @@ public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequest
     private final JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator;
     private final IssueCategoryRetriever issueCategoryRetriever;
     private final JiraCloudQueryExecutor jiraCloudQueryExecutor;
+    private final JiraCloudIssueCommenter jiraCloudIssueCommenter;
 
     public JiraCloudIssueCreator(
         JiraCloudChannelKey jiraCloudChannelKey,
@@ -75,6 +85,7 @@ public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequest
         this.jiraIssueCreationRequestCreator = jiraIssueCreationRequestCreator;
         this.issueCategoryRetriever = issueCategoryRetriever;
         this.jiraCloudQueryExecutor = jiraCloudQueryExecutor;
+        this.jiraCloudIssueCommenter = jiraCloudIssueCommenter;
     }
 
     @Override
@@ -109,6 +120,10 @@ public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequest
             replacementValues,
             distributionDetails.getCustomFields()
         );
+
+        Optional<AtlassianDocumentFormatModel> description = alertIssueCreationModel.getAtlassianDocumentFormatDescriptionModel();
+        description.ifPresent(atlassianDocumentFormatModel -> fieldsBuilder.setField(IssueRequestModelFieldsBuilder.DESCRIPTION, atlassianDocumentFormatModel));
+
         return new IssueCreationRequestModel(
             distributionDetails.getIssueCreatorEmail(),
             distributionDetails.getIssueType(),
@@ -146,6 +161,19 @@ public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequest
             .filter(project -> jiraProjectName.equals(project.getName()) || jiraProjectName.equals(project.getKey()))
             .findAny()
             .orElseThrow(() -> new AlertException(String.format("Unable to find project matching '%s'", jiraProjectName)));
+    }
+
+    @Override
+    protected void addPostCreateComments(ExistingIssueDetails<String> issueDetails, IssueCreationModel creationModel, @Nullable ProjectIssueModel projectSource) throws AlertException {
+        LinkedList<AtlassianDocumentFormatModel> postCreateComments = new LinkedList<>();
+        AtlassianDocumentFormatModelBuilder atlassianDocumentFormatModelBuilder = new AtlassianDocumentFormatModelBuilder();
+        atlassianDocumentFormatModelBuilder.addSingleParagraphTextNode("This issue was automatically created by Alert.");
+        AtlassianDocumentFormatModel firstComment = atlassianDocumentFormatModelBuilder.build();
+        Optional<List<AtlassianDocumentFormatModel>> additionalCommentList = creationModel.getAtlassianDocumentFormatCommentModel();
+        additionalCommentList.ifPresent(postCreateComments::addAll);
+
+        IssueCommentModel<String> commentRequestModel = new IssueCommentModel<>(issueDetails, List.of(), projectSource, firstComment, postCreateComments);
+        jiraCloudIssueCommenter.commentOnIssue(commentRequestModel);
     }
 
 }

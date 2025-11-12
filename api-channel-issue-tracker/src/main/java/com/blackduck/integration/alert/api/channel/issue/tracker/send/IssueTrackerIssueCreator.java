@@ -79,7 +79,7 @@ public abstract class IssueTrackerIssueCreator<T extends Serializable> {
 
     protected abstract void assignAlertSearchProperties(ExistingIssueDetails<T> createdIssueDetails, ProjectIssueModel alertIssueSource) throws AlertException;
 
-    private void addPostCreateComments(ExistingIssueDetails<T> issueDetails, IssueCreationModel creationModel, @Nullable ProjectIssueModel projectSource) throws AlertException {
+    protected void addPostCreateComments(ExistingIssueDetails<T> issueDetails, IssueCreationModel creationModel, @Nullable ProjectIssueModel projectSource) throws AlertException {
         LinkedList<String> postCreateComments = new LinkedList<>(creationModel.getPostCreateComments());
         postCreateComments.addFirst("This issue was automatically created by Alert.");
 
