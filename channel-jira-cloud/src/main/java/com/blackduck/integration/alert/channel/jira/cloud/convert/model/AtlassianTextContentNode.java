@@ -1,5 +1,6 @@
 package com.blackduck.integration.alert.channel.jira.cloud.convert.model;
 
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,7 @@ public class AtlassianTextContentNode implements AtlassianDocumentFormatNode, Se
     protected AtlassianTextContentNode(String type, String text, List<AtlassianDocumentFormatNode> marks) {
         this.type = type;
         this.text = text;
-        this.marks = marks;
+        this.marks = marks == null ? new ArrayList<>() : marks;
     }
 
     public String getType() {
@@ -29,11 +30,12 @@ public class AtlassianTextContentNode implements AtlassianDocumentFormatNode, Se
         return text;
     }
 
-    public Optional<List<AtlassianDocumentFormatNode>> getMarks() {
-        if(marks.isEmpty()) {
-            return Optional.empty();
+    @Nullable
+    public List<AtlassianDocumentFormatNode> getMarks() {
+        if (marks.isEmpty()) {
+            return null;
         }
-        return Optional.of(marks);
+        return marks;
     }
 
     public void addBoldStyle() {

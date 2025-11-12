@@ -56,30 +56,34 @@ public class JiraCloudIssueCommenter extends JiraIssueCommenter<IssueCommentRequ
             return;
         }
 
-        for (String comment : issueCommentModel.getComments()) {
+        ExistingIssueDetails<String> existingIssueDetails = issueCommentModel.getExistingIssueDetails();
+        try {
             // need to create the model from the issue comment model which has the atlassian document format
             Optional<AtlassianDocumentFormatModel> primaryComment = issueCommentModel.getAtlassianDocumentFormatCommentModel();
-            ExistingIssueDetails<String> existingIssueDetails = issueCommentModel.getExistingIssueDetails();
+            IssueCommentRequestModel commentRequestModel;
             if (primaryComment.isPresent()) {
-               IssueCommentRequestModel commentRequestModel =  new IssueCommentRequestModel(existingIssueDetails.getIssueKey(),primaryComment.get());
-                try {
-                    addComment(commentRequestModel);
-
-                    Optional<List<AtlassianDocumentFormatModel>> additionalComments = issueCommentModel.getAdditionalComments();
-                    if (additionalComments.isPresent()) {
-                        List<AtlassianDocumentFormatModel> additionalCommentsList = additionalComments.get();
-                        for(AtlassianDocumentFormatModel additionalComment : additionalCommentsList) {
-                            commentRequestModel = new IssueCommentRequestModel(existingIssueDetails.getIssueKey(), additionalComment);
-                            addComment(commentRequestModel);
-                        }
-                    }
-
-                } catch (IntegrationException ex) {
-                    throw new AlertException(String.format("Failed to add a comment in Jira. Issue Key: %s", existingIssueDetails.getIssueKey()), ex);
-                }
-            } else {
-                addComment(comment, issueCommentModel.getExistingIssueDetails(), issueCommentModel.getSource().orElse(null));
+                commentRequestModel = new IssueCommentRequestModel(existingIssueDetails.getIssueKey(), primaryComment.get());
+                addComment(commentRequestModel);
             }
+
+            // need to create the model from the issue comment model which has the atlassian document format
+            Optional<List<AtlassianDocumentFormatModel>> additionalComments = issueCommentModel.getAdditionalComments();
+            if (additionalComments.isPresent()) {
+                List<AtlassianDocumentFormatModel> additionalCommentsList = additionalComments.get();
+                for(AtlassianDocumentFormatModel additionalComment : additionalCommentsList) {
+                    commentRequestModel = new IssueCommentRequestModel(existingIssueDetails.getIssueKey(), additionalComment);
+                    addComment(commentRequestModel);
+                }
+            }
+
+            List<String> originalComments = issueCommentModel.getComments();
+            if (originalComments != null && !originalComments.isEmpty()) {
+                for(String comment : originalComments) {
+                    addComment(comment, existingIssueDetails, issueCommentModel.getSource().orElse(null));
+                }
+            }
+        } catch (IntegrationException ex) {
+            throw new AlertException(String.format("Failed to add a comment in Jira. Issue Key: %s", existingIssueDetails.getIssueKey()), ex);
         }
     }
 }

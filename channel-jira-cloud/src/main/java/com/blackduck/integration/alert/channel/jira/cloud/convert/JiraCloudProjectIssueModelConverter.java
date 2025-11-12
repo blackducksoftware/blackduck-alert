@@ -63,14 +63,17 @@ public class JiraCloudProjectIssueModelConverter {
 
     public IssueCreationModel toIssueCreationModel(ProjectIssueModel projectIssueModel, String jobName, String queryString) {
         String title = createTruncatedTitle(projectIssueModel);
-        AtlassianDocumentBuilder documentBuilder = new AtlassianDocumentBuilder(formatter);
+        AtlassianDocumentBuilder documentBuilder = new AtlassianDocumentBuilder(formatter, true);
         ChunkedStringBuilder descriptionBuilder = new ChunkedStringBuilder(formatter.getMaxDescriptionLength());
 
         String nonBreakingSpace = formatter.getNonBreakingSpace();
         String jobLine = String.format("Job%sname:%s%s", nonBreakingSpace, nonBreakingSpace, jobName);
         documentBuilder.addTextNode(jobLine, true)
+                .addParagraphNode()
                 .addTextNode(projectIssueModel.getProject(), true)
+                .addParagraphNode()
                 .addTextNode(projectIssueModel.getProjectVersion().orElse(MISSING_PROJECT_VERSION_PLACEHOLDER), true)
+                .addParagraphNode()
                 .addTextNode(formatter.getSectionSeparator(),false)
                 .addParagraphNode();
 
@@ -117,8 +120,7 @@ public class JiraCloudProjectIssueModelConverter {
     }
 
     public <T extends Serializable> IssueCommentModel<T> toIssueCommentModel(ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel projectIssueModel) {
-        ChunkedStringBuilder commentBuilder = new ChunkedStringBuilder(formatter.getMaxCommentLength());
-        AtlassianDocumentBuilder documentBuilder = new AtlassianDocumentBuilder(formatter);
+        AtlassianDocumentBuilder documentBuilder = new AtlassianDocumentBuilder(formatter, false);
 
         LinkableItem provider = projectIssueModel.getProvider();
         String commentHeader = String.format("The component was updated in %s[%s]", provider.getLabel(), provider.getValue());
@@ -133,13 +135,6 @@ public class JiraCloudProjectIssueModelConverter {
 
         IssueBomComponentDetails bomComponent = projectIssueModel.getBomComponentDetails();
         bomComponentDetailConverter.gatherAttributeStrings(bomComponent, documentBuilder);
-//        for (String attributeString : attributeStrings) {
-//            commentBuilder.append(formatter.getNonBreakingSpace());
-//            commentBuilder.append(formatter.encode("-"));
-//            commentBuilder.append(formatter.getNonBreakingSpace());
-//            commentBuilder.append(attributeString);
-//            commentBuilder.append(formatter.getLineSeparator());
-//        }
 
         AtlassianDocumentFormatModel primaryComment = documentBuilder.buildPrimaryDocument();
         List<AtlassianDocumentFormatModel> additionalComments = documentBuilder.buildAdditionalCommentDocuments();
@@ -227,7 +222,6 @@ public class JiraCloudProjectIssueModelConverter {
 
         Optional<IssueComponentUnknownVersionDetails> optionalUnknownVersionDetails = projectIssueModel.getComponentUnknownVersionDetails();
         if (optionalUnknownVersionDetails.isPresent()) {
-
             issueComponentUnknownVersionDetailsConverter.createEstimatedRiskDetailsSectionPieces(optionalUnknownVersionDetails.get(), documentBuilder);
 
             documentBuilder

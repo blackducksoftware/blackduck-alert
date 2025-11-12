@@ -34,7 +34,7 @@ public class JiraCloudModelExtractor {
     public final IssueTrackerModelHolder<String> extractSimpleMessageIssueModels(List<SimpleMessage> simpleMessages, String jobName) {
         List<IssueCreationModel> simpleMessageIssueCreationModels = new ArrayList<>(simpleMessages.size());
         for (SimpleMessage simpleMessage : simpleMessages) {
-            AtlassianDocumentBuilder documentBuilder = new AtlassianDocumentBuilder(formatter);
+            AtlassianDocumentBuilder documentBuilder = new AtlassianDocumentBuilder(formatter, true);
             IssueCreationModel simpleMessageIssueCreationModel = issueTrackerSimpleMessageConverter.convertToIssueCreationModel(simpleMessage, jobName, documentBuilder);
             simpleMessageIssueCreationModels.add(simpleMessageIssueCreationModel);
         }
