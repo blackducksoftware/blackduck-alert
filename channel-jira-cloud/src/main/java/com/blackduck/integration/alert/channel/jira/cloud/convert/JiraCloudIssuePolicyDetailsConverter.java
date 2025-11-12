@@ -28,38 +28,30 @@ public class JiraCloudIssuePolicyDetailsConverter {
         this.componentVulnerabilitiesConverter = new JiraCloudComponentVulnerabilitiesConverter(formatter);
     }
 
-    public List<String> createPolicyDetailsSectionPieces(IssueBomComponentDetails bomComponentDetails, IssuePolicyDetails policyDetails) {
-        List<String> policyDetailsSectionPieces = new LinkedList<>();
+    public void createPolicyDetailsSectionPieces(IssueBomComponentDetails bomComponentDetails, IssuePolicyDetails policyDetails, AtlassianDocumentBuilder documentBuilder) {
 
-        policyDetailsSectionPieces.add(formatter.encode(LABEL_POLICY));
-        policyDetailsSectionPieces.add(formatter.encode(policyDetails.getName()));
-        policyDetailsSectionPieces.add(formatter.getLineSeparator());
-        policyDetailsSectionPieces.add(formatter.encode(LABEL_SEVERITY));
-        policyDetailsSectionPieces.add(formatter.encode(policyDetails.getSeverity().getPolicyLabel()));
+        documentBuilder.addTextNode(formatter.encode(LABEL_POLICY))
+                .addTextNode(formatter.encode(policyDetails.getName()))
+                .addTextNode(formatter.getLineSeparator())
+                .addTextNode(formatter.encode(LABEL_SEVERITY))
+                .addTextNode(formatter.encode(policyDetails.getSeverity().getPolicyLabel()));
 
         List<String> policyDescriptionSection = createPolicyDescription(bomComponentDetails, policyDetails);
-        policyDetailsSectionPieces.addAll(policyDescriptionSection);
+        policyDescriptionSection.forEach(documentBuilder::addTextNode);
 
-        List<String> additionalPolicyDetailsSections = createAdditionalPolicyDetailsSections(bomComponentDetails, policyDetails);
-        if (!additionalPolicyDetailsSections.isEmpty()) {
-            policyDetailsSectionPieces.add(formatter.getLineSeparator());
-            policyDetailsSectionPieces.add(formatter.getSectionSeparator());
-            policyDetailsSectionPieces.add(formatter.getLineSeparator());
-            policyDetailsSectionPieces.addAll(additionalPolicyDetailsSections);
-        }
 
-        return policyDetailsSectionPieces;
-    }
-
-    private List<String> createAdditionalPolicyDetailsSections(IssueBomComponentDetails bomComponentDetails, IssuePolicyDetails policyDetails) {
         boolean isVulnerabilityPolicy = bomComponentDetails.getRelevantPolicies()
-            .stream()
-            .filter(policy -> policy.getPolicyName().equals(policyDetails.getName()))
-            .anyMatch(ComponentPolicy::isVulnerabilityPolicy);
+                .stream()
+                .filter(policy -> policy.getPolicyName().equals(policyDetails.getName()))
+                .anyMatch(ComponentPolicy::isVulnerabilityPolicy);
+
         if (isVulnerabilityPolicy) {
-            return componentVulnerabilitiesConverter.createComponentVulnerabilitiesSectionPieces(bomComponentDetails.getComponentVulnerabilities());
+            documentBuilder.addTextNode(formatter.getLineSeparator())
+                    .addTextNode(formatter.getSectionSeparator())
+                    .addParagraphNode()
+                    .addTextNode(formatter.getLineSeparator());
+            componentVulnerabilitiesConverter.createComponentVulnerabilitiesSectionPieces(bomComponentDetails.getComponentVulnerabilities(), documentBuilder);
         }
-        return List.of();
     }
 
     private List<String> createPolicyDescription(IssueBomComponentDetails bomComponentDetails, IssuePolicyDetails policyDetails) {

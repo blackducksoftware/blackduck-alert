@@ -28,6 +28,7 @@ import com.blackduck.integration.alert.common.channel.message.RechunkedModel;
 import com.blackduck.integration.alert.common.enumeration.ItemOperation;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
 import com.blackduck.integration.jira.common.cloud.builder.AtlassianDocumentFormatModelBuilder;
+import com.blackduck.integration.jira.common.cloud.model.AtlassianDocumentFormatModel;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -45,52 +46,41 @@ public class JiraCloudProjectIssueModelConverter {
     public static final String LABEL_SEVERITY_STATUS = "Severity Status: ";
 
     private final IssueTrackerMessageFormatter formatter;
-    private final BomComponentDetailConverter bomComponentDetailConverter;
+    private final JiraCloudBomComponentDetailConverter bomComponentDetailConverter;
     private final JiraCloudIssuePolicyDetailsConverter issuePolicyDetailsConverter;
     private final JiraCloudIssueVulnerabilityDetailsConverter issueVulnerabilityDetailsConverter;
     private final JiraCloudIssueComponentUnknownVersionDetailsConverter issueComponentUnknownVersionDetailsConverter;
     private final JiraCloudComponentVulnerabilitiesConverter componentVulnerabilitiesConverter;
-    private final JiraCloudLinkableItemConverter linkableItemConverter;
 
     public JiraCloudProjectIssueModelConverter(IssueTrackerMessageFormatter formatter) {
         this.formatter = formatter;
-        this.bomComponentDetailConverter = new BomComponentDetailConverter(formatter);
+        this.bomComponentDetailConverter = new JiraCloudBomComponentDetailConverter(formatter);
         this.issuePolicyDetailsConverter = new JiraCloudIssuePolicyDetailsConverter(formatter);
         this.issueVulnerabilityDetailsConverter = new JiraCloudIssueVulnerabilityDetailsConverter(formatter);
         this.issueComponentUnknownVersionDetailsConverter = new JiraCloudIssueComponentUnknownVersionDetailsConverter(formatter);
         this.componentVulnerabilitiesConverter = new JiraCloudComponentVulnerabilitiesConverter(formatter);
-        this.linkableItemConverter = new JiraCloudLinkableItemConverter(formatter);
     }
 
     public IssueCreationModel toIssueCreationModel(ProjectIssueModel projectIssueModel, String jobName, String queryString) {
         String title = createTruncatedTitle(projectIssueModel);
-
+        AtlassianDocumentBuilder documentBuilder = new AtlassianDocumentBuilder(formatter);
         ChunkedStringBuilder descriptionBuilder = new ChunkedStringBuilder(formatter.getMaxDescriptionLength());
-        AtlassianDocumentFormatModelBuilder atlassianModelBuilder = new AtlassianDocumentFormatModelBuilder();
 
         String nonBreakingSpace = formatter.getNonBreakingSpace();
         String jobLine = String.format("Job%sname:%s%s", nonBreakingSpace, nonBreakingSpace, jobName);
-        Map<String,Object> jobNodeContent = AtlassianDocumentFormatUtil.createTextNode(jobLine);
-        AtlassianDocumentFormatUtil.addBoldStylingToNode(jobNodeContent);
-        atlassianModelBuilder.addContentNode(AtlassianDocumentFormatModelBuilder.DOCUMENT_NODE_TYPE_PARAGRAPH, jobNodeContent);
-
-        Pair<String,List<Map<String,Object>>> projectContentNode = linkableItemConverter.convertToString(projectIssueModel.getProject(), true);
-        atlassianModelBuilder.addContentNode(projectContentNode.getKey(), projectContentNode.getValue());
-
-        LinkableItem projectVersion = projectIssueModel.getProjectVersion().orElse(MISSING_PROJECT_VERSION_PLACEHOLDER);
-        Pair<String,List<Map<String,Object>>> projectVersionContentNode = linkableItemConverter.convertToString(projectVersion, true);
-        atlassianModelBuilder.addContentNode(projectVersionContentNode.getKey(), projectVersionContentNode.getValue());
-        atlassianModelBuilder.addSingleParagraphTextNode(formatter.getSectionSeparator());
+        documentBuilder.addTextNode(jobLine, true)
+                .addTextNode(projectIssueModel.getProject(), true)
+                .addTextNode(projectIssueModel.getProjectVersion().orElse(MISSING_PROJECT_VERSION_PLACEHOLDER), true)
+                .addTextNode(formatter.getSectionSeparator(),false)
+                .addParagraphNode();
 
         IssueBomComponentDetails bomComponent = projectIssueModel.getBomComponentDetails();
-        List<String> bomComponentPieces = bomComponentDetailConverter.gatherAbstractBomComponentSectionPieces(bomComponent);
-        bomComponentPieces.forEach(descriptionBuilder::append);
+        bomComponentDetailConverter.gatherAbstractBomComponentSectionPieces(bomComponent, documentBuilder);
 
-        createVulnerabilitySeverityStatusSectionPieces(projectIssueModel).forEach(descriptionBuilder::append);
+        createVulnerabilitySeverityStatusSectionPieces(projectIssueModel, documentBuilder);
 
-        descriptionBuilder.append(formatter.getLineSeparator());
-        createProjectIssueModelConcernSectionPieces(projectIssueModel, false)
-            .forEach(descriptionBuilder::append);
+        documentBuilder.addParagraphNode();
+        createProjectIssueModelConcernSectionPieces(projectIssueModel, documentBuilder, false);
 
         int newChunkSize = formatter.getMaxCommentLength() - DESCRIPTION_CONTINUED_TEXT.length() - formatter.getLineSeparator().length();
         RechunkedModel rechunkedDescription = ChunkedStringBuilderRechunker.rechunk(descriptionBuilder, "No description", newChunkSize);
@@ -100,7 +90,10 @@ public class JiraCloudProjectIssueModelConverter {
             .map(comment -> String.format("%s%s%s", DESCRIPTION_CONTINUED_TEXT, formatter.getLineSeparator(), comment))
             .toList();
 
-        return IssueCreationModel.project(title, rechunkedDescription.getFirstChunk(), postCreateComments, projectIssueModel, queryString);
+        AtlassianDocumentFormatModel description = documentBuilder.buildPrimaryDocument();
+        List<AtlassianDocumentFormatModel> additionalComments = documentBuilder.buildAdditionalCommentDocuments();
+
+        return IssueCreationModel.project(title, rechunkedDescription.getFirstChunk(), postCreateComments, projectIssueModel, description, additionalComments, queryString);
     }
 
     public <T extends Serializable> IssueTransitionModel<T> toIssueTransitionModel(ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel projectIssueModel, ItemOperation requiredOperation) {
@@ -125,31 +118,32 @@ public class JiraCloudProjectIssueModelConverter {
 
     public <T extends Serializable> IssueCommentModel<T> toIssueCommentModel(ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel projectIssueModel) {
         ChunkedStringBuilder commentBuilder = new ChunkedStringBuilder(formatter.getMaxCommentLength());
+        AtlassianDocumentBuilder documentBuilder = new AtlassianDocumentBuilder(formatter);
 
         LinkableItem provider = projectIssueModel.getProvider();
         String commentHeader = String.format("The component was updated in %s[%s]", provider.getLabel(), provider.getValue());
-        commentBuilder.append(formatter.encode(commentHeader));
-        commentBuilder.append(formatter.getLineSeparator());
-        commentBuilder.append(formatter.getSectionSeparator());
-        commentBuilder.append(formatter.getLineSeparator());
+        documentBuilder
+            .addTextNode(formatter.encode(commentHeader))
+            .addTextNode(formatter.getSectionSeparator())
+            .addParagraphNode();
 
-        createVulnerabilitySeverityStatusSectionPieces(projectIssueModel).forEach(commentBuilder::append);
+        createVulnerabilitySeverityStatusSectionPieces(projectIssueModel, documentBuilder);
 
-        createProjectIssueModelConcernSectionPieces(projectIssueModel, true)
-            .forEach(commentBuilder::append);
+        createProjectIssueModelConcernSectionPieces(projectIssueModel, documentBuilder, true);
 
         IssueBomComponentDetails bomComponent = projectIssueModel.getBomComponentDetails();
-        List<String> attributeStrings = bomComponentDetailConverter.gatherAttributeStrings(bomComponent);
-        for (String attributeString : attributeStrings) {
-            commentBuilder.append(formatter.getNonBreakingSpace());
-            commentBuilder.append(formatter.encode("-"));
-            commentBuilder.append(formatter.getNonBreakingSpace());
-            commentBuilder.append(attributeString);
-            commentBuilder.append(formatter.getLineSeparator());
-        }
+        bomComponentDetailConverter.gatherAttributeStrings(bomComponent, documentBuilder);
+//        for (String attributeString : attributeStrings) {
+//            commentBuilder.append(formatter.getNonBreakingSpace());
+//            commentBuilder.append(formatter.encode("-"));
+//            commentBuilder.append(formatter.getNonBreakingSpace());
+//            commentBuilder.append(attributeString);
+//            commentBuilder.append(formatter.getLineSeparator());
+//        }
 
-        List<String> chunkedComments = commentBuilder.collectCurrentChunks();
-        return new IssueCommentModel<>(existingIssueDetails, chunkedComments, projectIssueModel);
+        AtlassianDocumentFormatModel primaryComment = documentBuilder.buildPrimaryDocument();
+        List<AtlassianDocumentFormatModel> additionalComments = documentBuilder.buildAdditionalCommentDocuments();
+        return new IssueCommentModel<>(existingIssueDetails, List.of(), projectIssueModel, primaryComment, additionalComments);
     }
 
     private String createTruncatedTitle(ProjectIssueModel projectIssueModel) {
@@ -204,51 +198,47 @@ public class JiraCloudProjectIssueModelConverter {
         return preConcernTitle + componentConcernPiece;
     }
 
-    private List<String> createProjectIssueModelConcernSectionPieces(ProjectIssueModel projectIssueModel, boolean commentFormat) {
-        List<String> concernSectionPieces = new LinkedList<>();
+    private void createProjectIssueModelConcernSectionPieces(ProjectIssueModel projectIssueModel,AtlassianDocumentBuilder documentBuilder,  boolean commentFormat) {
 
         IssueBomComponentDetails bomComponentDetails = projectIssueModel.getBomComponentDetails();
 
         Optional<IssuePolicyDetails> optionalPolicyDetails = projectIssueModel.getPolicyDetails();
         if (optionalPolicyDetails.isPresent()) {
-            List<String> policyDetailsSectionPieces = issuePolicyDetailsConverter.createPolicyDetailsSectionPieces(bomComponentDetails, optionalPolicyDetails.get());
-            concernSectionPieces.addAll(policyDetailsSectionPieces);
-            concernSectionPieces.add(formatter.getLineSeparator());
-            concernSectionPieces.add(formatter.getSectionSeparator());
-            concernSectionPieces.add(formatter.getLineSeparator());
+            issuePolicyDetailsConverter.createPolicyDetailsSectionPieces(bomComponentDetails, optionalPolicyDetails.get(), documentBuilder);
+            documentBuilder
+                    .addTextNode(formatter.getLineSeparator())
+                    .addTextNode(formatter.getSectionSeparator())
+                    .addTextNode(formatter.getLineSeparator());
         }
 
         Optional<IssueVulnerabilityDetails> optionalVulnDetails = projectIssueModel.getVulnerabilityDetails();
         if (optionalVulnDetails.isPresent()) {
-            List<String> vulnDetailsSectionPieces;
             if (commentFormat) {
-                vulnDetailsSectionPieces = issueVulnerabilityDetailsConverter.createVulnerabilityDetailsSectionPieces(optionalVulnDetails.get());
+                issueVulnerabilityDetailsConverter.createVulnerabilityDetailsSectionPieces(optionalVulnDetails.get(), documentBuilder);
             } else {
-                vulnDetailsSectionPieces = componentVulnerabilitiesConverter.createComponentVulnerabilitiesSectionPieces(projectIssueModel.getBomComponentDetails().getComponentVulnerabilities());
+                componentVulnerabilitiesConverter.createComponentVulnerabilitiesSectionPieces(projectIssueModel.getBomComponentDetails().getComponentVulnerabilities(), documentBuilder);
             }
-            concernSectionPieces.addAll(vulnDetailsSectionPieces);
-            concernSectionPieces.add(formatter.getLineSeparator());
-            concernSectionPieces.add(formatter.getSectionSeparator());
-            concernSectionPieces.add(formatter.getLineSeparator());
+
+            documentBuilder
+                    .addTextNode(formatter.getLineSeparator())
+                    .addTextNode(formatter.getSectionSeparator())
+                    .addTextNode(formatter.getLineSeparator());
         }
 
         Optional<IssueComponentUnknownVersionDetails> optionalUnknownVersionDetails = projectIssueModel.getComponentUnknownVersionDetails();
         if (optionalUnknownVersionDetails.isPresent()) {
-            List<String> componentUnknownVersionDetailsSectionPieces;
 
-            componentUnknownVersionDetailsSectionPieces = issueComponentUnknownVersionDetailsConverter.createEstimatedRiskDetailsSectionPieces(optionalUnknownVersionDetails.get());
+            issueComponentUnknownVersionDetailsConverter.createEstimatedRiskDetailsSectionPieces(optionalUnknownVersionDetails.get(), documentBuilder);
 
-            concernSectionPieces.addAll(componentUnknownVersionDetailsSectionPieces);
-            concernSectionPieces.add(formatter.getLineSeparator());
-            concernSectionPieces.add(formatter.getSectionSeparator());
-            concernSectionPieces.add(formatter.getLineSeparator());
+            documentBuilder
+                    .addTextNode(formatter.getLineSeparator())
+                    .addTextNode(formatter.getSectionSeparator())
+                    .addTextNode(formatter.getLineSeparator());
         }
 
-        return concernSectionPieces;
     }
 
-    private List<String> createVulnerabilitySeverityStatusSectionPieces(ProjectIssueModel projectIssueModel) {
-        List<String> severityStatusSectionPieces = new LinkedList<>();
+    private void createVulnerabilitySeverityStatusSectionPieces(ProjectIssueModel projectIssueModel, AtlassianDocumentBuilder documentBuilder) {
         String encodedSeverityStatus = formatter.encode(LABEL_SEVERITY_STATUS);
         IssueBomComponentDetails bomComponentDetails = projectIssueModel.getBomComponentDetails();
 
@@ -259,12 +249,13 @@ public class JiraCloudProjectIssueModelConverter {
                 .map(ComponentConcernSeverity::getVulnerabilityLabel)
                 .map(formatter::encode)
                 .map(severity -> encodedSeverityStatus + severity)
-                .ifPresentOrElse(severityStatusSectionPieces::add, () -> severityStatusSectionPieces.add(encodedSeverityStatus + "None"));
-            severityStatusSectionPieces.add(formatter.getLineSeparator());
-            severityStatusSectionPieces.add(formatter.getSectionSeparator());
-            severityStatusSectionPieces.add(formatter.getLineSeparator());
+                .ifPresentOrElse(documentBuilder::addTextNode, () -> documentBuilder.addTextNode(encodedSeverityStatus + "None"));
+            documentBuilder
+                    .addTextNode(formatter.getLineSeparator())
+                    .addTextNode(formatter.getSectionSeparator())
+                    .addTextNode(formatter.getLineSeparator());
+            documentBuilder.addParagraphNode();
         }
-        return severityStatusSectionPieces;
     }
 
 }

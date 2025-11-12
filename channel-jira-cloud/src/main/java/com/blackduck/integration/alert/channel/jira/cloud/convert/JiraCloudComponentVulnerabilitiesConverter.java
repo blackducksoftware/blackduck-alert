@@ -50,58 +50,44 @@ public class JiraCloudComponentVulnerabilitiesConverter {
         this.encodedRightBracket = formatter.encode(" ] ");
     }
 
-    public List<String> createComponentVulnerabilitiesSectionPieces(ComponentVulnerabilities componentVulnerabilities) {
-        List<String> componentVulnerabilitiesSectionPieces = new LinkedList<>();
-        componentVulnerabilitiesSectionPieces.add(encodedLabelVulnerabilitiesSection);
+    public void createComponentVulnerabilitiesSectionPieces(ComponentVulnerabilities componentVulnerabilities, AtlassianDocumentBuilder documentBuilder) {
+        documentBuilder.addTextNode(encodedLabelVulnerabilitiesSection);
 
         if (componentVulnerabilities.hasVulnerabilities()) {
-            componentVulnerabilitiesSectionPieces.add(formatter.getLineSeparator());
-            List<String> criticalSection = createSeveritySection(encodedLabelCritical, componentVulnerabilities.getCritical());
-            componentVulnerabilitiesSectionPieces.addAll(criticalSection);
-            componentVulnerabilitiesSectionPieces.add(formatter.getLineSeparator());
+            documentBuilder.addTextNode(formatter.getLineSeparator());
+            createSeveritySection(documentBuilder, encodedLabelCritical, componentVulnerabilities.getCritical());
+            documentBuilder.addTextNode(formatter.getLineSeparator());
 
-            List<String> highSection = createSeveritySection(encodedLabelHigh, componentVulnerabilities.getHigh());
-            componentVulnerabilitiesSectionPieces.addAll(highSection);
-            componentVulnerabilitiesSectionPieces.add(formatter.getLineSeparator());
+            createSeveritySection(documentBuilder, encodedLabelHigh, componentVulnerabilities.getHigh());
+            documentBuilder.addTextNode(formatter.getLineSeparator());
 
-            List<String> mediumSection = createSeveritySection(encodedLabelMedium, componentVulnerabilities.getMedium());
-            componentVulnerabilitiesSectionPieces.addAll(mediumSection);
-            componentVulnerabilitiesSectionPieces.add(formatter.getLineSeparator());
+            createSeveritySection(documentBuilder, encodedLabelMedium, componentVulnerabilities.getMedium());
+            documentBuilder.addTextNode(formatter.getLineSeparator());
 
-            List<String> lowSection = createSeveritySection(encodedLabelLow, componentVulnerabilities.getLow());
-            componentVulnerabilitiesSectionPieces.addAll(lowSection);
+            createSeveritySection(documentBuilder, encodedLabelLow, componentVulnerabilities.getLow());
 
         } else {
-            componentVulnerabilitiesSectionPieces.add(encodedValueNoCurrentVulnerabilities);
+            documentBuilder.addTextNode(encodedValueNoCurrentVulnerabilities);
         }
-        return componentVulnerabilitiesSectionPieces;
     }
 
-    private List<String> createSeveritySection(String encodedLabel, List<LinkableItem> vulnerabilities) {
+    private void createSeveritySection(AtlassianDocumentBuilder documentBuilder, String encodedLabel, List<LinkableItem> vulnerabilities) {
         if (vulnerabilities.isEmpty()) {
-            return List.of();
+            return;
         }
 
-        List<String> severitySectionPieces = new LinkedList<>();
-        severitySectionPieces.add(encodedLabel);
+        documentBuilder.addTextNode(encodedLabel);
 
         vulnerabilities
-            .stream()
-            .map(this::convertVulnerabilityToString)
-            .forEach(severitySectionPieces::add);
-
-        return severitySectionPieces;
+            .forEach(item -> convertVulnerabilityToString(documentBuilder, item));
     }
 
-    private String convertVulnerabilityToString(LinkableItem vulnerability) {
+    private void convertVulnerabilityToString(AtlassianDocumentBuilder documentBuilder, LinkableItem vulnerability) {
         Optional<String> url = vulnerability.getUrl();
 
-        String formattedVulnerability = formatter.encode(vulnerability.getValue());
-        if (url.isPresent()) {
-            String encodedUrl = formatter.encode(url.get());
-            formattedVulnerability = formatter.createLink(formattedVulnerability, encodedUrl);
-        }
-        return String.format("%s%s%s", encodedLeftBracket, formattedVulnerability, encodedRightBracket);
+        String encodedUrl = url.orElse(null);
+        String text = String.format("%s%s%s", encodedLeftBracket, formatter.encode(vulnerability.getValue()), encodedRightBracket);
+        documentBuilder.addTextNode(text, encodedUrl);
     }
 
     private static String createEncodedLabel(ChannelMessageFormatter formatter, String label) {

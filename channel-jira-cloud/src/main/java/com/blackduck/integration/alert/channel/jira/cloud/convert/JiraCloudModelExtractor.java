@@ -22,8 +22,10 @@ public class JiraCloudModelExtractor {
     private final JiraCloudIssueTrackerSimpleMessageConverter issueTrackerSimpleMessageConverter;
     private final JiraCloudProjectIssueModelConverter projectIssueModelConverter;
     private final IssueTrackerSearcher<String> issueTrackerSearcher;
+    private final IssueTrackerMessageFormatter formatter;
 
     public JiraCloudModelExtractor(IssueTrackerMessageFormatter formatter, IssueTrackerSearcher<String> issueTrackerSearcher) {
+        this.formatter = formatter;
         this.issueTrackerSimpleMessageConverter = new JiraCloudIssueTrackerSimpleMessageConverter(formatter);
         this.projectIssueModelConverter = new JiraCloudProjectIssueModelConverter(formatter);
         this.issueTrackerSearcher = issueTrackerSearcher;
@@ -32,7 +34,8 @@ public class JiraCloudModelExtractor {
     public final IssueTrackerModelHolder<String> extractSimpleMessageIssueModels(List<SimpleMessage> simpleMessages, String jobName) {
         List<IssueCreationModel> simpleMessageIssueCreationModels = new ArrayList<>(simpleMessages.size());
         for (SimpleMessage simpleMessage : simpleMessages) {
-            IssueCreationModel simpleMessageIssueCreationModel = issueTrackerSimpleMessageConverter.convertToIssueCreationModel(simpleMessage, jobName);
+            AtlassianDocumentBuilder documentBuilder = new AtlassianDocumentBuilder(formatter);
+            IssueCreationModel simpleMessageIssueCreationModel = issueTrackerSimpleMessageConverter.convertToIssueCreationModel(simpleMessage, jobName, documentBuilder);
             simpleMessageIssueCreationModels.add(simpleMessageIssueCreationModel);
         }
 

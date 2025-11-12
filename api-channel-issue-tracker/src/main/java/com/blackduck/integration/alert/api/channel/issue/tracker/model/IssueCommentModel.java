@@ -24,16 +24,19 @@ public class IssueCommentModel<T extends Serializable> extends AlertSerializable
     private final ProjectIssueModel source;
     @Nullable
     private final AtlassianDocumentFormatModel atlassianDocumentFormatCommentModel;
+    @Nullable
+    private final List<AtlassianDocumentFormatModel> additionalComments;
 
     public IssueCommentModel(ExistingIssueDetails<T> existingIssueDetails, List<String> comments, @Nullable ProjectIssueModel source) {
-        this(existingIssueDetails, comments, source, null);
+        this(existingIssueDetails, comments, source, null, null);
     }
 
-    public IssueCommentModel(ExistingIssueDetails<T> existingIssueDetails, List<String> comments, @Nullable ProjectIssueModel source, @Nullable AtlassianDocumentFormatModel atlassianDocumentFormatCommentModel) {
+    public IssueCommentModel(ExistingIssueDetails<T> existingIssueDetails, List<String> comments, @Nullable ProjectIssueModel source, @Nullable AtlassianDocumentFormatModel atlassianDocumentFormatCommentModel, @Nullable List<AtlassianDocumentFormatModel> additionalComments) {
         this.existingIssueDetails = existingIssueDetails;
         this.comments = comments;
         this.source = source;
         this.atlassianDocumentFormatCommentModel = atlassianDocumentFormatCommentModel;
+        this.additionalComments = additionalComments;
     }
 
     public ExistingIssueDetails<T> getExistingIssueDetails() {
@@ -50,6 +53,10 @@ public class IssueCommentModel<T extends Serializable> extends AlertSerializable
 
     public Optional<AtlassianDocumentFormatModel> getAtlassianDocumentFormatCommentModel() {
         return Optional.ofNullable(atlassianDocumentFormatCommentModel);
+    }
+
+    public Optional<List<AtlassianDocumentFormatModel>> getAdditionalComments() {
+        return Optional.ofNullable(additionalComments);
     }
 
 }

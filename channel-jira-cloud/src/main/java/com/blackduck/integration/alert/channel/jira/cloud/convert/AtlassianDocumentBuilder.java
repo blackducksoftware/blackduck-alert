@@ -1,34 +1,41 @@
 package com.blackduck.integration.alert.channel.jira.cloud.convert;
 
-import com.blackduck.integration.alert.channel.jira.cloud.convert.model.AtlassianDocumentFormatNode;
+import com.blackduck.integration.alert.api.channel.convert.ChannelMessageFormatter;
 import com.blackduck.integration.alert.channel.jira.cloud.convert.model.AtlassianDocumentNode;
 import com.blackduck.integration.alert.channel.jira.cloud.convert.model.AtlassianParagraphContentNode;
 import com.blackduck.integration.alert.channel.jira.cloud.convert.model.AtlassianTextContentNode;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.jira.common.cloud.builder.AtlassianDocumentFormatModelBuilder;
 import com.blackduck.integration.jira.common.cloud.model.AtlassianDocumentFormatModel;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import io.micrometer.common.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class AtlassianDocumentBuilder {
     public static final Integer MAX_SERIALIZED_LENGTH = 30000;
     private Logger logger = LoggerFactory.getLogger(getClass());
     private final ObjectMapper objectMapper;
+    private final ChannelMessageFormatter formatter;
 
+    // state variables
     private AtlassianDocumentNode primaryNode;
     private List<AtlassianDocumentNode> additionalCommentNodes;
     private AtlassianDocumentNode currentDocumentNode;
     private AtlassianParagraphContentNode currentParagraph;
     private Integer currentDocumentLength;
 
-    public AtlassianDocumentBuilder() {
+    public AtlassianDocumentBuilder(ChannelMessageFormatter formatter) {
         this.objectMapper = new ObjectMapper();
         this.additionalCommentNodes = new ArrayList<>();
+        this.formatter = formatter;
         this.primaryNode = new AtlassianDocumentNode();
         this.currentDocumentNode = primaryNode;
         initializeDocumentLength();
@@ -64,7 +71,8 @@ public class AtlassianDocumentBuilder {
         return 0;
     }
 
-    public AtlassianDocumentBuilder addParagraphNode(AtlassianParagraphContentNode paragraphNode) {
+    public AtlassianDocumentBuilder addParagraphNode() {
+        AtlassianParagraphContentNode paragraphNode = new AtlassianParagraphContentNode();
         if(willExceedLimit(paragraphNode)) {
             initialzeNewDocument();
         }
@@ -74,7 +82,30 @@ public class AtlassianDocumentBuilder {
         return this;
     }
 
-    public AtlassianDocumentBuilder addAdditionalCommentNode(AtlassianTextContentNode textNode, boolean bold, String href) {
+    public AtlassianDocumentBuilder addTextNode(String text) {
+        return addTextNode(text, false);
+    }
+
+    public AtlassianDocumentBuilder addTextNode(String text, boolean bold) {
+        AtlassianTextContentNode textNode = new AtlassianTextContentNode(text);
+        return addTextNode(textNode, bold, null);
+    }
+
+    public AtlassianDocumentBuilder addTextNode(LinkableItem linkableItem, boolean bold) {
+        String label = formatter.encode(linkableItem.getLabel());
+        String value = formatter.encode(linkableItem.getValue());
+        String href = linkableItem.getUrl().map(formatter::encode).orElse(null);
+        String text = String.format("%s:%s%s",label, formatter.getNonBreakingSpace(), value);
+        AtlassianTextContentNode textNode = new AtlassianTextContentNode(text);
+        return addTextNode(textNode, bold, href);
+    }
+
+    public AtlassianDocumentBuilder addTextNode(String text, String href) {
+        AtlassianTextContentNode textNode = new AtlassianTextContentNode(text);
+        return addTextNode(textNode, false, href);
+    }
+
+    public AtlassianDocumentBuilder addTextNode(AtlassianTextContentNode textNode, boolean bold, @Nullable String href) {
         if(bold) {
             textNode.addBoldStyle();
         }
@@ -92,11 +123,37 @@ public class AtlassianDocumentBuilder {
         return this;
     }
 
-//    public AtlassianDocumentFormatModel buildPrimaryDocument() {
-//
-//    }
-//
-//    public List<AtlassianDocumentFormatModel> buildAdditionalCommentDocuments() {
-//
-//    }
+    public AtlassianDocumentFormatModel buildPrimaryDocument() {
+        return buildDocumentModel(primaryNode);
+    }
+
+    public List<AtlassianDocumentFormatModel> buildAdditionalCommentDocuments() {
+        List<AtlassianDocumentFormatModel> documents = new ArrayList<>(additionalCommentNodes.size());
+
+        for(AtlassianDocumentNode node : additionalCommentNodes) {
+            documents.add(buildDocumentModel(node));
+        }
+
+        return documents;
+    }
+
+    private AtlassianDocumentFormatModel buildDocumentModel(AtlassianDocumentNode documentNode) {
+        AtlassianDocumentFormatModelBuilder builder = new AtlassianDocumentFormatModelBuilder();
+
+        documentNode.getContent().stream()
+            .map(this::createParagraphContentNode)
+            .forEach(nodeData -> builder.addContentNode(AtlassianDocumentFormatModelBuilder.DOCUMENT_NODE_TYPE_PARAGRAPH, nodeData));
+        return builder.build();
+    }
+
+    private List<Map<String,Object>> createParagraphContentNode(AtlassianParagraphContentNode paragraphNode) {
+        return paragraphNode.getContent().stream()
+                .map(this::createTextContentNode)
+                .toList();
+    }
+
+    private Map<String,Object> createTextContentNode(AtlassianTextContentNode textContentNode) {
+        return objectMapper.convertValue(textContentNode, new TypeReference<>() {
+        });
+    }
 }

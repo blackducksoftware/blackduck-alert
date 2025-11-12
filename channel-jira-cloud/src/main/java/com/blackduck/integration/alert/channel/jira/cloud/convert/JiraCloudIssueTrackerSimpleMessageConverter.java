@@ -14,28 +14,30 @@ import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage
 import com.blackduck.integration.alert.common.channel.message.ChunkedStringBuilderRechunker;
 import com.blackduck.integration.alert.common.channel.message.RechunkedModel;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.jira.common.cloud.model.AtlassianDocumentFormatModel;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
 public class JiraCloudIssueTrackerSimpleMessageConverter {
     private final IssueTrackerMessageFormatter formatter;
-    private final SimpleMessageConverter simpleMessageConverter;
+    private final JiraCloudSimpleMessageConverter simpleMessageConverter;
 
     public JiraCloudIssueTrackerSimpleMessageConverter(IssueTrackerMessageFormatter formatter) {
         this.formatter = formatter;
-        this.simpleMessageConverter = new SimpleMessageConverter(formatter);
+        this.simpleMessageConverter = new JiraCloudSimpleMessageConverter(formatter);
     }
 
-    public IssueCreationModel convertToIssueCreationModel(SimpleMessage simpleMessage, String jobName) {
+    public IssueCreationModel convertToIssueCreationModel(SimpleMessage simpleMessage, String jobName, AtlassianDocumentBuilder documentBuilder) {
         LinkableItem provider = simpleMessage.getProvider();
         String rawTitle = String.format("%s[%s] | %s", provider.getLabel(), provider.getValue(), simpleMessage.getSummary());
         String truncatedTitle = StringUtils.truncate(rawTitle, formatter.getMaxTitleLength());
 
-        List<String> descriptionChunks = simpleMessageConverter.convertToFormattedMessageChunks(simpleMessage, jobName);
-        RechunkedModel rechunkedDescription = ChunkedStringBuilderRechunker.rechunk(descriptionChunks, "No description", formatter.getMaxDescriptionLength(), formatter.getMaxCommentLength());
+        simpleMessageConverter.convertToFormattedMessageChunks(simpleMessage, jobName, documentBuilder);
 
-        return IssueCreationModel.simple(truncatedTitle, rechunkedDescription.getFirstChunk(), rechunkedDescription.getRemainingChunks(), simpleMessage.getProvider());
+        AtlassianDocumentFormatModel description = documentBuilder.buildPrimaryDocument();
+        List<AtlassianDocumentFormatModel> additionalComments = documentBuilder.buildAdditionalCommentDocuments();
+        return IssueCreationModel.simple(truncatedTitle, simpleMessage.getProvider(), description, additionalComments);
     }
 
 }

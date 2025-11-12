@@ -26,17 +26,22 @@ public class IssueCreationModel extends AlertSerializableModel {
     private final LinkableItem provider;
     private final ProjectIssueModel source;
     private final AtlassianDocumentFormatModel atlassianDocumentFormatDescriptionModel;
-    private final AtlassianDocumentFormatModel atlassianDocumentFormatCommentModel;
+    private final List<AtlassianDocumentFormatModel> atlassianDocumentFormatCommentModel;
 
     public static IssueCreationModel simple(String title, String description, List<String> postCreateComments, LinkableItem provider) {
         return new IssueCreationModel(title, description, postCreateComments, provider, null, null, null, null);
     }
 
+    public static IssueCreationModel simple(String title, LinkableItem provider, AtlassianDocumentFormatModel atlassianDocumentFormatDescriptionModel, List<AtlassianDocumentFormatModel> atlassianDocumentFormatCommentModel) {
+        return new IssueCreationModel(title, "", List.of(), provider, null, null, atlassianDocumentFormatDescriptionModel, atlassianDocumentFormatCommentModel);
+    }
+
+
     public static IssueCreationModel project(String title, String description, List<String> postCreateComments, ProjectIssueModel source, @Nullable String queryString) {
         return new IssueCreationModel(title, description, postCreateComments, source.getProvider(), source, queryString, null, null);
     }
 
-    public static IssueCreationModel project(String title, String description, List<String> postCreateComments, ProjectIssueModel source, AtlassianDocumentFormatModel atlassianDocumentFormatDescriptionModel, AtlassianDocumentFormatModel atlassianDocumentFormatCommentModel, @Nullable String queryString) {
+    public static IssueCreationModel project(String title, String description, List<String> postCreateComments, ProjectIssueModel source, AtlassianDocumentFormatModel atlassianDocumentFormatDescriptionModel, List<AtlassianDocumentFormatModel> atlassianDocumentFormatCommentModel, @Nullable String queryString) {
         return new IssueCreationModel(title, description, postCreateComments, source.getProvider(), source, queryString, atlassianDocumentFormatDescriptionModel, atlassianDocumentFormatCommentModel);
     }
 
@@ -48,7 +53,7 @@ public class IssueCreationModel extends AlertSerializableModel {
         @Nullable ProjectIssueModel source,
         @Nullable String queryString,
         @Nullable AtlassianDocumentFormatModel atlassianDocumentFormatDescriptionModel,
-        @Nullable AtlassianDocumentFormatModel atlassianDocumentFormatCommentModel
+        @Nullable List<AtlassianDocumentFormatModel> atlassianDocumentFormatCommentModel
     ) {
         this.title = title;
         this.description = description;
@@ -88,7 +93,7 @@ public class IssueCreationModel extends AlertSerializableModel {
         return Optional.ofNullable(atlassianDocumentFormatDescriptionModel);
     }
 
-    public Optional<AtlassianDocumentFormatModel> getAtlassianDocumentFormatCommentModel() {
+    public Optional<List<AtlassianDocumentFormatModel>> getAtlassianDocumentFormatCommentModel() {
         return Optional.ofNullable(atlassianDocumentFormatCommentModel);
     }
 }

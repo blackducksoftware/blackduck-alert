@@ -25,29 +25,27 @@ public class JiraCloudIssueComponentUnknownVersionDetailsConverter {
         this.formatter = formatter;
     }
 
-    public List<String> createEstimatedRiskDetailsSectionPieces(IssueComponentUnknownVersionDetails unknownVersionDetails) {
-        List<String> estimatedRiskSectionPieces = new LinkedList<>();
+    public void createEstimatedRiskDetailsSectionPieces(IssueComponentUnknownVersionDetails unknownVersionDetails, AtlassianDocumentBuilder documentBuilder) {
 
         if (ItemOperation.DELETE.equals(unknownVersionDetails.getItemOperation())) {
-            estimatedRiskSectionPieces.add(formatter.encode(TEXT_COMPONENT_DELETE));
-            estimatedRiskSectionPieces.add(formatter.getLineSeparator());
+            documentBuilder.addTextNode(formatter.encode(TEXT_COMPONENT_DELETE));
+            documentBuilder.addTextNode(formatter.getLineSeparator());
         } else {
-            estimatedRiskSectionPieces.add(formatter.encode(SECTION_LABEL_VULNERABILITY_COUNTS));
-            estimatedRiskSectionPieces.add(formatter.getLineSeparator());
-            estimatedRiskSectionPieces.add(formatter.getLineSeparator());
+            documentBuilder.addTextNode(formatter.encode(SECTION_LABEL_VULNERABILITY_COUNTS));
+            documentBuilder.addTextNode(formatter.getLineSeparator());
+            documentBuilder.addTextNode(formatter.getLineSeparator());
 
             for (IssueEstimatedRiskModel estimatedRiskModel : unknownVersionDetails.getEstimatedRiskModelList()) {
-                estimatedRiskSectionPieces.add(createEstimatedRiskString(estimatedRiskModel));
-                estimatedRiskSectionPieces.add(formatter.getLineSeparator());
+                createEstimatedRiskString(estimatedRiskModel, documentBuilder);
+                documentBuilder.addTextNode(formatter.getLineSeparator());
             }
         }
-        return estimatedRiskSectionPieces;
     }
 
-    private String createEstimatedRiskString(IssueEstimatedRiskModel estimatedRiskModel) {
+    private void createEstimatedRiskString(IssueEstimatedRiskModel estimatedRiskModel, AtlassianDocumentBuilder documentBuilder) {
         String severity = formatter.encode(estimatedRiskModel.getSeverity().getVulnerabilityLabel());
         String countString = formatter.encode(String.format("(%s)", estimatedRiskModel.getCount()));
-        String componentName = createComponentNameLinkIfPresent(estimatedRiskModel);
+        String componentName = formatter.encode(estimatedRiskModel.getName());
         // "    <SEVERITY>: (<COUNT>) <COMPONENT_NAME>"
         StringBuilder builder = new StringBuilder(100);
         builder.append(formatter.getNonBreakingSpace());
@@ -59,22 +57,7 @@ public class JiraCloudIssueComponentUnknownVersionDetailsConverter {
         builder.append(formatter.getNonBreakingSpace());
         builder.append(countString);
         builder.append(formatter.getNonBreakingSpace());
-        builder.append(componentName);
-
-        return builder.toString();
-    }
-
-    private String createComponentNameLinkIfPresent(IssueEstimatedRiskModel estimatedRiskModel) {
-        String encodedName = formatter.encode(estimatedRiskModel.getName());
-        String componentNameString = encodedName;
-
-        Optional<String> optionalUrl = estimatedRiskModel.getComponentVersionUrl();
-
-        if (optionalUrl.isPresent()) {
-            String encodedUrl = formatter.encode(optionalUrl.get());
-            componentNameString = formatter.createLink(encodedName, encodedUrl);
-        }
-
-        return componentNameString;
+        documentBuilder.addTextNode(builder.toString())
+                .addTextNode(componentName, estimatedRiskModel.getComponentVersionUrl().map(formatter::encode).orElse(null));
     }
 }
