@@ -38,7 +38,6 @@ public class AtlassianDocumentBuilder {
     private AtlassianParagraphContentNode currentParagraph;
     private Integer currentDocumentLength;
     private Integer descriptionContinuedLength;
-    private boolean descriptionContinuedAdded;
 
     public AtlassianDocumentBuilder(ChannelMessageFormatter formatter, boolean descriptionDocument) {
         this.objectMapper = new ObjectMapper();
@@ -47,7 +46,6 @@ public class AtlassianDocumentBuilder {
         this.primaryNode = new AtlassianDocumentNode();
         this.currentDocumentNode = primaryNode;
         this.descriptionDocument = descriptionDocument;
-        this.descriptionContinuedAdded = false;
         initializeDescriptionContinuedTextNodeLength();
         initializeDocumentLength();
         initializeNewParagraph();
@@ -89,13 +87,16 @@ public class AtlassianDocumentBuilder {
 
     public AtlassianDocumentBuilder addParagraphNode() {
         AtlassianParagraphContentNode paragraphNode = new AtlassianParagraphContentNode();
-        if (willExceedLimit(paragraphNode)) {
-            addDescriptionContinuedText();
+        boolean willExceed = willExceedLimit(paragraphNode);
+        if (willExceed) {
             initialzeNewDocument();
         }
 
         this.currentParagraph = paragraphNode;
         this.currentDocumentNode.addContent(paragraphNode);
+        if (willExceed) {
+            addDescriptionContinuedText();
+        }
         this.currentDocumentLength = computeJsonStringLength(currentDocumentNode);
         return this;
     }
@@ -135,9 +136,9 @@ public class AtlassianDocumentBuilder {
         }
 
         if (willExceedLimit(textNode)) {
-            addDescriptionContinuedText();
             initialzeNewDocument();
             initializeNewParagraph();
+            addDescriptionContinuedText();
         }
 
         this.currentParagraph.addContent(textNode);
@@ -146,9 +147,8 @@ public class AtlassianDocumentBuilder {
     }
 
     private void addDescriptionContinuedText() {
-        if (descriptionDocument && !descriptionContinuedAdded) {
+        if (descriptionDocument) {
             this.currentParagraph.addContent(descriptionContinuedNode);
-            descriptionContinuedAdded = true;
         }
     }
 
