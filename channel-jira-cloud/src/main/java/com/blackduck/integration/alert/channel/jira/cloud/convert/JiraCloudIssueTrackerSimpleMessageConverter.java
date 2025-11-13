@@ -7,17 +7,15 @@
  */
 package com.blackduck.integration.alert.channel.jira.cloud.convert;
 
-import com.blackduck.integration.alert.api.channel.convert.SimpleMessageConverter;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.blackduck.integration.alert.api.channel.issue.tracker.convert.IssueTrackerMessageFormatter;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
 import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage;
-import com.blackduck.integration.alert.common.channel.message.ChunkedStringBuilderRechunker;
-import com.blackduck.integration.alert.common.channel.message.RechunkedModel;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
 import com.blackduck.integration.jira.common.cloud.model.AtlassianDocumentFormatModel;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.List;
 
 public class JiraCloudIssueTrackerSimpleMessageConverter {
     private final IssueTrackerMessageFormatter formatter;

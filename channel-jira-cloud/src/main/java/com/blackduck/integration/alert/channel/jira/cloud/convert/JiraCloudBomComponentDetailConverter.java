@@ -1,11 +1,11 @@
 package com.blackduck.integration.alert.channel.jira.cloud.convert;
 
+import java.util.List;
+
 import com.blackduck.integration.alert.api.channel.convert.ChannelMessageFormatter;
 import com.blackduck.integration.alert.api.processor.extract.model.project.AbstractBomComponentDetails;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentUpgradeGuidance;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
-
-import java.util.List;
 
 public class JiraCloudBomComponentDetailConverter {
     private final ChannelMessageFormatter formatter;
@@ -16,11 +16,11 @@ public class JiraCloudBomComponentDetailConverter {
 
     public void gatherAbstractBomComponentSectionPieces(AbstractBomComponentDetails bomComponent, AtlassianDocumentBuilder documentBuilder) {
         documentBuilder.addTextNode(bomComponent.getComponent(), true)
-                .addTextNode(formatter.getLineSeparator());
+            .addTextNode(formatter.getLineSeparator());
 
-        bomComponent.getComponentVersion().ifPresent( version -> documentBuilder.addParagraphNode()
-                .addTextNode(version, true)
-                .addParagraphNode());
+        bomComponent.getComponentVersion().ifPresent(version -> documentBuilder.addParagraphNode()
+            .addTextNode(version, true)
+            .addParagraphNode());
 
         gatherAttributeStrings(bomComponent, documentBuilder);
     }
@@ -33,29 +33,29 @@ public class JiraCloudBomComponentDetailConverter {
 
         String licenseString = formatAttribute(licenseItem);
         documentBuilder.addTextNode(licenseString, licenseItem.getUrl().map(formatter::encode).orElse(null))
-                        .addTextNode(formatter.getLineSeparator());
+            .addTextNode(formatter.getLineSeparator());
 
         LinkableItem usageItem = new LinkableItem("Usage", usageText);
         String usageString = formatAttribute(usageItem);
         documentBuilder.addTextNode(usageString)
-                .addTextNode(formatter.getLineSeparator());
+            .addTextNode(formatter.getLineSeparator());
 
         componentUpgradeGuidance.getShortTermUpgradeGuidance()
-                .ifPresent(attr -> documentBuilder.addTextNode(formatAttribute(attr), attr.getUrl().map(formatter::encode).orElse(null))
-                        .addTextNode(formatter.getLineSeparator()));
+            .ifPresent(attr -> documentBuilder.addTextNode(formatAttribute(attr), attr.getUrl().map(formatter::encode).orElse(null))
+                .addTextNode(formatter.getLineSeparator()));
         componentUpgradeGuidance.getLongTermUpgradeGuidance()
-                .ifPresent(attr -> documentBuilder.addTextNode(formatAttribute(attr), attr.getUrl().map(formatter::encode).orElse(null))
-                        .addTextNode(formatter.getLineSeparator()));
+            .ifPresent(attr -> documentBuilder.addTextNode(formatAttribute(attr), attr.getUrl().map(formatter::encode).orElse(null))
+                .addTextNode(formatter.getLineSeparator()));
 
         additionalAttributes
-                .forEach(attr -> documentBuilder.addTextNode(formatAttribute(attr), attr.getUrl().map(formatter::encode).orElse(null))
-                        .addTextNode(formatter.getLineSeparator()));
+            .forEach(attr -> documentBuilder.addTextNode(formatAttribute(attr), attr.getUrl().map(formatter::encode).orElse(null))
+                .addTextNode(formatter.getLineSeparator()));
     }
 
     private String formatAttribute(LinkableItem linkableItem) {
         String label = formatter.encode(linkableItem.getLabel());
         String value = formatter.encode(linkableItem.getValue());
-        String formattedValue = String.format("%s:%s%s",label, formatter.getNonBreakingSpace(), value);
+        String formattedValue = String.format("%s:%s%s", label, formatter.getNonBreakingSpace(), value);
         return String.format("%s-%s%s", formatter.getNonBreakingSpace(), formatter.getNonBreakingSpace(), formattedValue);
     }
 }

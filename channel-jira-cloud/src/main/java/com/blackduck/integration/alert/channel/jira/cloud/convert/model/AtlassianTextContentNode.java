@@ -1,10 +1,10 @@
 package com.blackduck.integration.alert.channel.jira.cloud.convert.model;
 
-import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
+import javax.annotation.Nullable;
 
 public class AtlassianTextContentNode implements AtlassianDocumentFormatNode, Serializable {
     public static final String NODE_TYPE = "text";

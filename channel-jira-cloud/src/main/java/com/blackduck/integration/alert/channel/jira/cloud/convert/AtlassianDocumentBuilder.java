@@ -1,5 +1,14 @@
 package com.blackduck.integration.alert.channel.jira.cloud.convert;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Nullable;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.blackduck.integration.alert.api.channel.convert.ChannelMessageFormatter;
 import com.blackduck.integration.alert.channel.jira.cloud.convert.model.AtlassianDocumentNode;
 import com.blackduck.integration.alert.channel.jira.cloud.convert.model.AtlassianParagraphContentNode;
@@ -10,14 +19,8 @@ import com.blackduck.integration.jira.common.cloud.model.AtlassianDocumentFormat
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.micrometer.common.util.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import io.micrometer.common.util.StringUtils;
 
 public class AtlassianDocumentBuilder {
     public static final Integer MAX_SERIALIZED_LENGTH = 30000;
@@ -29,8 +32,8 @@ public class AtlassianDocumentBuilder {
     private final boolean descriptionDocument;
 
     // state variables
-    private AtlassianDocumentNode primaryNode;
-    private List<AtlassianDocumentNode> additionalCommentNodes;
+    private final AtlassianDocumentNode primaryNode;
+    private final List<AtlassianDocumentNode> additionalCommentNodes;
     private AtlassianDocumentNode currentDocumentNode;
     private AtlassianParagraphContentNode currentParagraph;
     private Integer currentDocumentLength;
@@ -71,7 +74,7 @@ public class AtlassianDocumentBuilder {
 
     private boolean willExceedLimit(Object object) {
         int newObjectLength = computeJsonStringLength(object);
-        return (this.currentDocumentLength + newObjectLength) >  (MAX_SERIALIZED_LENGTH - descriptionContinuedLength);
+        return (this.currentDocumentLength + newObjectLength) > (MAX_SERIALIZED_LENGTH - descriptionContinuedLength);
     }
 
     private int computeJsonStringLength(Object object) {
@@ -86,7 +89,7 @@ public class AtlassianDocumentBuilder {
 
     public AtlassianDocumentBuilder addParagraphNode() {
         AtlassianParagraphContentNode paragraphNode = new AtlassianParagraphContentNode();
-        if(willExceedLimit(paragraphNode)) {
+        if (willExceedLimit(paragraphNode)) {
             addDescriptionContinuedText();
             initialzeNewDocument();
         }
@@ -123,15 +126,15 @@ public class AtlassianDocumentBuilder {
     }
 
     public AtlassianDocumentBuilder addTextNode(AtlassianTextContentNode textNode, boolean bold, @Nullable String href) {
-        if(bold) {
+        if (bold) {
             textNode.addBoldStyle();
         }
 
-        if(StringUtils.isNotBlank(href)) {
+        if (StringUtils.isNotBlank(href)) {
             textNode.addLink(href);
         }
 
-        if(willExceedLimit(textNode)) {
+        if (willExceedLimit(textNode)) {
             addDescriptionContinuedText();
             initialzeNewDocument();
             initializeNewParagraph();
@@ -143,7 +146,7 @@ public class AtlassianDocumentBuilder {
     }
 
     private void addDescriptionContinuedText() {
-        if(descriptionDocument && !descriptionContinuedAdded) {
+        if (descriptionDocument && !descriptionContinuedAdded) {
             this.currentParagraph.addContent(descriptionContinuedNode);
             descriptionContinuedAdded = true;
         }
@@ -156,7 +159,7 @@ public class AtlassianDocumentBuilder {
     public List<AtlassianDocumentFormatModel> buildAdditionalCommentDocuments() {
         List<AtlassianDocumentFormatModel> documents = new ArrayList<>(additionalCommentNodes.size());
 
-        for(AtlassianDocumentNode node : additionalCommentNodes) {
+        for (AtlassianDocumentNode node : additionalCommentNodes) {
             documents.add(buildDocumentModel(node));
         }
 
@@ -172,14 +175,16 @@ public class AtlassianDocumentBuilder {
         return builder.build();
     }
 
-    private List<Map<String,Object>> createParagraphContentNode(AtlassianParagraphContentNode paragraphNode) {
+    private List<Map<String, Object>> createParagraphContentNode(AtlassianParagraphContentNode paragraphNode) {
         return paragraphNode.getContent().stream()
-                .map(this::createTextContentNode)
-                .toList();
+            .map(this::createTextContentNode)
+            .toList();
     }
 
-    private Map<String,Object> createTextContentNode(AtlassianTextContentNode textContentNode) {
-        return objectMapper.convertValue(textContentNode, new TypeReference<>() {
-        });
+    private Map<String, Object> createTextContentNode(AtlassianTextContentNode textContentNode) {
+        return objectMapper.convertValue(
+            textContentNode, new TypeReference<>() {
+            }
+        );
     }
 }

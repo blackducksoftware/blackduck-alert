@@ -12,10 +12,6 @@ import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueComp
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueEstimatedRiskModel;
 import com.blackduck.integration.alert.common.enumeration.ItemOperation;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-
 public class JiraCloudIssueComponentUnknownVersionDetailsConverter {
     private static final String TEXT_COMPONENT_DELETE = "Component was removed or the version was set.";
     private static final String SECTION_LABEL_VULNERABILITY_COUNTS = "Vulnerability counts:";
@@ -47,17 +43,16 @@ public class JiraCloudIssueComponentUnknownVersionDetailsConverter {
         String countString = formatter.encode(String.format("(%s)", estimatedRiskModel.getCount()));
         String componentName = formatter.encode(estimatedRiskModel.getName());
         // "    <SEVERITY>: (<COUNT>) <COMPONENT_NAME>"
-        StringBuilder builder = new StringBuilder(100);
-        builder.append(formatter.getNonBreakingSpace());
-        builder.append(formatter.getNonBreakingSpace());
-        builder.append(formatter.getNonBreakingSpace());
-        builder.append(formatter.getNonBreakingSpace());
-        builder.append(severity);
-        builder.append(formatter.encode(":"));
-        builder.append(formatter.getNonBreakingSpace());
-        builder.append(countString);
-        builder.append(formatter.getNonBreakingSpace());
-        documentBuilder.addTextNode(builder.toString())
-                .addTextNode(componentName, estimatedRiskModel.getComponentVersionUrl().map(formatter::encode).orElse(null));
+        final String builder = formatter.getNonBreakingSpace()
+            + formatter.getNonBreakingSpace()
+            + formatter.getNonBreakingSpace()
+            + formatter.getNonBreakingSpace()
+            + severity
+            + formatter.encode(":")
+            + formatter.getNonBreakingSpace()
+            + countString
+            + formatter.getNonBreakingSpace();
+        documentBuilder.addTextNode(builder)
+            .addTextNode(componentName, estimatedRiskModel.getComponentVersionUrl().map(formatter::encode).orElse(null));
     }
 }

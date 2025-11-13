@@ -7,13 +7,12 @@
  */
 package com.blackduck.integration.alert.channel.jira.cloud.convert;
 
+import java.util.List;
+import java.util.Optional;
+
 import com.blackduck.integration.alert.api.channel.convert.ChannelMessageFormatter;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
 
 public class JiraCloudComponentVulnerabilitiesConverter {
     private static final String LABEL_VULNERABILITIES_SECTION = "Current Vulnerabilities: ";

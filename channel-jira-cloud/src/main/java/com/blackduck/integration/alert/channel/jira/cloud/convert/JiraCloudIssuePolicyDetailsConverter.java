@@ -7,13 +7,13 @@
  */
 package com.blackduck.integration.alert.channel.jira.cloud.convert;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.blackduck.integration.alert.api.channel.convert.ChannelMessageFormatter;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueBomComponentDetails;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssuePolicyDetails;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentPolicy;
-
-import java.util.LinkedList;
-import java.util.List;
 
 public class JiraCloudIssuePolicyDetailsConverter {
     private static final String LABEL_POLICY = "Policy: ";
@@ -31,25 +31,24 @@ public class JiraCloudIssuePolicyDetailsConverter {
     public void createPolicyDetailsSectionPieces(IssueBomComponentDetails bomComponentDetails, IssuePolicyDetails policyDetails, AtlassianDocumentBuilder documentBuilder) {
 
         documentBuilder.addTextNode(formatter.encode(LABEL_POLICY))
-                .addTextNode(formatter.encode(policyDetails.getName()))
-                .addTextNode(formatter.getLineSeparator())
-                .addTextNode(formatter.encode(LABEL_SEVERITY))
-                .addTextNode(formatter.encode(policyDetails.getSeverity().getPolicyLabel()));
+            .addTextNode(formatter.encode(policyDetails.getName()))
+            .addTextNode(formatter.getLineSeparator())
+            .addTextNode(formatter.encode(LABEL_SEVERITY))
+            .addTextNode(formatter.encode(policyDetails.getSeverity().getPolicyLabel()));
 
         List<String> policyDescriptionSection = createPolicyDescription(bomComponentDetails, policyDetails);
         policyDescriptionSection.forEach(documentBuilder::addTextNode);
 
-
         boolean isVulnerabilityPolicy = bomComponentDetails.getRelevantPolicies()
-                .stream()
-                .filter(policy -> policy.getPolicyName().equals(policyDetails.getName()))
-                .anyMatch(ComponentPolicy::isVulnerabilityPolicy);
+            .stream()
+            .filter(policy -> policy.getPolicyName().equals(policyDetails.getName()))
+            .anyMatch(ComponentPolicy::isVulnerabilityPolicy);
 
         if (isVulnerabilityPolicy) {
             documentBuilder.addTextNode(formatter.getLineSeparator())
-                    .addTextNode(formatter.getSectionSeparator())
-                    .addParagraphNode()
-                    .addTextNode(formatter.getLineSeparator());
+                .addTextNode(formatter.getSectionSeparator())
+                .addParagraphNode()
+                .addTextNode(formatter.getLineSeparator());
             componentVulnerabilitiesConverter.createComponentVulnerabilitiesSectionPieces(bomComponentDetails.getComponentVulnerabilities(), documentBuilder);
         }
     }

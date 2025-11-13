@@ -2,7 +2,6 @@ package com.blackduck.integration.alert.channel.jira.cloud.convert;
 
 import com.blackduck.integration.alert.api.channel.convert.ChannelMessageFormatter;
 import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage;
-import com.blackduck.integration.alert.common.channel.message.ChunkedStringBuilder;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 public class JiraCloudSimpleMessageConverter {
@@ -17,9 +16,9 @@ public class JiraCloudSimpleMessageConverter {
         String nonBreakingSpace = messageFormatter.getNonBreakingSpace();
         String jobLine = String.format("Job%sname:%s%s", nonBreakingSpace, nonBreakingSpace, jobName);
         String formattedJob = messageFormatter.emphasize(jobLine);
-        appendSection( formattedJob, documentBuilder);
-        appendSection( simpleMessage.getSummary(), documentBuilder);
-        appendSection( simpleMessage.getDescription(), documentBuilder);
+        appendSection(formattedJob, documentBuilder);
+        appendSection(simpleMessage.getSummary(), documentBuilder);
+        appendSection(simpleMessage.getDescription(), documentBuilder);
 
         appendLinkableItem(documentBuilder, simpleMessage.getProvider(), false);
 
@@ -31,10 +30,10 @@ public class JiraCloudSimpleMessageConverter {
     private void appendSection(String txt, AtlassianDocumentBuilder documentBuilder) {
         String encodedTxt = messageFormatter.encode(txt);
         documentBuilder.addTextNode(encodedTxt)
-                .addTextNode(messageFormatter.getLineSeparator())
-                .addTextNode(messageFormatter.getSectionSeparator())
-                .addTextNode(messageFormatter.getLineSeparator())
-                .addParagraphNode();
+            .addTextNode(messageFormatter.getLineSeparator())
+            .addTextNode(messageFormatter.getSectionSeparator())
+            .addTextNode(messageFormatter.getLineSeparator())
+            .addParagraphNode();
     }
 
     private void appendLinkableItem(AtlassianDocumentBuilder documentBuilder, LinkableItem linkableItem, boolean bold) {

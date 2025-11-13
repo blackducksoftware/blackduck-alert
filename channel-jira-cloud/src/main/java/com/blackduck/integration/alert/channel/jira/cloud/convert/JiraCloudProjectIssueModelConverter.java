@@ -7,7 +7,13 @@
  */
 package com.blackduck.integration.alert.channel.jira.cloud.convert;
 
-import com.blackduck.integration.alert.api.channel.convert.BomComponentDetailConverter;
+import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.blackduck.integration.alert.api.channel.issue.tracker.convert.IssueTrackerMessageFormatter;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueBomComponentDetails;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
@@ -27,16 +33,7 @@ import com.blackduck.integration.alert.common.channel.message.ChunkedStringBuild
 import com.blackduck.integration.alert.common.channel.message.RechunkedModel;
 import com.blackduck.integration.alert.common.enumeration.ItemOperation;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
-import com.blackduck.integration.jira.common.cloud.builder.AtlassianDocumentFormatModelBuilder;
 import com.blackduck.integration.jira.common.cloud.model.AtlassianDocumentFormatModel;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 public class JiraCloudProjectIssueModelConverter {
     public static final int COMPONENT_CONCERN_TITLE_SECTION_CHAR_COUNT = 20;
@@ -69,13 +66,13 @@ public class JiraCloudProjectIssueModelConverter {
         String nonBreakingSpace = formatter.getNonBreakingSpace();
         String jobLine = String.format("Job%sname:%s%s", nonBreakingSpace, nonBreakingSpace, jobName);
         documentBuilder.addTextNode(jobLine, true)
-                .addParagraphNode()
-                .addTextNode(projectIssueModel.getProject(), true)
-                .addParagraphNode()
-                .addTextNode(projectIssueModel.getProjectVersion().orElse(MISSING_PROJECT_VERSION_PLACEHOLDER), true)
-                .addParagraphNode()
-                .addTextNode(formatter.getSectionSeparator(),false)
-                .addParagraphNode();
+            .addParagraphNode()
+            .addTextNode(projectIssueModel.getProject(), true)
+            .addParagraphNode()
+            .addTextNode(projectIssueModel.getProjectVersion().orElse(MISSING_PROJECT_VERSION_PLACEHOLDER), true)
+            .addParagraphNode()
+            .addTextNode(formatter.getSectionSeparator(), false)
+            .addParagraphNode();
 
         IssueBomComponentDetails bomComponent = projectIssueModel.getBomComponentDetails();
         bomComponentDetailConverter.gatherAbstractBomComponentSectionPieces(bomComponent, documentBuilder);
@@ -99,7 +96,11 @@ public class JiraCloudProjectIssueModelConverter {
         return IssueCreationModel.project(title, rechunkedDescription.getFirstChunk(), postCreateComments, projectIssueModel, description, additionalComments, queryString);
     }
 
-    public <T extends Serializable> IssueTransitionModel<T> toIssueTransitionModel(ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel projectIssueModel, ItemOperation requiredOperation) {
+    public <T extends Serializable> IssueTransitionModel<T> toIssueTransitionModel(
+        ExistingIssueDetails<T> existingIssueDetails,
+        ProjectIssueModel projectIssueModel,
+        ItemOperation requiredOperation
+    ) {
         IssueOperation issueOperation;
         if (ItemOperation.ADD.equals(requiredOperation)) {
             issueOperation = IssueOperation.OPEN;
@@ -178,7 +179,14 @@ public class JiraCloudProjectIssueModelConverter {
 
         String componentConcernPiece = componentConcernPieceBuilder.toString();
 
-        String preConcernTitle = String.format("Alert - %s[%s], %s[%s], %s", provider.getLabel(), provider.getValue(), project.getValue(), projectVersion.getValue(), componentPieceBuilder);
+        String preConcernTitle = String.format(
+            "Alert - %s[%s], %s[%s], %s",
+            provider.getLabel(),
+            provider.getValue(),
+            project.getValue(),
+            projectVersion.getValue(),
+            componentPieceBuilder
+        );
         if (preConcernTitle.length() + componentConcernPieceBuilder.length() > formatter.getMaxTitleLength()) {
             if (formatter.getMaxTitleLength() > COMPONENT_CONCERN_TITLE_SECTION_CHAR_COUNT) {
                 preConcernTitle = StringUtils.truncate(preConcernTitle, formatter.getMaxTitleLength() - COMPONENT_CONCERN_TITLE_SECTION_CHAR_COUNT);
@@ -193,7 +201,7 @@ public class JiraCloudProjectIssueModelConverter {
         return preConcernTitle + componentConcernPiece;
     }
 
-    private void createProjectIssueModelConcernSectionPieces(ProjectIssueModel projectIssueModel,AtlassianDocumentBuilder documentBuilder,  boolean commentFormat) {
+    private void createProjectIssueModelConcernSectionPieces(ProjectIssueModel projectIssueModel, AtlassianDocumentBuilder documentBuilder, boolean commentFormat) {
 
         IssueBomComponentDetails bomComponentDetails = projectIssueModel.getBomComponentDetails();
 
@@ -201,9 +209,9 @@ public class JiraCloudProjectIssueModelConverter {
         if (optionalPolicyDetails.isPresent()) {
             issuePolicyDetailsConverter.createPolicyDetailsSectionPieces(bomComponentDetails, optionalPolicyDetails.get(), documentBuilder);
             documentBuilder
-                    .addTextNode(formatter.getLineSeparator())
-                    .addTextNode(formatter.getSectionSeparator())
-                    .addTextNode(formatter.getLineSeparator());
+                .addTextNode(formatter.getLineSeparator())
+                .addTextNode(formatter.getSectionSeparator())
+                .addTextNode(formatter.getLineSeparator());
         }
 
         Optional<IssueVulnerabilityDetails> optionalVulnDetails = projectIssueModel.getVulnerabilityDetails();
@@ -211,13 +219,16 @@ public class JiraCloudProjectIssueModelConverter {
             if (commentFormat) {
                 issueVulnerabilityDetailsConverter.createVulnerabilityDetailsSectionPieces(optionalVulnDetails.get(), documentBuilder);
             } else {
-                componentVulnerabilitiesConverter.createComponentVulnerabilitiesSectionPieces(projectIssueModel.getBomComponentDetails().getComponentVulnerabilities(), documentBuilder);
+                componentVulnerabilitiesConverter.createComponentVulnerabilitiesSectionPieces(
+                    projectIssueModel.getBomComponentDetails().getComponentVulnerabilities(),
+                    documentBuilder
+                );
             }
 
             documentBuilder
-                    .addTextNode(formatter.getLineSeparator())
-                    .addTextNode(formatter.getSectionSeparator())
-                    .addTextNode(formatter.getLineSeparator());
+                .addTextNode(formatter.getLineSeparator())
+                .addTextNode(formatter.getSectionSeparator())
+                .addTextNode(formatter.getLineSeparator());
         }
 
         Optional<IssueComponentUnknownVersionDetails> optionalUnknownVersionDetails = projectIssueModel.getComponentUnknownVersionDetails();
@@ -225,9 +236,9 @@ public class JiraCloudProjectIssueModelConverter {
             issueComponentUnknownVersionDetailsConverter.createEstimatedRiskDetailsSectionPieces(optionalUnknownVersionDetails.get(), documentBuilder);
 
             documentBuilder
-                    .addTextNode(formatter.getLineSeparator())
-                    .addTextNode(formatter.getSectionSeparator())
-                    .addTextNode(formatter.getLineSeparator());
+                .addTextNode(formatter.getLineSeparator())
+                .addTextNode(formatter.getSectionSeparator())
+                .addTextNode(formatter.getLineSeparator());
         }
 
     }
@@ -245,9 +256,9 @@ public class JiraCloudProjectIssueModelConverter {
                 .map(severity -> encodedSeverityStatus + severity)
                 .ifPresentOrElse(documentBuilder::addTextNode, () -> documentBuilder.addTextNode(encodedSeverityStatus + "None"));
             documentBuilder
-                    .addTextNode(formatter.getLineSeparator())
-                    .addTextNode(formatter.getSectionSeparator())
-                    .addTextNode(formatter.getLineSeparator());
+                .addTextNode(formatter.getLineSeparator())
+                .addTextNode(formatter.getSectionSeparator())
+                .addTextNode(formatter.getLineSeparator());
             documentBuilder.addParagraphNode();
         }
     }

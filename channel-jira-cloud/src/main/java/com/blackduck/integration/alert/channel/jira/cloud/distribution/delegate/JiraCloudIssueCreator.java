@@ -11,19 +11,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
-import com.blackduck.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
-import com.blackduck.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
-import com.blackduck.integration.jira.common.cloud.builder.AtlassianDocumentFormatModelBuilder;
-import com.blackduck.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
-import com.blackduck.integration.jira.common.cloud.model.AtlassianDocumentFormatModel;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blackduck.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
 import com.blackduck.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
 import com.blackduck.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
@@ -38,6 +35,9 @@ import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDe
 import com.blackduck.integration.alert.channel.jira.cloud.distribution.JiraCloudQueryExecutor;
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.blackduck.integration.exception.IntegrationException;
+import com.blackduck.integration.jira.common.cloud.builder.AtlassianDocumentFormatModelBuilder;
+import com.blackduck.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
+import com.blackduck.integration.jira.common.cloud.model.AtlassianDocumentFormatModel;
 import com.blackduck.integration.jira.common.cloud.model.IssueCreationRequestModel;
 import com.blackduck.integration.jira.common.cloud.service.IssueService;
 import com.blackduck.integration.jira.common.cloud.service.ProjectService;
@@ -48,7 +48,7 @@ import com.blackduck.integration.jira.common.model.response.IssueResponseModel;
 import com.blackduck.integration.jira.common.model.response.PageOfProjectsResponseModel;
 
 public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequestModel> {
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final JiraCloudJobDetailsModel distributionDetails;
     private final IssueService issueService;
     private final ProjectService projectService;
@@ -164,7 +164,8 @@ public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequest
     }
 
     @Override
-    protected void addPostCreateComments(ExistingIssueDetails<String> issueDetails, IssueCreationModel creationModel, @Nullable ProjectIssueModel projectSource) throws AlertException {
+    protected void addPostCreateComments(ExistingIssueDetails<String> issueDetails, IssueCreationModel creationModel, @Nullable ProjectIssueModel projectSource)
+        throws AlertException {
         LinkedList<AtlassianDocumentFormatModel> postCreateComments = new LinkedList<>();
         AtlassianDocumentFormatModelBuilder atlassianDocumentFormatModelBuilder = new AtlassianDocumentFormatModelBuilder();
         atlassianDocumentFormatModelBuilder.addSingleParagraphTextNode("This issue was automatically created by Alert.");

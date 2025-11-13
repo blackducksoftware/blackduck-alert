@@ -7,6 +7,12 @@
  */
 package com.blackduck.integration.alert.channel.jira.cloud.distribution.delegate;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueResponseCreator;
@@ -15,13 +21,8 @@ import com.blackduck.integration.alert.api.common.model.exception.AlertException
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.cloud.model.AtlassianDocumentFormatModel;
-import com.blackduck.integration.jira.common.cloud.service.IssueService;
 import com.blackduck.integration.jira.common.cloud.model.IssueCommentRequestModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.List;
-import java.util.Optional;
+import com.blackduck.integration.jira.common.cloud.service.IssueService;
 
 public class JiraCloudIssueCommenter extends JiraIssueCommenter<IssueCommentRequestModel> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -70,7 +71,7 @@ public class JiraCloudIssueCommenter extends JiraIssueCommenter<IssueCommentRequ
             Optional<List<AtlassianDocumentFormatModel>> additionalComments = issueCommentModel.getAdditionalComments();
             if (additionalComments.isPresent()) {
                 List<AtlassianDocumentFormatModel> additionalCommentsList = additionalComments.get();
-                for(AtlassianDocumentFormatModel additionalComment : additionalCommentsList) {
+                for (AtlassianDocumentFormatModel additionalComment : additionalCommentsList) {
                     commentRequestModel = new IssueCommentRequestModel(existingIssueDetails.getIssueKey(), additionalComment);
                     addComment(commentRequestModel);
                 }
@@ -78,7 +79,7 @@ public class JiraCloudIssueCommenter extends JiraIssueCommenter<IssueCommentRequ
 
             List<String> originalComments = issueCommentModel.getComments();
             if (originalComments != null && !originalComments.isEmpty()) {
-                for(String comment : originalComments) {
+                for (String comment : originalComments) {
                     addComment(comment, existingIssueDetails, issueCommentModel.getSource().orElse(null));
                 }
             }
