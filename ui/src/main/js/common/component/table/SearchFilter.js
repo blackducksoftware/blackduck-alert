@@ -78,7 +78,7 @@ const SearchFilter = ({ searchBarPlaceholder, handleSearchChange, defaultSearchV
                 <input
                     className={classes.inputStyle}
                     placeholder={searchBarPlaceholder}
-                    value={searchValue === null ? '' : searchValue}
+                    value={searchValue ?? ''}
                     onChange={handleChange}
                     onKeyDown={handleKeyDown}
                     disabled={isDisabled}

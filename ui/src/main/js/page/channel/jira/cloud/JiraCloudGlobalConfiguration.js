@@ -101,7 +101,7 @@ const JiraCloudGlobalConfiguration = ({
                     id={JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout}
                     name={JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout}
                     label="Timeout"
-                    customDescription="The timeout in seconds for all connections to Jira Cloud.."
+                    description="The timeout in seconds for all connections to Jira Cloud."
                     required
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
