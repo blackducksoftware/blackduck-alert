@@ -18,6 +18,10 @@ public class JiraCloudBomComponentDetailConverter {
         documentBuilder.addTextNode(bomComponent.getComponent(), true)
                 .addTextNode(formatter.getLineSeparator());
 
+        bomComponent.getComponentVersion().ifPresent( version -> documentBuilder.addParagraphNode()
+                .addTextNode(version, true)
+                .addParagraphNode());
+
         gatherAttributeStrings(bomComponent, documentBuilder);
     }
 

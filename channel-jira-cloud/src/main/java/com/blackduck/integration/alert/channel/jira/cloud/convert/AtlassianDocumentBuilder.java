@@ -110,8 +110,10 @@ public class AtlassianDocumentBuilder {
         String label = formatter.encode(linkableItem.getLabel());
         String value = formatter.encode(linkableItem.getValue());
         String href = linkableItem.getUrl().map(formatter::encode).orElse(null);
-        String text = String.format("%s:%s%s",label, formatter.getNonBreakingSpace(), value);
+        String text = String.format("%s:%s", label, formatter.getNonBreakingSpace());
         AtlassianTextContentNode textNode = new AtlassianTextContentNode(text);
+        addTextNode(textNode, bold, null);
+        textNode = new AtlassianTextContentNode(value);
         return addTextNode(textNode, bold, href);
     }
 
