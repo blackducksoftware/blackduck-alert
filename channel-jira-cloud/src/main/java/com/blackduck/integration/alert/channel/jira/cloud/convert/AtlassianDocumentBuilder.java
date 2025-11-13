@@ -22,6 +22,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.micrometer.common.util.StringUtils;
 
+/**
+ * This class is used to build an {@link AtlassianDocumentFormatModel} object.
+ * This class maintains state for the latest document and latest paragraph in order to be able to create a document
+ * Once the document exceeds the size limit a new document is created and added to the list of documents for comment.
+ * A new paragraph is also created in order to allow additional text nodes to be added.
+ */
 public class AtlassianDocumentBuilder {
     public static final Integer MAX_SERIALIZED_LENGTH = 30000;
     public static final String DESCRIPTION_CONTINUED_TEXT = "(description continued...)";
@@ -43,6 +49,8 @@ public class AtlassianDocumentBuilder {
         this.objectMapper = new ObjectMapper();
         this.additionalCommentNodes = new ArrayList<>();
         this.formatter = formatter;
+
+        // initialize an empty document with a single paragraph
         this.primaryNode = new AtlassianDocumentNode();
         this.currentDocumentNode = primaryNode;
         this.descriptionDocument = descriptionDocument;
@@ -51,6 +59,7 @@ public class AtlassianDocumentBuilder {
         initializeNewParagraph();
     }
 
+    // private methods to initialize new nodes in the document
     private void initializeDescriptionContinuedTextNodeLength() {
         descriptionContinuedLength = computeJsonStringLength(DESCRIPTION_CONTINUED_TEXT);
     }
@@ -152,10 +161,12 @@ public class AtlassianDocumentBuilder {
         }
     }
 
+    // This build will create a primary document for the i.e. for the description an if the document exceeds the limit then additional comments will need to be added.
     public AtlassianDocumentFormatModel buildPrimaryDocument() {
         return buildDocumentModel(primaryNode);
     }
 
+    // This build will create a list of documents that are used to add comments to an issue because the content has exceeded the limit
     public List<AtlassianDocumentFormatModel> buildAdditionalCommentDocuments() {
         List<AtlassianDocumentFormatModel> documents = new ArrayList<>(additionalCommentNodes.size());
 
@@ -166,6 +177,7 @@ public class AtlassianDocumentBuilder {
         return documents;
     }
 
+    // methods to convert the objects in this builder to the AtlassianDocumentFormatModel object
     private AtlassianDocumentFormatModel buildDocumentModel(AtlassianDocumentNode documentNode) {
         AtlassianDocumentFormatModelBuilder builder = new AtlassianDocumentFormatModelBuilder();
 
