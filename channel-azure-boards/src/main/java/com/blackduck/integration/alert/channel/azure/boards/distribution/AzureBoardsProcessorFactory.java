@@ -12,7 +12,6 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +21,7 @@ import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerMod
 import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerProcessor;
 import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerProcessorFactory;
 import com.blackduck.integration.alert.api.channel.issue.tracker.convert.ProjectMessageToIssueModelTransformer;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueTrackerSearcher;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerAsyncMessageSender;

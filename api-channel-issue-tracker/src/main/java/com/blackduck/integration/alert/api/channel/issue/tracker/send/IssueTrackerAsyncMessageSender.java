@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerEventModel;
 import org.jetbrains.annotations.NotNull;
 
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerEventModel;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.distribution.execution.JobStage;
 import com.blackduck.integration.alert.api.distribution.execution.JobStageStartedEvent;

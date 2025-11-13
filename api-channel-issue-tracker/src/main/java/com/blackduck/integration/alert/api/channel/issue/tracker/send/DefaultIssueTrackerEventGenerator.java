@@ -1,12 +1,12 @@
 package com.blackduck.integration.alert.api.channel.issue.tracker.send;
 
-import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerEventModel;
-import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
-import com.blackduck.integration.alert.api.event.AlertEvent;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.function.Function;
+
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerEventModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
+import com.blackduck.integration.alert.api.event.AlertEvent;
 
 public class DefaultIssueTrackerEventGenerator<T extends Serializable> implements IssueTrackerEventGenerator<IssueTrackerModelHolder<T>> {
 
@@ -14,7 +14,11 @@ public class DefaultIssueTrackerEventGenerator<T extends Serializable> implement
     private final IssueTrackerTransitionEventGenerator<T> issueTrackerTransitionEventGenerator;
     private final IssueTrackerCommentEventGenerator<T> issueTrackerCommentEventGenerator;
 
-    public DefaultIssueTrackerEventGenerator(IssueTrackerCreationEventGenerator issueCreateEventGenerator, IssueTrackerTransitionEventGenerator<T> issueTrackerTransitionEventGenerator, IssueTrackerCommentEventGenerator<T> issueTrackerCommentEventGenerator) {
+    public DefaultIssueTrackerEventGenerator(
+        IssueTrackerCreationEventGenerator issueCreateEventGenerator,
+        IssueTrackerTransitionEventGenerator<T> issueTrackerTransitionEventGenerator,
+        IssueTrackerCommentEventGenerator<T> issueTrackerCommentEventGenerator
+    ) {
         this.issueCreateEventGenerator = issueCreateEventGenerator;
         this.issueTrackerTransitionEventGenerator = issueTrackerTransitionEventGenerator;
         this.issueTrackerCommentEventGenerator = issueTrackerCommentEventGenerator;
@@ -30,7 +34,7 @@ public class DefaultIssueTrackerEventGenerator<T extends Serializable> implement
 
     private <U> List<AlertEvent> createMessages(List<U> messages, Function<U, AlertEvent> eventGenerator) {
         return messages.stream()
-                .map(eventGenerator)
-                .toList();
+            .map(eventGenerator)
+            .toList();
     }
 }

@@ -11,11 +11,12 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
 import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 import com.blackduck.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.blackduck.integration.jira.common.cloud.model.AtlassianDocumentFormatModel;
-import org.jetbrains.annotations.Nullable;
 
 public class IssueTransitionModel<T extends Serializable> extends AlertSerializableModel {
     private final ExistingIssueDetails<T> existingIssueDetails;
@@ -27,10 +28,10 @@ public class IssueTransitionModel<T extends Serializable> extends AlertSerializa
     private final AtlassianDocumentFormatModel atlassianDocumentFormatCommentModel;
 
     public IssueTransitionModel(
-            ExistingIssueDetails<T> existingIssueDetails,
-            IssueOperation issueOperation,
-            List<String> postTransitionComments,
-            ProjectIssueModel source
+        ExistingIssueDetails<T> existingIssueDetails,
+        IssueOperation issueOperation,
+        List<String> postTransitionComments,
+        ProjectIssueModel source
     ) {
         this(existingIssueDetails, issueOperation, postTransitionComments, source, null);
     }

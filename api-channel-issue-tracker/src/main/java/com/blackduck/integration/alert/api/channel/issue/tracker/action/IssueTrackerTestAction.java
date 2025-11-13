@@ -15,17 +15,19 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueBomComponentDetails;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerIssueResponseModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.enumeration.IssueCategory;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.enumeration.IssueStatus;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerMessageSender;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerMessageSenderFactory;
-import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueBomComponentDetails;
-import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
-import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerIssueResponseModel;
-import com.blackduck.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
+import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.blackduck.integration.alert.common.channel.DistributionChannelTestAction;
 import com.blackduck.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.blackduck.integration.alert.common.exception.AlertFieldException;
@@ -33,8 +35,6 @@ import com.blackduck.integration.alert.common.message.model.LinkableItem;
 import com.blackduck.integration.alert.common.message.model.MessageResult;
 import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.blackduck.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
-import com.blackduck.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
-import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
 
 public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsModel, T extends Serializable> extends DistributionChannelTestAction {
     private final Logger logger = LoggerFactory.getLogger(getClass());

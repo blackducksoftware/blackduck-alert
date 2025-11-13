@@ -12,15 +12,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Set;
 import java.util.UUID;
 
-import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
-import com.blackduck.integration.alert.api.channel.issue.tracker.send.DefaultIssueTrackerEventGenerator;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.core.task.SyncTaskExecutor;
 
 import com.blackduck.integration.alert.api.channel.issue.tracker.convert.IssueTrackerMessageFormatter;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerResponse;
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.DefaultIssueTrackerEventGenerator;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerAsyncMessageSender;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerCommentEventGenerator;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerCreationEventGenerator;

@@ -10,23 +10,19 @@ package com.blackduck.integration.alert.channel.jira.cloud.distribution;
 import java.util.Set;
 import java.util.UUID;
 
-import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerMessageProcessor;
-import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
-import com.blackduck.integration.alert.api.channel.issue.tracker.send.AsyncMessageSender;
-import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudProcessor;
-import com.blackduck.integration.alert.channel.jira.cloud.convert.JiraCloudModelExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.certificates.AlertSSLContextManager;
-import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerModelExtractor;
+import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerMessageProcessor;
 import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerProcessorFactory;
 import com.blackduck.integration.alert.api.channel.issue.tracker.convert.ProjectMessageToIssueModelTransformer;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueTrackerSearcher;
-import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerAsyncMessageSender;
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.AsyncMessageSender;
 import com.blackduck.integration.alert.api.channel.jira.JiraConstants;
 import com.blackduck.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
 import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
@@ -35,7 +31,9 @@ import com.blackduck.integration.alert.api.channel.jira.distribution.search.Jira
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.descriptor.JiraCloudChannelKey;
+import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudProcessor;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudProperties;
+import com.blackduck.integration.alert.channel.jira.cloud.convert.JiraCloudModelExtractor;
 import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.blackduck.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;

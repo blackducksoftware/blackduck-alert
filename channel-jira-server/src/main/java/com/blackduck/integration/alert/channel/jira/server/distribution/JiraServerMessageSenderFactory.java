@@ -10,16 +10,15 @@ package com.blackduck.integration.alert.channel.jira.server.distribution;
 import java.util.Set;
 import java.util.UUID;
 
-import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
-import com.blackduck.integration.alert.api.channel.issue.tracker.send.DefaultIssueTrackerEventGenerator;
-import com.blackduck.integration.jira.common.server.builder.IssueRequestModelFieldsBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.DefaultIssueTrackerEventGenerator;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerAsyncMessageSender;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerCommentEventGenerator;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerCreationEventGenerator;
@@ -45,6 +44,7 @@ import com.blackduck.integration.alert.channel.jira.server.distribution.delegate
 import com.blackduck.integration.alert.channel.jira.server.distribution.delegate.JiraServerTransitionGenerator;
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.blackduck.integration.jira.common.rest.service.IssuePropertyService;
+import com.blackduck.integration.jira.common.server.builder.IssueRequestModelFieldsBuilder;
 import com.blackduck.integration.jira.common.server.service.FieldService;
 import com.blackduck.integration.jira.common.server.service.IssueSearchService;
 import com.blackduck.integration.jira.common.server.service.IssueService;

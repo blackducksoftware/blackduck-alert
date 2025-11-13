@@ -10,11 +10,11 @@ package com.blackduck.integration.alert.api.channel.issue.tracker.model;
 import java.util.List;
 import java.util.Optional;
 
-import com.blackduck.integration.jira.common.cloud.model.AtlassianDocumentFormatModel;
 import org.jetbrains.annotations.Nullable;
 
 import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.jira.common.cloud.model.AtlassianDocumentFormatModel;
 
 public class IssueCreationModel extends AlertSerializableModel {
     private static final long serialVersionUID = -3568919050386494416L;
@@ -32,17 +32,38 @@ public class IssueCreationModel extends AlertSerializableModel {
         return new IssueCreationModel(title, description, postCreateComments, provider, null, null, null, null);
     }
 
-    public static IssueCreationModel simple(String title, LinkableItem provider, AtlassianDocumentFormatModel atlassianDocumentFormatDescriptionModel, List<AtlassianDocumentFormatModel> atlassianDocumentFormatCommentModel) {
+    public static IssueCreationModel simple(
+        String title,
+        LinkableItem provider,
+        AtlassianDocumentFormatModel atlassianDocumentFormatDescriptionModel,
+        List<AtlassianDocumentFormatModel> atlassianDocumentFormatCommentModel
+    ) {
         return new IssueCreationModel(title, "", List.of(), provider, null, null, atlassianDocumentFormatDescriptionModel, atlassianDocumentFormatCommentModel);
     }
-
 
     public static IssueCreationModel project(String title, String description, List<String> postCreateComments, ProjectIssueModel source, @Nullable String queryString) {
         return new IssueCreationModel(title, description, postCreateComments, source.getProvider(), source, queryString, null, null);
     }
 
-    public static IssueCreationModel project(String title, String description, List<String> postCreateComments, ProjectIssueModel source, AtlassianDocumentFormatModel atlassianDocumentFormatDescriptionModel, List<AtlassianDocumentFormatModel> atlassianDocumentFormatCommentModel, @Nullable String queryString) {
-        return new IssueCreationModel(title, description, postCreateComments, source.getProvider(), source, queryString, atlassianDocumentFormatDescriptionModel, atlassianDocumentFormatCommentModel);
+    public static IssueCreationModel project(
+        String title,
+        String description,
+        List<String> postCreateComments,
+        ProjectIssueModel source,
+        AtlassianDocumentFormatModel atlassianDocumentFormatDescriptionModel,
+        List<AtlassianDocumentFormatModel> atlassianDocumentFormatCommentModel,
+        @Nullable String queryString
+    ) {
+        return new IssueCreationModel(
+            title,
+            description,
+            postCreateComments,
+            source.getProvider(),
+            source,
+            queryString,
+            atlassianDocumentFormatDescriptionModel,
+            atlassianDocumentFormatCommentModel
+        );
     }
 
     protected IssueCreationModel(

@@ -1,8 +1,8 @@
 package com.blackduck.integration.alert.api.channel.issue.tracker.model;
 
-import com.blackduck.integration.alert.api.event.AlertEvent;
-
 import java.util.List;
+
+import com.blackduck.integration.alert.api.event.AlertEvent;
 
 public class IssueTrackerEventModel {
     private final List<AlertEvent> creationEvents;
@@ -16,21 +16,21 @@ public class IssueTrackerEventModel {
     }
 
     public List<AlertEvent> getIssueCreationEvents() {
-        if(creationEvents == null) {
+        if (creationEvents == null) {
             return List.of();
         }
         return creationEvents;
     }
 
     public List<AlertEvent> getIssueCommentEvents() {
-        if(commentEvents == null) {
+        if (commentEvents == null) {
             return List.of();
         }
         return commentEvents;
     }
 
     public List<AlertEvent> getIssueTransitionEvents() {
-        if(transitionEvents == null) {
+        if (transitionEvents == null) {
             return List.of();
         }
         return transitionEvents;

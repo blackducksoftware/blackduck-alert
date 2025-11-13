@@ -11,14 +11,14 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerAsyncMessageSender;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerResponse;
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerAsyncMessageSender;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderMessageHolder;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 
-public class IssueTrackerProcessor<T extends Serializable> implements IssueTrackerMessageProcessor<T>{
+public class IssueTrackerProcessor<T extends Serializable> implements IssueTrackerMessageProcessor<T> {
     private final IssueTrackerModelExtractor<T> modelExtractor;
     private final IssueTrackerAsyncMessageSender<IssueTrackerModelHolder<T>> messageSender;
 

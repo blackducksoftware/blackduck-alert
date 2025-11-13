@@ -1,5 +1,8 @@
 package com.blackduck.integration.alert.channel.jira.cloud;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerMessageProcessor;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerResponse;
@@ -8,9 +11,6 @@ import com.blackduck.integration.alert.api.common.model.exception.AlertException
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderMessageHolder;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 import com.blackduck.integration.alert.channel.jira.cloud.convert.JiraCloudModelExtractor;
-
-import java.util.LinkedList;
-import java.util.List;
 
 public class JiraCloudProcessor implements IssueTrackerMessageProcessor<String> {
     private final JiraCloudModelExtractor modelExtractor;
