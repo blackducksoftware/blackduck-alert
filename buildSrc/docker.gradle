@@ -113,7 +113,7 @@ dockerImagesToBuild.each { imageName ->
 
     def dockerfile = new File(baseDockerDirectory + '/' + imageName + '/Dockerfile')
     dockerfile.eachLine { line ->
-        def matcher = line =~ /^FROM\s+\$\{([^}]+)\}/
+        def matcher = line =~ /^FROM\s+\$\{?([^}]+)\}?/
         if (matcher.find()) {
             def gradlePropertyName = "dockerBuildParam_${matcher.group(1)}".toString()
             if (!rootProject.ext.properties.containsKey(gradlePropertyName)) {
