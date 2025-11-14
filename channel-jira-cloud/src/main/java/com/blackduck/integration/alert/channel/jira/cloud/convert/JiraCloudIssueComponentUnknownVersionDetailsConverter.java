@@ -28,17 +28,17 @@ public class JiraCloudIssueComponentUnknownVersionDetailsConverter {
             documentBuilder.addTextNode(formatter.getLineSeparator());
         } else {
             documentBuilder.addTextNode(formatter.encode(SECTION_LABEL_VULNERABILITY_COUNTS));
-            documentBuilder.addTextNode(formatter.getLineSeparator());
-            documentBuilder.addTextNode(formatter.getLineSeparator());
 
+            documentBuilder.startBulletList();
             for (IssueEstimatedRiskModel estimatedRiskModel : unknownVersionDetails.getEstimatedRiskModelList()) {
                 createEstimatedRiskString(estimatedRiskModel, documentBuilder);
-                documentBuilder.addTextNode(formatter.getLineSeparator());
             }
+            documentBuilder.finishBulletList();
         }
     }
 
     private void createEstimatedRiskString(IssueEstimatedRiskModel estimatedRiskModel, AtlassianDocumentBuilder documentBuilder) {
+        documentBuilder.addListItem();
         String severity = formatter.encode(estimatedRiskModel.getSeverity().getVulnerabilityLabel());
         String countString = formatter.encode(String.format("(%s)", estimatedRiskModel.getCount()));
         String componentName = formatter.encode(estimatedRiskModel.getName());

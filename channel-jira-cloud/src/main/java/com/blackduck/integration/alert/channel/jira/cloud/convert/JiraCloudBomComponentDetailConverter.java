@@ -31,31 +31,47 @@ public class JiraCloudBomComponentDetailConverter {
         ComponentUpgradeGuidance componentUpgradeGuidance = bomComponent.getComponentUpgradeGuidance();
         List<LinkableItem> additionalAttributes = bomComponent.getAdditionalAttributes();
 
-        String licenseString = formatAttribute(licenseItem);
-        documentBuilder.addTextNode(licenseString, licenseItem.getUrl().map(formatter::encode).orElse(null))
+        String licenseString = formatAttributeLabel(licenseItem);
+        documentBuilder.startBulletList()
+            .addListItem()
+            .addTextNode(licenseString)
+            .addTextNode(formatter.encode(licenseItem.getValue()), licenseItem.getUrl().map(formatter::encode).orElse(null))
             .addTextNode(formatter.getLineSeparator());
 
         LinkableItem usageItem = new LinkableItem("Usage", usageText);
-        String usageString = formatAttribute(usageItem);
-        documentBuilder.addTextNode(usageString)
+        String usageString = formatAttributeLabel(usageItem);
+        documentBuilder
+            .addListItem()
+            .addTextNode(usageString)
+            .addTextNode(formatter.encode(usageItem.getValue()))
             .addTextNode(formatter.getLineSeparator());
 
         componentUpgradeGuidance.getShortTermUpgradeGuidance()
-            .ifPresent(attr -> documentBuilder.addTextNode(formatAttribute(attr), attr.getUrl().map(formatter::encode).orElse(null))
+            .ifPresent(attr -> documentBuilder
+                .addListItem()
+                .addTextNode(formatAttributeLabel(attr))
+                .addTextNode(formatter.encode(attr.getValue()), attr.getUrl().map(formatter::encode).orElse(null))
                 .addTextNode(formatter.getLineSeparator()));
         componentUpgradeGuidance.getLongTermUpgradeGuidance()
-            .ifPresent(attr -> documentBuilder.addTextNode(formatAttribute(attr), attr.getUrl().map(formatter::encode).orElse(null))
+            .ifPresent(attr -> documentBuilder
+                .addListItem()
+                .addTextNode(formatAttributeLabel(attr))
+                .addTextNode(formatter.encode(attr.getValue()), attr.getUrl().map(formatter::encode).orElse(null))
                 .addTextNode(formatter.getLineSeparator()));
 
         additionalAttributes
-            .forEach(attr -> documentBuilder.addTextNode(formatAttribute(attr), attr.getUrl().map(formatter::encode).orElse(null))
+            .forEach(attr -> documentBuilder
+                .addListItem()
+                .addTextNode(formatAttributeLabel(attr))
+                .addTextNode(formatter.encode(attr.getValue()), attr.getUrl().map(formatter::encode).orElse(null))
                 .addTextNode(formatter.getLineSeparator()));
+
+        documentBuilder.finishBulletList();
     }
 
-    private String formatAttribute(LinkableItem linkableItem) {
+    private String formatAttributeLabel(LinkableItem linkableItem) {
         String label = formatter.encode(linkableItem.getLabel());
-        String value = formatter.encode(linkableItem.getValue());
-        String formattedValue = String.format("%s:%s%s", label, formatter.getNonBreakingSpace(), value);
-        return String.format("%s-%s%s", formatter.getNonBreakingSpace(), formatter.getNonBreakingSpace(), formattedValue);
+        String formattedValue = String.format("%s:%s", label, formatter.getNonBreakingSpace());
+        return String.format("%s%s", formatter.getNonBreakingSpace(), formattedValue);
     }
 }

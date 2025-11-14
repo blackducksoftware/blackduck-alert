@@ -6,11 +6,16 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blackduck.integration.alert.api.channel.convert.ChannelMessageFormatter;
+import com.blackduck.integration.alert.channel.jira.cloud.convert.model.AtlassianBulletList;
+import com.blackduck.integration.alert.channel.jira.cloud.convert.model.AtlassianDocumentFormatNode;
+import com.blackduck.integration.alert.channel.jira.cloud.convert.model.AtlassianDocumentFormatRootNode;
 import com.blackduck.integration.alert.channel.jira.cloud.convert.model.AtlassianDocumentNode;
+import com.blackduck.integration.alert.channel.jira.cloud.convert.model.AtlassianListItem;
 import com.blackduck.integration.alert.channel.jira.cloud.convert.model.AtlassianParagraphContentNode;
 import com.blackduck.integration.alert.channel.jira.cloud.convert.model.AtlassianTextContentNode;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
@@ -42,6 +47,9 @@ public class AtlassianDocumentBuilder {
     private final List<AtlassianDocumentNode> additionalCommentNodes;
     private AtlassianDocumentNode currentDocumentNode;
     private AtlassianParagraphContentNode currentParagraph;
+    private AtlassianParagraphContentNode previousParagraph;
+    private AtlassianBulletList currentBulletList;
+
     private Integer currentDocumentLength;
     private Integer descriptionContinuedLength;
 
@@ -71,8 +79,14 @@ public class AtlassianDocumentBuilder {
     }
 
     private void initializeNewParagraph() {
-        this.currentParagraph = new AtlassianParagraphContentNode();
-        this.currentDocumentNode.addContent(currentParagraph);
+        if (currentBulletList != null) {
+            finishBulletList();
+            startBulletList();
+            addListItem();
+        } else {
+            this.currentParagraph = new AtlassianParagraphContentNode();
+            this.currentDocumentNode.addContent(currentParagraph);
+        }
     }
 
     private void initializeDocumentLength() {
@@ -155,6 +169,44 @@ public class AtlassianDocumentBuilder {
         return this;
     }
 
+    public AtlassianDocumentBuilder startBulletList() {
+        currentBulletList = new AtlassianBulletList();
+
+        if (willExceedLimit(currentBulletList)) {
+            initialzeNewDocument();
+        }
+        currentDocumentNode.addContent(currentBulletList);
+        this.currentDocumentLength = computeJsonStringLength(currentDocumentNode);
+        return this;
+    }
+
+    public AtlassianDocumentBuilder addListItem() {
+        if (currentBulletList == null) {
+            throw new IllegalStateException("Current bullet list is empty");
+        }
+        AtlassianListItem listItem = new AtlassianListItem();
+        AtlassianParagraphContentNode paragraphNode = new AtlassianParagraphContentNode();
+        listItem.addContent(paragraphNode);
+
+        if (willExceedLimit(listItem)) {
+            initialzeNewDocument();
+            currentDocumentNode.addContent(currentBulletList);
+        }
+        currentBulletList.addContent(listItem);
+        this.currentParagraph = paragraphNode;
+        this.currentDocumentLength = computeJsonStringLength(currentDocumentNode);
+        return this;
+    }
+
+    public AtlassianDocumentBuilder finishBulletList() {
+        if (currentBulletList == null) {
+            throw new IllegalStateException("Current bullet list is empty");
+        }
+        currentBulletList = null;
+        addParagraphNode();
+        return this;
+    }
+
     private void addDescriptionContinuedText() {
         if (descriptionDocument) {
             this.currentParagraph.addContent(descriptionContinuedNode);
@@ -182,18 +234,25 @@ public class AtlassianDocumentBuilder {
         AtlassianDocumentFormatModelBuilder builder = new AtlassianDocumentFormatModelBuilder();
 
         documentNode.getContent().stream()
-            .map(this::createParagraphContentNode)
-            .forEach(nodeData -> builder.addContentNode(AtlassianDocumentFormatModelBuilder.DOCUMENT_NODE_TYPE_PARAGRAPH, nodeData));
+            .map(this::createRootContentNode)
+            .forEach(nodeData -> builder.addContentNode(nodeData.getLeft(), nodeData.getRight()));
         return builder.build();
     }
 
-    private List<Map<String, Object>> createParagraphContentNode(AtlassianParagraphContentNode paragraphNode) {
-        return paragraphNode.getContent().stream()
-            .map(this::createTextContentNode)
-            .toList();
+    private Pair<String, List<Map<String, Object>>> createRootContentNode(AtlassianDocumentFormatNode rootNode) {
+        if (rootNode instanceof final AtlassianDocumentFormatRootNode node) {
+            String type = node.getType();
+            List<Map<String, Object>> content = node.getContent().stream()
+                .map(this::createContentNode)
+                .toList();
+            return Pair.of(type, content);
+        }
+
+        // should not get to this point.
+        return Pair.of("", List.of());
     }
 
-    private Map<String, Object> createTextContentNode(AtlassianTextContentNode textContentNode) {
+    private <T extends AtlassianDocumentFormatNode> Map<String, Object> createContentNode(T textContentNode) {
         return objectMapper.convertValue(
             textContentNode, new TypeReference<>() {
             }

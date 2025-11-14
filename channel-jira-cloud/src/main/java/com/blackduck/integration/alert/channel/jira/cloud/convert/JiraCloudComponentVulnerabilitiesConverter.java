@@ -53,18 +53,12 @@ public class JiraCloudComponentVulnerabilitiesConverter {
         documentBuilder.addTextNode(encodedLabelVulnerabilitiesSection);
 
         if (componentVulnerabilities.hasVulnerabilities()) {
-            documentBuilder.addTextNode(formatter.getLineSeparator());
+            documentBuilder.startBulletList();
             createSeveritySection(documentBuilder, encodedLabelCritical, componentVulnerabilities.getCritical());
-            documentBuilder.addTextNode(formatter.getLineSeparator());
-
             createSeveritySection(documentBuilder, encodedLabelHigh, componentVulnerabilities.getHigh());
-            documentBuilder.addTextNode(formatter.getLineSeparator());
-
             createSeveritySection(documentBuilder, encodedLabelMedium, componentVulnerabilities.getMedium());
-            documentBuilder.addTextNode(formatter.getLineSeparator());
-
             createSeveritySection(documentBuilder, encodedLabelLow, componentVulnerabilities.getLow());
-
+            documentBuilder.finishBulletList();
         } else {
             documentBuilder.addTextNode(encodedValueNoCurrentVulnerabilities);
         }
@@ -74,7 +68,7 @@ public class JiraCloudComponentVulnerabilitiesConverter {
         if (vulnerabilities.isEmpty()) {
             return;
         }
-
+        documentBuilder.addListItem();
         documentBuilder.addTextNode(encodedLabel);
 
         vulnerabilities
@@ -90,7 +84,7 @@ public class JiraCloudComponentVulnerabilitiesConverter {
     }
 
     private static String createEncodedLabel(ChannelMessageFormatter formatter, String label) {
-        return String.format("%s-%s%s:%s", formatter.getNonBreakingSpace(), formatter.getNonBreakingSpace(), label, formatter.getNonBreakingSpace());
+        return String.format("%s%s:%s", formatter.getNonBreakingSpace(), label, formatter.getNonBreakingSpace());
     }
 
 }

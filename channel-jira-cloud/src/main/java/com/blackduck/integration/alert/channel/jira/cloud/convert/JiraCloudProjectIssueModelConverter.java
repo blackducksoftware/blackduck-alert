@@ -78,8 +78,6 @@ public class JiraCloudProjectIssueModelConverter {
         bomComponentDetailConverter.gatherAbstractBomComponentSectionPieces(bomComponent, documentBuilder);
 
         createVulnerabilitySeverityStatusSectionPieces(projectIssueModel, documentBuilder);
-
-        documentBuilder.addParagraphNode();
         createProjectIssueModelConcernSectionPieces(projectIssueModel, documentBuilder, false);
 
         int newChunkSize = formatter.getMaxCommentLength() - DESCRIPTION_CONTINUED_TEXT.length() - formatter.getLineSeparator().length();
