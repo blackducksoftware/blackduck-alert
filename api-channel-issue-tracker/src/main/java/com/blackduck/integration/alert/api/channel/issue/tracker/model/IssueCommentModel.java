@@ -22,6 +22,9 @@ public class IssueCommentModel<T extends Serializable> extends AlertSerializable
     private final List<String> comments;
     @Nullable
     private final ProjectIssueModel source;
+
+    // Only used for Jira Cloud channel.
+    // the reason these Jira Cloud specific fields are here is because of the layers of abstraction prevent having a model specific for Jira cloud.
     @Nullable
     private final AtlassianDocumentFormatModel atlassianDocumentFormatCommentModel;
     @Nullable

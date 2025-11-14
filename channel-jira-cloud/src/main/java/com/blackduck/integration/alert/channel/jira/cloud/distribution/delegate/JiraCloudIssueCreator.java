@@ -121,6 +121,7 @@ public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequest
             distributionDetails.getCustomFields()
         );
 
+        // The description field is an empty string.  The actual description comes from the atlassian model.  Set the description field.
         Optional<AtlassianDocumentFormatModel> description = alertIssueCreationModel.getAtlassianDocumentFormatDescriptionModel();
         description.ifPresent(atlassianDocumentFormatModel -> fieldsBuilder.setField(IssueRequestModelFieldsBuilder.DESCRIPTION, atlassianDocumentFormatModel));
 

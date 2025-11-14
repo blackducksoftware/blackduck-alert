@@ -25,6 +25,8 @@ public class IssueCreationModel extends AlertSerializableModel {
 
     private final LinkableItem provider;
     private final ProjectIssueModel source;
+    // Only used for Jira Cloud channel.
+    // the reason these Jira Cloud specific fields are here is because of the layers of abstraction prevent having a model specific for Jira cloud.
     private final AtlassianDocumentFormatModel atlassianDocumentFormatDescriptionModel;
     private final List<AtlassianDocumentFormatModel> atlassianDocumentFormatCommentModel;
 

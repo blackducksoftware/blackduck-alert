@@ -47,11 +47,10 @@ public class AtlassianDocumentBuilder {
     private final List<AtlassianDocumentNode> additionalCommentNodes;
     private AtlassianDocumentNode currentDocumentNode;
     private AtlassianParagraphContentNode currentParagraph;
-    private AtlassianParagraphContentNode previousParagraph;
     private AtlassianBulletList currentBulletList;
 
     private Integer currentDocumentLength;
-    private Integer descriptionContinuedLength;
+    private Integer computedMaximumDocumentLength;
 
     public AtlassianDocumentBuilder(ChannelMessageFormatter formatter, boolean descriptionDocument) {
         this.objectMapper = new ObjectMapper();
@@ -62,17 +61,18 @@ public class AtlassianDocumentBuilder {
         this.primaryNode = new AtlassianDocumentNode();
         this.currentDocumentNode = primaryNode;
         this.descriptionDocument = descriptionDocument;
-        initializeDescriptionContinuedTextNodeLength();
+        initializeMaximumDocumentLength();
         initializeDocumentLength();
         initializeNewParagraph();
     }
 
     // private methods to initialize new nodes in the document
-    private void initializeDescriptionContinuedTextNodeLength() {
-        descriptionContinuedLength = computeJsonStringLength(DESCRIPTION_CONTINUED_TEXT);
+    private void initializeMaximumDocumentLength() {
+        Integer descriptionContinuedLength = computeJsonStringLength(DESCRIPTION_CONTINUED_TEXT);
+        computedMaximumDocumentLength = MAX_SERIALIZED_LENGTH - descriptionContinuedLength;
     }
 
-    private void initialzeNewDocument() {
+    private void initializeNewDocument() {
         this.currentDocumentNode = new AtlassianDocumentNode();
         initializeDocumentLength();
         additionalCommentNodes.add(this.currentDocumentNode);
@@ -95,7 +95,7 @@ public class AtlassianDocumentBuilder {
 
     private boolean willExceedLimit(Object object) {
         int newObjectLength = computeJsonStringLength(object);
-        return (this.currentDocumentLength + newObjectLength) > (MAX_SERIALIZED_LENGTH - descriptionContinuedLength);
+        return this.currentDocumentLength + newObjectLength > computedMaximumDocumentLength;
     }
 
     private int computeJsonStringLength(Object object) {
@@ -112,7 +112,7 @@ public class AtlassianDocumentBuilder {
         AtlassianParagraphContentNode paragraphNode = new AtlassianParagraphContentNode();
         boolean willExceed = willExceedLimit(paragraphNode);
         if (willExceed) {
-            initialzeNewDocument();
+            initializeNewDocument();
         }
 
         this.currentParagraph = paragraphNode;
@@ -159,7 +159,7 @@ public class AtlassianDocumentBuilder {
         }
 
         if (willExceedLimit(textNode)) {
-            initialzeNewDocument();
+            initializeNewDocument();
             initializeNewParagraph();
             addDescriptionContinuedText();
         }
@@ -173,7 +173,7 @@ public class AtlassianDocumentBuilder {
         currentBulletList = new AtlassianBulletList();
 
         if (willExceedLimit(currentBulletList)) {
-            initialzeNewDocument();
+            initializeNewDocument();
         }
         currentDocumentNode.addContent(currentBulletList);
         this.currentDocumentLength = computeJsonStringLength(currentDocumentNode);
@@ -189,7 +189,7 @@ public class AtlassianDocumentBuilder {
         listItem.addContent(paragraphNode);
 
         if (willExceedLimit(listItem)) {
-            initialzeNewDocument();
+            initializeNewDocument();
             currentDocumentNode.addContent(currentBulletList);
         }
         currentBulletList.addContent(listItem);

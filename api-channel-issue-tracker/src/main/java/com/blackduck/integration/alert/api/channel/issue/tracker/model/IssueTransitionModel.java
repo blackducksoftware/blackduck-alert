@@ -9,14 +9,10 @@ package com.blackduck.integration.alert.api.channel.issue.tracker.model;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Optional;
-
-import org.jetbrains.annotations.Nullable;
 
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
 import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 import com.blackduck.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.blackduck.integration.jira.common.cloud.model.AtlassianDocumentFormatModel;
 
 public class IssueTransitionModel<T extends Serializable> extends AlertSerializableModel {
     private final ExistingIssueDetails<T> existingIssueDetails;
@@ -24,8 +20,6 @@ public class IssueTransitionModel<T extends Serializable> extends AlertSerializa
     private final List<String> postTransitionComments;
 
     private final ProjectIssueModel source;
-    @Nullable
-    private final AtlassianDocumentFormatModel atlassianDocumentFormatCommentModel;
 
     public IssueTransitionModel(
         ExistingIssueDetails<T> existingIssueDetails,
@@ -33,21 +27,10 @@ public class IssueTransitionModel<T extends Serializable> extends AlertSerializa
         List<String> postTransitionComments,
         ProjectIssueModel source
     ) {
-        this(existingIssueDetails, issueOperation, postTransitionComments, source, null);
-    }
-
-    public IssueTransitionModel(
-        ExistingIssueDetails<T> existingIssueDetails,
-        IssueOperation issueOperation,
-        List<String> postTransitionComments,
-        ProjectIssueModel source,
-        @Nullable AtlassianDocumentFormatModel atlassianDocumentFormatCommentModel
-    ) {
         this.existingIssueDetails = existingIssueDetails;
         this.issueOperation = issueOperation;
         this.postTransitionComments = postTransitionComments;
         this.source = source;
-        this.atlassianDocumentFormatCommentModel = atlassianDocumentFormatCommentModel;
     }
 
     public ExistingIssueDetails<T> getExistingIssueDetails() {
@@ -64,10 +47,6 @@ public class IssueTransitionModel<T extends Serializable> extends AlertSerializa
 
     public ProjectIssueModel getSource() {
         return source;
-    }
-
-    public Optional<AtlassianDocumentFormatModel> getAtlassianDocumentFormatCommentModel() {
-        return Optional.ofNullable(atlassianDocumentFormatCommentModel);
     }
 
 }

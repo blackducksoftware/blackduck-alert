@@ -29,8 +29,6 @@ import com.blackduck.integration.alert.api.processor.extract.model.project.Compo
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentVulnerabilities;
 import com.blackduck.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.blackduck.integration.alert.common.channel.message.ChunkedStringBuilder;
-import com.blackduck.integration.alert.common.channel.message.ChunkedStringBuilderRechunker;
-import com.blackduck.integration.alert.common.channel.message.RechunkedModel;
 import com.blackduck.integration.alert.common.enumeration.ItemOperation;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
 import com.blackduck.integration.jira.common.cloud.model.AtlassianDocumentFormatModel;
@@ -80,18 +78,10 @@ public class JiraCloudProjectIssueModelConverter {
         createVulnerabilitySeverityStatusSectionPieces(projectIssueModel, documentBuilder);
         createProjectIssueModelConcernSectionPieces(projectIssueModel, documentBuilder, false);
 
-        int newChunkSize = formatter.getMaxCommentLength() - DESCRIPTION_CONTINUED_TEXT.length() - formatter.getLineSeparator().length();
-        RechunkedModel rechunkedDescription = ChunkedStringBuilderRechunker.rechunk(descriptionBuilder, "No description", newChunkSize);
-
-        List<String> postCreateComments = rechunkedDescription.getRemainingChunks()
-            .stream()
-            .map(comment -> String.format("%s%s%s", DESCRIPTION_CONTINUED_TEXT, formatter.getLineSeparator(), comment))
-            .toList();
-
         AtlassianDocumentFormatModel description = documentBuilder.buildPrimaryDocument();
         List<AtlassianDocumentFormatModel> additionalComments = documentBuilder.buildAdditionalCommentDocuments();
 
-        return IssueCreationModel.project(title, rechunkedDescription.getFirstChunk(), postCreateComments, projectIssueModel, description, additionalComments, queryString);
+        return IssueCreationModel.project(title, "", List.of(), projectIssueModel, description, additionalComments, queryString);
     }
 
     public <T extends Serializable> IssueTransitionModel<T> toIssueTransitionModel(
@@ -125,6 +115,7 @@ public class JiraCloudProjectIssueModelConverter {
         String commentHeader = String.format("The component was updated in %s[%s]", provider.getLabel(), provider.getValue());
         documentBuilder
             .addTextNode(formatter.encode(commentHeader))
+            .addParagraphNode()
             .addTextNode(formatter.getSectionSeparator())
             .addParagraphNode();
 

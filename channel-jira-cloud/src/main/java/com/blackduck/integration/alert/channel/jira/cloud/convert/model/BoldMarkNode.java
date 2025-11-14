@@ -2,7 +2,9 @@ package com.blackduck.integration.alert.channel.jira.cloud.convert.model;
 
 import java.io.Serializable;
 
-public class BoldMarkNode implements AtlassianDocumentFormatNode, Serializable {
+import com.blackduck.integration.util.Stringable;
+
+public class BoldMarkNode extends Stringable implements AtlassianDocumentFormatNode, Serializable {
     public static final String NODE_TYPE = "strong";
     private final String type;
 

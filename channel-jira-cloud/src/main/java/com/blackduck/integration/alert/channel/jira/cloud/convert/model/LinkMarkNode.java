@@ -2,7 +2,9 @@ package com.blackduck.integration.alert.channel.jira.cloud.convert.model;
 
 import java.io.Serializable;
 
-public class LinkMarkNode implements AtlassianDocumentFormatNode, Serializable {
+import com.blackduck.integration.util.Stringable;
+
+public class LinkMarkNode extends Stringable implements AtlassianDocumentFormatNode, Serializable {
     public static final String NODE_TYPE = "link";
     private final String type;
     private final HrefNode attrs;

@@ -1,8 +1,8 @@
 package com.blackduck.integration.alert.channel.jira.cloud.convert.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -10,16 +10,16 @@ public class AtlassianTextContentNode implements AtlassianDocumentFormatNode, Se
     public static final String NODE_TYPE = "text";
     private final String type;
     private final String text;
-    private final List<AtlassianDocumentFormatNode> marks;
+    private final Set<AtlassianDocumentFormatNode> marks;
 
     public AtlassianTextContentNode(String text) {
-        this(NODE_TYPE, text, new ArrayList<>());
+        this(NODE_TYPE, text, new LinkedHashSet<>());
     }
 
-    protected AtlassianTextContentNode(String type, String text, List<AtlassianDocumentFormatNode> marks) {
+    protected AtlassianTextContentNode(String type, String text, Set<AtlassianDocumentFormatNode> marks) {
         this.type = type;
         this.text = text;
-        this.marks = marks == null ? new ArrayList<>() : marks;
+        this.marks = marks == null ? new LinkedHashSet<>() : marks;
     }
 
     public String getType() {
@@ -31,7 +31,7 @@ public class AtlassianTextContentNode implements AtlassianDocumentFormatNode, Se
     }
 
     @Nullable
-    public List<AtlassianDocumentFormatNode> getMarks() {
+    public Set<AtlassianDocumentFormatNode> getMarks() {
         if (marks.isEmpty()) {
             return null;
         }
