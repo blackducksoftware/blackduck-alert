@@ -10,21 +10,26 @@ String dockerPublishAllImages_DH = rootProject.ext.dockerPublishAllImages_DHStag
 String dockerPublishAllImages_ART = rootProject.ext.dockerPublishAllImages_ARTStageName
 String dockerPublishAllImages = rootProject.ext.dockerPublishAllImagesStageName
 
-ext.createDockerRemoveTask = { removeTaskName, removeGroupName, removeImageName, primaryDependencyTaskName ->
-    project.tasks.create(name: removeTaskName, type: Exec, group: removeGroupName, description: "Docker remove tagged Artifactory image. <sub-task>") {
+ext.createDockerRemoveTask = { removeTaskName, removeGroupName, removeImageNames, primaryDependencyTaskName ->
+    project.tasks.create(name: removeTaskName, type: Exec, group: removeGroupName, description: "Docker remove tagged Docker images. <sub-task>") {
         outputs.upToDateWhen { false }
 
         ignoreExitValue = true
         errorOutput = new ByteArrayOutputStream()
 
-        commandLine 'docker', 'image', 'rm', removeImageName
+        def imageList = removeImageNames as List<String>
+        def command = ['docker', 'image', 'rm']
+        command.addAll(imageList)
+
+        logger.lifecycle("Pre-removing the following images: " + imageList)
+        commandLine command
 
         doLast {
             String stdErr = errorOutput.toString()
 
             if (stdErr?.trim() && !stdErr.contains("Deleted: ")) {
                 if (stdErr.contains("No such image")) {
-                    logger.lifecycle("Image does not exist, continuing.")
+                    logger.lifecycle("One or more images did not need to be removed, continuing.")
                 } else {
                     throw new GradleException("${stdErr}")
                 }
@@ -102,10 +107,26 @@ dockerImagesToBuild.each { imageName ->
         imageTaskNameSuffix += token.substring(0, 1).toUpperCase() + token.substring(1).toLowerCase()
     }
 
+    // Identify base images that should be pre-removed
+    def imageNamesToRemove = []
+    imageNamesToRemove.add(fullDockerImageName)
+
+    def dockerfile = new File(baseDockerDirectory + '/' + imageName + '/Dockerfile')
+    dockerfile.eachLine { line ->
+        def matcher = line =~ /^FROM\s+\$\{?([^}]+)\}?/
+        if (matcher.find()) {
+            def gradlePropertyName = "dockerBuildParam_${matcher.group(1)}".toString()
+            if (!rootProject.ext.properties.containsKey(gradlePropertyName)) {
+                throw new GradleException("Missing Gradle property: ${gradlePropertyName}")
+            }
+            imageNamesToRemove << rootProject.ext.properties[gradlePropertyName]
+        }
+    }
+
     String dockerImageRemoveTaskName = "dockerRemove${imageTaskNameSuffix}"
     String dockerImageBuildTaskName = "dockerBuild${imageTaskNameSuffix}"
 
-    ext.createDockerRemoveTask(dockerImageRemoveTaskName, 'Docker', fullDockerImageName, dockerRemoveAllImages)
+    ext.createDockerRemoveTask(dockerImageRemoveTaskName, 'Docker', imageNamesToRemove, dockerRemoveAllImages)
 
     project.tasks.create(name: dockerImageBuildTaskName, type: Exec, dependsOn: [dockerSetupStagingAreaDirectory], group: 'Docker', description: "Build docker image. <sub-task>") {
         outputs.upToDateWhen { false }
@@ -202,5 +223,5 @@ dockerImagesToBuild.each { imageName ->
     }
     project.tasks.findByName(dockerPublishAllImages_ART).dependsOn project.tasks.findByName(dockerImagePublishARTTaskName)
 
-    ext.createDockerRemoveTask(dockerImageRemoveTagARTaskName, 'Docker_Artifactory', artifactoryDockerImageName, dockerRemoveAllImages)
+    ext.createDockerRemoveTask(dockerImageRemoveTagARTaskName, 'Docker_Artifactory', [artifactoryDockerImageName], dockerRemoveAllImages)
 }
