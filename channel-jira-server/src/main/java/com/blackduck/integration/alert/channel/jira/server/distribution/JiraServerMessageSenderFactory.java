@@ -10,14 +10,15 @@ package com.blackduck.integration.alert.channel.jira.server.distribution;
 import java.util.Set;
 import java.util.UUID;
 
-import com.blackduck.integration.jira.common.server.builder.IssueRequestModelFieldsBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.DefaultIssueTrackerEventGenerator;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerAsyncMessageSender;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerCommentEventGenerator;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerCreationEventGenerator;
@@ -43,6 +44,7 @@ import com.blackduck.integration.alert.channel.jira.server.distribution.delegate
 import com.blackduck.integration.alert.channel.jira.server.distribution.delegate.JiraServerTransitionGenerator;
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.blackduck.integration.jira.common.rest.service.IssuePropertyService;
+import com.blackduck.integration.jira.common.server.builder.IssueRequestModelFieldsBuilder;
 import com.blackduck.integration.jira.common.server.service.FieldService;
 import com.blackduck.integration.jira.common.server.service.IssueSearchService;
 import com.blackduck.integration.jira.common.server.service.IssueService;
@@ -51,7 +53,7 @@ import com.blackduck.integration.jira.common.server.service.ProjectService;
 import com.google.gson.Gson;
 
 @Component
-public class JiraServerMessageSenderFactory implements IssueTrackerMessageSenderFactory<JiraServerJobDetailsModel, String> {
+public class JiraServerMessageSenderFactory implements IssueTrackerMessageSenderFactory<JiraServerJobDetailsModel, String, IssueTrackerModelHolder<String>> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Gson gson;
@@ -116,7 +118,7 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
     }
 
     @Override
-    public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
+    public IssueTrackerAsyncMessageSender<IssueTrackerModelHolder<String>> createAsyncMessageSender(
         JiraServerJobDetailsModel distributionDetails,
         UUID globalId,
         UUID jobExecutionId,
@@ -161,7 +163,7 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
 
     }
 
-    public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
+    public IssueTrackerAsyncMessageSender<IssueTrackerModelHolder<String>> createAsyncMessageSender(
         JiraServerJobDetailsModel distributionDetails,
         UUID jobExecutionId,
         Set<Long> notificationIds
@@ -176,10 +178,10 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
             notificationIds
         );
 
+        DefaultIssueTrackerEventGenerator<String> eventGenerator = new DefaultIssueTrackerEventGenerator<>(createEventGenerator, transitionEventGenerator, commentEventGenerator);
+
         return new IssueTrackerAsyncMessageSender<>(
-            createEventGenerator,
-            transitionEventGenerator,
-            commentEventGenerator,
+            eventGenerator,
             eventManager,
             jobExecutionId,
             notificationIds,

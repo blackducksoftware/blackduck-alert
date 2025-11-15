@@ -46,10 +46,9 @@ class IssueTrackerAsyncMessageSenderTest {
         IssueTrackerCreationEventGenerator createEventGenerator = (model) -> null;
         IssueTrackerTransitionEventGenerator<String> transitionEventGenerator = (model) -> null;
         IssueTrackerCommentEventGenerator<String> commentEventGenerator = (model) -> null;
-        IssueTrackerAsyncMessageSender<String> sender = new IssueTrackerAsyncMessageSender<>(
-            createEventGenerator,
-            transitionEventGenerator,
-            commentEventGenerator,
+        DefaultIssueTrackerEventGenerator<String> eventGenerator = new DefaultIssueTrackerEventGenerator<>(createEventGenerator, transitionEventGenerator, commentEventGenerator);
+        IssueTrackerAsyncMessageSender<IssueTrackerModelHolder<String>> sender = new IssueTrackerAsyncMessageSender<>(
+            eventGenerator,
             mockEventManager,
             jobExecutionId,
             Set.of(1L, 2L, 3L),
@@ -80,10 +79,9 @@ class IssueTrackerAsyncMessageSenderTest {
             null
         );
         IssueTrackerCommentEventGenerator<String> commentEventGenerator = (model) -> new IssueTrackerCommentEvent<>(null, jobExecutionId, jobId, null, null);
-        IssueTrackerAsyncMessageSender<String> sender = new IssueTrackerAsyncMessageSender<>(
-            createEventGenerator,
-            transitionEventGenerator,
-            commentEventGenerator,
+        DefaultIssueTrackerEventGenerator<String> eventGenerator = new DefaultIssueTrackerEventGenerator<>(createEventGenerator, transitionEventGenerator, commentEventGenerator);
+        IssueTrackerAsyncMessageSender<IssueTrackerModelHolder<String>> sender = new IssueTrackerAsyncMessageSender<>(
+            eventGenerator,
             mockEventManager,
             jobExecutionId,
             Set.of(1L, 2L, 3L),

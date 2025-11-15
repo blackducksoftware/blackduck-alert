@@ -14,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.DefaultIssueTrackerEventGenerator;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerAsyncMessageSender;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerCommentEventGenerator;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerCreationEventGenerator;
@@ -50,7 +52,7 @@ import com.blackduck.integration.rest.proxy.ProxyInfo;
 import com.google.gson.Gson;
 
 @Component
-public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSenderFactory<AzureBoardsJobDetailsModel, Integer> {
+public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSenderFactory<AzureBoardsJobDetailsModel, Integer, IssueTrackerModelHolder<Integer>> {
     private final Gson gson;
     private final IssueTrackerCallbackInfoCreator callbackInfoCreator;
     private final AzureBoardsChannelKey channelKey;
@@ -112,7 +114,7 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
     }
 
     @Override
-    public IssueTrackerAsyncMessageSender<Integer> createAsyncMessageSender(
+    public IssueTrackerAsyncMessageSender<IssueTrackerModelHolder<Integer>> createAsyncMessageSender(
         AzureBoardsJobDetailsModel distributionDetails, UUID globalId,
         UUID jobExecutionId,
         Set<Long> notificationIds
@@ -165,7 +167,7 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
         );
     }
 
-    public IssueTrackerAsyncMessageSender<Integer> createAsyncMessageSender(
+    public IssueTrackerAsyncMessageSender<IssueTrackerModelHolder<Integer>> createAsyncMessageSender(
         AzureBoardsJobDetailsModel distributionDetails,
         UUID jobExecutionId,
         Set<Long> notificationIds
@@ -179,11 +181,10 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
             jobId,
             notificationIds
         );
+        DefaultIssueTrackerEventGenerator<Integer> eventGenerator = new DefaultIssueTrackerEventGenerator<>(createEventGenerator, transitionEventGenerator, commentEventGenerator);
 
         return new IssueTrackerAsyncMessageSender<>(
-            createEventGenerator,
-            transitionEventGenerator,
-            commentEventGenerator,
+            eventGenerator,
             eventManager,
             jobExecutionId,
             notificationIds,

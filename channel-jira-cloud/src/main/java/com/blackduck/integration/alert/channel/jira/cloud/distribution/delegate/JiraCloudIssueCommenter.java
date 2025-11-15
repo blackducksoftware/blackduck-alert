@@ -7,15 +7,25 @@
  */
 package com.blackduck.integration.alert.channel.jira.cloud.distribution.delegate;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueResponseCreator;
 import com.blackduck.integration.alert.api.channel.jira.distribution.delegate.JiraIssueCommenter;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.blackduck.integration.exception.IntegrationException;
-import com.blackduck.integration.jira.common.cloud.service.IssueService;
+import com.blackduck.integration.jira.common.cloud.model.AtlassianDocumentFormatModel;
 import com.blackduck.integration.jira.common.cloud.model.IssueCommentRequestModel;
+import com.blackduck.integration.jira.common.cloud.service.IssueService;
 
 public class JiraCloudIssueCommenter extends JiraIssueCommenter<IssueCommentRequestModel> {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final IssueService issueService;
     private final JiraCloudJobDetailsModel distributionDetails;
 
@@ -38,5 +48,43 @@ public class JiraCloudIssueCommenter extends JiraIssueCommenter<IssueCommentRequ
     @Override
     protected IssueCommentRequestModel createCommentModel(String comment, ExistingIssueDetails<String> existingIssueDetails) throws IntegrationException {
         return IssueCommentRequestModel.commentForIssue(existingIssueDetails.getIssueKey(), comment);
+    }
+
+    @Override
+    protected void addComments(IssueCommentModel<String> issueCommentModel) throws AlertException {
+        if (!isCommentingEnabled()) {
+            logger.debug(COMMENTING_DISABLED_MESSAGE);
+            return;
+        }
+
+        ExistingIssueDetails<String> existingIssueDetails = issueCommentModel.getExistingIssueDetails();
+        try {
+            // need to create the model from the issue comment model which has the atlassian document format
+            Optional<AtlassianDocumentFormatModel> primaryComment = issueCommentModel.getAtlassianDocumentFormatCommentModel();
+            IssueCommentRequestModel commentRequestModel;
+            if (primaryComment.isPresent()) {
+                commentRequestModel = new IssueCommentRequestModel(existingIssueDetails.getIssueKey(), primaryComment.get());
+                addComment(commentRequestModel);
+            }
+
+            // need to create the model from the issue comment model which has the atlassian document format
+            Optional<List<AtlassianDocumentFormatModel>> additionalComments = issueCommentModel.getAdditionalComments();
+            if (additionalComments.isPresent()) {
+                List<AtlassianDocumentFormatModel> additionalCommentsList = additionalComments.get();
+                for (AtlassianDocumentFormatModel additionalComment : additionalCommentsList) {
+                    commentRequestModel = new IssueCommentRequestModel(existingIssueDetails.getIssueKey(), additionalComment);
+                    addComment(commentRequestModel);
+                }
+            }
+
+            List<String> originalComments = issueCommentModel.getComments();
+            if (originalComments != null && !originalComments.isEmpty()) {
+                for (String comment : originalComments) {
+                    addComment(comment, existingIssueDetails, issueCommentModel.getSource().orElse(null));
+                }
+            }
+        } catch (IntegrationException ex) {
+            throw new AlertException(String.format("Failed to add a comment in Jira. Issue Key: %s", existingIssueDetails.getIssueKey()), ex);
+        }
     }
 }

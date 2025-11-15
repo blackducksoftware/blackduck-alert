@@ -16,13 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.certificates.AlertSSLContextManager;
-import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerModelExtractor;
-import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerProcessor;
+import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerMessageProcessor;
 import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerProcessorFactory;
 import com.blackduck.integration.alert.api.channel.issue.tracker.convert.ProjectMessageToIssueModelTransformer;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueTrackerSearcher;
-import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerAsyncMessageSender;
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.AsyncMessageSender;
 import com.blackduck.integration.alert.api.channel.jira.JiraConstants;
 import com.blackduck.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
 import com.blackduck.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
@@ -31,7 +31,9 @@ import com.blackduck.integration.alert.api.channel.jira.distribution.search.Jira
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.descriptor.JiraCloudChannelKey;
+import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudProcessor;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudProperties;
+import com.blackduck.integration.alert.channel.jira.cloud.convert.JiraCloudModelExtractor;
 import com.blackduck.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.blackduck.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
@@ -86,7 +88,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
     }
 
     @Override
-    public IssueTrackerProcessor<String> createProcessor(JiraCloudJobDetailsModel distributionDetails, UUID jobExecutionId, Set<Long> notificationIds)
+    public IssueTrackerMessageProcessor<String> createProcessor(JiraCloudJobDetailsModel distributionDetails, UUID jobExecutionId, Set<Long> notificationIds)
         throws AlertException {
         JiraCloudProperties jiraProperties = createJiraCloudProperties();
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
@@ -115,15 +117,14 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
         JiraCloudQueryExecutor jiraCloudQueryExecutor = new JiraCloudQueryExecutor(issueSearchService);
         IssueTrackerSearcher<String> jiraSearcher = jiraSearcherFactory.createJiraSearcher(distributionDetails.getProjectNameOrKey(), jiraCloudQueryExecutor);
 
-        IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(jiraMessageFormatter, jiraSearcher);
-
-        IssueTrackerAsyncMessageSender<String> messageSender = messageSenderFactory.createAsyncMessageSender(
+        JiraCloudModelExtractor extractor = new JiraCloudModelExtractor(jiraMessageFormatter, jiraSearcher);
+        AsyncMessageSender<IssueTrackerModelHolder<String>> messageSender = messageSenderFactory.createAsyncMessageSender(
             distributionDetails,
             jobExecutionId,
             notificationIds
         );
 
-        return new IssueTrackerProcessor<>(extractor, messageSender);
+        return new JiraCloudProcessor(extractor, messageSender);
     }
 
     private JiraCloudProperties createJiraCloudProperties() throws AlertConfigurationException {

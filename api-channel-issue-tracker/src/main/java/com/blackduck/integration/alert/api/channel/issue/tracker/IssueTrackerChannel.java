@@ -42,7 +42,7 @@ public abstract class IssueTrackerChannel<D extends DistributionJobDetailsModel,
     )
         throws AlertException {
 
-        IssueTrackerProcessor<T> processor = processorFactory.createProcessor(distributionDetails, jobExecutionId, notificationIds);
+        IssueTrackerMessageProcessor<T> processor = processorFactory.createProcessor(distributionDetails, jobExecutionId, notificationIds);
         IssueTrackerResponse<T> issueTrackerResponse = processor.processMessages(messages, jobName);
 
         return new MessageResult(issueTrackerResponse.getStatusMessage());

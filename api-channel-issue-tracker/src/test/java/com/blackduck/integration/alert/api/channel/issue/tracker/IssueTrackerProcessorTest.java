@@ -31,7 +31,7 @@ class IssueTrackerProcessorTest {
         Mockito.when(extractor.extractSimpleMessageIssueModels(Mockito.anyList(), Mockito.any())).thenReturn(simpleMessageResponses);
         IssueTrackerModelHolder<String> projectMessageResponses = new IssueTrackerModelHolder<>(List.of(), List.of(), List.of());
 
-        IssueTrackerAsyncMessageSender<String> sender = Mockito.mock(IssueTrackerAsyncMessageSender.class);
+        IssueTrackerAsyncMessageSender<IssueTrackerModelHolder<String>> sender = Mockito.mock(IssueTrackerAsyncMessageSender.class);
         AtomicInteger messageCounter = new AtomicInteger(0);
         Mockito.doAnswer(invocation -> {
             messageCounter.incrementAndGet();

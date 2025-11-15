@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
+import com.blackduck.integration.jira.common.cloud.model.AtlassianDocumentFormatModel;
 
 public class IssueCreationModel extends AlertSerializableModel {
     private static final long serialVersionUID = -3568919050386494416L;
@@ -24,22 +25,58 @@ public class IssueCreationModel extends AlertSerializableModel {
 
     private final LinkableItem provider;
     private final ProjectIssueModel source;
+    // Only used for Jira Cloud channel.
+    // the reason these Jira Cloud specific fields are here is because of the layers of abstraction prevent having a model specific for Jira cloud.
+    private final AtlassianDocumentFormatModel atlassianDocumentFormatDescriptionModel;
+    private final List<AtlassianDocumentFormatModel> atlassianDocumentFormatCommentModel;
 
     public static IssueCreationModel simple(String title, String description, List<String> postCreateComments, LinkableItem provider) {
-        return new IssueCreationModel(title, description, postCreateComments, provider, null, null);
+        return new IssueCreationModel(title, description, postCreateComments, provider, null, null, null, null);
+    }
+
+    public static IssueCreationModel simple(
+        String title,
+        LinkableItem provider,
+        AtlassianDocumentFormatModel atlassianDocumentFormatDescriptionModel,
+        List<AtlassianDocumentFormatModel> atlassianDocumentFormatCommentModel
+    ) {
+        return new IssueCreationModel(title, "", List.of(), provider, null, null, atlassianDocumentFormatDescriptionModel, atlassianDocumentFormatCommentModel);
     }
 
     public static IssueCreationModel project(String title, String description, List<String> postCreateComments, ProjectIssueModel source, @Nullable String queryString) {
-        return new IssueCreationModel(title, description, postCreateComments, source.getProvider(), source, queryString);
+        return new IssueCreationModel(title, description, postCreateComments, source.getProvider(), source, queryString, null, null);
     }
 
-    private IssueCreationModel(
+    public static IssueCreationModel project(
+        String title,
+        String description,
+        List<String> postCreateComments,
+        ProjectIssueModel source,
+        AtlassianDocumentFormatModel atlassianDocumentFormatDescriptionModel,
+        List<AtlassianDocumentFormatModel> atlassianDocumentFormatCommentModel,
+        @Nullable String queryString
+    ) {
+        return new IssueCreationModel(
+            title,
+            description,
+            postCreateComments,
+            source.getProvider(),
+            source,
+            queryString,
+            atlassianDocumentFormatDescriptionModel,
+            atlassianDocumentFormatCommentModel
+        );
+    }
+
+    protected IssueCreationModel(
         String title,
         String description,
         List<String> postCreateComments,
         LinkableItem provider,
         @Nullable ProjectIssueModel source,
-        @Nullable String queryString
+        @Nullable String queryString,
+        @Nullable AtlassianDocumentFormatModel atlassianDocumentFormatDescriptionModel,
+        @Nullable List<AtlassianDocumentFormatModel> atlassianDocumentFormatCommentModel
     ) {
         this.title = title;
         this.description = description;
@@ -47,6 +84,8 @@ public class IssueCreationModel extends AlertSerializableModel {
         this.provider = provider;
         this.source = source;
         this.queryString = queryString;
+        this.atlassianDocumentFormatDescriptionModel = atlassianDocumentFormatDescriptionModel;
+        this.atlassianDocumentFormatCommentModel = atlassianDocumentFormatCommentModel;
     }
 
     public Optional<String> getQueryString() {
@@ -73,4 +112,11 @@ public class IssueCreationModel extends AlertSerializableModel {
         return Optional.ofNullable(source);
     }
 
+    public Optional<AtlassianDocumentFormatModel> getAtlassianDocumentFormatDescriptionModel() {
+        return Optional.ofNullable(atlassianDocumentFormatDescriptionModel);
+    }
+
+    public Optional<List<AtlassianDocumentFormatModel>> getAtlassianDocumentFormatCommentModel() {
+        return Optional.ofNullable(atlassianDocumentFormatCommentModel);
+    }
 }
