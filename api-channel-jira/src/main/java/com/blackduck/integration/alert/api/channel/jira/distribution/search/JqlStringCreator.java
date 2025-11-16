@@ -27,7 +27,7 @@ public final class JqlStringCreator {
         LinkableItem project
     ) {
         StringBuilder jqlBuilder = new StringBuilder();
-        appendBlackDuckCommentSearchStrings(jqlBuilder, jiraProjectKey, project, null, null, null, null, null);
+        appendBlackDuckCommentSearchStrings(jqlBuilder, jiraProjectKey, provider, project, null, null, null, null, null);
         jqlBuilder.append(" OR ");
         jqlBuilder.append("(");
         appendBlackDuckProjectSearchStrings(jqlBuilder, jiraProjectKey, provider, project);
@@ -43,7 +43,7 @@ public final class JqlStringCreator {
         LinkableItem projectVersion
     ) {
         StringBuilder jqlBuilder = new StringBuilder();
-        appendBlackDuckCommentSearchStrings(jqlBuilder, jiraProjectKey, project, projectVersion, null, null, null, null);
+        appendBlackDuckCommentSearchStrings(jqlBuilder, jiraProjectKey, provider, project, projectVersion, null, null, null, null);
         jqlBuilder.append(" OR ");
         jqlBuilder.append("(");
         appendBlackDuckProjectVersionSearchStrings(jqlBuilder, jiraProjectKey, provider, project, projectVersion);
@@ -61,7 +61,7 @@ public final class JqlStringCreator {
         @Nullable LinkableItem componentVersion
     ) {
         StringBuilder jqlBuilder = new StringBuilder();
-        appendBlackDuckCommentSearchStrings(jqlBuilder, jiraProjectKey, project, projectVersion, component, componentVersion, null, null);
+        appendBlackDuckCommentSearchStrings(jqlBuilder, jiraProjectKey, provider, project, projectVersion, component, componentVersion, null, null);
         jqlBuilder.append(" OR ");
         jqlBuilder.append("(");
         appendBlackDuckComponentSearchStrings(jqlBuilder, jiraProjectKey, provider, project, projectVersion, component, componentVersion);
@@ -81,7 +81,7 @@ public final class JqlStringCreator {
         @Nullable String policyName
     ) {
         StringBuilder jqlBuilder = new StringBuilder();
-        appendBlackDuckCommentSearchStrings(jqlBuilder, jiraProjectKey, project, projectVersion, component, componentVersion, concernType, policyName);
+        appendBlackDuckCommentSearchStrings(jqlBuilder, jiraProjectKey, provider, project, projectVersion, component, componentVersion, concernType, policyName);
         jqlBuilder.append(" OR ");
         jqlBuilder.append("(");
         appendBlackDuckComponentSearchStrings(jqlBuilder, jiraProjectKey, provider, project, projectVersion, component, componentVersion);
@@ -103,6 +103,7 @@ public final class JqlStringCreator {
     private static void appendBlackDuckCommentSearchStrings(
         StringBuilder jqlBuilder,
         String jiraProjectKey,
+        LinkableItem provider,
         LinkableItem project,
         @Nullable LinkableItem projectVersion,
         @Nullable LinkableItem component,
@@ -117,49 +118,50 @@ public final class JqlStringCreator {
         jqlBuilder.append(String.format("comment ~\"%s\"", JiraIssuePropertyKeys.JIRA_ISSUE_KEY_START_HEADER));
         jqlBuilder.append(StringUtils.SPACE);
 
+        if(provider != null && provider.getUrl().isPresent()) {
+            jqlBuilder.append(SEARCH_CONJUNCTION);
+            jqlBuilder.append(StringUtils.SPACE);
+            appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_PROVIDER, provider.getUrl().get());
+        }
+
         if(project != null && project.getUrl().isPresent()) {
-            String projectId = extractUuid(project.getUrl().get(), "/api/projects/");
-            appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_PROJECT_ID, projectId);
+            jqlBuilder.append(SEARCH_CONJUNCTION);
+            jqlBuilder.append(StringUtils.SPACE);
+            appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_PROJECT_ID, project.getValue());
         }
 
         if(projectVersion != null && projectVersion.getUrl().isPresent()) {
-            String projectVersionId = extractUuid(projectVersion.getUrl().get(), "/versions/");
-            appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_PROJECT_VERSION_ID, projectVersionId);
+            jqlBuilder.append(SEARCH_CONJUNCTION);
+            jqlBuilder.append(StringUtils.SPACE);
+            appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_PROJECT_VERSION_ID, projectVersion.getValue());
         }
 
         if(component != null) {
+            jqlBuilder.append(SEARCH_CONJUNCTION);
+            jqlBuilder.append(StringUtils.SPACE);
             appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_COMPONENT_NAME, component.getValue());
         }
 
         if(componentVersion != null) {
+            jqlBuilder.append(SEARCH_CONJUNCTION);
+            jqlBuilder.append(StringUtils.SPACE);
             appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_COMPONENT_VERSION_NAME, componentVersion.getValue());
         }
 
         if(concernType != null) {
+            jqlBuilder.append(SEARCH_CONJUNCTION);
+            jqlBuilder.append(StringUtils.SPACE);
             appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_CATEGORY, concernType.name());
         }
 
         if(StringUtils.isNotBlank(policyName)) {
             String escapedPolicyName = JiraIssueSearchPropertyStringCompatibilityUtils.createPolicyAdditionalKey(policyName);
+            jqlBuilder.append(SEARCH_CONJUNCTION);
+            jqlBuilder.append(StringUtils.SPACE);
             appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_POLICY_NAME, escapedPolicyName);
         }
         jqlBuilder.append(")");
     }
-
-    private static @NotNull String extractUuid(String url, String pathSearchToken) {
-        int searchTokenStart = StringUtils.indexOf(url, pathSearchToken);
-        int startIndex = searchTokenStart + pathSearchToken.length();
-        int endSlashIndex = StringUtils.indexOf(url, '/', startIndex);
-        String uuid;
-        if(endSlashIndex > startIndex) {
-            uuid = StringUtils.substring(url, startIndex, endSlashIndex);
-        } else {
-            uuid = StringUtils.substring(url, startIndex);
-        }
-
-        return uuid;
-    }
-
 
     private static void appendBlackDuckComponentSearchStrings(
         StringBuilder jqlBuilder,
@@ -212,8 +214,7 @@ public final class JqlStringCreator {
     }
 
     private static void appendCommentSearchString(StringBuilder jqlBuilder, String key, String value) {
-        jqlBuilder.append(SEARCH_CONJUNCTION);
-        jqlBuilder.append(" comment ~ \"");
+        jqlBuilder.append("comment ~ \"");
         jqlBuilder.append(String.format("%s%s%s", key,JiraIssuePropertyKeys.JIRA_ISSUE_KEY_SEPARATOR, escapeSearchString(value)));
         jqlBuilder.append("\"");
         jqlBuilder.append(StringUtils.SPACE);

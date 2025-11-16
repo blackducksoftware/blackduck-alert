@@ -51,7 +51,8 @@ public class JiraServerSchedulingManager {
     }
 
     private List<JiraTask> createTasks(JiraServerGlobalConfigModel configModel, Set<String> projectNameOrKeys) {
-        JiraPropertyUpdateTask task = new JiraPropertyUpdateTask(taskScheduler, taskManager, jiraPropertiesFactory, gson, configModel.getId(), configModel.getName(), "JiraServer", projectNameOrKeys);
-        return List.of(task);
+        JiraPropertyUpdateTask propertyTask = new JiraPropertyUpdateTask(taskScheduler, taskManager, jiraPropertiesFactory, gson, configModel.getId(), configModel.getName(), "JiraServer", projectNameOrKeys);
+        JiraSearchCommentUpdateTask searchCommentTask = new JiraSearchCommentUpdateTask(taskScheduler, taskManager, jiraPropertiesFactory, gson, configModel.getId(), configModel.getName(), "JiraServer");
+        return List.of(propertyTask, searchCommentTask);
     }
 }
