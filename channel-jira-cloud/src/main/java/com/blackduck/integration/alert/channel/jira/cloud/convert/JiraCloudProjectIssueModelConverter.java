@@ -97,15 +97,16 @@ public class JiraCloudProjectIssueModelConverter {
         }
 
         IssueCommentModel<T> commentModel = toIssueCommentModel(existingIssueDetails, projectIssueModel);
-        List<String> transitionComments = new LinkedList<>(commentModel.getComments());
+        List<AtlassianDocumentFormatModel> transitionComments = new LinkedList<>();
+        commentModel.getAtlassianDocumentFormatCommentModel().ifPresent(transitionComments::add);
+        commentModel.getAdditionalComments().ifPresent(transitionComments::addAll);
 
         LinkableItem provider = projectIssueModel.getProvider();
-        ChunkedStringBuilder commentBuilder = new ChunkedStringBuilder(formatter.getMaxCommentLength());
-        commentBuilder.append(String.format("The %s operation was performed on this component in %s.", requiredOperation.name(), provider.getLabel()));
+        AtlassianDocumentBuilder documentBuilder = new AtlassianDocumentBuilder(formatter, false);
+        documentBuilder.addTextNode(String.format("The %s operation was performed on this component in %s.", requiredOperation.name(), provider.getLabel()));
+        transitionComments.add(documentBuilder.buildPrimaryDocument());
 
-        transitionComments.addAll(commentBuilder.collectCurrentChunks());
-
-        return new IssueTransitionModel<>(existingIssueDetails, issueOperation, transitionComments, projectIssueModel);
+        return new IssueTransitionModel<>(existingIssueDetails, issueOperation, List.of(), projectIssueModel, transitionComments);
     }
 
     public <T extends Serializable> IssueCommentModel<T> toIssueCommentModel(ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel projectIssueModel) {
