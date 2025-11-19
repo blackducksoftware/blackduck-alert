@@ -35,7 +35,8 @@ export function createReadAllRequest(apiUrl, csrfToken, context, descriptorName)
     headersUtil.addXCsrfToken(csrfToken);
     return fetch(url, {
         credentials: 'same-origin',
-        headers: headersUtil.getHeaders()
+        headers: headersUtil.getHeaders(),
+        redirect: 'manual'
     });
 }
 
@@ -52,7 +53,8 @@ export function createReadRequest(apiUrl, csrfToken, configurationId = null) {
     headersUtil.addXCsrfToken(csrfToken);
     return fetch(url, {
         credentials: 'same-origin',
-        headers: headersUtil.getHeaders()
+        headers: headersUtil.getHeaders(),
+        redirect: 'manual'
     });
 }
 
@@ -75,7 +77,8 @@ export function createReadPageRequest(apiUrl, csrfToken, currentPage, pageSize, 
     headersUtil.addXCsrfToken(csrfToken);
     return fetch(url, {
         credentials: 'same-origin',
-        headers: headersUtil.getHeaders()
+        headers: headersUtil.getHeaders(),
+        redirect: 'manual'
     });
 }
 

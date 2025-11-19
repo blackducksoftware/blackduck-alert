@@ -7,7 +7,8 @@ export function createReadRequest(url, csrfToken) {
     return fetch(url, {
         credentials: 'same-origin',
         method: 'GET',
-        headers: headersUtil.getHeaders()
+        headers: headersUtil.getHeaders(),
+        redirect: 'manual'
     });
 }
 

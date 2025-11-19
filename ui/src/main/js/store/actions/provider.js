@@ -157,7 +157,8 @@ export function fetchProviders() {
 
         fetch(url, {
             credentials: 'same-origin',
-            headers: headersUtil.getHeaders()
+            headers: headersUtil.getHeaders(),
+            redirect: 'manual'
         }).then((response) => {
             response.json()
                 .then((responseData) => {

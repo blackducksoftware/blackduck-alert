@@ -8,7 +8,8 @@ import {
     SESSION_LOGGED_OUT,
     SESSION_LOGGING_IN,
     SESSION_LOGIN_ERROR,
-    SESSION_LOGOUT
+    SESSION_LOGOUT,
+    SESSION_UNAUTHORIZED
 } from 'store/actions/types';
 
 const initialState = {
@@ -18,6 +19,7 @@ const initialState = {
     logoutPerformed: false,
     initializing: true,
     showLogoutConfirm: false,
+    sessionUnauthorizationPerformed: false,
     name: '',
     samlEnabled: false,
     errorMessage: null,
@@ -78,6 +80,8 @@ const session = (state = initialState, action) => {
             return { ...state, showLogoutConfirm: true };
         case SESSION_LOGOUT:
             return { ...state, logoutPerformed: true };
+        case SESSION_UNAUTHORIZED:
+            return { ...state, sessionUnauthorizationPerformed: true };
         case SAML_ENABLED:
             return { ...state, samlEnabled: action.saml_enabled };
         case SERIALIZE:
