@@ -2,6 +2,7 @@ ext.moduleName = 'com.blackduck.integration.alert.api-channel-issue-tracker'
 
 dependencies {
     api project(':api-channel')
+    api 'com.blackduck.integration:int-jira-common'
 
     implementation platform(project(':alert-platform'))
     implementation project(':alert-common')

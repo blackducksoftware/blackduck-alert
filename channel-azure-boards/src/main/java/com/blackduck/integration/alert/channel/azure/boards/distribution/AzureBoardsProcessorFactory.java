@@ -21,6 +21,7 @@ import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerMod
 import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerProcessor;
 import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerProcessorFactory;
 import com.blackduck.integration.alert.api.channel.issue.tracker.convert.ProjectMessageToIssueModelTransformer;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueTrackerSearcher;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerAsyncMessageSender;
@@ -134,7 +135,7 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
 
         IssueTrackerModelExtractor<Integer> extractor = new IssueTrackerModelExtractor<>(formatter, azureBoardsSearcher);
 
-        IssueTrackerAsyncMessageSender<Integer> messageSender = azureBoardsMessageSenderFactory.createAsyncMessageSender(
+        IssueTrackerAsyncMessageSender<IssueTrackerModelHolder<Integer>> messageSender = azureBoardsMessageSenderFactory.createAsyncMessageSender(
             distributionDetails,
             null,
             jobExecutionId,

@@ -22,9 +22,9 @@ import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrac
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
 import com.blackduck.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.blackduck.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
-import com.blackduck.integration.alert.api.descriptor.model.IssueTrackerChannelKey;
 
 public abstract class IssueTrackerIssueCreator<T extends Serializable> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -79,7 +79,7 @@ public abstract class IssueTrackerIssueCreator<T extends Serializable> {
 
     protected abstract void assignAlertSearchProperties(ExistingIssueDetails<T> createdIssueDetails, ProjectIssueModel alertIssueSource) throws AlertException;
 
-    private void addPostCreateComments(ExistingIssueDetails<T> issueDetails, IssueCreationModel creationModel, @Nullable ProjectIssueModel projectSource) throws AlertException {
+    protected void addPostCreateComments(ExistingIssueDetails<T> issueDetails, IssueCreationModel creationModel, @Nullable ProjectIssueModel projectSource) throws AlertException {
         LinkedList<String> postCreateComments = new LinkedList<>(creationModel.getPostCreateComments());
         postCreateComments.addFirst("This issue was automatically created by Alert.");
 
