@@ -44,12 +44,13 @@ import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
 import org.springframework.scheduling.TaskScheduler;
 
 class JiraServerGlobalCrudActionsTest {
-    private final String CREATED_AT = String.valueOf(DateUtils.createCurrentDateTimestamp().minusMinutes(5L));
-    private final String UPDATED_AT = String.valueOf(DateUtils.createCurrentDateTimestamp());
-    private final String URL = "https://someUrl";
-    private final String USER_NAME = "username";
-    private final String PASSWORD = "password";
-    private final String ACCESS_TOKEN = "accessToken";
+    private static final String CREATED_AT = String.valueOf(DateUtils.createCurrentDateTimestamp().minusMinutes(5L));
+    private static final String UPDATED_AT = String.valueOf(DateUtils.createCurrentDateTimestamp());
+    private static final String URL = "https://someUrl";
+    private static final Integer TEST_JIRA_TIMEOUT_SECONDS = 300;
+    private static final String USER_NAME = "username";
+    private static final String PASSWORD = "password";
+    private static final String ACCESS_TOKEN = "accessToken";
 
     private final UUID id = UUID.randomUUID();
 
@@ -159,6 +160,7 @@ class JiraServerGlobalCrudActionsTest {
             CREATED_AT,
             UPDATED_AT,
             URL,
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC,
             USER_NAME,
             PASSWORD,
@@ -207,6 +209,7 @@ class JiraServerGlobalCrudActionsTest {
             CREATED_AT,
             UPDATED_AT,
             URL,
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC,
             USER_NAME,
             PASSWORD,
@@ -334,6 +337,7 @@ class JiraServerGlobalCrudActionsTest {
             CREATED_AT,
             UPDATED_AT,
             URL,
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC,
             USER_NAME,
             PASSWORD,
@@ -351,6 +355,7 @@ class JiraServerGlobalCrudActionsTest {
             CREATED_AT,
             UPDATED_AT,
             URL,
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN,
             null,
             null,

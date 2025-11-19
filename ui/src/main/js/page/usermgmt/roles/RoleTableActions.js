@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import RoleDeleteModal from 'page/usermgmt/roles/RoleDeleteModal';
 import RoleModal from 'page/usermgmt/roles/RoleModal';
@@ -19,6 +19,12 @@ const RoleTableActions = ({ canCreate, canDelete, data, selected, setSelected })
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
+
+    useEffect(() => {
+        if (showCreateModal) {
+            setStatusMessage(undefined);
+        }
+    }, [showCreateModal]);
 
     function handleCreateRole() {
         setShowCreateModal(true);

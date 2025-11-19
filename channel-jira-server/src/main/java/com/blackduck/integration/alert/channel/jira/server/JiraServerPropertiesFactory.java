@@ -23,6 +23,8 @@ import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
 
 @Component
 public class JiraServerPropertiesFactory {
+    public static final Integer DEFAULT_JIRA_TIMEOUT_SECONDS = 300;
+
     private final ProxyManager proxyManager;
     private final JiraServerGlobalConfigAccessor jiraServerGlobalConfigAccessor;
     private final JobAccessor jobAccessor;
@@ -57,6 +59,7 @@ public class JiraServerPropertiesFactory {
     public JiraServerProperties createJiraProperties(JiraServerGlobalConfigModel jiraServerGlobalConfigModel) {
         return createJiraProperties(
             jiraServerGlobalConfigModel.getUrl(),
+            jiraServerGlobalConfigModel.getTimeout().orElse(DEFAULT_JIRA_TIMEOUT_SECONDS),
             jiraServerGlobalConfigModel.getAuthorizationMethod(),
             jiraServerGlobalConfigModel.getPassword().orElse(null),
             jiraServerGlobalConfigModel.getUserName().orElse(null),
@@ -67,6 +70,7 @@ public class JiraServerPropertiesFactory {
 
     public JiraServerProperties createJiraProperties(
         String url,
+        Integer timeout,
         JiraServerAuthorizationMethod authorizationMethod,
         String password,
         String username,
@@ -75,6 +79,7 @@ public class JiraServerPropertiesFactory {
     ) {
         return new JiraServerProperties(
             url,
+            timeout,
             authorizationMethod,
             password,
             username,

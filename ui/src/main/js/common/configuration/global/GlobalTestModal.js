@@ -16,7 +16,7 @@ const GlobalTestModal = ({
         submitTitle={testModalButtonTitle}
         submitText={ modalSubmitText || 'Send Test Message'}
         style="default"
-        showLoader={performingAction ? 'save' : ''}
+        showLoader={performingAction}
     >
         <div className="modal-description">
             {children}

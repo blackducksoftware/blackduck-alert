@@ -20,6 +20,7 @@ import com.blackduck.integration.alert.common.descriptor.validator.GlobalConfigu
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.rest.model.FieldModel;
 import com.blackduck.integration.alert.common.rest.model.FieldValueModel;
+import org.junit.jupiter.api.Assertions;
 
 public class GlobalConfigurationValidatorAsserter {
     private final String descriptorKey;
@@ -66,6 +67,12 @@ public class GlobalConfigurationValidatorAsserter {
     public void assertValid() {
         Set<AlertFieldStatus> fieldStatuses = runValidation();
         assertEquals(0, fieldStatuses.size(), fieldStatuses.toString());
+    }
+
+    public void assertExceptionThrown(Class<? extends Exception> expectedExceptionClass, String key, String invalidValue) {
+        FieldValueModel apiKeyFieldValueModel = new FieldValueModel(List.of(invalidValue), true);
+        defaultKeyToValues.put(key, apiKeyFieldValueModel);
+        Assertions.assertThrows(expectedExceptionClass, this::runValidation);
     }
 
     private Set<AlertFieldStatus> runValidation() {

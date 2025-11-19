@@ -40,6 +40,7 @@ class JiraServerEnvironmentVariableHandlerTestIT {
     public static final String TEST_USER = "testuser";
     public static final String TEST_PASSWORD = "a test value";
     public static final String TEST_URL = "http://test.jira.server.example.com";
+    public static final Integer TEST_TIMEOUT = 300;
     public static final String TEST_ACCESS_TOKEN = "JiraServerAccessTokenValue";
     public static final String TEST_DISABLE_PLUGIN_CHECK = "true";
 
@@ -108,6 +109,7 @@ class JiraServerEnvironmentVariableHandlerTestIT {
             createdAt,
             createdAt,
             TEST_URL,
+            TEST_TIMEOUT,
             JiraServerAuthorizationMethod.BASIC,
             TEST_USER,
             TEST_PASSWORD,
@@ -140,6 +142,7 @@ class JiraServerEnvironmentVariableHandlerTestIT {
             createdAt,
             createdAt,
             TEST_URL,
+            TEST_TIMEOUT,
             JiraServerAuthorizationMethod.PERSONAL_ACCESS_TOKEN,
             null,
             null,

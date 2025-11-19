@@ -7,6 +7,7 @@
  */
 package com.blackduck.integration.alert.api.channel.jira.distribution.delegate;
 
+import com.blackduck.integration.jira.common.model.request.JiraRequestModel;
 import org.jetbrains.annotations.Nullable;
 
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
@@ -15,9 +16,8 @@ import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrack
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueResponseCreator;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.exception.IntegrationException;
-import com.blackduck.integration.jira.common.model.request.IssueCommentRequestModel;
 
-public abstract class JiraIssueCommenter extends IssueTrackerIssueCommenter<String> {
+public abstract class JiraIssueCommenter<T extends JiraRequestModel> extends IssueTrackerIssueCommenter<String> {
 
     protected JiraIssueCommenter(IssueTrackerIssueResponseCreator issueResponseCreator) {
         super(issueResponseCreator);
@@ -26,13 +26,12 @@ public abstract class JiraIssueCommenter extends IssueTrackerIssueCommenter<Stri
     @Override
     protected final void addComment(String comment, ExistingIssueDetails<String> existingIssueDetails, @Nullable ProjectIssueModel source) throws AlertException {
         try {
-            IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(existingIssueDetails.getIssueKey(), comment);
-            addComment(issueCommentRequestModel);
+            addComment(createCommentModel(comment, existingIssueDetails));
         } catch (IntegrationException e) {
             throw new AlertException(String.format("Failed to add a comment in Jira. Issue Key: %s", existingIssueDetails.getIssueKey()), e);
         }
     }
 
-    protected abstract void addComment(IssueCommentRequestModel requestModel) throws IntegrationException;
-
+    protected abstract void addComment(T requestModel) throws IntegrationException;
+    protected abstract T createCommentModel(String comment, ExistingIssueDetails<String> existingIssueDetails) throws IntegrationException;
 }

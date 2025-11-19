@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.UUID;
 
+import com.blackduck.integration.jira.common.cloud.configuration.JiraCloudRestConfigBuilder;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Tags;
@@ -110,7 +111,7 @@ public class JiraCloudSummaryFieldLengthTestIT {
         String userEmail = testProperties.getProperty(TestPropertyKey.TEST_JIRA_CLOUD_USER_EMAIL);
 
         JiraCloudPropertiesFactory jiraCloudPropertiesFactory = Mockito.mock(JiraCloudPropertiesFactory.class);
-        JiraCloudProperties jiraCloudProperties = new JiraCloudProperties(url, apiToken, userEmail, true, ProxyInfo.NO_PROXY_INFO, null);
+        JiraCloudProperties jiraCloudProperties = new JiraCloudProperties(url, apiToken, userEmail, true, ProxyInfo.NO_PROXY_INFO, null,  JiraCloudRestConfigBuilder.DEFAULT_TIMEOUT_SECONDS);
         Mockito.when(jiraCloudPropertiesFactory.createJiraProperties()).thenReturn(jiraCloudProperties);
 
         return jiraCloudPropertiesFactory;

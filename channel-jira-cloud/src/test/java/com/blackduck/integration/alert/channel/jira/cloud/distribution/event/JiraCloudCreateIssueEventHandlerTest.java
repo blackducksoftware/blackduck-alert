@@ -15,6 +15,10 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.blackduck.integration.jira.common.cloud.builder.AtlassianDocumentFormatModelBuilder;
+import com.blackduck.integration.jira.common.cloud.model.AtlassianDocumentFormatModel;
+import com.blackduck.integration.jira.common.cloud.model.JiraCloudIssueResponseModel;
+import com.blackduck.integration.jira.common.cloud.model.component.JiraCloudIssueFieldsComponent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -359,15 +363,18 @@ class JiraCloudCreateIssueEventHandlerTest {
         return new PageOfProjectsResponseModel(List.of(projectComponent));
     }
 
-    private IssueResponseModel createIssueResponseModel() {
+    private JiraCloudIssueResponseModel createIssueResponseModel() {
         String id = ISSUE_KEY;
-        IssueFieldsComponent issueFieldsComponent = new IssueFieldsComponent(List.of(), null, null, "summary", "description", List.of(), null, List.of(), null, null, null, null);
+        AtlassianDocumentFormatModelBuilder atlassianDocumentFormatModelBuilder = new AtlassianDocumentFormatModelBuilder();
+        atlassianDocumentFormatModelBuilder.addSingleParagraphTextNode("description");
+        AtlassianDocumentFormatModel descriptionModel = atlassianDocumentFormatModelBuilder.build();
+        JiraCloudIssueFieldsComponent issueFieldsComponent = new JiraCloudIssueFieldsComponent(List.of(), null, null, "summary", descriptionModel, List.of(), null, List.of(), null, null, null, null);
 
-        return new IssueResponseModel("", id, "", id, Map.of(), Map.of(), Map.of(), Map.of(), List.of(), null, null, null, null, null, issueFieldsComponent);
+        return new JiraCloudIssueResponseModel("", id, "", id, Map.of(), Map.of(), Map.of(), null, null, null, null, issueFieldsComponent);
     }
 
     private IssueSearchResponseModel createIssueSearchResponseModel() {
-        IssueResponseModel issueResponseModel = createIssueResponseModel();
+        JiraCloudIssueResponseModel issueResponseModel = createIssueResponseModel();
         return new IssueSearchResponseModel("", List.of(issueResponseModel), List.of(), null, null);
     }
 

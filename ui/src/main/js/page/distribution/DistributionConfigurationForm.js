@@ -54,7 +54,7 @@ const DistributionConfigurationForm = ({
     const [channelModel, setChannelModel] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.DISTRIBUTION, AZURE_BOARDS_INFO.key));
     const [specificChannelModel, setSpecificChannelModel] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.DISTRIBUTION, AZURE_BOARDS_INFO.key));
     const [providerModel, setProviderModel] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.DISTRIBUTION, BLACKDUCK_INFO.key));
-    const [selectedChannel, setSelectedChannel] = useState(AZURE_BOARDS_INFO.key);
+    const [selectedChannel, setSelectedChannel] = useState('');
     const [testFieldModel, setTestFieldModel] = useState({});
     const [readonly, setReadonly] = useState(false);
     const [processingTypes, setProcessingTypes] = useState(DISTRIBUTION_PROCESSING_TYPES);
@@ -267,10 +267,6 @@ const DistributionConfigurationForm = ({
         setChannelModel(defaultValueModel);
     }
 
-    if (!FieldModelUtilities.hasKey(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName)) {
-        onChannelSelectChange({ target: { name: DISTRIBUTION_COMMON_FIELD_KEYS.channelName, value: [AZURE_BOARDS_INFO.key] } });
-    }
-
     if (!FieldModelUtilities.hasKey(testFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.topic) && !FieldModelUtilities.hasKey(testFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.message)) {
         const topicFieldModel = FieldModelUtilities.updateFieldModelSingleValue(testFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.topic, 'Alert Test Message');
         const messageFieldModel = FieldModelUtilities.updateFieldModelSingleValue(topicFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.message, 'Test Message Content');
@@ -359,8 +355,10 @@ const DistributionConfigurationForm = ({
                 testFormData={testFieldModel}
                 setTestFormData={setTestFieldModel}
                 csrfToken={csrfToken}
-                displaySave={!readonly && isOneOperationAssigned(descriptors[selectedChannel], [OPERATIONS.WRITE, OPERATIONS.CREATE])}
-                displayTest={!readonly && isOperationAssigned(descriptors[selectedChannel], OPERATIONS.EXECUTE)}
+                displaySave={!readonly}
+                isSaveDisabled={!isOneOperationAssigned(descriptors[selectedChannel], [OPERATIONS.WRITE, OPERATIONS.CREATE])}
+                displayTest={!readonly}
+                isTestDisabled={!isOperationAssigned(descriptors[selectedChannel], OPERATIONS.EXECUTE)}
                 displayDelete={false}
                 afterSuccessfulSave={() => history.push(DISTRIBUTION_URLS.distributionTableUrl)}
                 retrieveData={retrieveData}
