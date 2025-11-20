@@ -49,7 +49,6 @@ export function getAboutInfo() {
         }).then((response) => {
                 response.json()
                     .then((responseData) => {
-                        console.log('ABOUT fetch response data:', responseData, response);
                         if (response.ok) {
                             dispatch(aboutInfoFetched(responseData));
                         } else {

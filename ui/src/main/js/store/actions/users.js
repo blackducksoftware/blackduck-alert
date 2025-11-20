@@ -228,11 +228,9 @@ export function saveUser(user) {
         if (id) {
             saveRequest = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, id, user);
         } else {
-            console.log('HERE');
             saveRequest = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user);
         }
         saveRequest.then((response) => {
-            console.log('RESPONSE', response);
             if (response.ok) {
                 dispatch(saveUserSuccess());
                 dispatch(fetchUsers());
