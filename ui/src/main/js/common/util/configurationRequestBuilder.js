@@ -89,7 +89,8 @@ export function createNewConfigurationRequest(apiUrl, csrfToken, fieldModel) {
         credentials: 'same-origin',
         method: 'POST',
         body: JSON.stringify(fieldModel),
-        headers: headersUtil.getHeaders()
+        headers: headersUtil.getHeaders(),
+        redirect: 'manual'
     });
 }
 
@@ -101,7 +102,8 @@ export function createUpdateRequest(apiUrl, csrfToken, configurationId, fieldMod
         credentials: 'same-origin',
         method: 'PUT',
         body: JSON.stringify(fieldModel),
-        headers: headersUtil.getHeaders()
+        headers: headersUtil.getHeaders(),
+        redirect: 'manual'
     });
 }
 
@@ -113,7 +115,8 @@ export function createUpdateWithoutIdRequest(apiUrl, csrfToken, model) {
         credentials: 'same-origin',
         method: 'PUT',
         body: JSON.stringify(model),
-        headers: headersUtil.getHeaders()
+        headers: headersUtil.getHeaders(),
+        redirect: 'manual'
     });
 }
 
@@ -128,7 +131,8 @@ export function createDeleteRequest(apiUrl, csrfToken, configurationId = null) {
     return fetch(url, {
         credentials: 'same-origin',
         method: 'DELETE',
-        headers: headersUtil.getHeaders()
+        headers: headersUtil.getHeaders(),
+        redirect: 'manual'
     });
 }
 
@@ -144,7 +148,8 @@ export function createMultiDeleteRequest(baseUrl, csrfToken, configurationIdArra
         fetch(url, {
             credentials: 'same-origin',
             method: 'DELETE',
-            headers: headersUtil.getHeaders()
+            headers: headersUtil.getHeaders(),
+            redirect: 'manual'
         }))
     ));
 }
@@ -157,7 +162,8 @@ export function createValidateRequest(apiUrl, csrfToken, fieldModel) {
         credentials: 'same-origin',
         method: 'POST',
         body: JSON.stringify(fieldModel),
-        headers: headersUtil.getHeaders()
+        headers: headersUtil.getHeaders(),
+        redirect: 'manual'
     });
 }
 
@@ -173,7 +179,8 @@ export function createTestRequest(apiUrl, csrfToken, fieldModel, queryParamKey, 
         credentials: 'same-origin',
         method: 'POST',
         body: JSON.stringify(fieldModel),
-        headers: headersUtil.getHeaders()
+        headers: headersUtil.getHeaders(),
+        redirect: 'manual'
     });
 }
 
@@ -190,6 +197,7 @@ export function createFileUploadRequest(apiUrl, csrfToken, fieldName, files) {
         credentials: 'same-origin',
         method: 'POST',
         body: fileData,
-        headers: headersUtil.getHeaders()
+        headers: headersUtil.getHeaders(),
+        redirect: 'manual'
     });
 }
