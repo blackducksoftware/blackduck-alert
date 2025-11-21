@@ -44,7 +44,7 @@ class HttpInterceptor {
                 const response = await originalFetch(...args);
                 const url = typeof args[0] === 'string' ? args[0] : args[0].url;
 
-                if (this.shouldHandleUnauthorized(response, url) {
+                if (this.shouldHandleUnauthorized(response, url)) {
                     console.log('System Message: Unauthorized access detected, logging out user.');
                     store.dispatch(unauthorized());
                 }
