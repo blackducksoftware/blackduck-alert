@@ -148,7 +148,8 @@ export function fetchRoles() {
         headersUtil.addXCsrfToken(csrfToken);
         fetch(ConfigRequestBuilder.ROLE_API_URL, {
             credentials: 'same-origin',
-            headers: headersUtil.getHeaders()
+            headers: headersUtil.getHeaders(),
+            redirect: 'manual'
         })
             .then((response) => {
                 response.json()
