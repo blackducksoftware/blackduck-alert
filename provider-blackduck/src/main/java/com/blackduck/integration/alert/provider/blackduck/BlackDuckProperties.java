@@ -15,6 +15,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
@@ -39,6 +40,9 @@ import com.google.gson.Gson;
 
 public class BlackDuckProperties extends ProviderProperties {
     public static final int DEFAULT_TIMEOUT = 300;
+    public static final int DEFAULT_ACCUMULATOR_BATCH_LIMIT_MAXIMUM =10000;
+    public static final int DEFAULT_ACCUMULATOR_BATCH_LIMIT_MINIMUM = 1000;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Gson gson;
     private final ObjectMapper objectMapper;
     private final AlertProperties alertProperties;
@@ -83,6 +87,20 @@ public class BlackDuckProperties extends ProviderProperties {
 
     public String getApiToken() {
         return apiToken;
+    }
+
+    public Integer getNotifcationBatchLimit() {
+        int batchLimit = alertProperties.getAccumulatorNotificationBatchLimit().orElse(DEFAULT_ACCUMULATOR_BATCH_LIMIT_MAXIMUM);
+
+        if( batchLimit < DEFAULT_ACCUMULATOR_BATCH_LIMIT_MINIMUM) {
+            logger.warn("Notification accumulator batch limit of {} is below the minimum limit of {}. Default to the minimum.", batchLimit, DEFAULT_ACCUMULATOR_BATCH_LIMIT_MINIMUM);
+            batchLimit = DEFAULT_ACCUMULATOR_BATCH_LIMIT_MINIMUM;
+        } else if ( batchLimit > DEFAULT_ACCUMULATOR_BATCH_LIMIT_MAXIMUM) {
+            logger.warn("Notification accumulator batch limit of {} is above the maximum limit of {}. Default to the maximum.", batchLimit, DEFAULT_ACCUMULATOR_BATCH_LIMIT_MAXIMUM);
+            batchLimit = DEFAULT_ACCUMULATOR_BATCH_LIMIT_MAXIMUM;
+        }
+
+        return batchLimit;
     }
 
     public BlackDuckServicesFactory createBlackDuckServicesFactory(BlackDuckHttpClient blackDuckHttpClient, IntLogger logger) {
