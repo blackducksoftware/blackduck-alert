@@ -192,7 +192,10 @@ public class AlertProperties {
     public Optional<Integer> getNotificationMappingBatchLimit() {
         return Optional.ofNullable(notificationMappingBatchLimit);
     }
-    public Optional<Integer> getAccumulatorNotificationBatchLimit() {return Optional.ofNullable(accumulatorNotificationBatchLimit);}
+
+    public Optional<Integer> getAccumulatorNotificationBatchLimit() {
+        return Optional.ofNullable(accumulatorNotificationBatchLimit);
+    }
 
     private Optional<String> getOptionalString(String value) {
         if (StringUtils.isNotBlank(value)) {

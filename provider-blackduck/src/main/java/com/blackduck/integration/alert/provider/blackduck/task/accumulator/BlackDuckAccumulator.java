@@ -148,7 +148,6 @@ public class BlackDuckAccumulator extends ProviderTask {
                 logger.debug("Retrieved a page of {} notifications", currentNotifications.size());
 
                 storedNotifications += storeNotifications(currentNotifications);
-                //uncomment when we want to test the batch limit change.
                 hasExceedBatchSize = storedNotifications >= batchLimit;
                 notificationPage = notificationPage.retrieveNextPage();
             }
@@ -227,7 +226,6 @@ public class BlackDuckAccumulator extends ProviderTask {
         if (null != notification && null != notification.getHref()) {
             try {
                 String providerIdAndUrl = String.format("%s-%s", providerConfigId, notification.getHref().string());
-                // see if you can use the static method here to compute the value
                 contentId = new DigestUtils("SHA3-256").digestAsHex(providerIdAndUrl);
             } catch (RuntimeException ex) {
                 // do nothing use the URL
