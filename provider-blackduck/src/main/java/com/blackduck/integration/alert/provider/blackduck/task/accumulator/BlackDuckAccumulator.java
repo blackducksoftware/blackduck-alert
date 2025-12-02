@@ -140,14 +140,21 @@ public class BlackDuckAccumulator extends ProviderTask {
             SUPPORTED_NOTIFICATION_TYPES
         );
         int storedNotifications = 0;
+        int batchLimit = getProviderProperties().getNotifcationBatchLimit();
+        boolean hasExceedBatchSize = false;
         try {
-            while (!notificationPage.isCurrentPageEmpty()) {
+            while (!hasExceedBatchSize && !notificationPage.isCurrentPageEmpty()) {
                 List<NotificationUserView> currentNotifications = notificationPage.getCurrentModels();
                 logger.debug("Retrieved a page of {} notifications", currentNotifications.size());
 
                 storedNotifications += storeNotifications(currentNotifications);
+                hasExceedBatchSize = storedNotifications >= batchLimit;
                 notificationPage = notificationPage.retrieveNextPage();
             }
+            if(hasExceedBatchSize) {
+                logger.info("Accumulator batch limit exceeded.  Accumulation cycle stopped.  Sending event to begin processing notifications.");
+            }
+
         } finally {
             if (storedNotifications > 0) {
                 eventManager.sendEvent(new NotificationReceivedEvent(getProviderProperties().getConfigId()));
@@ -174,7 +181,7 @@ public class BlackDuckAccumulator extends ProviderTask {
             .stream()
             .sorted(Comparator.comparing(NotificationView::getCreatedAt))
             .map(this::convertToAlertNotificationModel)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private int write(List<AlertNotificationModel> contentList) {
@@ -184,7 +191,7 @@ public class BlackDuckAccumulator extends ProviderTask {
         if (logger.isDebugEnabled()) {
             List<Long> notificationIds = savedNotifications.stream()
                 .map(AlertNotificationModel::getId)
-                .collect(Collectors.toList());
+                .toList();
             String joinedIds = StringUtils.join(notificationIds, ", ");
             notificationLogger.debug("Saved notifications: {}", joinedIds);
         }

@@ -89,6 +89,9 @@ public class AlertProperties {
     @Value("${alert.notification.mapping.batch.limit:10000}")
     private Integer notificationMappingBatchLimit;
 
+    @Value("${alert.notification.accumulator.batch.limit:10000}")
+    private Integer accumulatorNotificationBatchLimit;
+
     public String getAlertConfigHome() {
         return StringUtils.trimToNull(alertConfigHome);
     }
@@ -188,6 +191,10 @@ public class AlertProperties {
 
     public Optional<Integer> getNotificationMappingBatchLimit() {
         return Optional.ofNullable(notificationMappingBatchLimit);
+    }
+
+    public Optional<Integer> getAccumulatorNotificationBatchLimit() {
+        return Optional.ofNullable(accumulatorNotificationBatchLimit);
     }
 
     private Optional<String> getOptionalString(String value) {
