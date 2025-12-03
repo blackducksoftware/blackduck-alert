@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.blackduck.integration.alert.channel.jira.server.database.configuration.JiraServerConfigurationEntity;
 import com.blackduck.integration.alert.channel.jira.server.database.configuration.JiraServerConfigurationRepository;
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
@@ -155,6 +156,7 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
             createdTime,
             lastUpdated,
             configuration.getUrl(),
+            configuration.getTimeout().orElse(JiraServerPropertiesFactory.DEFAULT_JIRA_TIMEOUT_SECONDS),
             configuration.getAuthorizationMethod(),
             configuration.getUserName().orElse(null),
             password,
@@ -172,6 +174,7 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
         String id = String.valueOf(jiraConfiguration.getConfigurationId());
         String name = jiraConfiguration.getName();
         String url = jiraConfiguration.getUrl();
+        Integer timeout = jiraConfiguration.getTimeout();
         String username = jiraConfiguration.getUsername();
         String password = jiraConfiguration.getPassword();
         String accessToken = jiraConfiguration.getAccessToken();
@@ -191,6 +194,7 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
             createdAtFormatted,
             lastUpdatedFormatted,
             url,
+            timeout,
             jiraConfiguration.getAuthorizationMethod(),
             username,
             password,

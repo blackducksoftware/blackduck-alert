@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { applyMiddleware, createStore } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import createHistory from 'history/createBrowserHistory';
+import { createBrowserHistory } from 'history';
 import App from 'application/App';
 import { ConnectedRouter, routerMiddleware } from 'connected-react-router';
 import rootReducer from 'store/reducers';
@@ -13,7 +13,7 @@ import { dom } from '@fortawesome/fontawesome-svg-core';
 
 const initialState = {};
 // Setup history
-const history = createHistory();
+const history = createBrowserHistory();
 
 // Configure store with redux, thunk and history
 const store = createStore(rootReducer(history), initialState, applyMiddleware(thunk, routerMiddleware(history)));

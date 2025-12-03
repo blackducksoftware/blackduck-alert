@@ -42,8 +42,8 @@ import com.blackduck.integration.jira.common.cloud.service.IssueSearchService;
 import com.blackduck.integration.jira.common.cloud.service.IssueService;
 import com.blackduck.integration.jira.common.cloud.service.JiraCloudServiceFactory;
 import com.blackduck.integration.jira.common.cloud.service.ProjectService;
-import com.blackduck.integration.jira.common.model.request.IssueCommentRequestModel;
-import com.blackduck.integration.jira.common.model.response.IssueCommentResponseModel;
+import com.blackduck.integration.jira.common.cloud.model.IssueCommentRequestModel;
+import com.blackduck.integration.jira.common.cloud.model.IssueCommentResponseModel;
 import com.google.gson.Gson;
 
 class JiraCloudCommentEventHandlerTest {
@@ -167,7 +167,6 @@ class JiraCloudCommentEventHandlerTest {
     private JiraCloudJobDetailsModel createJobDetails(UUID jobId) {
         return new JiraCloudJobDetailsModel(
             jobId,
-            true,
             "user",
             "jiraProject",
             "Task",

@@ -48,6 +48,26 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
     const roles = useSelector((state) => state.roles.data);
     const { saveStatus, error } = useSelector((state) => state.users);
 
+    function disableSubmit() {
+        const password = userModel[USER_INPUT_FIELD_KEYS.PASSWORD_KEY];
+        const isPasswordSet = userModel[USER_INPUT_FIELD_KEYS.IS_PASSWORD_SET];
+
+        // isPasswordSet will be set when the user is being edited. We don't need to disable the submit button in this case
+        if (isPasswordSet) {
+            return false;
+        }
+        // When copying or creating a user, these fields will be empty initially.
+        // We want to disable the submit button until the user enters a password and confirms it
+        if (!password || !confirmPassword) {
+            return true;
+        } else if (password && confirmPassword){
+            return false;
+        }
+
+        // Otherwise, disable
+        return true;
+    }
+
     function passwordsMatch(user) {
         let passwordError = {};
         let matching = true;
@@ -128,7 +148,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
             closeModal={handleClose}
             handleCancel={handleClose}
             handleSubmit={handleSubmit}
-            disableSubmit={!userModel[USER_INPUT_FIELD_KEYS.PASSWORD_KEY] || !confirmPassword}
+            disableSubmit={disableSubmit()}
             submitText={submitText}
             showLoader={showLoader}
             noOverflow
@@ -186,7 +206,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
                         placeholder="Confirm password..."
                         readOnly={false}
                         required
-                        isSet={Boolean(confirmPassword)}
+                        isSet={userModel[USER_INPUT_FIELD_KEYS.IS_PASSWORD_SET]}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         value={confirmPassword || undefined}
                         errorName="confirmPasswordError"

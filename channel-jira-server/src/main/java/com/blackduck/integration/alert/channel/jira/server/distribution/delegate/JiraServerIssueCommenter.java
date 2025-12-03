@@ -7,14 +7,15 @@
  */
 package com.blackduck.integration.alert.channel.jira.server.distribution.delegate;
 
+import com.blackduck.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerIssueResponseCreator;
 import com.blackduck.integration.alert.api.channel.jira.distribution.delegate.JiraIssueCommenter;
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.blackduck.integration.exception.IntegrationException;
-import com.blackduck.integration.jira.common.model.request.IssueCommentRequestModel;
+import com.blackduck.integration.jira.common.server.model.IssueCommentRequestModel;
 import com.blackduck.integration.jira.common.server.service.IssueService;
 
-public class JiraServerIssueCommenter extends JiraIssueCommenter {
+public class JiraServerIssueCommenter extends JiraIssueCommenter<IssueCommentRequestModel> {
     private final IssueService issueService;
     private final JiraServerJobDetailsModel distributionDetails;
 
@@ -26,7 +27,7 @@ public class JiraServerIssueCommenter extends JiraIssueCommenter {
 
     @Override
     protected boolean isCommentingEnabled() {
-        return distributionDetails.isAddComments();
+        return true;
     }
 
     @Override
@@ -34,4 +35,8 @@ public class JiraServerIssueCommenter extends JiraIssueCommenter {
         issueService.addComment(requestModel);
     }
 
+    @Override
+    protected IssueCommentRequestModel createCommentModel(String comment, ExistingIssueDetails<String> existingIssueDetails) throws IntegrationException {
+        return new IssueCommentRequestModel(existingIssueDetails.getIssueKey(), comment);
+    }
 }

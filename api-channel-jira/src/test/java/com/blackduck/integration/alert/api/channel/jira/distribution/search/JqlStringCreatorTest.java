@@ -20,12 +20,12 @@ class JqlStringCreatorTest {
     private final LinkableItem project = new LinkableItem(
         "Project",
         "project_with_single_quote'",
-        "http://projectUrl"
+        "http://projectUrl/api/projects/project-uuid"
     );
     private final LinkableItem projectVersion = new LinkableItem(
         "Project Version",
         "v1.0 \\& v2.0",
-        "http://projectVersionUrl"
+        "http://projectVersionUrl/api/projects/project-uuid/versions/project-version-uuid/components"
     );
     private final LinkableItem component = new LinkableItem(
         "Component",
@@ -52,7 +52,17 @@ class JqlStringCreatorTest {
             policyName
         );
         String expectedSearchString =
-            "project = 'TEST' "
+            "("
+                + "project = 'TEST'"
+                + " AND comment ~\"=== BEGIN JIRA ISSUE KEYS ===\""
+                + " AND comment ~ \"projectId: project-uuid\""
+                + " AND comment ~ \"projectVersionId: project-version-uuid\""
+                + " AND comment ~ \"componentName: myVulnerableComponent\""
+                + " AND comment ~ \"componentVersionName: 1.1.2\""
+                + " AND comment ~ \"category: POLICY\""
+                + " AND comment ~ \"policyName: Policy ViolatedMyPolicy\""
+                + " ) OR ("
+                + "project = 'TEST' "
                 + "AND (issue.property[com-blackduck-integration-alert].provider = 'Black Duck' OR issue.property[com-synopsys-integration-alert].provider = 'Black Duck') "
                 + "AND (issue.property[com-blackduck-integration-alert].providerUrl = 'http://providerUrl/' OR issue.property[com-synopsys-integration-alert].providerUrl = 'http://providerUrl/') "
                 + "AND (issue.property[com-blackduck-integration-alert].topicName = 'Project' OR issue.property[com-synopsys-integration-alert].topicName = 'Project') "
@@ -64,7 +74,8 @@ class JqlStringCreatorTest {
                 + "AND (issue.property[com-blackduck-integration-alert].subComponentName = 'Component Version' OR issue.property[com-synopsys-integration-alert].subComponentName = 'Component Version') "
                 + "AND (issue.property[com-blackduck-integration-alert].subComponentValue = '1.1.2' OR issue.property[com-synopsys-integration-alert].subComponentValue = '1.1.2') "
                 + "AND (issue.property[com-blackduck-integration-alert].category = 'Policy' OR issue.property[com-synopsys-integration-alert].category = 'Policy') "
-                + "AND (issue.property[com-blackduck-integration-alert].additionalKey = 'Policy ViolatedMyPolicy' OR issue.property[com-synopsys-integration-alert].additionalKey = 'Policy ViolatedMyPolicy') ";
+                + "AND (issue.property[com-blackduck-integration-alert].additionalKey = 'Policy ViolatedMyPolicy' OR issue.property[com-synopsys-integration-alert].additionalKey = 'Policy ViolatedMyPolicy') "
+                + ")";
 
         assertEquals(expectedSearchString, jqlString);
     }
@@ -82,7 +93,16 @@ class JqlStringCreatorTest {
             null
         );
         String expectedSearchString =
-            "project = 'TEST' "
+            "("
+                + "project = 'TEST'"
+                + " AND comment ~\"=== BEGIN JIRA ISSUE KEYS ===\""
+                + " AND comment ~ \"projectId: project-uuid\""
+                + " AND comment ~ \"projectVersionId: project-version-uuid\""
+                + " AND comment ~ \"componentName: myVulnerableComponent\""
+                + " AND comment ~ \"componentVersionName: 1.1.2\""
+                + " AND comment ~ \"category: VULNERABILITY\""
+                + " ) OR ("
+                + "project = 'TEST' "
                 + "AND (issue.property[com-blackduck-integration-alert].provider = 'Black Duck' OR issue.property[com-synopsys-integration-alert].provider = 'Black Duck') "
                 + "AND (issue.property[com-blackduck-integration-alert].providerUrl = 'http://providerUrl/' OR issue.property[com-synopsys-integration-alert].providerUrl = 'http://providerUrl/') "
                 + "AND (issue.property[com-blackduck-integration-alert].topicName = 'Project' OR issue.property[com-synopsys-integration-alert].topicName = 'Project') "
@@ -93,7 +113,8 @@ class JqlStringCreatorTest {
                 + "AND (issue.property[com-blackduck-integration-alert].componentValue = 'myVulnerableComponent' OR issue.property[com-synopsys-integration-alert].componentValue = 'myVulnerableComponent') "
                 + "AND (issue.property[com-blackduck-integration-alert].subComponentName = 'Component Version' OR issue.property[com-synopsys-integration-alert].subComponentName = 'Component Version') "
                 + "AND (issue.property[com-blackduck-integration-alert].subComponentValue = '1.1.2' OR issue.property[com-synopsys-integration-alert].subComponentValue = '1.1.2') "
-                + "AND (issue.property[com-blackduck-integration-alert].category = 'Vulnerability' OR issue.property[com-synopsys-integration-alert].category = 'Vulnerability') ";
+                + "AND (issue.property[com-blackduck-integration-alert].category = 'Vulnerability' OR issue.property[com-synopsys-integration-alert].category = 'Vulnerability') "
+                + ")";
 
         assertEquals(expectedSearchString, jqlString);
     }
@@ -104,7 +125,7 @@ class JqlStringCreatorTest {
         LinkableItem projectVersionInjected = new LinkableItem(
             "Project Version",
             exploitableString,
-            "http://projectVersionUrl"
+            "http:///api/projects/project-uuid/versions/projectVersionUrl"
         );
         String jqlString = JqlStringCreator.createBlackDuckComponentConcernIssuesSearchString(
             JIRA_PROJECT_KEY,
@@ -117,7 +138,16 @@ class JqlStringCreatorTest {
             null
         );
         String expectedSearchString =
-            "project = 'TEST' "
+            "("
+                + "project = 'TEST'"
+                + " AND comment ~\"=== BEGIN JIRA ISSUE KEYS ===\""
+                + " AND comment ~ \"projectId: project-uuid\""
+                + " AND comment ~ \"projectVersionId: projectVersionUrl\""
+                + " AND comment ~ \"componentName: myVulnerableComponent\""
+                + " AND comment ~ \"componentVersionName: 1.1.2\""
+                + " AND comment ~ \"category: VULNERABILITY\""
+                + " ) OR ("
+                + "project = 'TEST' "
                 + "AND (issue.property[com-blackduck-integration-alert].provider = 'Black Duck' OR issue.property[com-synopsys-integration-alert].provider = 'Black Duck') "
                 + "AND (issue.property[com-blackduck-integration-alert].providerUrl = 'http://providerUrl/' OR issue.property[com-synopsys-integration-alert].providerUrl = 'http://providerUrl/') "
                 + "AND (issue.property[com-blackduck-integration-alert].topicName = 'Project' OR issue.property[com-synopsys-integration-alert].topicName = 'Project') "
@@ -128,7 +158,8 @@ class JqlStringCreatorTest {
                 + "AND (issue.property[com-blackduck-integration-alert].componentValue = 'myVulnerableComponent' OR issue.property[com-synopsys-integration-alert].componentValue = 'myVulnerableComponent') "
                 + "AND (issue.property[com-blackduck-integration-alert].subComponentName = 'Component Version' OR issue.property[com-synopsys-integration-alert].subComponentName = 'Component Version') "
                 + "AND (issue.property[com-blackduck-integration-alert].subComponentValue = '1.1.2' OR issue.property[com-synopsys-integration-alert].subComponentValue = '1.1.2') "
-                + "AND (issue.property[com-blackduck-integration-alert].category = 'Vulnerability' OR issue.property[com-synopsys-integration-alert].category = 'Vulnerability') ";
+                + "AND (issue.property[com-blackduck-integration-alert].category = 'Vulnerability' OR issue.property[com-synopsys-integration-alert].category = 'Vulnerability') "
+                + ")";
 
         assertEquals(expectedSearchString, jqlString);
     }

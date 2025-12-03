@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '3.3.12'
+        springBootVersion = '3.3.13'
     }
 
     apply from: 'https://raw.githubusercontent.com/blackducksoftware/integration-resources/master/gradle_common/buildscript-repositories.gradle', to: buildscript
@@ -33,10 +33,11 @@ ext {
     moduleName = 'com.blackduck.integration.alert.main'
 
     // This version is also in src/test/resources/spring-test.properties for the test jdbc connection
-    postgresContainerVersionMigration = '14.10'
-    postgresContainerVersionCurrent = '15.8'
+    postgresContainerVersionMigration = '15.8'
+    postgresContainerVersionCurrent = '16.9'
 
     // Docker Variables
+    dockerBuildParam_POSTGRES_MIGRATION_VERSION = postgresContainerVersionMigration
     dockerBuildParam_POSTGRESIMAGEVERSION_MIGRATION = 'postgres:' + postgresContainerVersionMigration + '-alpine'
     dockerBuildParam_POSTGRESIMAGEVERSION = 'postgres:' + postgresContainerVersionCurrent + '-alpine'
     dockerStagingDirectory = project.buildDir.toString() + '/docker-staging'
@@ -56,7 +57,7 @@ ext {
 }
 
 mainClassName = 'com.blackduck.integration.alert.Application'
-version = '8.2.0-SIGQA2-SNAPSHOT'
+version = '9.0.0-SNAPSHOT'
 
 ext.isSnapshot = project.version.endsWith('-SNAPSHOT')
 ext.isSIGQA = project.version.contains('-SIGQA')

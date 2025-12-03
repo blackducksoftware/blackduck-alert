@@ -219,7 +219,13 @@ export function validateJiraServer(jiraServerModel) {
                         }
                     });
             } else {
-                handleValidationError(dispatch, errorHandlers, response.status, () => validateJiraServerFail(response.message, HTTPErrorUtils.createEmptyErrorObject()));
+                response.json().then((responseData) => {
+                    if (responseData && responseData.status === 400) {
+                        handleValidationError(dispatch, errorHandlers, response.status, () => validateJiraServerFail({...responseData, isBadRequest: true}, HTTPErrorUtils.createEmptyErrorObject()));
+                    } else {
+                        handleValidationError(dispatch, errorHandlers, response.status, () => validateJiraServerFail(response.message, HTTPErrorUtils.createEmptyErrorObject()));
+                    }
+                });
             }
         })
             .catch(console.error);

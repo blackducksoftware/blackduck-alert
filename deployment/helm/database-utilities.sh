@@ -184,7 +184,7 @@ while getopts "b,d:,f:,k:,n:,p,r,t:,u:,h" option; do
 done
 shift $((OPTIND -1))
 
-podId=$(kubectl -n $deploymentNamespace get pods | grep $databaseKeyword | awk '{print $1}');
+podId=$(kubectl -n $deploymentNamespace get pods | grep -- $databaseKeyword | awk '{print $1}');
 
 displayConfiguration
 checkFormat

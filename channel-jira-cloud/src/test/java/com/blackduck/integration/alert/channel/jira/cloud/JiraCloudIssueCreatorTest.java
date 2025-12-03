@@ -42,7 +42,6 @@ public class JiraCloudIssueCreatorTest {
         String projectNameOrKey = "FakeProject";
         JiraCloudJobDetailsModel jiraCloudJobDetailsModel = new JiraCloudJobDetailsModel(
             UUID.randomUUID(),
-            false,
             "my@email.com",
             projectNameOrKey,
             "Task",
@@ -72,7 +71,6 @@ public class JiraCloudIssueCreatorTest {
         String projectNameOrKey = "FakeProject";
         JiraCloudJobDetailsModel jiraCloudJobDetailsModel = new JiraCloudJobDetailsModel(
             UUID.randomUUID(),
-            false,
             "my@email.com",
             projectNameOrKey,
             "Task",
@@ -113,7 +111,7 @@ public class JiraCloudIssueCreatorTest {
             ))
         ));
         JiraCustomFieldResolver jiraCustomFieldResolver = new JiraCustomFieldResolver(() -> List.of());
-        JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator = new JiraIssueCreationRequestCreator(jiraCustomFieldResolver);
+        JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator = new JiraIssueCreationRequestCreator(jiraCustomFieldResolver, IssueRequestModelFieldsBuilder::new);
         IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();
 
         return new TestJiraCloudIssueCreator(jiraCloudJobDetailsModel, projectService, jiraIssueCreationRequestCreator, issueCategoryRetriever);

@@ -44,7 +44,6 @@ public class DefaultJiraCloudJobDetailsAccessor implements JiraCloudJobDetailsAc
     public JiraCloudJobDetailsEntity saveJiraCloudJobDetails(UUID jobId, JiraCloudJobDetailsModel jiraCloudJobDetails) {
         JiraCloudJobDetailsEntity jiraCloudJobDetailsToSave = new JiraCloudJobDetailsEntity(
             jobId,
-            jiraCloudJobDetails.isAddComments(),
             jiraCloudJobDetails.getIssueCreatorEmail(),
             jiraCloudJobDetails.getProjectNameOrKey(),
             jiraCloudJobDetails.getIssueType(),
@@ -77,7 +76,6 @@ public class DefaultJiraCloudJobDetailsAccessor implements JiraCloudJobDetailsAc
                                                          .toList();
         return new JiraCloudJobDetailsModel(
             jobDetails.getJobId(),
-            jobDetails.getAddComments(),
             jobDetails.getIssueCreatorEmail(),
             jobDetails.getProjectNameOrKey(),
             jobDetails.getIssueType(),

@@ -118,6 +118,7 @@ class JiraServerExternalConnectionTest {
             UUID.randomUUID().toString(),
             "name",
             testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_URL),
+            Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_TIMEOUT)),
             JiraServerAuthorizationMethod.BASIC
         );
         configModel.setUserName(testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_USERNAME));
@@ -146,7 +147,6 @@ class JiraServerExternalConnectionTest {
 
         return new JiraServerJobDetailsModel(
             uuid,
-            Boolean.parseBoolean(testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_ADD_COMMENTS)),
             testProperties.getOptionalProperty(TestPropertyKey.TEST_JIRA_SERVER_ISSUE_CREATOR).orElse(null),
             testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_PROJECT_NAME),
             testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_ISSUE_TYPE),

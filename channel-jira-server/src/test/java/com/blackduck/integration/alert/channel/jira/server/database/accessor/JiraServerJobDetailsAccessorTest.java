@@ -91,12 +91,12 @@ class JiraServerJobDetailsAccessorTest {
     }
 
     private JiraServerJobDetailsModel createDetailsModel(JiraServerJobDetailsEntity jobDetailsModel) {
-        return new JiraServerJobDetailsModel(jobDetailsModel.getJobId(), jobDetailsModel.getAddComments(), jobDetailsModel.getIssueCreatorUsername(), jobDetailsModel.getProjectNameOrKey(),
+        return new JiraServerJobDetailsModel(jobDetailsModel.getJobId(), jobDetailsModel.getIssueCreatorUsername(), jobDetailsModel.getProjectNameOrKey(),
             jobDetailsModel.getIssueType(), jobDetailsModel.getResolveTransition(), jobDetailsModel.getReopenTransition(), createCustomFieldModels(), jobDetailsModel.getIssueSummary());
     }
 
     private JiraServerJobDetailsEntity createDetailsEntity(UUID jobId) {
-        return new JiraServerJobDetailsEntity(jobId, false, "user", "project",
+        return new JiraServerJobDetailsEntity(jobId, "user", "project",
             "Task", "Resolve", "Reopen", "summary");
     }
 

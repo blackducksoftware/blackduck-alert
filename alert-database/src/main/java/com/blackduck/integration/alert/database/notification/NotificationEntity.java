@@ -50,6 +50,9 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
     @Column(name = "content_id")
     private String contentId;
 
+    @Column(name = "mapping_to_jobs")
+    private boolean mappingToJobs;
+
     @OneToMany(mappedBy = "notificationContent")
     private final List<AuditNotificationRelation> auditNotificationRelations = new ArrayList<>();
 
@@ -67,7 +70,8 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
         String notificationType,
         String content,
         boolean processed,
-        String contentId
+        String contentId,
+        boolean mappingToJobs
     ) {
         this.setId(id);
         this.createdAt = createdAt;
@@ -78,6 +82,7 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
         this.content = content;
         this.processed = processed;
         this.contentId = contentId;
+        this.mappingToJobs = mappingToJobs;
     }
 
     public NotificationEntity(
@@ -88,7 +93,8 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
         String notificationType,
         String content,
         boolean processed,
-        String contentId
+        String contentId,
+        boolean mappingToJobs
     ) {
         this.createdAt = createdAt;
         this.provider = provider;
@@ -98,6 +104,7 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
         this.content = content;
         this.processed = processed;
         this.contentId = contentId;
+        this.mappingToJobs = mappingToJobs;
     }
 
     @Override
@@ -152,5 +159,13 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
 
     public void setContentId(String contentId) {
         this.contentId = contentId;
+    }
+
+    public boolean isMappingToJobs() {
+        return mappingToJobs;
+    }
+
+    public void setMappingToJobsToTrue() {
+        this.mappingToJobs = true;
     }
 }

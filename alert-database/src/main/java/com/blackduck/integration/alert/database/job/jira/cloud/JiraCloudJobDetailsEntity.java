@@ -26,9 +26,6 @@ public class JiraCloudJobDetailsEntity {
     @Column(name = "job_id")
     private UUID jobId;
 
-    @Column(name = "add_comments")
-    private Boolean addComments;
-
     @Column(name = "issue_creator_email")
     private String issueCreatorEmail;
 
@@ -54,9 +51,8 @@ public class JiraCloudJobDetailsEntity {
     public JiraCloudJobDetailsEntity() {
     }
 
-    public JiraCloudJobDetailsEntity(UUID jobId, Boolean addComments, String issueCreatorEmail, String projectNameOrKey, String issueType, String resolveTransition, String reopenTransition, String issueSummary) {
+    public JiraCloudJobDetailsEntity(UUID jobId, String issueCreatorEmail, String projectNameOrKey, String issueType, String resolveTransition, String reopenTransition, String issueSummary) {
         this.jobId = jobId;
-        this.addComments = addComments;
         this.issueCreatorEmail = issueCreatorEmail;
         this.projectNameOrKey = projectNameOrKey;
         this.issueType = issueType;
@@ -71,14 +67,6 @@ public class JiraCloudJobDetailsEntity {
 
     public void setJobId(UUID jobId) {
         this.jobId = jobId;
-    }
-
-    public Boolean getAddComments() {
-        return addComments;
-    }
-
-    public void setAddComments(Boolean addComments) {
-        this.addComments = addComments;
     }
 
     public String getIssueCreatorEmail() {

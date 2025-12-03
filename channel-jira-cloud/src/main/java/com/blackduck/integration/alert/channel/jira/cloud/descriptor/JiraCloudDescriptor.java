@@ -31,6 +31,7 @@ public class JiraCloudDescriptor extends ChannelDescriptor {
     public static final String KEY_JIRA_ADMIN_API_TOKEN = JIRA_CLOUD_PREFIX + "admin.api.token";
     public static final String KEY_JIRA_DISABLE_PLUGIN_CHECK = JIRA_CLOUD_PREFIX + "disable.plugin.check";
     public static final String KEY_JIRA_CONFIGURE_PLUGIN = JIRA_CLOUD_PREFIX + "configure.plugin";
+    public static final String KEY_JIRA_TIMEOUT = JIRA_CLOUD_PREFIX + "timeout";
 
     public static final String KEY_ADD_COMMENTS = JIRA_CLOUD_CHANNEL_PREFIX + "add.comments";
     public static final String KEY_ISSUE_CREATOR = JIRA_CLOUD_CHANNEL_PREFIX + "issue.creator";
@@ -45,7 +46,6 @@ public class JiraCloudDescriptor extends ChannelDescriptor {
     public static final String JIRA_URL = "jira";
     public static final String JIRA_DESCRIPTION = "Configure the Jira Cloud instance that Alert will send issue updates to.";
 
-    public static final String LABEL_ADD_COMMENTS = "Add Comments";
     public static final String LABEL_ISSUE_CREATOR = "Issue Creator";
     public static final String LABEL_JIRA_PROJECT = "Jira Project";
     public static final String LABEL_ISSUE_TYPE = "Issue Type";

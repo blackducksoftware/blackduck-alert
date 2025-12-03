@@ -216,7 +216,8 @@ class AuditFailedEventListenerTest {
             "VULNERABILITY",
             content,
             false,
-            String.format("content-id-%s", UUID.randomUUID())
+            String.format("content-id-%s", UUID.randomUUID()),
+            false
         );
     }
 

@@ -191,12 +191,13 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
                 logger.debug(actionMessageCreator.updateStartMessage("user", userName));
                 userAccessor.updateUser(newUserModel, passwordMissing);
                 Set<String> configuredRoleNames = resource.getRoleNames();
+                Collection<UserRoleModel> roleNames = List.of();
                 if (null != configuredRoleNames && !configuredRoleNames.isEmpty()) {
-                    Collection<UserRoleModel> roleNames = roleAccessor.getRoles().stream()
-                                                              .filter(role -> configuredRoleNames.contains(role.getName()))
-                                                              .collect(Collectors.toList());
-                    authorizationManager.updateUserRoles(existingUser.getId(), roleNames);
+                    roleNames = roleAccessor.getRoles().stream()
+                        .filter(role -> configuredRoleNames.contains(role.getName()))
+                        .toList();
                 }
+                authorizationManager.updateUserRoles(existingUser.getId(), roleNames);
                 userSystemValidator.validateDefaultAdminUser(id);
                 UserConfig user = userAccessor.getUser(id)
                                       .map(this::convertDatabaseModelToRestModel)

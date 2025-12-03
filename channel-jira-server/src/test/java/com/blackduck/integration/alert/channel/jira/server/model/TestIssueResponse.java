@@ -11,21 +11,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.blackduck.integration.jira.common.model.components.IdComponent;
+import com.blackduck.integration.jira.common.model.components.IssueFieldsComponent;
 import com.blackduck.integration.jira.common.model.response.IssueResponseModel;
 
-public class TestIssueResponse extends IssueResponseModel {
+public class TestIssueResponse implements IssueResponseModel {
     private final String id;
     private final String key;
-    private final List<IdComponent> transitions;
+    private final String self;
+    private final IssueFieldsComponent fields;
 
     public TestIssueResponse() {
-        this("1", "project-1", new ArrayList<>());
+        this("1", "project-1", "https://www.some-url.example.com/rest/api/3/issue/1", null);
     }
 
-    public TestIssueResponse(String id, String key, List<IdComponent> transitions) {
+    public TestIssueResponse(String id, String key, String self, IssueFieldsComponent fields) {
         this.id = id;
         this.key = key;
-        this.transitions = transitions;
+        this.self = self;
+        this.fields = fields;
     }
 
     @Override
@@ -39,7 +42,12 @@ public class TestIssueResponse extends IssueResponseModel {
     }
 
     @Override
-    public List<IdComponent> getTransitions() {
-        return transitions;
+    public String getSelf() {
+        return self;
+    }
+
+    @Override
+    public IssueFieldsComponent getFields() {
+        return fields;
     }
 }

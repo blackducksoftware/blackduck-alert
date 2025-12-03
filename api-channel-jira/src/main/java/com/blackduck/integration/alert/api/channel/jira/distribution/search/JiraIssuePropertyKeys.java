@@ -24,6 +24,16 @@ public final class JiraIssuePropertyKeys {
     public static final String JIRA_ISSUE_PROPERTY_OBJECT_KEY_SUB_COMPONENT_VALUE = "subComponentValue";
     public static final String JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY = "additionalKey";
 
+    public static final String JIRA_ISSUE_KEY_SEPARATOR = ": ";
+    public static final String JIRA_ISSUE_KEY_START_HEADER = "=== BEGIN JIRA ISSUE KEYS ===";
+    public static final String JIRA_ISSUE_KEY_END_HEADER = "=== END JIRA ISSUE KEYS ===";
+    public static final String JIRA_ISSUE_KEY_PROJECT_ID = "projectId";
+    public static final String JIRA_ISSUE_KEY_PROJECT_VERSION_ID = "projectVersionId";
+    public static final String JIRA_ISSUE_KEY_COMPONENT_NAME = "componentName";
+    public static final String JIRA_ISSUE_KEY_COMPONENT_VERSION_NAME = "componentVersionName";
+    public static final String JIRA_ISSUE_KEY_CATEGORY = "category";
+    public static final String JIRA_ISSUE_KEY_POLICY_NAME = "policyName";
+
     private JiraIssuePropertyKeys() {
     }
 

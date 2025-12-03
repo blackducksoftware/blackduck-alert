@@ -1,32 +1,60 @@
 #!/bin/bash
+set -e
+
+formatLine() {
+  local text="$1"
+  local prefix="- "
+  local suffix="-"
+  local total_length=62
+
+  # Special case: if the input is "-----", print all dashes
+  if [[ "$text" == "-----" ]]; then
+    printf '%*s\n' $total_length '' | tr ' ' '-'
+    return
+  fi
+
+  local padding_length=$((total_length - ${#prefix} - ${#text} - 1))
+  local padding=$(printf '%*s' "$padding_length")
+
+  echo "${prefix}${text}${padding}${suffix}"
+}
 
 usage() {
-  echo "--------------------------------------------------------------"
-  echo "- Usage: ./init-helm-db.sh                                   -"
-  echo "- Parameters                                                 -"
-  echo "-   -n: specify the path to the helm chart                   -"
-  echo "-   -n: specify the namespace name to be created             -"
-  echo "-   -i: postgres password                                    -"
-  echo "-                                                            -"
-  echo "- Example:                                                   -"
-  echo "    ./init-helm-db.sh -n postgres-namespace -i install-name  -"
-  echo "_____________________________________________________________-"
+  formatLine "-----"
+  formatLine "Usage: ./init-helm-db.sh"
+  formatLine "Parameters"
+  formatLine "  -c: specify the path to the Helm chart"
+  formatLine "  -d: specify the name of the Alert database"
+  formatLine "  -n: specify the Kubernetes namespace name to be created"
+  formatLine "  -i: specify the Helm install name"
+  formatLine "  -u: specify the Alert DB user name"
+  formatLine ""
+  formatLine "Example:"
+  formatLine "  ./init-helm-db.sh -n postgres-namespace -i install-name"
+  formatLine ""
+  formatLine "Defaults:"
+  formatLine "   -c: ${chart_path}"
+  formatLine "   -d: ${db_name}"
+  formatLine "   -n: ${namespace}"
+  formatLine "   -i: ${installation_name}"
+  formatLine "   -u: ${user}"
+  formatLine "-----"
 }
+
+chart_path="."
+db_name='alertdb'
+namespace='test-postgres'
+installation_name='alert-install'
+user='sa'
 
 if [ $# -eq 0 ];
   then
-      echo "--------------------------------------------------------------"
-      echo "- Error: No arguments supplied                               -"
-      echo "______________________________________________________________"
+      formatLine "-----"
+      formatLine "Error: No arguments supplied"
+      formatLine "-----"
       usage
       exit 1
 fi
-
-namespace='test-postgres'
-installation_name='alert-install'
-chart_path="."
-user=sa
-db_name=alertdb
 
 while getopts "c:,d:,n:,i:,u:,h" option; do
   case ${option} in

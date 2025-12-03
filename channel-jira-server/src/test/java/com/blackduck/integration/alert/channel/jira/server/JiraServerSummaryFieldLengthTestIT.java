@@ -48,6 +48,7 @@ import com.google.gson.GsonBuilder;
 public class JiraServerSummaryFieldLengthTestIT {
     private static final LinkableItem PROVIDER = new LinkableItem("Black Duck", "a hub server", "https://a-hub-server");
     private static final String TEST_NAME = JiraServerSummaryFieldLengthTestIT.class.getSimpleName();
+    private static final Integer TEST_JIRA_TIMEOUT_SECONDS = 300;
 
     private static IssueTrackerMessageSender<String> jiraServerMessageSender;
 
@@ -113,6 +114,7 @@ public class JiraServerSummaryFieldLengthTestIT {
         JiraServerPropertiesFactory jiraServerPropertiesFactory = Mockito.mock(JiraServerPropertiesFactory.class);
         JiraServerProperties jiraServerProperties = new JiraServerProperties(
             url,
+            TEST_JIRA_TIMEOUT_SECONDS,
             JiraServerAuthorizationMethod.BASIC,
             password,
             username,
@@ -135,7 +137,6 @@ public class JiraServerSummaryFieldLengthTestIT {
 
         return new JiraServerJobDetailsModel(
             UUID.randomUUID(),
-            true,
             issueCreator,
             projectName,
             issueType,

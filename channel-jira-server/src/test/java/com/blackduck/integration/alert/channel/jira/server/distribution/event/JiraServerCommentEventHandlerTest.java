@@ -39,8 +39,8 @@ import com.blackduck.integration.alert.channel.jira.server.distribution.JiraServ
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.exception.IntegrationException;
-import com.blackduck.integration.jira.common.model.request.IssueCommentRequestModel;
-import com.blackduck.integration.jira.common.model.response.IssueCommentResponseModel;
+import com.blackduck.integration.jira.common.server.model.IssueCommentRequestModel;
+import com.blackduck.integration.jira.common.server.model.IssueCommentResponseModel;
 import com.blackduck.integration.jira.common.server.service.FieldService;
 import com.blackduck.integration.jira.common.server.service.IssueSearchService;
 import com.blackduck.integration.jira.common.server.service.IssueService;
@@ -181,7 +181,6 @@ class JiraServerCommentEventHandlerTest {
     private JiraServerJobDetailsModel createJobDetails(UUID jobId) {
         return new JiraServerJobDetailsModel(
             jobId,
-            true,
             "user",
             "jiraProject",
             "Task",

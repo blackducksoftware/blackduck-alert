@@ -73,7 +73,6 @@ class StaticJobAccessorTestIT {
     void verifyJiraServerSavesTest() {
         JiraServerJobDetailsModel jiraServerJobDetailsModel = new JiraServerJobDetailsModel(
             UUID.randomUUID(),
-            true,
             "issueCreatorUsername",
             "projectNameOrKey",
             "issueType",
@@ -91,7 +90,6 @@ class StaticJobAccessorTestIT {
     void verifyJiraCloudSavesTest() {
         JiraCloudJobDetailsModel jiraCloudJobDetailsModel = new JiraCloudJobDetailsModel(
             UUID.randomUUID(),
-            true,
             "issueCreatorEmail",
             "projectNameOrKey",
             "issueType",
