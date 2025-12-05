@@ -1,11 +1,11 @@
 const path = require('path');
-const merge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 const commonConfig = require('./webpack.common.config.js');
 
 const srcDir = path.resolve(__dirname, 'src');
 const jsDir = path.resolve(srcDir, 'main', 'js');
 
-module.exports = merge.smart(commonConfig, {
+module.exports = merge(commonConfig, {
     mode: 'development',
     devtool: 'source-map',
     output: {
@@ -17,7 +17,7 @@ module.exports = merge.smart(commonConfig, {
             { directory: path.resolve(srcDir, 'css'), publicPath: '/alert/' },
             { directory: path.resolve(srcDir, 'img'), publicPath: '/alert/' }
         ],
-        https: true,
+        server: 'https',
         hot: true,
         port: 9000,
         compress: true,
