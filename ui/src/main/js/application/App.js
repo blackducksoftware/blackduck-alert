@@ -9,6 +9,7 @@ import AboutInfoFooter from 'page/about/AboutInfoFooter';
 import { verifyLogin, verifySaml } from 'store/actions/session';
 import * as IconUtility from 'common/util/iconUtility';
 import LogoutPage from 'application/auth/LogoutPage';
+import SessionUnauthorizedPage from 'application/auth/SessionUnauthorizedPage';
 // These are needed for the react-bootstrap tables to show the ascending/descending icons
 import '@fortawesome/fontawesome-free/scss/fontawesome.scss';
 import '@fortawesome/fontawesome-free/js/all.js';
@@ -34,6 +35,10 @@ class App extends Component {
             return <LogoutPage />;
         }
 
+        if (this.props.sessionUnauthorizationPerformed) {
+            return <SessionUnauthorizedPage />;
+        }
+
         const contentPage = (this.props.loggedIn) ? <MainPage /> : <LoginPage />;
 
         return (
@@ -52,6 +57,7 @@ class App extends Component {
 App.propTypes = {
     loggedIn: PropTypes.bool.isRequired,
     logoutPerformed: PropTypes.bool.isRequired,
+    sessionUnauthorizationPerformed: PropTypes.bool.isRequired,
     initializing: PropTypes.bool.isRequired,
     verifyLogin: PropTypes.func.isRequired,
     verifySaml: PropTypes.func.isRequired,
@@ -61,6 +67,7 @@ App.propTypes = {
 const mapStateToProps = (state) => ({
     loggedIn: state.session.loggedIn,
     logoutPerformed: state.session.logoutPerformed,
+    sessionUnauthorizationPerformed: state.session.sessionUnauthorizationPerformed,
     initializing: state.session.initializing,
 });
 

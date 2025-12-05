@@ -52,7 +52,8 @@ export function getDescriptors() {
         headersUtil.addApplicationJsonContentType();
         fetch(getUrl, {
             credentials: 'same-origin',
-            headers: headersUtil.getHeaders()
+            headers: headersUtil.getHeaders(),
+            redirect: 'manual'
         })
             .then((response) => {
                 response.json()
