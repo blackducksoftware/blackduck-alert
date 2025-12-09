@@ -34,7 +34,7 @@ ext {
 
     // This version is also in src/test/resources/spring-test.properties for the test jdbc connection
     postgresContainerVersionMigration = '15.8'
-    postgresContainerVersionCurrent = '16.9'
+    postgresContainerVersionCurrent = '16.11'
 
     // All variables that start with 'dockerBuildParam+' will all be passed to the 'docker build' command
     dockerBuildParam_BASEIMAGE_HUB_DOCKER_COMMON = 'blackducksoftware/hub-docker-common:1.0.7'
