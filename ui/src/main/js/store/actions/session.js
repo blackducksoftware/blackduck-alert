@@ -7,7 +7,8 @@ import {
     SESSION_LOGGED_OUT,
     SESSION_LOGGING_IN,
     SESSION_LOGIN_ERROR,
-    SESSION_LOGOUT
+    SESSION_LOGOUT,
+    SESSION_UNAUTHORIZED
 } from 'store/actions/types';
 import HeaderUtilities from 'common/util/HeaderUtilities';
 import { push } from 'connected-react-router';
@@ -60,6 +61,12 @@ function logOut() {
     return {
         type: SESSION_LOGOUT
     };
+}
+
+function unauthorizeUser() {
+    return {
+        type: SESSION_UNAUTHORIZED
+    }
 }
 
 const PARAM_IGNORE_SAML = 'ignoreSAML';
@@ -215,5 +222,19 @@ export function logout() {
 }
 
 export function unauthorized() {
-    return (dispatch) => dispatch(loggedOut());
+    return (dispatch, getState) => {
+        const { csrfToken } = getState().session;
+        const headersUtil = new HeaderUtilities();
+        headersUtil.addApplicationJsonContentType();
+        headersUtil.addXCsrfToken(csrfToken);
+        fetch('/alert/api/logout', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: headersUtil.getHeaders()
+        })
+            .then(() => dispatch(unauthorizeUser()))
+            .catch((error) => {
+                console.log(error);
+            });
+    };
 }

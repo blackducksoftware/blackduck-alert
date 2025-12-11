@@ -160,7 +160,8 @@ export function fetchUsers() {
         headersUtil.addXCsrfToken(csrfToken);
         fetch(ConfigRequestBuilder.USER_API_URL, {
             credentials: 'same-origin',
-            headers: headersUtil.getHeaders()
+            headers: headersUtil.getHeaders(),
+            redirect: 'manual'
         })
             .then((response) => {
                 response.json()
