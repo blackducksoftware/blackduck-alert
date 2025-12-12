@@ -7,7 +7,7 @@
  */
 package com.blackduck.integration.alert.channel.jira.server.task;
 
-import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraTask;
+import com.blackduck.integration.alert.api.channel.jira.lifecycle.JiraPropertyTask;
 import com.blackduck.integration.alert.api.task.ScheduledTask;
 import com.blackduck.integration.alert.api.task.TaskManager;
 import com.blackduck.integration.alert.channel.jira.server.JiraServerProperties;
@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-public class JiraPropertyUpdateTask extends JiraTask {
+public class JiraPropertyUpdateTask extends JiraPropertyTask {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final JiraServerPropertiesFactory jiraPropertiesFactory;
     private final Set<String> projectNamesOrKeys;
