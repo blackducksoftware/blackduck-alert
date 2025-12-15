@@ -16,10 +16,10 @@ import org.springframework.lang.Nullable;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 
-public interface IssueTrackerMessageSenderFactory<D extends DistributionJobDetailsModel, T extends Serializable> {
+public interface IssueTrackerMessageSenderFactory<D extends DistributionJobDetailsModel, T extends Serializable, A extends Serializable> {
     IssueTrackerMessageSender<T> createMessageSender(D distributionDetails, @Nullable UUID globalId) throws AlertException;
 
-    IssueTrackerAsyncMessageSender<T> createAsyncMessageSender(
+    AsyncMessageSender<A> createAsyncMessageSender(
         D distributionDetails, @Nullable UUID globalId, UUID jobExecutionId,
         Set<Long> notificationIds
     ) throws AlertException;
