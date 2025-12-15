@@ -171,8 +171,15 @@ public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequest
         Optional<String> searchKeys = getAlertSearchKeys(issueDetails, projectSource);
         AtlassianDocumentFormatModelBuilder atlassianDocumentFormatModelBuilder = new AtlassianDocumentFormatModelBuilder();
         atlassianDocumentFormatModelBuilder.addSingleParagraphTextNode("This issue was automatically created by Alert.");
-        searchKeys.ifPresent(atlassianDocumentFormatModelBuilder::addSingleParagraphTextNode);
         AtlassianDocumentFormatModel firstComment = atlassianDocumentFormatModelBuilder.build();
+
+        if(searchKeys.isPresent()) {
+            AtlassianDocumentFormatModelBuilder searchKeysModelBuilder = new AtlassianDocumentFormatModelBuilder();
+            searchKeys.ifPresent(searchKeysModelBuilder::addSingleParagraphTextNode);
+            AtlassianDocumentFormatModel searchKeysComment = searchKeysModelBuilder.build();
+            postCreateComments.add(searchKeysComment);
+        }
+
         Optional<List<AtlassianDocumentFormatModel>> additionalCommentList = creationModel.getAtlassianDocumentFormatCommentModel();
         additionalCommentList.ifPresent(postCreateComments::addAll);
 
