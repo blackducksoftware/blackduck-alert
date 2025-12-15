@@ -10,14 +10,16 @@ package com.blackduck.integration.alert.channel.jira.cloud.distribution;
 import java.util.Set;
 import java.util.UUID;
 
-import com.blackduck.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.AsyncMessageSender;
+import com.blackduck.integration.alert.api.channel.issue.tracker.send.DefaultIssueTrackerEventGenerator;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerAsyncMessageSender;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerCommentEventGenerator;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerCreationEventGenerator;
@@ -42,6 +44,7 @@ import com.blackduck.integration.alert.channel.jira.cloud.distribution.delegate.
 import com.blackduck.integration.alert.channel.jira.cloud.distribution.delegate.JiraCloudIssueTransitioner;
 import com.blackduck.integration.alert.channel.jira.cloud.distribution.delegate.JiraCloudTransitionGenerator;
 import com.blackduck.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
+import com.blackduck.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
 import com.blackduck.integration.jira.common.cloud.service.FieldService;
 import com.blackduck.integration.jira.common.cloud.service.IssueSearchService;
 import com.blackduck.integration.jira.common.cloud.service.IssueService;
@@ -51,7 +54,7 @@ import com.blackduck.integration.jira.common.rest.service.IssuePropertyService;
 import com.google.gson.Gson;
 
 @Component
-public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderFactory<JiraCloudJobDetailsModel, String> {
+public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderFactory<JiraCloudJobDetailsModel, String, IssueTrackerModelHolder<String>> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Gson gson;
@@ -113,7 +116,7 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
     }
 
     @Override
-    public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
+    public AsyncMessageSender<IssueTrackerModelHolder<String>> createAsyncMessageSender(
         JiraCloudJobDetailsModel distributionDetails,
         UUID globalId,
         UUID jobExecutionId,
@@ -158,7 +161,7 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
         );
     }
 
-    public IssueTrackerAsyncMessageSender<String> createAsyncMessageSender(
+    public AsyncMessageSender<IssueTrackerModelHolder<String>> createAsyncMessageSender(
         JiraCloudJobDetailsModel distributionDetails,
         UUID jobExecutionId,
         Set<Long> notificationIds
@@ -167,11 +170,9 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
         IssueTrackerCommentEventGenerator<String> commentEventGenerator = new JiraCloudCommentGenerator(channelKey, jobExecutionId, jobId, notificationIds);
         IssueTrackerCreationEventGenerator createEventGenerator = new JiraCloudCreateEventGenerator(channelKey, jobExecutionId, jobId, notificationIds);
         IssueTrackerTransitionEventGenerator<String> transitionEventGenerator = new JiraCloudTransitionGenerator(channelKey, jobExecutionId, jobId, notificationIds);
-
+        DefaultIssueTrackerEventGenerator<String> eventGenerator = new DefaultIssueTrackerEventGenerator<>(createEventGenerator, transitionEventGenerator, commentEventGenerator);
         return new IssueTrackerAsyncMessageSender<>(
-            createEventGenerator,
-            transitionEventGenerator,
-            commentEventGenerator,
+            eventGenerator,
             eventManager,
             jobExecutionId,
             notificationIds,

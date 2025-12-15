@@ -7,18 +7,15 @@
  */
 package com.blackduck.integration.alert.api.channel.issue.tracker.send;
 
-import java.io.Serializable;
 import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerEventModel;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.distribution.execution.JobStage;
 import com.blackduck.integration.alert.api.distribution.execution.JobStageStartedEvent;
@@ -26,38 +23,32 @@ import com.blackduck.integration.alert.api.event.AlertEvent;
 import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
 
-public class IssueTrackerAsyncMessageSender<T extends Serializable> {
-    private final IssueTrackerCreationEventGenerator issueCreateEventGenerator;
-    private final IssueTrackerTransitionEventGenerator<T> issueTrackerTransitionEventGenerator;
-    private final IssueTrackerCommentEventGenerator<T> issueTrackerCommentEventGenerator;
+public class IssueTrackerAsyncMessageSender<T> implements AsyncMessageSender<T> {
+    private final IssueTrackerEventGenerator<T> issueTrackerEventGenerator;
     private final EventManager eventManager;
     private final UUID jobExecutionId;
     private final Set<Long> notificationIds;
     private final ExecutingJobManager executingJobManager;
 
     public IssueTrackerAsyncMessageSender(
-        IssueTrackerCreationEventGenerator issueCreateEventGenerator,
-        IssueTrackerTransitionEventGenerator<T> issueTrackerTransitionEventGenerator,
-        IssueTrackerCommentEventGenerator<T> issueTrackerCommentEventGenerator,
+        IssueTrackerEventGenerator<T> issueTrackerEventGenerator,
         EventManager eventManager,
         UUID jobExecutionId,
         Set<Long> notificationIds,
         ExecutingJobManager executingJobManager
     ) {
-        this.issueCreateEventGenerator = issueCreateEventGenerator;
-        this.issueTrackerTransitionEventGenerator = issueTrackerTransitionEventGenerator;
-        this.issueTrackerCommentEventGenerator = issueTrackerCommentEventGenerator;
+        this.issueTrackerEventGenerator = issueTrackerEventGenerator;
         this.eventManager = eventManager;
         this.jobExecutionId = jobExecutionId;
         this.notificationIds = notificationIds;
         this.executingJobManager = executingJobManager;
     }
 
-    public final void sendAsyncMessages(List<IssueTrackerModelHolder<T>> issueTrackerMessages) {
+    public final void sendAsyncMessages(List<T> issueTrackerMessages) {
         List<AlertEvent> eventList = issueTrackerMessages.stream()
             .map(this::createAlertEvents)
             .flatMap(List::stream)
-            .collect(Collectors.toList());
+            .toList();
 
         // the full set of notifications to be sent is here.  Each event generated is for a subset of notification ids.
         // some notifications do not produce events which is why the check for the empty event list also exists.
@@ -75,23 +66,18 @@ public class IssueTrackerAsyncMessageSender<T extends Serializable> {
     }
 
     @NotNull
-    private List<AlertEvent> createAlertEvents(IssueTrackerModelHolder<T> issueTrackerMessage) {
+    private List<AlertEvent> createAlertEvents(T issueTrackerMessage) {
         List<AlertEvent> eventList = new LinkedList<>();
-        List<AlertEvent> creationEvents = createMessages(issueTrackerMessage.getIssueCreationModels(), issueCreateEventGenerator::generateEvent);
-        List<AlertEvent> transitionEvents = createMessages(issueTrackerMessage.getIssueTransitionModels(), issueTrackerTransitionEventGenerator::generateEvent);
-        List<AlertEvent> commentEvents = createMessages(issueTrackerMessage.getIssueCommentModels(), issueTrackerCommentEventGenerator::generateEvent);
+        IssueTrackerEventModel eventModel = issueTrackerEventGenerator.generateEvents(issueTrackerMessage);
+        List<AlertEvent> creationEvents = eventModel.getIssueCreationEvents();
+        List<AlertEvent> transitionEvents = eventModel.getIssueTransitionEvents();
+        List<AlertEvent> commentEvents = eventModel.getIssueCommentEvents();
 
         addEventsAndStartStage(eventList, creationEvents, JobStage.ISSUE_CREATION);
         addEventsAndStartStage(eventList, transitionEvents, JobStage.ISSUE_TRANSITION);
         addEventsAndStartStage(eventList, commentEvents, JobStage.ISSUE_COMMENTING);
 
         return eventList;
-    }
-
-    private <U> List<AlertEvent> createMessages(List<U> messages, Function<U, AlertEvent> eventGenerator) {
-        return messages.stream()
-            .map(eventGenerator::apply)
-            .collect(Collectors.toList());
     }
 
     private void addEventsAndStartStage(List<AlertEvent> allEvents, List<AlertEvent> events, JobStage jobStage) {

@@ -12,7 +12,8 @@ import java.util.List;
 
 import org.apache.commons.collections4.ListUtils;
 
-public class IssueTrackerModelHolder<T extends Serializable> {
+public class IssueTrackerModelHolder<T extends Serializable> implements Serializable {
+
     private final List<IssueCreationModel> issueCreationModels;
     private final List<IssueTransitionModel<T>> issueTransitionModels;
     private final List<IssueCommentModel<T>> issueCommentModels;
@@ -24,7 +25,11 @@ public class IssueTrackerModelHolder<T extends Serializable> {
         return new IssueTrackerModelHolder<>(unifiedIssueCreationModels, unifiedIssueTransitionModels, unifiedIssueCommentModels);
     }
 
-    public IssueTrackerModelHolder(List<IssueCreationModel> issueCreationModels, List<IssueTransitionModel<T>> issueTransitionModels, List<IssueCommentModel<T>> issueCommentModels) {
+    public IssueTrackerModelHolder(
+        List<IssueCreationModel> issueCreationModels,
+        List<IssueTransitionModel<T>> issueTransitionModels,
+        List<IssueCommentModel<T>> issueCommentModels
+    ) {
         this.issueCreationModels = issueCreationModels;
         this.issueTransitionModels = issueTransitionModels;
         this.issueCommentModels = issueCommentModels;

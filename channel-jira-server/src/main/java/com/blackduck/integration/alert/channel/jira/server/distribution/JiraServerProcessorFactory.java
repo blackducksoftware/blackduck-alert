@@ -19,6 +19,7 @@ import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerMod
 import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerProcessor;
 import com.blackduck.integration.alert.api.channel.issue.tracker.IssueTrackerProcessorFactory;
 import com.blackduck.integration.alert.api.channel.issue.tracker.convert.ProjectMessageToIssueModelTransformer;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueTrackerSearcher;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerAsyncMessageSender;
@@ -99,8 +100,8 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
         IssueTrackerSearcher<String> jiraSearcher = jiraSearcherFactory.createJiraSearcher(distributionDetails.getProjectNameOrKey(), jiraServerQueryExecutor);
 
         IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(jiraMessageFormatter, jiraSearcher);
-        
-        IssueTrackerAsyncMessageSender<String> messageSender = jiraServerMessageSenderFactory.createAsyncMessageSender(
+
+        IssueTrackerAsyncMessageSender<IssueTrackerModelHolder<String>> messageSender = jiraServerMessageSenderFactory.createAsyncMessageSender(
             distributionDetails,
             jobExecutionId,
             notificationIds
