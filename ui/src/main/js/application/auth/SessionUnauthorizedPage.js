@@ -24,19 +24,19 @@ const SessionUnauthorizedPage = () => {
     }
 
     return (
-            <div className="wrapper">
-                <div className="loginContainer">
-                    <div className="loginBox">
-                        <Header />
-                        <div className={classes.dialogContainer}>
-                            <div>You have been logged out due to an inactive session.</div>
-                            <div>This site is only for registered users.</div>
-                            <Button id="unauthroized-login" onClick={handleLoginRedirect} text="Return to Login" />
-                        </div>
+        <div className="wrapper">
+            <div className="loginContainer">
+                <div className="loginBox">
+                    <Header />
+                    <div className={classes.dialogContainer}>
+                        <div>You have been logged out due to an inactive session.</div>
+                        <div>This site is only for registered users.</div>
+                        <Button id="unauthorized-login" onClick={handleLoginRedirect} text="Return to Login" />
                     </div>
                 </div>
             </div>
-        );
+        </div>
+    );
 }
 
 export default SessionUnauthorizedPage

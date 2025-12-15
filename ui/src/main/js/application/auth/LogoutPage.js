@@ -1,36 +1,41 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { createUseStyles } from 'react-jss';
+import { useDispatch } from 'react-redux';
+import { verifyLogin } from 'store/actions/session';
 import Header from 'common/component/Header';
-import { connect } from 'react-redux';
+import Button from 'common/component/button/Button';
 
-class LogoutPage extends Component {
-    constructor(props) {
-        super(props);
+const useStyles = createUseStyles({
+    dialogContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        padding: '2.25em',
+        rowGap: '1.5em'
+    }
+});
+
+const LogoutPage = () => {
+    const classes = useStyles();
+    const dispatch = useDispatch();
+    function handleLoginRedirect() {
+        dispatch(verifyLogin());
     }
 
-    render() {
-        return (
-            <div className="wrapper">
-                <div className="loginContainer">
-                    <div className="loginBox">
-                        <Header />
-                        <div className="col-sm-12 text-center" style={{ padding: '2.25em' }}>
-                            <div className="d-inline-flex flex-column p-2">You've successfully logged out of Alert!</div>
-                            <div className="d-inline-flex flex-column p-2">Please close your browser to complete logout.</div>
-                        </div>
+    return (
+        <div className="wrapper">
+            <div className="loginContainer">
+                <div className="loginBox">
+                    <Header />
+                    <div className={classes.dialogContainer}>
+                        <div>You've successfully logged out of Alert!</div>
+                        <div>To complete logout please close your browser or click below.</div>
+                        <Button id="logout-redirect-login" onClick={handleLoginRedirect} text="Return to Login" />
                     </div>
                 </div>
             </div>
-        );
-    }
-}
+        </div>
+    );
+};
 
-LogoutPage.propTypes = {};
-
-LogoutPage.defaultProps = {};
-
-// Redux mappings to be used later....
-const mapStateToProps = () => ({});
-
-const mapDispatchToProps = () => ({});
-
-export default connect(mapStateToProps, mapDispatchToProps)(LogoutPage);
+export default LogoutPage;
