@@ -1,5 +1,10 @@
-FROM blackducksoftware/hub-docker-common:1.0.7 AS docker-common
-FROM alpine:3.20
+# The ARG's for the FROM images come from Gradle. Base image variables are set in the root build.gradle,
+# and used in buildSrc/docker.gradle
+ARG BASEIMAGE_HUB_DOCKER_COMMON="default"
+ARG BASEIMAGE_BLACKDUCK_ALERT="default"
+
+FROM ${BASEIMAGE_HUB_DOCKER_COMMON} AS docker-common
+FROM ${BASEIMAGE_BLACKDUCK_ALERT}
 
 ARG VERSION
 ARG COMMITHASH

@@ -15,6 +15,8 @@ const CommonDistributionConfigurationForm = ({
     displaySave,
     displayTest,
     displayDelete,
+    isSaveDisabled,
+    isTestDisabled,
     children,
     testFields,
     buttonIdPrefix,
@@ -174,6 +176,8 @@ const CommonDistributionConfigurationForm = ({
                     includeSave={displaySave}
                     includeTest={displayTest}
                     includeDelete={displayDelete}
+                    isSaveDisabled={isSaveDisabled}
+                    isTestDisabled={isTestDisabled}
                     type="submit"
                     onTestClick={handleTestClick}
                     onDeleteClick={performDeleteRequest}
@@ -207,6 +211,8 @@ CommonDistributionConfigurationForm.propTypes = {
     displaySave: PropTypes.bool,
     displayTest: PropTypes.bool,
     displayDelete: PropTypes.bool,
+    isSaveDisabled: PropTypes.bool,
+    isTestDisabled: PropTypes.bool,
     testFields: PropTypes.node,
     testFormData: PropTypes.object,
     setTestFormData: PropTypes.func,
