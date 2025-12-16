@@ -3,4 +3,5 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <include file="jira-cloud-job-details-remove-comments.xml" relativeToChangelogFile="true"/>
     <include file="jira-server-job-details-remove-comments.xml" relativeToChangelogFile="true"/>
+    <include file="distribution_jobs_handle_bom_edit.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
