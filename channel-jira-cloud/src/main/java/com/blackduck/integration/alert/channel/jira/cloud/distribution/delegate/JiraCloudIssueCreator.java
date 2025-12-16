@@ -169,10 +169,18 @@ public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequest
         throws AlertException {
         LinkedList<AtlassianDocumentFormatModel> postCreateComments = new LinkedList<>();
         Optional<String> searchKeys = getAlertSearchKeys(issueDetails, projectSource);
-        AtlassianDocumentFormatModelBuilder atlassianDocumentFormatModelBuilder = new AtlassianDocumentFormatModelBuilder();
-        atlassianDocumentFormatModelBuilder.addSingleParagraphTextNode("This issue was automatically created by Alert.");
-        searchKeys.ifPresent(atlassianDocumentFormatModelBuilder::addSingleParagraphTextNode);
-        AtlassianDocumentFormatModel firstComment = atlassianDocumentFormatModelBuilder.build();
+        AtlassianDocumentFormatModel firstComment;
+
+        if(searchKeys.isPresent()) {
+            AtlassianDocumentFormatModelBuilder searchKeysModelBuilder = new AtlassianDocumentFormatModelBuilder();
+            searchKeys.ifPresent(searchKeysModelBuilder::addSingleParagraphTextNode);
+            firstComment = searchKeysModelBuilder.build();
+        } else {
+            AtlassianDocumentFormatModelBuilder atlassianDocumentFormatModelBuilder = new AtlassianDocumentFormatModelBuilder();
+            atlassianDocumentFormatModelBuilder.addSingleParagraphTextNode("This issue was automatically created by Alert.");
+            firstComment = atlassianDocumentFormatModelBuilder.build();
+        }
+
         Optional<List<AtlassianDocumentFormatModel>> additionalCommentList = creationModel.getAtlassianDocumentFormatCommentModel();
         additionalCommentList.ifPresent(postCreateComments::addAll);
 
