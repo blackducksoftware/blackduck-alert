@@ -37,6 +37,7 @@ public class RunServerTask extends Exec {
     private String externalRabbitUser = "sysadmin";
     private String externalRabbitPassword = "blackduck";
     private String externalRabbitVirtualHost = "blackduck-alert";
+    private boolean profiler = false;
 
     @Option(option = "suspend", description = "Suspends the server until a debug connection is made")
     public void setSuspend(boolean suspend) {
@@ -122,6 +123,12 @@ public class RunServerTask extends Exec {
         this.externalRabbitVirtualHost = externalRabbitVirtualHost;
     }
 
+    @Option(option = "profiler", description = "Adds options to attach a local profiler to the process")
+    public void setProfiler(boolean profiler) {
+        this.profiler = profiler;
+    }
+
+
     @Override
     protected void exec() {
         if (null == postgresVersion || postgresVersion.trim().length() == 0) {
@@ -154,10 +161,16 @@ public class RunServerTask extends Exec {
 
     @Internal
     public List<String> getDebugVariables() {
-        return List.of(
-            "-Xdebug",
-            "-Xrunjdwp:transport=dt_socket,server=y,address=9095,suspend=" + (suspend ? "y" : "n")
-        );
+        List<String> debugVariables = new ArrayList<>();
+        debugVariables.add("-Xdebug");
+        debugVariables.add("-Xrunjdwp:transport=dt_socket,server=y,address=9095,suspend=" + (suspend ? "y" : "n"));
+
+        // add profiling options
+        if (profiler) {
+            debugVariables.add("-XX:+UnlockDiagnosticVMOptions");
+            debugVariables.add("-XX:+DebugNonSafepoints");
+        }
+        return debugVariables;
     }
 
     public List<String> getJMXVariables(String buildDirectory) {
