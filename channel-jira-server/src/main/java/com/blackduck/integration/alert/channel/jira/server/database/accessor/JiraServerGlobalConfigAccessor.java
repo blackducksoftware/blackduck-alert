@@ -32,6 +32,7 @@ import com.blackduck.integration.alert.channel.jira.server.database.configuratio
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.blackduck.integration.alert.common.persistence.util.AccessorLimitedMap;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.security.EncryptionUtility;
 import com.blackduck.integration.alert.common.util.DateUtils;
@@ -42,10 +43,13 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
     private final EncryptionUtility encryptionUtility;
     private final JiraServerConfigurationRepository jiraServerConfigurationRepository;
 
+    private final AccessorLimitedMap<UUID, JiraServerGlobalConfigModel> globalConfigCache;
+
     @Autowired
     public JiraServerGlobalConfigAccessor(EncryptionUtility encryptionUtility, JiraServerConfigurationRepository jiraServerConfigurationRepository) {
         this.encryptionUtility = encryptionUtility;
         this.jiraServerConfigurationRepository = jiraServerConfigurationRepository;
+        this.globalConfigCache = new AccessorLimitedMap<>();
     }
 
     @Override
@@ -57,7 +61,14 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
     @Override
     @Transactional(readOnly = true)
     public Optional<JiraServerGlobalConfigModel> getConfiguration(UUID id) {
-        return jiraServerConfigurationRepository.findById(id).map(this::createConfigModel);
+        if (globalConfigCache.containsKey(id)) {
+            return Optional.of(globalConfigCache.get(id));
+        }
+        Optional<JiraServerGlobalConfigModel> model = jiraServerConfigurationRepository.findById(id).map(this::createConfigModel);
+
+        model.ifPresent(jiraServerGlobalConfigModel -> globalConfigCache.put(id, jiraServerGlobalConfigModel));
+
+        return model;
     }
 
     @Override
@@ -75,7 +86,7 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
     @Override
     @Transactional(readOnly = true)
     public boolean existsConfigurationById(UUID id) {
-        return jiraServerConfigurationRepository.existsByConfigurationId(id);
+        return globalConfigCache.containsKey(id) || jiraServerConfigurationRepository.existsByConfigurationId(id);
     }
 
     @Override
@@ -134,6 +145,7 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
     public void deleteConfiguration(UUID configurationId) {
         if (null != configurationId) {
             jiraServerConfigurationRepository.deleteById(configurationId);
+            globalConfigCache.remove(configurationId);
         }
     }
 
@@ -142,7 +154,11 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
         removeUnusedAuthCredentials(configuration);
         JiraServerConfigurationEntity configurationToSave = toEntity(configurationId, configuration, createdAt, currentTime);
         JiraServerConfigurationEntity savedJiraServerConfig = jiraServerConfigurationRepository.save(configurationToSave);
-        return createConfigModel(savedJiraServerConfig);
+        JiraServerGlobalConfigModel model = createConfigModel(savedJiraServerConfig);
+
+        globalConfigCache.put(configurationId, model);
+
+        return model;
     }
 
     private JiraServerConfigurationEntity toEntity(UUID configurationId, JiraServerGlobalConfigModel configuration, OffsetDateTime createdTime, OffsetDateTime lastUpdated) {
