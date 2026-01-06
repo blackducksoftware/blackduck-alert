@@ -32,7 +32,7 @@ import com.blackduck.integration.alert.channel.jira.server.database.configuratio
 import com.blackduck.integration.alert.channel.jira.server.model.JiraServerGlobalConfigModel;
 import com.blackduck.integration.alert.channel.jira.server.model.enumeration.JiraServerAuthorizationMethod;
 import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.blackduck.integration.alert.common.persistence.util.AccessorLimitedMap;
+import com.blackduck.integration.alert.common.persistence.util.SizeLimitedMap;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.security.EncryptionUtility;
 import com.blackduck.integration.alert.common.util.DateUtils;
@@ -43,13 +43,13 @@ public class JiraServerGlobalConfigAccessor implements ConfigurationAccessor<Jir
     private final EncryptionUtility encryptionUtility;
     private final JiraServerConfigurationRepository jiraServerConfigurationRepository;
 
-    private final AccessorLimitedMap<UUID, JiraServerGlobalConfigModel> globalConfigCache;
+    private final SizeLimitedMap<UUID, JiraServerGlobalConfigModel> globalConfigCache;
 
     @Autowired
     public JiraServerGlobalConfigAccessor(EncryptionUtility encryptionUtility, JiraServerConfigurationRepository jiraServerConfigurationRepository) {
         this.encryptionUtility = encryptionUtility;
         this.jiraServerConfigurationRepository = jiraServerConfigurationRepository;
-        this.globalConfigCache = new AccessorLimitedMap<>();
+        this.globalConfigCache = new SizeLimitedMap<>();
     }
 
     @Override

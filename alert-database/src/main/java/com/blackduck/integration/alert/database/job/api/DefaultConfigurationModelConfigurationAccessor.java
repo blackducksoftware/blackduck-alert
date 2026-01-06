@@ -31,6 +31,7 @@ import com.blackduck.integration.alert.common.persistence.accessor.Configuration
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
 import com.blackduck.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
+import com.blackduck.integration.alert.common.persistence.util.SizeLimitedMap;
 import com.blackduck.integration.alert.common.security.EncryptionUtility;
 import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.database.configuration.ConfigContextEntity;
@@ -53,6 +54,7 @@ public class DefaultConfigurationModelConfigurationAccessor implements Configura
     private final ConfigContextRepository configContextRepository;
     private final FieldValueRepository fieldValueRepository;
     private final EncryptionUtility encryptionUtility;
+    private final SizeLimitedMap<Long,ConfigurationModel> globalConfigurationCache;
 
     @Autowired
     public DefaultConfigurationModelConfigurationAccessor(
@@ -69,12 +71,32 @@ public class DefaultConfigurationModelConfigurationAccessor implements Configura
         this.configContextRepository = configContextRepository;
         this.fieldValueRepository = fieldValueRepository;
         this.encryptionUtility = encryptionUtility;
+        this.globalConfigurationCache = new SizeLimitedMap<>(20);
     }
 
     @Override
     public Optional<ConfigurationModel> getProviderConfigurationByName(String providerConfigName) {
         if (StringUtils.isBlank(providerConfigName)) {
             return Optional.empty();
+        }
+
+        Optional<ConfigurationModel> cachedProviderConfig = Optional.empty();
+
+        for(ConfigurationModel config : globalConfigurationCache.values()) {
+            if(cachedProviderConfig.isEmpty()) {
+                Optional<ConfigurationFieldModel> nameField = config.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
+                if (nameField.isPresent()) {
+                    Optional<String> fieldValue = nameField.get().getFieldValue();
+                    if (fieldValue.isPresent() && fieldValue.equals(providerConfigName)) {
+                        // found provider config by name stop iterating after assigning cached value
+                        cachedProviderConfig = Optional.of(config);
+                    }
+                }
+            }
+        }
+
+        if(cachedProviderConfig.isPresent()) {
+            return cachedProviderConfig;
         }
 
         List<Long> providerConfigIds = definedFieldRepository.findFirstByKey(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)
@@ -98,11 +120,17 @@ public class DefaultConfigurationModelConfigurationAccessor implements Configura
 
     @Override
     public Optional<ConfigurationModel> getConfigurationById(Long id) {
+        if (globalConfigurationCache.containsKey(id)) {
+            return Optional.of(globalConfigurationCache.get(id));
+        }
         return descriptorConfigsRepository.findById(id).map(this::createConfigModel);
     }
 
     @Override
     public List<ConfigurationModel> getConfigurationsByDescriptorKey(DescriptorKey descriptorKey) {
+        if(descriptorKey.getUniversalKey().equals(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)) {
+
+        }
         return descriptorConfigsRepository.findByDescriptorName(descriptorKey.getUniversalKey())
             .stream()
             .map(this::createConfigModel)
@@ -162,6 +190,10 @@ public class DefaultConfigurationModelConfigurationAccessor implements Configura
             }
             fieldValueRepository.saveAll(fieldValuesToSave);
         }
+        if(createdConfig.getDescriptorContext() ==  ConfigContextEnum.GLOBAL) {
+            globalConfigurationCache.put(createdConfig.getConfigurationId(), createdConfig);
+        }
+
         return createdConfig;
     }
 
@@ -217,6 +249,10 @@ public class DefaultConfigurationModelConfigurationAccessor implements Configura
         descriptorConfigEntity.setLastUpdated(DateUtils.createCurrentDateTimestamp());
         descriptorConfigsRepository.save(descriptorConfigEntity);
 
+        if(updatedConfig.getDescriptorContext() ==  ConfigContextEnum.GLOBAL) {
+            globalConfigurationCache.put(updatedConfig.getConfigurationId(), updatedConfig);
+        }
+
         return updatedConfig;
     }
 
@@ -229,6 +265,7 @@ public class DefaultConfigurationModelConfigurationAccessor implements Configura
     public void deleteConfiguration(Long descriptorConfigId) {
         if (null != descriptorConfigId) {
             descriptorConfigsRepository.deleteById(descriptorConfigId);
+            globalConfigurationCache.remove(descriptorConfigId);
         }
     }
 

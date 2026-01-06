@@ -3,13 +3,13 @@ package com.blackduck.integration.alert.common.persistence.util;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class AccessorLimitedMap<K,V> extends LinkedHashMap<K,V> {
+public class SizeLimitedMap<K,V> extends LinkedHashMap<K,V> {
     private final int limit;
 
-    public AccessorLimitedMap() {
+    public SizeLimitedMap() {
         this(10);
     }
-    public AccessorLimitedMap(int limit) {
+    public SizeLimitedMap(int limit) {
         this.limit = limit;
     }
 
