@@ -37,6 +37,7 @@ public class JobNotificationMappedEventHandler implements AlertEventHandler<JobN
     public void handle(JobNotificationMappedEvent event) {
         UUID correlationId = event.getCorrelationId();
         Set<UUID> jobConfigIds = jobMappingAccessor.getUniqueJobIds(correlationId);
+        notificationLogger.debug("Discovered {} unique jobConfigId(s) for batch: {}", jobConfigIds.size(), correlationId);
         for (UUID jobConfigId : jobConfigIds) {
             notificationLogger.info("Creating processing event for jobConfigId: {}, batch: {}", jobConfigId, correlationId);
             eventManager.sendEvent(new JobProcessingEvent(correlationId, jobConfigId));

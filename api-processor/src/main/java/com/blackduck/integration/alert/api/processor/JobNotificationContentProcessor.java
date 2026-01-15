@@ -8,6 +8,7 @@
 package com.blackduck.integration.alert.api.processor;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -160,6 +161,16 @@ public class JobNotificationContentProcessor {
     private ProcessedProviderMessageHolder defaultProcessing(ProcessedProviderMessageHolder currentMessageHolder, ProcessedProviderMessageHolder extractedProviderMessages) {
         List<ProcessedProviderMessage<ProjectMessage>> filteredProjectMessages = filterProcessedMessages(extractedProviderMessages.getProcessedProjectMessages());
         List<ProcessedProviderMessage<SimpleMessage>> filteredSimpleMessages = filterProcessedMessages(extractedProviderMessages.getProcessedSimpleMessages());
+
+        if ( extractedProviderMessages.extractAllNotificationIds().size() != filteredProjectMessages.size() + filteredSimpleMessages.size()) {
+            Set<Long> extractedNotificationIds = extractedProviderMessages.extractAllNotificationIds();
+            logger.debug("Notification Ids were filtered. Count before filter: [{}]", extractedNotificationIds.size());
+            logger.debug("Notification IDs extracted: [{}]", extractedNotificationIds);
+            logger.debug("Count after filter (Project Message): [{}]", filteredProjectMessages.size());
+            logger.debug("Project Message IDs extracted: [{}]", filteredProjectMessages);
+            logger.debug("Count after filter (Simple Message): [{}]", filteredSimpleMessages.size());
+            logger.debug("Simple Message IDs extracted: [{}]", filteredSimpleMessages);
+        }
 
         ProcessedProviderMessageHolder processedProviderMessageHolder = new ProcessedProviderMessageHolder(filteredProjectMessages, filteredSimpleMessages);
         if (null == currentMessageHolder) {

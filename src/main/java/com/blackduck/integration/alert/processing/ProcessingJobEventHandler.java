@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +33,7 @@ import com.blackduck.integration.alert.common.persistence.model.job.Distribution
 
 @Component
 public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessingEvent> {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final ProviderMessageDistributor providerMessageDistributor;
     private final List<NotificationProcessingLifecycleCache> lifecycleCaches;
     private final JobAccessor jobAccessor;
@@ -79,6 +82,8 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
                 );
                 providerMessageDistributor.distribute(processedNotificationDetails, processedMessageHolder);
                 executingJobManager.endStage(executingJob.getExecutionId(), JobStage.NOTIFICATION_PROCESSING, Instant.now());
+            } else {
+                logger.debug("No job discovered for jobId: {}", jobId);
             }
         } finally {
             jobNotificationMappingAccessor.removeJobMapping(correlationId, jobId);

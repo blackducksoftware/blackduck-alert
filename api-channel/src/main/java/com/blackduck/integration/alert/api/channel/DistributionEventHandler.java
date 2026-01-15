@@ -48,6 +48,7 @@ public class DistributionEventHandler<D extends DistributionJobDetailsModel> imp
         if (details.isPresent()) {
             try {
                 notificationLogger.debug("Channel: {} is processing event: {}", channel.getClass(), event.getEventId());
+                notificationLogger.debug("Event: [{}] contains the following notificationIds: [{}]", event.getEventId(), event.getNotificationIds());
                 channel.distributeMessages(
                     details.get(),
                     event.getProviderMessages(),
