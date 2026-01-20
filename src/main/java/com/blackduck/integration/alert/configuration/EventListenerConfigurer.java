@@ -80,6 +80,8 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
     @Override
     public void configureRabbitListeners(RabbitListenerEndpointRegistrar registrar) {
         logRabbitMqConfig();
+        // declare the main exchange before binding queues to it.
+        amqpAdmin.declareExchange(exchange);
         createDeadLetterHandler(registrar);
         MessageListenerContainer alertDefaultMessageListenerContainer = createMessageListenerContainer();
         logger.debug("Registering JMS Listeners");
@@ -98,22 +100,29 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
 
     private void logRabbitMqConfig() {
         logger.info("Rabbitmq connection details:");
-        logger.info("  host:        {}", cachingConnectionFactory.getHost());
-        logger.info("  port:        {}", cachingConnectionFactory.getPort());
-        logger.info("  ssl enabled: {}", cachingConnectionFactory.getRabbitConnectionFactory().isSSL());
+        logger.info("  host:                   {}", cachingConnectionFactory.getHost());
+        logger.info("  port:                   {}", cachingConnectionFactory.getPort());
+        logger.info("  ssl enabled:            {}", cachingConnectionFactory.getRabbitConnectionFactory().isSSL());
+        logger.info("  cache mode:             {}", cachingConnectionFactory.getCacheMode());
+        logger.info("  connection cache size:  {}", cachingConnectionFactory.getConnectionCacheSize());
+        logger.info("  channel cache size:     {}", cachingConnectionFactory.getChannelCacheSize());
 
         if (StringUtils.isNotBlank(cachingConnectionFactory.getUsername())) {
-            logger.info("  username:    *******");
+            logger.info("  username:               *******");
         } else {
             logger.info("  username: ");
         }
         if (StringUtils.isNotBlank(cachingConnectionFactory.getRabbitConnectionFactory().getPassword())) {
-            logger.info("  password:    *******");
+            logger.info("  password:               *******");
         } else {
             logger.info("  password: ");
         }
 
-        logger.info("  vhost:       {}", cachingConnectionFactory.getVirtualHost());
+        logger.info("  vhost:                  {}", cachingConnectionFactory.getVirtualHost());
+        logger.info("Rabbitmq Exchange details:");
+        logger.info("  Name:    {}", exchange.getName());
+        logger.info("  Type:    {}", exchange.getType());
+        logger.info("  Durable: {}",exchange.isDurable());
     }
 
     private void createDeadLetterHandler(RabbitListenerEndpointRegistrar registrar) {
@@ -125,7 +134,7 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
             .withArgument("x-expires", TimeUnit.HOURS.toMillis(8))
             // may need to add dead letter queue and dead letter queue listener
             .build();
-        TopicExchange deadLetterExchange = ExchangeBuilder.topicExchange(RabbitMQConfiguration.DEAD_LETTER_EXCHANGE_NAME).build();
+        TopicExchange deadLetterExchange = ExchangeBuilder.topicExchange(RabbitMQConfiguration.DEAD_LETTER_EXCHANGE_NAME).durable(true).build();
         Binding binding = BindingBuilder.bind(queue).to(deadLetterExchange).with(DeadLetterListener.DEAD_LETTER_QUEUE_NAME);
         amqpAdmin.declareExchange(deadLetterExchange);
         amqpAdmin.declareQueue(queue);
