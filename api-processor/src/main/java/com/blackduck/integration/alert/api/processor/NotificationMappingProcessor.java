@@ -9,6 +9,7 @@ package com.blackduck.integration.alert.api.processor;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -58,6 +59,14 @@ public class NotificationMappingProcessor {
             .map(notificationDetailExtractionDelegator::wrapNotification)
             .flatMap(List::stream)
             .toList();
+        if (logger.isDebugEnabled()) {
+            logger.debug("Number of filterable notifications created: {}", filterableNotifications.size());
+            String filterableNotificationIds = filterableNotifications.stream()
+                .map(detailedNotificationContent -> detailedNotificationContent.getNotificationContentWrapper().getNotificationId())
+                .map(String::valueOf)
+                .collect(Collectors.joining(", "));
+            logger.debug("Filterable notification ids: {}", filterableNotificationIds);
+        }
         jobNotificationMapper.mapJobsToNotifications(correlationID, filterableNotifications, frequencies);
         notificationAccessor.setNotificationsProcessed(notifications);
         logNotifications("Finished mapping notifications: {}", notifications);
