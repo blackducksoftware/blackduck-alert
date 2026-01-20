@@ -86,7 +86,8 @@ public class ProcessingJobEventHandler implements AlertEventHandler<JobProcessin
                 logger.debug("No job discovered for jobId: {}", jobId);
             }
         } finally {
-            jobNotificationMappingAccessor.removeJobMapping(correlationId, jobId);
+            //TODO: Removed for test purposes
+            //jobNotificationMappingAccessor.removeJobMapping(correlationId, jobId);
             clearCaches(correlationId);
         }
     }
