@@ -22,12 +22,12 @@ collect_statistics_interval = 15000
 EOL
 
 # connection settings
-echo "channel_max = ${ALERT_RABBITMQ_CONNECTION_CHANNEL_MAX:2048}" >> $confFile
-ehco "num_acceptors.tcp = ${ALERT_RABBITMQ_CONNECTION_TCP_ACCEPTORS:10}" >> $confFile
-echo "heartbeat = ${ALERT_RABBITMQ_CONNECTION_HEARTBEAT:60}" >> $confFile
+echo "channel_max = ${ALERT_RABBITMQ_CONNECTION_CHANNEL_MAX:-2048}" >> $confFile
+echo "num_acceptors.tcp = ${ALERT_RABBITMQ_CONNECTION_TCP_ACCEPTORS:-10}" >> $confFile
+echo "heartbeat = ${ALERT_RABBITMQ_CONNECTION_HEARTBEAT:-60}" >> $confFile
 
-echo "total_memory_available_override_value = ${ALERT_RABBITMQ_MEMORY_HIGH_WATERMARK:1GB}" >> $confFile
-echo "vm_memory_high_watermark = ${ALERT_RABBITMQ_MEMORY_HIGH_WATERMARK:1GB}" >> $confFile
+echo "total_memory_available_override_value = ${ALERT_RABBITMQ_MEMORY_HIGH_WATERMARK:-1GB}" >> $confFile
+echo "vm_memory_high_watermark.absolute = ${ALERT_RABBITMQ_MEMORY_HIGH_WATERMARK:-1GB}" >> $confFile
 # Set the amount of memory rabbit can use to 70% of system, overridable by the property below
 echo "vm_memory_high_watermark.relative = ${ALERT_RABBITMQ_MEMORY_WATERMARK:-0.70}" >> $confFile
 
