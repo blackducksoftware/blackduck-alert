@@ -3,9 +3,15 @@
 rabbitHome=/etc/rabbitmq
 blackduckSecurityHome=/opt/blackduck/rabbitmq/security
 confFile="${rabbitHome}/rabbitmq.conf"
+envFile="${rabbitHome}/rabbitmq-env.conf"
 isSsl=${ALERT_RABBITMQ_SSL:-false}
 clusterSize=${ALERT_RABBITMQ_CLUSTER_SIZE:-1}
 clusterType=${ALERT_RABBITMQ_CLUSTER_TYPE:-compose}
+
+echo "Generating $envFile ..."
+echo "SERVER_ADDITIONAL_ERL_ARGS=\"+A ${ALERT_RABBITMQ_ERLANG_ASYNC_THREADS:-4}\"" >> $envFile
+
+echo "Generating $confFile ..."
 
 cat >> ${confFile} << EOL
 loopback_users.guest = false
@@ -22,7 +28,7 @@ collect_statistics_interval = 15000
 EOL
 
 # connection settings
-echo "channel_max = ${ALERT_RABBITMQ_CONNECTION_CHANNEL_MAX:-2048}" >> $confFile
+echo "channel_max = ${ALERT_RABBITMQ_CONNECTION_CHANNEL_MAX:-512}" >> $confFile
 echo "num_acceptors.tcp = ${ALERT_RABBITMQ_CONNECTION_TCP_ACCEPTORS:-10}" >> $confFile
 echo "heartbeat = ${ALERT_RABBITMQ_CONNECTION_HEARTBEAT:-60}" >> $confFile
 
