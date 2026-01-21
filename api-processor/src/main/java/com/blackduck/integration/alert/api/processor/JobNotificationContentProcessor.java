@@ -87,10 +87,29 @@ public class JobNotificationContentProcessor {
             pageSize
         );
 
+        //DEBUG: Get first page of mapping page data
+        logger.debug("Processing Notifications for Job. CorrelationId: {}, JobId: {} ", correlationId, jobId);
+        logger.debug("Initial Page Data. Total Pages: {}, Current Page: {}, Page Size: {}, Number of Mappings in page: {}",
+            jobNotificationMappings.getTotalPages(),
+            jobNotificationMappings.getCurrentPage(),
+            jobNotificationMappings.getPageSize(),
+            jobNotificationMappings.getModels().size());
+
         ProcessingType jobProcessingType = job.getProcessingType();
         while (jobNotificationMappings.getCurrentPage() <= jobNotificationMappings.getTotalPages()) {
+
+            //DEBUG: Check the page in the loop
+            logger.debug("Job notification mapping page: {}", jobNotificationMappings.getCurrentPage());
+
             List<Long> notificationIds = extractNotificationIds(jobNotificationMappings);
             List<AlertNotificationModel> notifications = notificationAccessor.findByIds(notificationIds);
+
+            //DEBUG: Log the notification count from the notification accessor
+            String notificationsIdsFromFoundNotifications = notifications.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(", "));
+            logger.debug("Notifications actually found in Notification Accessor: {}", notificationsIdsFromFoundNotifications);
+
             logNotifications("Start", event, notificationIds);
             List<NotificationContentWrapper> notificationContentList = notifications
                 .stream()
@@ -100,11 +119,28 @@ public class JobNotificationContentProcessor {
                 .map(DetailedNotificationContent::getNotificationContentWrapper)
                 .collect(Collectors.toList());
 
+            //DEBUG: Log the notification ID's after notifications are wrapped and initial filter is run
+            String notificationContentListIds = notificationContentList.stream()
+                .map(NotificationContentWrapper::getNotificationId)
+                .map(String::valueOf)
+                .collect(Collectors.joining(", "));
+            logger.debug("Notification content list, Size: {}, Notification IDs: {}", notificationContentList.size(), notificationContentListIds);
+
             ProcessedProviderMessageHolder extractedProviderMessages = notificationContentList
                 .stream()
                 .map(providerMessageExtractionDelegator::extract)
                 .reduce(ProcessedProviderMessageHolder::reduce)
                 .orElse(ProcessedProviderMessageHolder.empty());
+
+            //DEBUG: Log notification ID's after performing reduce
+            Set<Long> extractedProviderMessageIdSet = extractedProviderMessages.extractAllNotificationIds();
+            String extractedProviderMessageIds = extractedProviderMessageIdSet.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(", "));
+            logger.debug("Extracted provider message count content list, Size: {}, Notification IDs: {}",
+                extractedProviderMessageIdSet.size(),
+                extractedProviderMessageIds);
+
             processedMessageHolder = defaultProcessing(processedMessageHolder, extractedProviderMessages);
 
             if (ProcessingType.DIGEST == jobProcessingType || ProcessingType.SUMMARY == jobProcessingType) {
@@ -118,6 +154,14 @@ public class JobNotificationContentProcessor {
                 pageNumber,
                 pageSize
             );
+
+            //DEBUG: Log the next page of data
+            logger.debug("Next Page Data. Total Pages: {}, Current Page: {}, Page Size: {}, Number of Mappings in page: {}",
+                jobNotificationMappings.getTotalPages(),
+                jobNotificationMappings.getCurrentPage(),
+                jobNotificationMappings.getPageSize(),
+                jobNotificationMappings.getModels().size());
+
             logNotifications("Finished", event, notificationIds);
         }
 
@@ -129,6 +173,12 @@ public class JobNotificationContentProcessor {
     }
 
     private List<Long> extractNotificationIds(AlertPagedModel<JobToNotificationMappingModel> pageOfMappingData) {
+        //DEBUG: Log page data when performing notification ID extraction
+        logger.debug("Extracting page of notification IDs. Total Pages: {}, Current Page: {}, Page Size: {}, Number of Mappings in page: {}",
+            pageOfMappingData.getTotalPages(),
+            pageOfMappingData.getCurrentPage(),
+            pageOfMappingData.getPageSize(),
+            pageOfMappingData.getModels().size());
         return pageOfMappingData.getModels().stream()
             .map(JobToNotificationMappingModel::getNotificationId)
             .collect(Collectors.toList());
