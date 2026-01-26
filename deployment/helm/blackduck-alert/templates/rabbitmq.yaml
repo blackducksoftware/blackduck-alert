@@ -134,6 +134,10 @@ spec:
         volumeMounts:
           - mountPath: /opt/blackduck/rabbitmq/logs
             name: alert-rabbitmq-volume
+            subPath: logs
+          - mountPath: /var/lib/rabbitmq
+            name: alert-rabbitmq-volume
+            subPath: data
       dnsPolicy: ClusterFirst
       {{- include "alert.imagePullSecrets" . | nindent 6 -}}
       {{- with .Values.rabbitmq.nodeSelector }}

@@ -19,6 +19,7 @@ import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.ExchangeBuilder;
+import org.springframework.amqp.core.MessageDeliveryMode;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.core.TopicExchange;
@@ -26,6 +27,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListenerConfigurer;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerEndpoint;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistrar;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +51,7 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
     private final AmqpAdmin amqpAdmin;
     private final TopicExchange exchange;
     private final DeadLetterListener deadLetterListener;
+    private final RabbitTemplate rabbitTemplate;
 
     @Autowired
     public EventListenerConfigurer(
@@ -59,7 +62,8 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
         RetryTemplate rabbitmqRetryTemplate,
         AmqpAdmin amqpAdmin,
         TopicExchange exchange,
-        DeadLetterListener deadLetterListener
+        DeadLetterListener deadLetterListener,
+        RabbitTemplate rabbitTemplate
     ) {
         this.allAlertMessageListeners = allAlertMessageListeners;
         this.distributionEventDestinationNames = distributionEventReceivers
@@ -74,12 +78,17 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
         this.amqpAdmin = amqpAdmin;
         this.exchange = exchange;
         this.deadLetterListener = deadLetterListener;
-
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     @Override
     public void configureRabbitListeners(RabbitListenerEndpointRegistrar registrar) {
         logRabbitMqConfig();
+        // setup persistence for the rabbit template
+        rabbitTemplate.setBeforePublishPostProcessors(message -> {
+            message.getMessageProperties().setDeliveryMode(MessageDeliveryMode.PERSISTENT);
+            return message;
+        });
         // declare the main exchange before binding queues to it.
         amqpAdmin.declareExchange(exchange);
         createDeadLetterHandler(registrar);
@@ -122,12 +131,13 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
         logger.info("Rabbitmq Exchange details:");
         logger.info("  Name:    {}", exchange.getName());
         logger.info("  Type:    {}", exchange.getType());
-        logger.info("  Durable: {}",exchange.isDurable());
+        logger.info("  Durable: {}", exchange.isDurable());
     }
 
     private void createDeadLetterHandler(RabbitListenerEndpointRegistrar registrar) {
         logger.debug("Registering dead letter listener");
         org.springframework.amqp.rabbit.listener.MessageListenerContainer deadLetterListenerContainer = createMessageListenerContainer();
+        amqpAdmin.declareExchange(exchange);
         String listenerId = createListenerId(DeadLetterListener.DEAD_LETTER_QUEUE_NAME);
         Queue queue = QueueBuilder
             .durable(DeadLetterListener.DEAD_LETTER_QUEUE_NAME)
