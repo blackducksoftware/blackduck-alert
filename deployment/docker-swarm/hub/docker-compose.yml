@@ -51,4 +51,4 @@ services:
       resources:
         limits: {memory: 2560M}
         reservations: {memory: 2560M}
-volumes: { alert-db-volume: null, alert-db-postgres-volume: null, alert-rabbitmq-volume: null }
+volumes: { alert-db-volume: null, alert-db-postgres-volume: null, alert-rabbitmq-volume: null, alert-rabbitmq-data: null }
