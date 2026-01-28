@@ -27,11 +27,18 @@ background_gc_enabled = true
 collect_statistics_interval = 15000
 EOL
 
+# persistence settings
+# default 4K bytes
+echo "queue_index_embed_msgs_below = ${ALERT_RABBITMQ_PERSISTENCE_EMBED_MSG_BELOW:-4096}"
+echo "msg_store_io_batch_size = ${ALERT_RABBITMQ_MSG_STORE_BATCH_SIZE:-2048}"
+echo "queue_index_max_journal_entries = ${ALERT_RABBITMQ_MAX_JOURNAL_ENTRIES:-32768}"
+
 # connection settings
 echo "channel_max = ${ALERT_RABBITMQ_CONNECTION_CHANNEL_MAX:-512}" >> $confFile
 echo "num_acceptors.tcp = ${ALERT_RABBITMQ_CONNECTION_TCP_ACCEPTORS:-10}" >> $confFile
 echo "heartbeat = ${ALERT_RABBITMQ_CONNECTION_HEARTBEAT:-60}" >> $confFile
 
+# memory settings
 echo "total_memory_available_override_value = ${ALERT_RABBITMQ_MEMORY_HIGH_WATERMARK:-1GB}" >> $confFile
 echo "vm_memory_high_watermark.absolute = ${ALERT_RABBITMQ_MEMORY_HIGH_WATERMARK:-1GB}" >> $confFile
 # Set the amount of memory rabbit can use to 70% of system, overridable by the property below
