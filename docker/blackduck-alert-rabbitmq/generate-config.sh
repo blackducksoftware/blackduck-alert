@@ -31,7 +31,6 @@ EOL
 # default 4K bytes
 echo "queue_index_embed_msgs_below = ${ALERT_RABBITMQ_PERSISTENCE_EMBED_MSG_BELOW:-4096}" >> $confFile
 echo "msg_store_io_batch_size = ${ALERT_RABBITMQ_MSG_STORE_BATCH_SIZE:-2048}" >> $confFile
-echo "queue_index_max_journal_entries = ${ALERT_RABBITMQ_MAX_JOURNAL_ENTRIES:-32768}" >> $confFile
 
 # connection settings
 echo "channel_max = ${ALERT_RABBITMQ_CONNECTION_CHANNEL_MAX:-512}" >> $confFile
