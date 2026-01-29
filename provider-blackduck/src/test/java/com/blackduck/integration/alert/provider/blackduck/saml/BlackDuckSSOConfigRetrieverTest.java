@@ -20,6 +20,7 @@ import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
 import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.common.system.SystemInfoReader;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.blackduck.integration.alert.test.common.MockAlertProperties;
@@ -33,6 +34,7 @@ import com.blackduck.integration.blackduck.service.request.BlackDuckRequest;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.rest.HttpUrl;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
+import com.google.gson.Gson;
 
 public class BlackDuckSSOConfigRetrieverTest {
     @Test
@@ -91,8 +93,8 @@ public class BlackDuckSSOConfigRetrieverTest {
         configurationModel.put(createConfigFieldModel(BlackDuckDescriptor.KEY_BLACKDUCK_URL, blackDuckUrl));
         configurationModel.put(createConfigFieldModel(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, blackDuckApiKey));
         configurationModel.put(createConfigFieldModel(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, blackDuckTimeout));
-
-        return new BlackDuckProperties(0L, BlackDuckServicesFactory.createDefaultGson(), BlackDuckServicesFactory.createDefaultObjectMapper(), mockAlertProperties, mockProxyManager, configurationModel);
+        Gson gson = BlackDuckServicesFactory.createDefaultGson();
+        return new BlackDuckProperties(0L, gson, BlackDuckServicesFactory.createDefaultObjectMapper(), mockAlertProperties, mockProxyManager, configurationModel, new SystemInfoReader(gson));
     }
 
     private ConfigurationFieldModel createConfigFieldModel(String key, String value) {

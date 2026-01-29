@@ -21,14 +21,15 @@ import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.blackduck.integration.alert.common.persistence.accessor.SystemStatusAccessor;
 import com.blackduck.integration.alert.common.rest.AlertWebServerUrlManager;
+import com.blackduck.integration.alert.common.system.SystemInfoReader;
 import com.blackduck.integration.alert.web.api.metadata.DescriptorMetadataActions;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.google.gson.Gson;
 
-public class AboutActionsTest {
+class AboutActionsTest {
 
     @Test
-    public void testGetAboutModel() {
+    void testGetAboutModel() {
         String version = "1.2.3";
         String created = "date";
         String description = "description";
@@ -53,13 +54,13 @@ public class AboutActionsTest {
     }
 
     @Test
-    public void testGetAboutDataNotPresent() {
+    void testGetAboutDataNotPresent() {
         Gson gson = BlackDuckServicesFactory.createDefaultGson();
-        AlertWebServerUrlManager alertWebServerUrlManager = Mockito.mock(AlertWebServerUrlManager.class);
+        SystemInfoReader systemInfoReader = new SystemInfoReader(gson);
         SystemStatusAccessor systemStatusAccessor = Mockito.mock(SystemStatusAccessor.class);
         DescriptorMetadataActions descriptorActions = Mockito.mock(DescriptorMetadataActions.class);
 
-        AboutReader aboutReader = new AboutReader(gson, systemStatusAccessor, descriptorActions);
+        AboutReader aboutReader = new AboutReader(systemInfoReader, systemStatusAccessor, descriptorActions);
         AboutActions aboutActions = new AboutActions(aboutReader);
         ActionResponse<AboutModel> resultModel = aboutActions.getAboutModel();
         assertTrue(resultModel.isError());
