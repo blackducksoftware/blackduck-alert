@@ -31,6 +31,8 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistrar;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
+import org.springframework.boot.autoconfigure.amqp.SimpleRabbitListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.retry.support.RetryTemplate;
 
@@ -52,6 +54,8 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
     private final TopicExchange exchange;
     private final DeadLetterListener deadLetterListener;
     private final RabbitTemplate rabbitTemplate;
+    private final RabbitProperties rabbitProperties;
+    private final SimpleRabbitListenerContainerFactoryConfigurer rabbitListenerContainerFactoryConfigurer;
 
     @Autowired
     public EventListenerConfigurer(
@@ -63,7 +67,9 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
         AmqpAdmin amqpAdmin,
         TopicExchange exchange,
         DeadLetterListener deadLetterListener,
-        RabbitTemplate rabbitTemplate
+        RabbitTemplate rabbitTemplate,
+        RabbitProperties rabbitProperties,
+        SimpleRabbitListenerContainerFactoryConfigurer rabbitListenerContainerFactoryConfigurer
     ) {
         this.allAlertMessageListeners = allAlertMessageListeners;
         this.distributionEventDestinationNames = distributionEventReceivers
@@ -79,6 +85,8 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
         this.exchange = exchange;
         this.deadLetterListener = deadLetterListener;
         this.rabbitTemplate = rabbitTemplate;
+        this.rabbitProperties = rabbitProperties;
+        this.rabbitListenerContainerFactoryConfigurer = rabbitListenerContainerFactoryConfigurer;
     }
 
     @Override
@@ -132,6 +140,13 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
         logger.info("  Name:    {}", exchange.getName());
         logger.info("  Type:    {}", exchange.getType());
         logger.info("  Durable: {}", exchange.isDurable());
+        logger.info("Rabbitmq Simple Listener Container details: ");
+        RabbitProperties.SimpleContainer simpleContainerProperties = rabbitProperties.getListener().getSimple();
+        logger.info("  Concurrency:            {}", simpleContainerProperties.getConcurrency());
+        logger.info("  Max Concurrency:        {}", simpleContainerProperties.getMaxConcurrency());
+        logger.info("  Prefetch:               {}", simpleContainerProperties.getPrefetch());
+        logger.info("  Acknowledge Mode:       {}", simpleContainerProperties.getAcknowledgeMode());
+        logger.info("  Missing Queues Fatal:   {}", simpleContainerProperties.isMissingQueuesFatal());
     }
 
     private void createDeadLetterHandler(RabbitListenerEndpointRegistrar registrar) {
@@ -160,7 +175,7 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
 
     private MessageListenerContainer createMessageListenerContainer() {
         SimpleRabbitListenerContainerFactory containerFactory = new SimpleRabbitListenerContainerFactory();
-        containerFactory.setConnectionFactory(cachingConnectionFactory);
+        rabbitListenerContainerFactoryConfigurer.configure(containerFactory, cachingConnectionFactory);
         containerFactory.setRetryTemplate(rabbitmqRetryTemplate);
         containerFactory.setFailedDeclarationRetryInterval(30000L); // default is 5 seconds
         return containerFactory.createListenerContainer();
