@@ -243,7 +243,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         int currentPage = 0;
         Sort.Order sortingOrder = Sort.Order.asc(COLUMN_NAME_PROVIDER_CREATION_TIME);
         PageRequest pageRequest = PageRequest.of(currentPage, pageSize, Sort.by(sortingOrder));
-        Page<AlertNotificationModel> pageOfNotifications = notificationContentRepository.findByProviderConfigIdAndMappingToJobsFalseAndProcessedFalseOrderByProviderCreationTimeAscAndIdAsc(
+        Page<AlertNotificationModel> pageOfNotifications = notificationContentRepository.findByProviderConfigIdAndMappingToJobsFalseAndProcessedFalseOrderByProviderCreationTimeAscIdAsc(
                         providerConfigId,
                         pageRequest
                 )
