@@ -173,12 +173,12 @@ public class MockNotificationContentRepository extends MockRepositoryContainer<L
     }
 
     @Override
-    public Page<NotificationEntity> findByProviderConfigIdAndMappingToJobsFalseAndProcessedFalseOrderByProviderCreationTimeAscIdAsc(long providerConfigId, Pageable pageable) {
+    public Page<NotificationEntity> findByProviderConfigIdAndMappingToJobsFalseAndProcessedFalseOrderByProviderCreationTimeAsc(long providerConfigId, Pageable pageable) {
         Predicate<NotificationEntity> mappingFalse = Predicate.not(NotificationEntity::isMappingToJobs);
         Predicate<NotificationEntity> notProcessed = Predicate.not(NotificationEntity::getProcessed);
         Predicate<NotificationEntity> providerConfigIdEqual = notificationEntity -> notificationEntity.getProviderConfigId().equals(providerConfigId);
         List<NotificationEntity> notifications = findAll().stream()
-                .sorted(Comparator.comparing(NotificationEntity::getProviderCreationTime).thenComparing(NotificationEntity::getId))
+                .sorted(Comparator.comparing(NotificationEntity::getProviderCreationTime))
                 .filter(providerConfigIdEqual)
                 .filter(mappingFalse)
                 .filter(notProcessed)

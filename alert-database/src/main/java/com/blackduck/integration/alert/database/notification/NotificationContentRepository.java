@@ -92,7 +92,7 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
 
     long countByProviderConfigIdAndNotificationType(long providerConfigId, String notificationType);
 
-    Page<NotificationEntity> findByProviderConfigIdAndMappingToJobsFalseAndProcessedFalseOrderByProviderCreationTimeAscIdAsc(long providerConfigId, Pageable pageable);
+    Page<NotificationEntity> findByProviderConfigIdAndMappingToJobsFalseAndProcessedFalseOrderByProviderCreationTimeAsc(long providerConfigId, Pageable pageable);
 
     boolean existsByProviderConfigIdAndMappingToJobsFalse(long providerConfigId);
 
