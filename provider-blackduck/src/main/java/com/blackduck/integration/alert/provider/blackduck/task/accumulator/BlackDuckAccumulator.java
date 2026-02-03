@@ -142,10 +142,11 @@ public class BlackDuckAccumulator extends ProviderTask {
         int storedNotifications = 0;
         int batchLimit = getProviderProperties().getNotifcationBatchLimit();
         boolean hasExceedBatchSize = false;
+        UUID correlationId = UUID.randomUUID();
         try {
             while (!hasExceedBatchSize && !notificationPage.isCurrentPageEmpty()) {
                 List<NotificationUserView> currentNotifications = notificationPage.getCurrentModels();
-                logger.debug("Retrieved a page of {} notifications", currentNotifications.size());
+                logger.debug("Retrieved a page of {} notifications for correlationId: {}", currentNotifications.size(), correlationId);
 
                 storedNotifications += storeNotifications(currentNotifications);
                 hasExceedBatchSize = storedNotifications >= batchLimit;
@@ -157,7 +158,7 @@ public class BlackDuckAccumulator extends ProviderTask {
 
         } finally {
             if (storedNotifications > 0) {
-                eventManager.sendEvent(new NotificationReceivedEvent(getProviderProperties().getConfigId()));
+                eventManager.sendEvent(new NotificationReceivedEvent(correlationId, getProviderProperties().getConfigId()));
             }
         }
     }
