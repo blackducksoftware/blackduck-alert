@@ -50,10 +50,9 @@ public class NotificationMappingInitializer extends StartupComponent {
                 // only start processing for enabled provider configurations.
                 if(providerEnabled) {
                     long providerConfigId = providerConfiguration.getConfigurationId();
-                    int pageNumber = 0;
-                    PageRequest pageRequest = PageRequest.of(pageNumber, 100);
+                    PageRequest pageRequest = PageRequest.of(0, 100);
                     AlertPagedModel<UUID> batchIdsToReprocess = notificationAccessor.findUniqueBatchesForProviderWithNotificationsNotProcessed(pageRequest, providerConfigId);
-                    if (!batchIdsToReprocess.getModels().isEmpty()) {
+                    while(pageRequest.getPageNumber() < batchIdsToReprocess.getTotalPages() && !batchIdsToReprocess.getModels().isEmpty()) {
                         // send event to start mapping notifications for provided
                         String providerName = providerConfiguration.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)
                                 .flatMap(ConfigurationFieldModel::getFieldValue)
@@ -62,6 +61,10 @@ public class NotificationMappingInitializer extends StartupComponent {
                             logger.info("Restarting notification mappings for provider: {}({}) batch: {}", providerName, providerConfigId, batchId);
                             notificationAccessor.setNotificationsMappingFalseWhenProcessedFalse(providerConfigId);
                             eventManager.sendEvent(new NotificationReceivedEvent(providerConfiguration.getConfigurationId(), batchId));
+                        }
+                        pageRequest = pageRequest.next();
+                        if(pageRequest.getPageNumber() < batchIdsToReprocess.getTotalPages()) {
+                            batchIdsToReprocess = notificationAccessor.findUniqueBatchesForProviderWithNotificationsNotProcessed(pageRequest, providerConfigId);
                         }
                     }
                 }
