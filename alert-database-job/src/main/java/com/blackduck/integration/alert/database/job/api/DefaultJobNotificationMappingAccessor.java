@@ -37,7 +37,7 @@ public class DefaultJobNotificationMappingAccessor implements JobNotificationMap
     @Transactional(readOnly = true)
     public AlertPagedModel<JobToNotificationMappingModel> getJobNotificationMappings(UUID correlationId, UUID jobId, int page, int pageSize) {
         PageRequest pageRequest = PageRequest.of(page, pageSize);
-        Page<JobToNotificationRelation> pageOfData = jobToNotificationRelationRepository.findAllByCorrelationIdAndJobId(correlationId, jobId, pageRequest);
+        Page<JobToNotificationRelation> pageOfData = jobToNotificationRelationRepository.findAllByCorrelationIdAndJobIdOrderByNotificationId(correlationId, jobId, pageRequest);
         List<JobToNotificationMappingModel> models = pageOfData.get()
             .map(this::convertToModel)
             .collect(Collectors.toList());
