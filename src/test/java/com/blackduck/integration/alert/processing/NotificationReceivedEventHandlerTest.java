@@ -38,6 +38,7 @@ import com.google.gson.Gson;
 class NotificationReceivedEventHandlerTest {
 
     private final MockAlertProperties alertProperties = new MockAlertProperties();
+    private final UUID batchId = UUID.randomUUID();
 
     @Test
     void handleEventTest() throws IOException {
@@ -49,7 +50,7 @@ class NotificationReceivedEventHandlerTest {
         NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationMappingProcessor, eventManager);
 
         try {
-            eventHandler.handle(new NotificationReceivedEvent(2L));
+            eventHandler.handle(new NotificationReceivedEvent(2L, batchId));
         } catch (RuntimeException e) {
             fail("Unable to handle event", e);
         }
@@ -65,7 +66,7 @@ class NotificationReceivedEventHandlerTest {
         RecordingEventManager eventManager = mockEventManager();
 
         NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationMappingProcessor, eventManager);
-        eventHandler.handle(new NotificationReceivedEvent(2L));
+        eventHandler.handle(new NotificationReceivedEvent(2L, batchId));
 
         Assertions.assertTrue(eventManager.getEventList().isEmpty());
     }
@@ -89,7 +90,7 @@ class NotificationReceivedEventHandlerTest {
         RecordingEventManager eventManager = mockEventManager();
 
         NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationMappingProcessor, eventManager);
-        eventHandler.handle(new NotificationReceivedEvent(2L));
+        eventHandler.handle(new NotificationReceivedEvent(2L, batchId));
 
         List<Long> notificationIds = alertNotificationModels.stream()
                                 .map(AlertNotificationModel::getId)
@@ -121,7 +122,7 @@ class NotificationReceivedEventHandlerTest {
         RecordingEventManager eventManager = mockEventManager();
 
         NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationMappingProcessor, eventManager);
-        eventHandler.handle(new NotificationReceivedEvent(2L));
+        eventHandler.handle(new NotificationReceivedEvent(2L, batchId));
 
         List<Long> notificationIds = alertNotificationModels.stream()
                 .map(AlertNotificationModel::getId)
@@ -156,7 +157,7 @@ class NotificationReceivedEventHandlerTest {
         RecordingEventManager eventManager = mockEventManager();
 
         NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationMappingProcessor, eventManager);
-        eventHandler.handle(new NotificationReceivedEvent(2L));
+        eventHandler.handle(new NotificationReceivedEvent(2L, batchId));
         AlertNotificationModel updatedNotificationModel = notificationAccessor.findById(notificationId).orElseThrow(() -> new AssertionError("Expected notification not found.  Expected to find a notification with id: " + notificationId));
 
         Assertions.assertTrue(updatedNotificationModel.isMappingToJobs());

@@ -58,6 +58,7 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
     private void processNotifications(NotificationReceivedEvent event) {
         UUID correlationID = event.getCorrelationId();
         long providerConfigId = event.getProviderConfigId();
+        UUID accumulationBatchId = event.getBatchId();
         AlertPagedModel<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotMapped(providerConfigId, PAGE_SIZE);
         if (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels())) {
             List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getModels();
@@ -69,9 +70,9 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
                 if (notificationMappingProcessor.hasExceededBatchLimit(correlationID)) {
                     logger.info("Mapping batch limit of {} exceeded for correlation id: {}. Continuing processing in next batch.", notificationMappingProcessor.getNotificationMappingBatchLimit(), correlationID);
                     eventManager.sendEvent(new JobNotificationMappedEvent(correlationID));
-                    continueProcessingEvent = new NotificationReceivedEvent(providerConfigId);
+                    continueProcessingEvent = new NotificationReceivedEvent(providerConfigId, accumulationBatchId);
                 } else {
-                    continueProcessingEvent = new NotificationReceivedEvent(correlationID, providerConfigId);
+                    continueProcessingEvent = new NotificationReceivedEvent(correlationID, providerConfigId, accumulationBatchId);
                 }
                 eventManager.sendEvent(continueProcessingEvent);
             } else {

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
@@ -28,9 +30,11 @@ import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 
 public class MockProcessingNotificationAccessor implements NotificationAccessor {
     ArrayList<AlertNotificationModel> alertNotificationModels;
+    Map<Long, UUID> batchMap;
 
     public MockProcessingNotificationAccessor(List<AlertNotificationModel> alertNotificationModels) {
-        this.alertNotificationModels = new ArrayList<>(alertNotificationModels);
+        this.alertNotificationModels = new ArrayList<>(alertNotificationModels.size());
+        saveAllNotificationsInBatch(UUID.randomUUID(), alertNotificationModels);
     }
 
     @Override
@@ -41,7 +45,9 @@ public class MockProcessingNotificationAccessor implements NotificationAccessor 
 
     @Override
     public List<AlertNotificationModel> saveAllNotificationsInBatch(final UUID batchId, final Collection<AlertNotificationModel> notifications) {
-        return saveAllNotifications(notifications);
+        List<AlertNotificationModel> savedModels = saveAllNotifications(notifications);
+        savedModels.forEach(savedModel -> batchMap.put(savedModel.getId(), batchId));
+        return savedModels;
     }
 
     @Override
@@ -216,6 +222,28 @@ public class MockProcessingNotificationAccessor implements NotificationAccessor 
             int index = alertNotificationModels.indexOf(notification);
             alertNotificationModels.set(index, updatedNotification);
         }
+    }
+
+    @Override
+    public AlertPagedModel<UUID> findUniqueBatchesForProviderWithNotificationsNotProcessed(final PageRequest pageRequest, final Long providerId) {
+        Set<Long> notificationIdsNotProcessed = alertNotificationModels.stream()
+            .filter(item -> item.getProviderConfigId().equals(providerId))
+            .filter(item -> !item.getProcessed())
+            .map(AlertNotificationModel::getId)
+            .collect(Collectors.toSet());
+        List<UUID> batchFullList = batchMap.entrySet().stream()
+            .filter(entry -> notificationIdsNotProcessed.contains(entry.getKey()))
+            .map(Map.Entry::getValue)
+            .distinct()
+            .toList();
+        AlertPagedModel<UUID> pagedModel = AlertPagedModel.empty(0,pageRequest.getPageSize());
+
+        if(!batchFullList.isEmpty()) {
+            List<List<UUID>> totalPages = ListUtils.partition(batchFullList, pageRequest.getPageSize());
+            pagedModel = new AlertPagedModel<>(totalPages.size(), pageRequest.getPageNumber(), pageRequest.getPageSize(), totalPages.get(pageRequest.getPageNumber()));
+        }
+
+        return pagedModel;
     }
 
     //AlertNotificationModel is immutable, this is a workaround for the unit test to set "processed" to true.

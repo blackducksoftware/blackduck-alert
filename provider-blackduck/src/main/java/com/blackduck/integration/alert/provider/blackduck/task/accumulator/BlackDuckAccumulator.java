@@ -158,7 +158,7 @@ public class BlackDuckAccumulator extends ProviderTask {
 
         } finally {
             if (storedNotifications > 0) {
-                eventManager.sendEvent(new NotificationReceivedEvent(getProviderProperties().getConfigId()));
+                eventManager.sendEvent(new NotificationReceivedEvent(getProviderProperties().getConfigId(), batchId));
             }
         }
     }

@@ -98,6 +98,11 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         return models;
     }
 
+    public AlertPagedModel<UUID> findUniqueBatchesForProviderWithNotificationsNotProcessed(PageRequest pageRequest, Long providerId) {
+        Page<UUID> pageOfIds = notificationBatchRepository.findUniqueBatchIdsForProviderWhereNotificationsNotProcessed(providerId, pageRequest);
+        return new AlertPagedModel<>(pageOfIds.getTotalPages(), pageOfIds.getNumber(), pageOfIds.getSize(), pageOfIds.getContent());
+    }
+
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public Page<AlertNotificationModel> findAll(PageRequest pageRequest, boolean onlyShowSentNotifications) {
         if (onlyShowSentNotifications) {

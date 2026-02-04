@@ -7,6 +7,11 @@
  */
 package com.blackduck.integration.alert.api.distribution.mock;
 
+import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.blackduck.integration.alert.database.notification.NotificationBatchEntity;
 import com.blackduck.integration.alert.database.notification.NotificationBatchPK;
 import com.blackduck.integration.alert.database.notification.NotificationBatchRepository;
@@ -23,5 +28,10 @@ public class MockNotificationBatchRepository extends MockRepositoryContainer <No
     }
     public MockNotificationBatchRepository() {
         super(MockNotificationBatchRepository::generateNotificationBatchKey);
+    }
+
+    @Override
+    public Page<UUID> findUniqueBatchIdsForProviderWhereNotificationsNotProcessed(final Long providerId, final Pageable pageable) {
+        return null;
     }
 }

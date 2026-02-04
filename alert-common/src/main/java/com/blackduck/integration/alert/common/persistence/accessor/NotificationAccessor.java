@@ -14,6 +14,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.data.domain.PageRequest;
+
 import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 
@@ -61,5 +63,7 @@ public interface NotificationAccessor {
     boolean hasMoreNotificationsToMap(long providerConfigId);
 
     void setNotificationsMappingFalseWhenProcessedFalse(long providerConfigId);
+
+    AlertPagedModel<UUID> findUniqueBatchesForProviderWithNotificationsNotProcessed(PageRequest pageRequest, Long providerId);
 
 }
