@@ -142,13 +142,13 @@ public class BlackDuckAccumulator extends ProviderTask {
         int storedNotifications = 0;
         int batchLimit = getProviderProperties().getNotifcationBatchLimit();
         boolean hasExceedBatchSize = false;
-        UUID correlationId = UUID.randomUUID();
+        UUID batchId = UUID.randomUUID();
         try {
             while (!hasExceedBatchSize && !notificationPage.isCurrentPageEmpty()) {
                 List<NotificationUserView> currentNotifications = notificationPage.getCurrentModels();
-                logger.debug("Retrieved a page of {} notifications for correlationId: {}", currentNotifications.size(), correlationId);
+                logger.debug("Retrieved a page of {} notifications for batch: {}", currentNotifications.size(), batchId);
 
-                storedNotifications += storeNotifications(currentNotifications);
+                storedNotifications += storeNotifications(batchId, currentNotifications);
                 hasExceedBatchSize = storedNotifications >= batchLimit;
                 notificationPage = notificationPage.retrieveNextPage();
             }
@@ -158,14 +158,14 @@ public class BlackDuckAccumulator extends ProviderTask {
 
         } finally {
             if (storedNotifications > 0) {
-                eventManager.sendEvent(new NotificationReceivedEvent(correlationId, getProviderProperties().getConfigId()));
+                eventManager.sendEvent(new NotificationReceivedEvent(getProviderProperties().getConfigId()));
             }
         }
     }
 
-    private int storeNotifications(List<NotificationUserView> notifications) {
+    private int storeNotifications(UUID batchId, List<NotificationUserView> notifications) {
         List<AlertNotificationModel> alertNotifications = convertToAlertNotificationModels(notifications);
-        int notificationsWritten = write(alertNotifications);
+        int notificationsWritten = write(batchId, alertNotifications);
         Optional<OffsetDateTime> optionalNextSearchTime = computeLatestNotificationCreatedAtDate(alertNotifications)
             .map(latestNotification -> latestNotification.minusNanos(1000000));
         if (optionalNextSearchTime.isPresent()) {
@@ -185,9 +185,9 @@ public class BlackDuckAccumulator extends ProviderTask {
             .toList();
     }
 
-    private int write(List<AlertNotificationModel> contentList) {
+    private int write(UUID batchId, List<AlertNotificationModel> contentList) {
         logger.info("Writing {} notifications for provider {} ...", contentList.size(), getProviderProperties().getConfigId());
-        List<AlertNotificationModel> savedNotifications = notificationAccessor.saveAllNotifications(contentList);
+        List<AlertNotificationModel> savedNotifications = notificationAccessor.saveAllNotificationsInBatch(batchId, contentList);
         logger.info("Saved {} notifications for provider {} ...", savedNotifications.size(), getProviderProperties().getConfigId());
         if (logger.isDebugEnabled()) {
             List<Long> notificationIds = savedNotifications.stream()

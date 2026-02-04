@@ -12,12 +12,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 
 public interface NotificationAccessor {
     List<AlertNotificationModel> saveAllNotifications(Collection<AlertNotificationModel> notifications);
+
+    List<AlertNotificationModel> saveAllNotificationsInBatch(UUID batchId, Collection<AlertNotificationModel> notifications);
 
     List<AlertNotificationModel> findByIds(List<Long> notificationIds);
 

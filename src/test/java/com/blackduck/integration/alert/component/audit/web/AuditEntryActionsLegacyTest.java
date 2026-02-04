@@ -49,6 +49,7 @@ import com.blackduck.integration.alert.database.audit.AuditEntryRepository;
 import com.blackduck.integration.alert.database.audit.AuditNotificationRepository;
 import com.blackduck.integration.alert.database.job.api.DefaultNotificationAccessor;
 import com.blackduck.integration.alert.database.job.api.DefaultRestApiAuditAccessor;
+import com.blackduck.integration.alert.database.notification.NotificationBatchRepository;
 import com.blackduck.integration.alert.database.notification.NotificationContentRepository;
 import com.blackduck.integration.alert.database.notification.NotificationEntity;
 import com.blackduck.integration.alert.mock.entity.MockNotificationContent;
@@ -116,6 +117,7 @@ public class AuditEntryActionsLegacyTest {
         Mockito.when(authorizationManager.hasExecutePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
         AuditDescriptorKey auditDescriptorKey = new AuditDescriptorKey();
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
+        NotificationBatchRepository notificationBatchRepository = Mockito.mock(NotificationBatchRepository.class);
         NotificationContentRepository notificationRepository = Mockito.mock(NotificationContentRepository.class);
         AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
         JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
@@ -125,7 +127,7 @@ public class AuditEntryActionsLegacyTest {
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(mockAuditEntryEntity.createEmptyEntity()));
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Collections.singletonList(mockNotificationEntity.createEntity()));
 
-        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationRepository, auditEntryRepository, null);
+        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationRepository, auditEntryRepository, null, notificationBatchRepository);
         DefaultRestApiAuditAccessor auditEntryUtility = new DefaultRestApiAuditAccessor(
             auditEntryRepository,
             auditNotificationRepository,

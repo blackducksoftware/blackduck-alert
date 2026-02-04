@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 import org.apache.commons.collections4.ListUtils;
@@ -37,6 +38,11 @@ public class MockNotificationAccessor implements NotificationAccessor {
     @Override
     public List<AlertNotificationModel> saveAllNotifications(Collection<AlertNotificationModel> notifications) {
         return null;
+    }
+
+    @Override
+    public List<AlertNotificationModel> saveAllNotificationsInBatch(final UUID batchId, final Collection<AlertNotificationModel> notifications) {
+        return List.of();
     }
 
     @Override

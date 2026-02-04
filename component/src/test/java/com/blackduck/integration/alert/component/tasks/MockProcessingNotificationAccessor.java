@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -36,6 +37,11 @@ public class MockProcessingNotificationAccessor implements NotificationAccessor 
     public List<AlertNotificationModel> saveAllNotifications(Collection<AlertNotificationModel> notifications) {
         alertNotificationModels.addAll(notifications);
         return alertNotificationModels;
+    }
+
+    @Override
+    public List<AlertNotificationModel> saveAllNotificationsInBatch(final UUID batchId, final Collection<AlertNotificationModel> notifications) {
+        return saveAllNotifications(notifications);
     }
 
     @Override
