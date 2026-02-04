@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="psantos" id="create-raw-notification-batch-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="raw_notification_batch"/>
+            </not>
+        </preConditions>
+        <createTable tableName="raw_notification_batch" schemaName="alert">
+            <column name="provider_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="batch_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos" id="create-raw-notification-batch-key">
+         <preConditions onFail="MARK_RAN">
+            <not>
+                <primaryKeyExists schemaName="alert" primaryKeyName="PK_RAW_NOTIFICATION_BATCH_KEY"/>
+            </not>
+        </preConditions>
+        <addPrimaryKey columnNames="provider_id, batch_id, notification_id" constraintName="PK_RAW_NOTIFICATION_BATCH_KEY" tableName="raw_notification_batch" schemaName="ALERT"/>
+    </changeSet>
+    <changeSet author="psantos" id="create-foreign-key-raw-notification-batch-notification-id">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="raw_notification_batch_notification_id_fk"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                baseTableSchemaName="alert"
+                baseTableName="raw_notification_batch"
+                baseColumnNames="notification_id"
+                constraintName="raw_notification_batch_notification_id_fk"
+                referencedTableSchemaName="alert"
+                referencedTableName="raw_notification_content"
+                referencedColumnNames="id"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+</databaseChangeLog>
