@@ -44,4 +44,25 @@
                 onDelete="CASCADE"
         />
     </changeSet>
+    <changeSet author="psantos" id="create-indexes-on-raw-notification-batch">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists indexName="idx_raw_notification_batch_notification_id" schemaName="alert"/>
+            </not>
+            <not>
+                <indexExists indexName="idx_raw_notification_batch_provider_notification" schemaName="alert"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="idx_raw_notification_batch_notification_id"
+                     tableName="raw_notification_batch"
+                     schemaName="alert">
+            <column name="notification_id"/>
+        </createIndex>
+        <createIndex indexName="idx_raw_notification_batch_provider_notification"
+                     tableName="raw_notification_batch"
+                     schemaName="alert">
+            <column name="provider_id"/>
+            <column name="notification_id"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>
