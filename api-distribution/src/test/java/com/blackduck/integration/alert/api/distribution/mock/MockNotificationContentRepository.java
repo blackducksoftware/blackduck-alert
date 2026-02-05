@@ -11,6 +11,7 @@ import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -173,7 +174,7 @@ public class MockNotificationContentRepository extends MockRepositoryContainer<L
     }
 
     @Override
-    public Page<NotificationEntity> findByProviderConfigIdAndMappingToJobsFalseAndProcessedFalseOrderByProviderCreationTimeAsc(long providerConfigId, Pageable pageable) {
+    public Page<NotificationEntity> findNotMappedAndNotProcessedNotifications(long providerConfigId, UUID batchId,  Pageable pageable) {
         Predicate<NotificationEntity> mappingFalse = Predicate.not(NotificationEntity::isMappingToJobs);
         Predicate<NotificationEntity> notProcessed = Predicate.not(NotificationEntity::getProcessed);
         Predicate<NotificationEntity> providerConfigIdEqual = notificationEntity -> notificationEntity.getProviderConfigId().equals(providerConfigId);
