@@ -54,7 +54,7 @@ public interface NotificationAccessor {
 
     long countNotificationsByProviderAndType(long providerConfigId, String notificationType);
 
-    AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotMapped(long providerConfigId, int pageSize);
+    AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotMapped(long providerConfigId, UUID batchId, int pageSize);
 
     void setNotificationsMapping(List<AlertNotificationModel> notifications);
 

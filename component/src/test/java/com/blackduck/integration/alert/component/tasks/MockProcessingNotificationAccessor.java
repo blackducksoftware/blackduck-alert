@@ -172,11 +172,12 @@ public class MockProcessingNotificationAccessor implements NotificationAccessor 
     }
 
     @Override
-    public AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotMapped(long providerConfigId, int pageSize) {
+    public AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotMapped(long providerConfigId, UUID batchId, int pageSize) {
         List<AlertNotificationModel> notificationsNotMapped = alertNotificationModels
                 .stream()
                 .filter(model -> model.getProviderConfigId().equals(providerConfigId))
                 .filter(Predicate.not(AlertNotificationModel::isMappingToJobs))
+                .limit(pageSize)
                 .toList();
 
         Page<AlertNotificationModel> pageOfNotifications;

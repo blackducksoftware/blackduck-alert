@@ -59,10 +59,10 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
         UUID correlationID = event.getCorrelationId();
         long providerConfigId = event.getProviderConfigId();
         UUID accumulationBatchId = event.getBatchId();
-        AlertPagedModel<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotMapped(providerConfigId, PAGE_SIZE);
+        AlertPagedModel<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotMapped(providerConfigId, accumulationBatchId, PAGE_SIZE);
         if (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels())) {
             List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getModels();
-            logger.info("Starting to process batch for provider({}): {} = {} notifications.", providerConfigId, correlationID, notifications.size());
+            logger.info("Starting to process batch for provider({}): batch: {} correlation id: {} = {} notifications.", providerConfigId, accumulationBatchId, correlationID, notifications.size());
             notificationMappingProcessor.processNotifications(correlationID, notifications, List.of(FrequencyType.REAL_TIME));
             boolean hasMoreNotificationsToMap = notificationAccessor.hasMoreNotificationsToMap(providerConfigId);
             if (hasMoreNotificationsToMap) {
