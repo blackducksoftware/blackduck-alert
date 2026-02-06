@@ -33,9 +33,13 @@ public class MockNotificationAccessor implements NotificationAccessor {
     private final Map<Long,UUID> batchMap;
 
     public MockNotificationAccessor(List<AlertNotificationModel> alertNotificationModels) {
+        this(alertNotificationModels, UUID.randomUUID());
+    }
+
+    public MockNotificationAccessor(List<AlertNotificationModel> alertNotificationModels, UUID batchId) {
         this.alertNotificationModels = new LinkedHashMap<>();
         this.batchMap = new LinkedHashMap<>();
-        saveAllNotificationsInBatch(UUID.randomUUID(), alertNotificationModels);
+        saveAllNotificationsInBatch(batchId, alertNotificationModels);
     }
 
     @Override
@@ -181,10 +185,11 @@ public class MockNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
-    public boolean hasMoreNotificationsToMap(long providerConfigId) {
+    public boolean hasMoreNotificationsToMap(long providerConfigId, UUID batchId) {
         return alertNotificationModels.values()
                 .stream()
                 .filter(model -> model.getProviderConfigId().equals(providerConfigId))
+                .filter(model -> batchMap.containsKey(model.getId()) && batchMap.get(model.getId()).equals(batchId))
                 .anyMatch(Predicate.not(AlertNotificationModel::isMappingToJobs));
     }
 

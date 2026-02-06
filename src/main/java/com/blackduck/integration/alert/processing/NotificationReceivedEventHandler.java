@@ -64,7 +64,7 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
             List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getModels();
             logger.info("Starting to process batch for provider({}): batch: {} correlation id: {} = {} notifications.", providerConfigId, accumulationBatchId, correlationID, notifications.size());
             notificationMappingProcessor.processNotifications(correlationID, notifications, List.of(FrequencyType.REAL_TIME));
-            boolean hasMoreNotificationsToMap = notificationAccessor.hasMoreNotificationsToMap(providerConfigId);
+            boolean hasMoreNotificationsToMap = notificationAccessor.hasMoreNotificationsToMap(providerConfigId, accumulationBatchId);
             String sendingMappedEvent = String.format("Sending mapped event for correlation id %s", correlationID);
             if (hasMoreNotificationsToMap) {
                 NotificationReceivedEvent continueProcessingEvent;
@@ -82,7 +82,9 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
                 logger.debug(sendingMappedEvent);
                 eventManager.sendEvent(new JobNotificationMappedEvent(correlationID));
             }
+        } else {
+            logger.debug("No notifications to process for provider({}): batch: {} correlation id: {}", providerConfigId, accumulationBatchId, correlationID);
         }
-        logger.info("Finished processing batch for provider({}): batch: {} {} event for notifications.", providerConfigId, accumulationBatchId, correlationID);
+        logger.info("Finished processing batch for provider({}): batch: {} correlation id: {} event for notifications.", providerConfigId, accumulationBatchId, correlationID);
     }
 }

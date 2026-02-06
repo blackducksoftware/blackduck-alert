@@ -60,7 +60,7 @@ public interface NotificationAccessor {
 
     void setNotificationsMappingById(Set<Long> notificationIds);
 
-    boolean hasMoreNotificationsToMap(long providerConfigId);
+    boolean hasMoreNotificationsToMap(long providerConfigId, UUID batchId);
 
     void setNotificationsMappingFalseWhenProcessedFalse(long providerConfigId);
 

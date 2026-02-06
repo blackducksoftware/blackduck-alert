@@ -196,7 +196,7 @@ public class MockNotificationContentRepository extends MockRepositoryContainer<L
     }
 
     @Override
-    public boolean existsByProviderConfigIdAndMappingToJobsFalse(long providerConfigId) {
+    public boolean existsByProviderConfigIdAndMappingToJobsFalse(long providerConfigId, UUID batchId) {
         Predicate<NotificationEntity> providerConfigIdEqual = notificationEntity -> notificationEntity.getProviderConfigId().equals(providerConfigId);
         Predicate<NotificationEntity> notMapped = Predicate.not(NotificationEntity::isMappingToJobs);
         Predicate<NotificationEntity> providerAndMappingToJobsFalse = providerConfigIdEqual.and(notMapped);

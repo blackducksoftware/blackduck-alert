@@ -297,8 +297,8 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
 
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public boolean hasMoreNotificationsToMap(long providerConfigId) {
-        return notificationContentRepository.existsByProviderConfigIdAndMappingToJobsFalse(providerConfigId);
+    public boolean hasMoreNotificationsToMap(long providerConfigId,  UUID batchId) {
+        return notificationContentRepository.existsByProviderConfigIdAndMappingToJobsFalse(providerConfigId, batchId);
     }
 
     @Override

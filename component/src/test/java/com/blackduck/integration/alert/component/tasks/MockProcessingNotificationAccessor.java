@@ -205,9 +205,11 @@ public class MockProcessingNotificationAccessor implements NotificationAccessor 
     }
 
     @Override
-    public boolean hasMoreNotificationsToMap(long providerConfigId) {
+    public boolean hasMoreNotificationsToMap(long providerConfigId, UUID batchId) {
         return alertNotificationModels.stream()
-                .anyMatch(AlertNotificationModel::isMappingToJobs);
+            .filter(model -> model.getProviderConfigId().equals(providerConfigId))
+            .filter(model -> batchMap.containsKey(model.getId()) && batchMap.get(model.getId()).equals(batchId))
+            .anyMatch(Predicate.not(AlertNotificationModel::isMappingToJobs));
     }
 
     @Override

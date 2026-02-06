@@ -102,7 +102,7 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
         + " ORDER BY entity.providerCreationTime ASC")
     Page<NotificationEntity> findNotMappedAndNotProcessedNotifications(@Param("providerId") long providerConfigId, @Param("batchId") UUID batchId, Pageable pageable);
 
-    boolean existsByProviderConfigIdAndMappingToJobsFalse(long providerConfigId);
+    boolean existsByProviderConfigIdAndMappingToJobsFalse(@Param("providerId") long providerConfigId, @Param("batchId")  UUID batchId);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE NotificationEntity entity "
