@@ -102,6 +102,16 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
         + " ORDER BY entity.providerCreationTime ASC")
     Page<NotificationEntity> findNotMappedAndNotProcessedNotifications(@Param("providerId") long providerConfigId, @Param("batchId") UUID batchId, Pageable pageable);
 
+    @Query(value = "SELECT CASE WHEN EXISTS ("
+        + " SELECT 1 FROM NotificationEntity entity"
+        + " INNER JOIN NotificationBatchEntity batch ON entity.id = batch.notificationId"
+        + " WHERE batch.batchId = :batchId"
+        + " AND entity.providerConfigId = :providerId"
+        + " AND entity.mappingToJobs = false"
+        + " AND entity.processed = false"
+        + " ORDER BY entity.providerCreationTime ASC"
+        + ") THEN true ELSE false END"
+        + " FROM NotificationEntity entity")
     boolean existsByProviderConfigIdAndMappingToJobsFalse(@Param("providerId") long providerConfigId, @Param("batchId")  UUID batchId);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
