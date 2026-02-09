@@ -93,7 +93,7 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
     public void configureRabbitListeners(RabbitListenerEndpointRegistrar registrar) {
         logRabbitMqConfig();
         // setup persistence for the rabbit template
-        rabbitTemplate.setBeforePublishPostProcessors(message -> {
+        rabbitTemplate.addBeforePublishPostProcessors(message -> {
             message.getMessageProperties().setDeliveryMode(MessageDeliveryMode.PERSISTENT);
             return message;
         });

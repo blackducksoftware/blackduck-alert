@@ -9,11 +9,12 @@ clusterSize=${ALERT_RABBITMQ_CLUSTER_SIZE:-1}
 clusterType=${ALERT_RABBITMQ_CLUSTER_TYPE:-compose}
 
 echo "Generating $envFile ..."
+cat >> ${envFile} << EOL
 echo "SERVER_ADDITIONAL_ERL_ARGS=\"+A ${ALERT_RABBITMQ_ERLANG_ASYNC_THREADS:-4}\"" >> $envFile
 
 echo "Generating $confFile ..."
 
-cat >> ${confFile} << EOL
+cat >> ${confFile} << EOL\
 loopback_users.guest = false
 log.console = true
 log.console.level = warning
@@ -35,7 +36,7 @@ echo "heartbeat = ${ALERT_RABBITMQ_CONNECTION_HEARTBEAT:-60}" >> $confFile
 # memory settings
 echo "total_memory_available_override_value = ${ALERT_RABBITMQ_MEMORY_HIGH_WATERMARK:-1GB}" >> $confFile
 echo "vm_memory_high_watermark.absolute = ${ALERT_RABBITMQ_MEMORY_HIGH_WATERMARK:-1GB}" >> $confFile
-# Set the amount of memory rabbit can use to 70% of system, overridable by the property below
+# Set the amount of memory rabbit can use to 80% of system, overridable by the property below
 echo "vm_memory_high_watermark.relative = ${ALERT_RABBITMQ_MEMORY_WATERMARK:-0.80}" >> $confFile
 
 if [ "$isSsl" = 'true' ] ; then
