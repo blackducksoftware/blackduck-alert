@@ -65,7 +65,12 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
             logger.info("Starting to process batch for provider({}): batch: {} correlation id: {} = {} notifications.", providerConfigId, accumulationBatchId, correlationID, notifications.size());
             notificationMappingProcessor.processNotifications(correlationID, notifications, List.of(FrequencyType.REAL_TIME));
             boolean hasMoreNotificationsToMap = notificationAccessor.hasMoreNotificationsToMap(providerConfigId, accumulationBatchId);
-            String sendingMappedEvent = String.format("Sending mapped event for correlation id %s", correlationID);
+            String sendingMappedEvent = "";
+
+            if (logger.isDebugEnabled()) {
+                sendingMappedEvent = String.format("Sending mapped event for correlation id %s", correlationID);
+            }
+
             if (hasMoreNotificationsToMap) {
                 NotificationReceivedEvent continueProcessingEvent;
                 if (notificationMappingProcessor.hasExceededBatchLimit(correlationID)) {

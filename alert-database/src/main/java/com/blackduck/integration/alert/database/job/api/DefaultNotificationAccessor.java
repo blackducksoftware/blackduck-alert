@@ -98,6 +98,8 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         return models;
     }
 
+    @Override
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public AlertPagedModel<UUID> findUniqueBatchesForProviderWithNotificationsNotProcessed(PageRequest pageRequest, Long providerId) {
         Page<UUID> pageOfIds = notificationBatchRepository.findUniqueBatchIdsForProviderWhereNotificationsNotProcessed(providerId, pageRequest);
         return new AlertPagedModel<>(pageOfIds.getTotalPages(), pageOfIds.getNumber(), pageOfIds.getSize(), pageOfIds.getContent());

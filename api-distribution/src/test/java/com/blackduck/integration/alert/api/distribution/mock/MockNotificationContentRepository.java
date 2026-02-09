@@ -9,24 +9,50 @@ package com.blackduck.integration.alert.api.distribution.mock;
 
 import java.time.OffsetDateTime;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import com.blackduck.integration.alert.database.notification.NotificationBatchEntity;
 import com.blackduck.integration.alert.database.notification.NotificationContentRepository;
 import com.blackduck.integration.alert.database.notification.NotificationEntity;
 import com.blackduck.integration.alert.test.common.database.MockRepositoryContainer;
 
 public class MockNotificationContentRepository extends MockRepositoryContainer<Long, NotificationEntity> implements NotificationContentRepository {
+    private final MockNotificationBatchRepository mockNotificationBatchRepository;
     public MockNotificationContentRepository(final Function<NotificationEntity, Long> idGenerator) {
         super(idGenerator);
+        mockNotificationBatchRepository = new MockNotificationBatchRepository();
+    }
+
+    @Override
+    public <S extends NotificationEntity> @NotNull S save(@NotNull final S entity) {
+        S savedEntity = super.save(entity);
+        mockNotificationBatchRepository.save(new NotificationBatchEntity(entity.getProviderConfigId(), UUID.randomUUID(), entity.getId()));
+        return savedEntity;
+    }
+
+    @Override
+    public @NotNull <S extends NotificationEntity> List<S> saveAll(final Iterable<S> entities) {
+        List<S> savedEntities = super.saveAll(entities);
+        List<NotificationBatchEntity> batchEntities = new LinkedList<>();
+        UUID batchId = UUID.randomUUID();
+        entities.forEach(entity -> {
+            NotificationBatchEntity batchEntity = new NotificationBatchEntity(entity.getProviderConfigId(), batchId, entity.getId());
+            batchEntities.add(batchEntity);
+        });
+        mockNotificationBatchRepository.saveAll(batchEntities);
+        return savedEntities;
     }
 
     @Override
@@ -175,12 +201,18 @@ public class MockNotificationContentRepository extends MockRepositoryContainer<L
 
     @Override
     public Page<NotificationEntity> findNotMappedAndNotProcessedNotifications(long providerConfigId, UUID batchId,  Pageable pageable) {
+        Set<Long> notificationsInBatch = mockNotificationBatchRepository.findAll().stream()
+            .filter(entity -> entity.getBatchId().equals(batchId))
+            .map(NotificationBatchEntity::getNotificationId)
+            .collect(Collectors.toSet());
+        Predicate<NotificationEntity> notificationInBatch = notification -> notificationsInBatch.contains(notification.getId());
         Predicate<NotificationEntity> mappingFalse = Predicate.not(NotificationEntity::isMappingToJobs);
         Predicate<NotificationEntity> notProcessed = Predicate.not(NotificationEntity::getProcessed);
         Predicate<NotificationEntity> providerConfigIdEqual = notificationEntity -> notificationEntity.getProviderConfigId().equals(providerConfigId);
         List<NotificationEntity> notifications = findAll().stream()
                 .sorted(Comparator.comparing(NotificationEntity::getProviderCreationTime))
                 .filter(providerConfigIdEqual)
+                .filter(notificationInBatch)
                 .filter(mappingFalse)
                 .filter(notProcessed)
                 .toList();

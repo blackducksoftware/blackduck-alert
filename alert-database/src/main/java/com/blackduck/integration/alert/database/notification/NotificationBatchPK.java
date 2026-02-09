@@ -10,7 +10,9 @@ package com.blackduck.integration.alert.database.notification;
 import java.io.Serializable;
 import java.util.UUID;
 
-public class NotificationBatchPK implements Serializable {
+import com.blackduck.integration.util.Stringable;
+
+public class NotificationBatchPK extends Stringable implements Serializable {
     private static final long serialVersionUID = -2386387064939665605L;
 
     private Long providerId;

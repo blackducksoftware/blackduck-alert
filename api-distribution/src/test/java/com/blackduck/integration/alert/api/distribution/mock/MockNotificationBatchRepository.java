@@ -32,6 +32,6 @@ public class MockNotificationBatchRepository extends MockRepositoryContainer <No
 
     @Override
     public Page<UUID> findUniqueBatchIdsForProviderWhereNotificationsNotProcessed(final Long providerId, final Pageable pageable) {
-        return null;
+        return Page.empty();
     }
 }

@@ -18,7 +18,7 @@ import org.springframework.data.repository.query.Param;
 public interface NotificationBatchRepository extends JpaRepository<NotificationBatchEntity, NotificationBatchPK> {
 
     @Query(value = "SELECT DISTINCT batchEntity.batchId FROM NotificationEntity notification"
-        + " INNER JOIN notification.notificationBatches batchEntity on notification.id = batchEntity.notificationId"
+        + " INNER JOIN notification.notificationBatches batchEntity"
         + " WHERE batchEntity.providerId = :providerId AND notification.processed = false")
     Page<UUID> findUniqueBatchIdsForProviderWhereNotificationsNotProcessed(@Param("providerId") Long providerId, Pageable pageable);
 }

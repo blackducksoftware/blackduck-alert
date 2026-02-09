@@ -109,7 +109,6 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
         + " AND entity.providerConfigId = :providerId"
         + " AND entity.mappingToJobs = false"
         + " AND entity.processed = false"
-        + " ORDER BY entity.providerCreationTime ASC"
         + ") THEN true ELSE false END"
         + " FROM NotificationEntity entity")
     boolean existsByProviderConfigIdAndMappingToJobsFalse(@Param("providerId") long providerConfigId, @Param("batchId")  UUID batchId);
