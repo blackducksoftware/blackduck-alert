@@ -93,7 +93,7 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
     public void configureRabbitListeners(RabbitListenerEndpointRegistrar registrar) {
         logRabbitMqConfig();
         // setup persistence for the rabbit template
-        rabbitTemplate.setBeforePublishPostProcessors(message -> {
+        rabbitTemplate.addBeforePublishPostProcessors(message -> {
             message.getMessageProperties().setDeliveryMode(MessageDeliveryMode.PERSISTENT);
             return message;
         });
@@ -152,7 +152,6 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
     private void createDeadLetterHandler(RabbitListenerEndpointRegistrar registrar) {
         logger.debug("Registering dead letter listener");
         org.springframework.amqp.rabbit.listener.MessageListenerContainer deadLetterListenerContainer = createMessageListenerContainer();
-        amqpAdmin.declareExchange(exchange);
         String listenerId = createListenerId(DeadLetterListener.DEAD_LETTER_QUEUE_NAME);
         Queue queue = QueueBuilder
             .durable(DeadLetterListener.DEAD_LETTER_QUEUE_NAME)
