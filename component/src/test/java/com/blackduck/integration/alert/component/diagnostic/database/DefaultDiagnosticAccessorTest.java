@@ -119,8 +119,8 @@ class DefaultDiagnosticAccessorTest {
     }
 
     private RabbitMQDiagnosticModel createRabbitMQDiagnosticModel() {
-        AlertQueueInformation queue1 = new AlertQueueInformation("queue1", 50, 1);
-        AlertQueueInformation queue2 = new AlertQueueInformation("queue2", 0, 50);
+        AlertQueueInformation queue1 = new AlertQueueInformation("queue1", 50, 1, 25);
+        AlertQueueInformation queue2 = new AlertQueueInformation("queue2", 0, 50,0);
         RabbitMQDiagnosticModel rabbitMQDiagnosticModel = new RabbitMQDiagnosticModel(List.of(queue1, queue2));
         Mockito.when(rabbitMQDiagnosticUtility.getRabbitMQDiagnostics()).thenReturn(rabbitMQDiagnosticModel);
         return rabbitMQDiagnosticModel;
