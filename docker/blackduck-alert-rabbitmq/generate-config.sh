@@ -9,8 +9,7 @@ clusterSize=${ALERT_RABBITMQ_CLUSTER_SIZE:-1}
 clusterType=${ALERT_RABBITMQ_CLUSTER_TYPE:-compose}
 
 echo "Generating $envFile ..."
-cat >> ${envFile} << EOL
-echo "SERVER_ADDITIONAL_ERL_ARGS=\"+A ${ALERT_RABBITMQ_ERLANG_ASYNC_THREADS:-4}\"" >> $envFile
+echo "SERVER_ADDITIONAL_ERL_ARGS=\"+A ${ALERT_RABBITMQ_ERLANG_ASYNC_THREADS:-1}\"" >> $envFile
 
 echo "Generating $confFile ..."
 
