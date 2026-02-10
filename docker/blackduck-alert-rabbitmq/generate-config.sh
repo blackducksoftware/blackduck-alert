@@ -14,7 +14,7 @@ echo "SERVER_ADDITIONAL_ERL_ARGS=\"+A ${ALERT_RABBITMQ_ERLANG_ASYNC_THREADS:-4}\
 
 echo "Generating $confFile ..."
 
-cat >> ${confFile} << EOL\
+cat >> ${confFile} << EOL
 loopback_users.guest = false
 log.console = true
 log.console.level = warning
@@ -59,7 +59,7 @@ fi
 if [ "${clusterType}" = 'kubernetes' ] ; then
   clusterName=${ALERT_RABBITMQ_CLUSTER_NAME:-cluster.local}
   cat  >> ${confFile} << EOL
-cluster_formation.peer_discovery_backend  = rabbit_peer_discovery_k8s
+cluster_formation.peer_discovery_backend = rabbit_peer_discovery_k8s
 cluster_formation.k8s.host = kubernetes.default.svc.${clusterName}
 cluster_formation.k8s.address_type = hostname
 cluster_formation.node_cleanup.interval = 30
