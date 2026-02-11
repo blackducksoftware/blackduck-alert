@@ -188,7 +188,7 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
         while (page.getCurrentPage() <= page.getTotalPages()) {
             jobExecutions.addAll(page.getModels().stream()
                 .map(this::convertExecutionData)
-                .collect(Collectors.toList()));
+                .toList());
             pageNumber++;
             page = executingJobManager.getExecutingJobs(pageNumber, pageSize);
         }
@@ -200,7 +200,7 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
         List<JobStageDiagnosticModel> stageData = job.getStages().values()
             .stream()
             .map(this::convertJobStageData)
-            .collect(Collectors.toList());
+            .toList();
         Optional<DistributionJobModel> distributionJobModel = jobAccessor.getJobById(job.getJobConfigId());
         String jobName = distributionJobModel.map(DistributionJobModelData::getName).orElse(String.format("Unknown Job (%s)", job.getJobConfigId()));
         String channelName = distributionJobModel.map(DistributionJobModel::getChannelDescriptorName).orElse("Unknown Channel");

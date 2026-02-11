@@ -144,6 +144,7 @@ class DefaultDiagnosticAccessorTest {
             failureCount,
             latestStatus,
             lastRun,
+            lastRun,
             durations
         );
         AlertPagedModel<JobCompletionStatusModel> pageModel = new AlertPagedModel<>(1, 0, 10, List.of(statusModel));
