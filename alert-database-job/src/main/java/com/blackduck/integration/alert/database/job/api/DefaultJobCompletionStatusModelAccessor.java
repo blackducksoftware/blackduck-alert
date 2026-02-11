@@ -154,7 +154,7 @@ public class DefaultJobCompletionStatusModelAccessor implements JobCompletionSta
         long failureCount = savedStatus.getFailureCount();
         OffsetDateTime firstRun = latestData.getLastRun();
 
-        if (savedStatus.getFirstRun().isBefore(latestData.getLastRun())) {
+        if (latestData.getLastRun() != null && savedStatus.getFirstRun().isBefore(latestData.getLastRun())) {
            firstRun = savedStatus.getFirstRun();
         }
 

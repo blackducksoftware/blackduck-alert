@@ -46,7 +46,6 @@ import com.blackduck.integration.alert.common.persistence.accessor.Configuration
 import com.blackduck.integration.alert.common.persistence.accessor.JobAccessor;
 import com.blackduck.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
 import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
-import com.blackduck.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.blackduck.integration.alert.common.persistence.accessor.ProcessingFailedAccessor;
 import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobModelBuilder;
@@ -173,7 +172,7 @@ class AuditFailedEventListenerTest {
         assertEquals(AuditEntryStatus.FAILURE.name(), statusModel.getLatestStatus());
         assertEquals(0, statusModel.getSuccessCount());
         assertEquals(1, statusModel.getFailureCount());
-        assertEquals(0, statusModel.getTotalNotificationCount());
+        assertEquals(3, statusModel.getTotalNotificationCount());
         assertTrue(executingJobManager.getExecutingJob(executingJobId).isEmpty());
     }
 
