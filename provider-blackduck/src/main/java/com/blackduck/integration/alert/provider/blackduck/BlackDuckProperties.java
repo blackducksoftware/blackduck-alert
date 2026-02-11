@@ -24,6 +24,8 @@ import com.blackduck.integration.alert.common.AlertProperties;
 import com.blackduck.integration.alert.common.persistence.accessor.FieldUtility;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
 import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.common.system.SystemInfo;
+import com.blackduck.integration.alert.common.system.SystemInfoReader;
 import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.blackduck.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.blackduck.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
@@ -34,6 +36,7 @@ import com.blackduck.integration.log.IntLogger;
 import com.blackduck.integration.log.Slf4jIntLogger;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
 import com.blackduck.integration.util.IntEnvironmentVariables;
+import com.blackduck.integration.util.NameVersion;
 import com.blackduck.integration.util.NoThreadExecutorService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -50,12 +53,13 @@ public class BlackDuckProperties extends ProviderProperties {
     private final String url;
     private final Integer timeout;
     private final String apiToken;
+    private final SystemInfoReader systemInfoReader;
 
-    public BlackDuckProperties(Long configId, Gson gson, ObjectMapper objectMapper, AlertProperties alertProperties, ProxyManager proxyManager, ConfigurationModel configurationModel) {
-        this(configId, gson, objectMapper, alertProperties, proxyManager, createFieldUtility(configurationModel));
+    public BlackDuckProperties(Long configId, Gson gson, ObjectMapper objectMapper, AlertProperties alertProperties, ProxyManager proxyManager, ConfigurationModel configurationModel, SystemInfoReader systemInfoReader) {
+        this(configId, gson, objectMapper, alertProperties, proxyManager, createFieldUtility(configurationModel), systemInfoReader);
     }
 
-    public BlackDuckProperties(Long configId, Gson gson, ObjectMapper objectMapper, AlertProperties alertProperties, ProxyManager proxyManager, FieldUtility fieldUtility) {
+    public BlackDuckProperties(Long configId, Gson gson, ObjectMapper objectMapper, AlertProperties alertProperties, ProxyManager proxyManager, FieldUtility fieldUtility, SystemInfoReader systemInfoReader) {
         super(configId, fieldUtility.getBooleanOrFalse(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED), fieldUtility.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse(UNKNOWN_CONFIG_NAME));
         this.gson = gson;
         this.objectMapper = objectMapper;
@@ -69,6 +73,7 @@ public class BlackDuckProperties extends ProviderProperties {
             .getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT)
             .orElse(DEFAULT_TIMEOUT);
         this.apiToken = fieldUtility.getStringOrNull(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
+        this.systemInfoReader = systemInfoReader;
     }
 
     private static FieldUtility createFieldUtility(ConfigurationModel configurationModel) {
@@ -169,6 +174,9 @@ public class BlackDuckProperties extends ProviderProperties {
     public BlackDuckServerConfigBuilder createServerConfigBuilderWithoutAuthentication(IntLogger logger, int blackDuckTimeout) {
         BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = new BlackDuckServerConfigBuilder(KEYS.apiToken);
         String blackDuckUrl = getBlackDuckUrl().orElse("");
+        systemInfoReader.getSystemInfo()
+            .map(info -> new NameVersion("Alert", info.getVersion()))
+            .ifPresent(blackDuckServerConfigBuilder::setSolutionDetails);
         blackDuckServerConfigBuilder.setProperties(createBlackDuckProperties(blackDuckUrl).entrySet());
         blackDuckServerConfigBuilder.setLogger(logger);
         blackDuckServerConfigBuilder.setTimeoutInSeconds(blackDuckTimeout);

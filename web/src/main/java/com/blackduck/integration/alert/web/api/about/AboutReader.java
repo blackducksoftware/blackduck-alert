@@ -7,12 +7,9 @@
  */
 package com.blackduck.integration.alert.web.api.about;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -22,54 +19,53 @@ import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.blackduck.integration.alert.common.enumeration.DescriptorType;
 import com.blackduck.integration.alert.common.persistence.accessor.SystemStatusAccessor;
+import com.blackduck.integration.alert.common.system.SystemInfo;
+import com.blackduck.integration.alert.common.system.SystemInfoReader;
 import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.web.api.metadata.DescriptorMetadataActions;
 import com.blackduck.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
 import com.blackduck.integration.alert.web.documentation.SwaggerConfiguration;
-import com.blackduck.integration.util.ResourceUtil;
-import com.google.gson.Gson;
 
 @Component
 public class AboutReader {
     public static final String PRODUCT_VERSION_UNKNOWN = "unknown";
-    private final Logger logger = LoggerFactory.getLogger(AboutReader.class);
 
-    private final Gson gson;
+    private final SystemInfoReader systemInfoReader;
     private final SystemStatusAccessor systemStatusAccessor;
     private final DescriptorMetadataActions descriptorActions;
 
+
     @Autowired
-    public AboutReader(Gson gson, SystemStatusAccessor systemStatusAccessor, DescriptorMetadataActions descriptorActions) {
-        this.gson = gson;
+    public AboutReader(SystemInfoReader systemInfoReader, SystemStatusAccessor systemStatusAccessor, DescriptorMetadataActions descriptorActions) {
+        this.systemInfoReader = systemInfoReader;
         this.systemStatusAccessor = systemStatusAccessor;
         this.descriptorActions = descriptorActions;
     }
 
     public Optional<AboutModel> getAboutModel() {
-        try {
-            String aboutJson = ResourceUtil.getResourceAsString(getClass(), "/about.txt", StandardCharsets.UTF_8.toString());
-            AboutModel aboutModel = gson.fromJson(aboutJson, AboutModel.class);
+        Optional<AboutModel> aboutModel = Optional.empty();
+        Optional<SystemInfo> systemInfo = systemInfoReader.getSystemInfo();
+        if (systemInfo.isPresent()) {
+            SystemInfo info =  systemInfo.get();
             String startupDate = systemStatusAccessor.getStartupTime() != null ? DateUtils.formatDateAsJsonString(systemStatusAccessor.getStartupTime()) : "";
             Set<DescriptorMetadata> providers = getDescriptorData(DescriptorType.PROVIDER);
             Set<DescriptorMetadata> channels = getDescriptorData(DescriptorType.CHANNEL);
             AboutModel model = new AboutModel(
-                aboutModel.getVersion(),
-                aboutModel.getCreated(),
-                aboutModel.getDescription(),
-                aboutModel.getProjectUrl(),
-                aboutModel.getCommitHash(),
-                aboutModel.getCopyrightYear(),
+                info.getVersion(),
+                info.getCreated(),
+                info.getDescription(),
+                info.getProjectUrl(),
+                info.getCommitHash(),
+                info.getCopyrightYear(),
                 createSwaggerUrl(SwaggerConfiguration.SWAGGER_DEFAULT_PATH_SPEC),
                 systemStatusAccessor.isSystemInitialized(),
                 startupDate,
                 providers,
                 channels
             );
-            return Optional.of(model);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return Optional.empty();
+            aboutModel = Optional.of(model);
         }
+        return aboutModel;
     }
 
     private Set<DescriptorMetadata> getDescriptorData(DescriptorType descriptorType) {

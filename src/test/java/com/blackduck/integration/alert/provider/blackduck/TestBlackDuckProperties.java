@@ -17,6 +17,7 @@ import com.blackduck.integration.alert.api.common.model.exception.AlertException
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
 import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.common.system.SystemInfoReader;
 import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.blackduck.integration.alert.test.common.MockAlertProperties;
 import com.blackduck.integration.alert.test.common.TestProperties;
@@ -62,7 +63,7 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
 
     public TestBlackDuckProperties(Long configId, Gson gson, ObjectMapper objectMapper, MockAlertProperties alertProperties, TestProperties testProperties, ProxyManager proxyManager, Integer blackDuckTimeout,
         boolean trustCertificates) {
-        super(configId, gson, objectMapper, alertProperties, proxyManager, getConfigurationModel(testProperties));
+        super(configId, gson, objectMapper, alertProperties, proxyManager, getConfigurationModel(testProperties), new SystemInfoReader(gson));
         this.blackDuckTimeout = blackDuckTimeout;
         testAlertProperties = alertProperties;
         this.testProperties = testProperties;

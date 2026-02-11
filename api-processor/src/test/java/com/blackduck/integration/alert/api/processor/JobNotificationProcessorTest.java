@@ -31,6 +31,8 @@ import com.blackduck.integration.alert.common.message.model.LinkableItem;
 import com.blackduck.integration.alert.common.persistence.accessor.ConfigurationModelConfigurationAccessor;
 import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.common.system.SystemInfo;
+import com.blackduck.integration.alert.common.system.SystemInfoReader;
 import com.blackduck.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
 import com.blackduck.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
 import com.blackduck.integration.alert.provider.blackduck.processor.detail.RuleViolationNotificationDetailExtractor;
@@ -137,7 +139,8 @@ class JobNotificationProcessorTest {
         ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
         AlertProperties properties = new AlertProperties();
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        BlackDuckPropertiesFactory blackDuckPropertiesFactory = new BlackDuckPropertiesFactory(configurationModelConfigurationAccessor, GSON, properties, proxyManager);
+        SystemInfoReader systemInfo = new SystemInfoReader(GSON);
+        BlackDuckPropertiesFactory blackDuckPropertiesFactory = new BlackDuckPropertiesFactory(configurationModelConfigurationAccessor, GSON, properties, proxyManager, systemInfo);
 
         return new NotificationExtractorBlackDuckServicesFactoryCache(blackDuckPropertiesFactory);
     }

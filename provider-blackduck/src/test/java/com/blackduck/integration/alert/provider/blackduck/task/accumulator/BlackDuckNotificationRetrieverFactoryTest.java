@@ -23,10 +23,12 @@ import com.blackduck.integration.alert.common.persistence.model.ConfigurationFie
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
 import com.blackduck.integration.alert.common.rest.model.SettingsProxyModel;
 import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.common.system.SystemInfoReader;
 import com.blackduck.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.blackduck.integration.alert.test.common.MockAlertProperties;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
+import com.google.gson.Gson;
 
 class BlackDuckNotificationRetrieverFactoryTest {
     private final String BLACKDUCK_URL = "https://example.com";
@@ -54,13 +56,16 @@ class BlackDuckNotificationRetrieverFactoryTest {
     private BlackDuckProperties createBlackDuckProperties(String blackDuckUrl) {
         ConfigurationModel configurationModel = createConfigurationModel(blackDuckUrl);
         ProxyManager proxyManager = new ProxyManager(new MockSettingsUtility());
+        Gson gson = BlackDuckServicesFactory.createDefaultGson();
+        SystemInfoReader systemInfoReader = new SystemInfoReader(gson);
         return new BlackDuckProperties(
             1L,
-            BlackDuckServicesFactory.createDefaultGson(),
+            gson,
             BlackDuckServicesFactory.createDefaultObjectMapper(),
             new MockAlertProperties(),
             proxyManager,
-            configurationModel
+            configurationModel,
+            systemInfoReader
         );
     }
 

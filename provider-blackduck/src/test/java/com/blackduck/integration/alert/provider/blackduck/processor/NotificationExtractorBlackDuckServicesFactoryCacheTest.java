@@ -26,6 +26,7 @@ import com.blackduck.integration.alert.common.persistence.accessor.Configuration
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
 import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.common.system.SystemInfoReader;
 import com.blackduck.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.blackduck.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
@@ -37,7 +38,8 @@ class NotificationExtractorBlackDuckServicesFactoryCacheTest {
     private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
     private final AlertProperties properties = new AlertProperties();
     private final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-    private final BlackDuckPropertiesFactory blackDuckPropertiesFactory = new BlackDuckPropertiesFactory(configurationModelConfigurationAccessor, gson, properties, proxyManager);
+    private final SystemInfoReader systemInfoReader = new SystemInfoReader(gson);
+    private final BlackDuckPropertiesFactory blackDuckPropertiesFactory = new BlackDuckPropertiesFactory(configurationModelConfigurationAccessor, gson, properties, proxyManager, systemInfoReader);
 
     private final Long blackDuckConfigId = 15L;
 
