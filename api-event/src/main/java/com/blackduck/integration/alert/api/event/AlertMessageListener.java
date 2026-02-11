@@ -7,6 +7,8 @@
  */
 package com.blackduck.integration.alert.api.event;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
@@ -76,7 +78,8 @@ public abstract class AlertMessageListener<T extends AlertEvent> implements Mess
         double averageMessageSize = 0.0;
 
         if (messageCount > 0 ) {
-            averageMessageSize = (double) totalBytes / messageCount;
+            double averageBytes = (double) totalBytes / messageCount;
+            averageMessageSize = BigDecimal.valueOf(averageBytes).setScale(4, RoundingMode.HALF_UP).doubleValue();
         }
 
         return averageMessageSize;
