@@ -31,7 +31,7 @@ class RabbitMQDiagnosticUtilityTest {
 
         int messageCount = 5;
         int consumerCount = 1;
-        long averageMessageSize = 25L;
+        double averageMessageSize = 25.0;
         QueueInformation queueInformation = new QueueInformation(destinationName, messageCount, consumerCount);
 
         Mockito.when(alertMessageListener.getDestinationName()).thenReturn(destinationName);

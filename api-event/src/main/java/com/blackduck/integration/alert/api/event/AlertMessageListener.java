@@ -70,8 +70,16 @@ public abstract class AlertMessageListener<T extends AlertEvent> implements Mess
         }
     }
 
-    public final Long calculateAverageMessageSize() {
-        return totalBytesCounter.get() / messageCounter.get();
+    public final Double calculateAverageMessageSize() {
+        long totalBytes = totalBytesCounter.get();
+        long messageCount = messageCounter.get();
+        double averageMessageSize = 0.0;
+
+        if (messageCount > 0 ) {
+            averageMessageSize = (double) totalBytes / messageCount;
+        }
+
+        return averageMessageSize;
     }
 
 }
