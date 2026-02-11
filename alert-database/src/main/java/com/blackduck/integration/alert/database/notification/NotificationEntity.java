@@ -15,6 +15,7 @@ import com.blackduck.integration.alert.database.BaseEntity;
 import com.blackduck.integration.alert.database.DatabaseEntity;
 import com.blackduck.integration.alert.database.audit.AuditNotificationRelation;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -57,7 +58,7 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
     @OneToMany(mappedBy = "notificationContent")
     private final List<AuditNotificationRelation> auditNotificationRelations = new ArrayList<>();
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "notification_id", referencedColumnName = "id",  insertable = false, updatable = false)
     private List<NotificationBatchEntity> notificationBatches = new ArrayList<>();
 
