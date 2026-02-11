@@ -132,6 +132,7 @@ class DefaultDiagnosticAccessorTest {
         Long successCount = 1L;
         Long failureCount = 0L;
         String latestStatus = AuditEntryStatus.SUCCESS.name();
+        OffsetDateTime firstRun = DateUtils.createCurrentDateTimestamp();
         OffsetDateTime lastRun = DateUtils.createCurrentDateTimestamp();
         Long jobDuration = 100000L;
         JobCompletionStatusDurations durations = new JobCompletionStatusDurations(jobDuration, 1000000L, 300000L, 0L, 0L, 0L);
@@ -193,6 +194,7 @@ class DefaultDiagnosticAccessorTest {
             successCount,
             failureCount,
             latestStatus,
+            DateUtils.formatDateAsJsonString(firstRun),
             DateUtils.formatDateAsJsonString(lastRun),
             durationDisgnostics
         ));

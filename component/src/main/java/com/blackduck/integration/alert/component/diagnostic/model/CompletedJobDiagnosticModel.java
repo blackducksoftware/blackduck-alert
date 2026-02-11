@@ -20,6 +20,7 @@ public class CompletedJobDiagnosticModel extends AlertSerializableModel {
     private final Long successCount;
     private final Long failureCount;
     private final String latestStatus;
+    private final String firstRun;
     private final String lastRun;
 
     private final CompletedJobDurationDiagnosticModel durations;
@@ -32,6 +33,7 @@ public class CompletedJobDiagnosticModel extends AlertSerializableModel {
         Long successCount,
         Long failureCount,
         String latestStatus,
+        String firstRun,
         String lastRun,
         CompletedJobDurationDiagnosticModel durations
     ) {
@@ -42,6 +44,7 @@ public class CompletedJobDiagnosticModel extends AlertSerializableModel {
         this.successCount = successCount;
         this.failureCount = failureCount;
         this.latestStatus = latestStatus;
+        this.firstRun = firstRun;
         this.lastRun = lastRun;
         this.durations = durations;
     }
@@ -73,6 +76,8 @@ public class CompletedJobDiagnosticModel extends AlertSerializableModel {
     public String getLatestStatus() {
         return latestStatus;
     }
+
+    public String getFirstRun() { return firstRun;}
 
     public String getLastRun() {
         return lastRun;

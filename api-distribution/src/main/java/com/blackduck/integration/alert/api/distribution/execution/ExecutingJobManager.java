@@ -201,6 +201,8 @@ public class ExecutingJobManager {
         UUID jobConfigId = executingJob.getJobConfigId();
         long successCount = AuditEntryStatus.SUCCESS == jobStatus ? 1L : 0L;
         long failureCount = AuditEntryStatus.FAILURE == jobStatus ? 1L : 0L;
+        OffsetDateTime startTime = DateUtils.fromInstantUTC(executingJob.getStart());
+        OffsetDateTime endTime = executingJob.getEnd().map(DateUtils::fromInstantUTC).orElse(DateUtils.createCurrentDateTimestamp());
 
         JobCompletionStatusDurations durations = new JobCompletionStatusDurations(
             calculateNanosecondDuration(executingJob.getStart(), executingJob.getEnd().orElse(Instant.now())),
@@ -218,8 +220,8 @@ public class ExecutingJobManager {
             successCount,
             failureCount,
             jobStatus.name(),
-            executingJob.getEnd().map(DateUtils::fromInstantUTC).orElse(null),
-            null, // the first run is stored in the database.
+            endTime,
+            startTime,
             durations
         );
     }

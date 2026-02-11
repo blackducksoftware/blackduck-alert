@@ -257,6 +257,7 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
             jobCompletionStatusModel.getSuccessCount(),
             jobCompletionStatusModel.getFailureCount(),
             jobCompletionStatusModel.getLatestStatus(),
+            DateUtils.formatDateAsJsonString(jobCompletionStatusModel.getFirstRun()),
             DateUtils.formatDateAsJsonString(jobCompletionStatusModel.getLastRun()),
             durationDiagnosticModel
         );
