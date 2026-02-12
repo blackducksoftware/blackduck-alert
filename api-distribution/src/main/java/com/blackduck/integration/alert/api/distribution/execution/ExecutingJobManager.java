@@ -99,7 +99,7 @@ public class ExecutingJobManager {
         logger.debug("Starting stage {} for job execution {} at {}", stage, executionId, startTimeDateFormatted);
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
         executingJob.ifPresent(job -> job.addStage(ExecutingJobStage.createStage(executionId, stage, DateUtils.fromInstantUTC(start).toInstant())));
-        executingJob.ifPresent(execution -> jobCompletionStatusAccessor.saveExecutionStatus(createStatusModel(execution)));
+        executingJob.ifPresent(execution -> jobCompletionStatusAccessor.saveExecutionDurations(createStatusModel(execution)));
     }
 
     public void endStage(UUID executionId, JobStage stage, Instant end) {
@@ -109,7 +109,7 @@ public class ExecutingJobManager {
         executingJob
             .flatMap(job -> job.getStage(stage))
             .ifPresent(jobStage -> jobStage.endStage(DateUtils.fromInstantUTC(end).toInstant()));
-        executingJob.ifPresent(execution -> jobCompletionStatusAccessor.saveExecutionStatus(createStatusModel(execution)));
+        executingJob.ifPresent(execution -> jobCompletionStatusAccessor.saveExecutionDurations(createStatusModel(execution)));
     }
 
     public void purgeJob(UUID executionId) {

@@ -79,6 +79,16 @@ public class DefaultJobCompletionStatusModelAccessor implements JobCompletionSta
         jobCompletionDurationsRepository.save(durations);
     }
 
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void saveExecutionDurations(final JobCompletionStatusModel statusModel) {
+        Optional<JobCompletionStatusModel> currentStatusModel = getJobExecutionStatus(statusModel.getJobConfigId());
+        if (currentStatusModel.isPresent()) {
+            JobCompletionStatusDurationsEntity durations = convertDurationFromModel(statusModel.getJobConfigId(), statusModel.getDurations());
+            jobCompletionDurationsRepository.save(durations);
+        }
+    }
+
     private JobCompletionStatusModel convertToModel(JobCompletionStatusEntity entity) {
         JobCompletionStatusDurations durations = convertDurationToModel(jobCompletionDurationsRepository.findById(entity.getJobConfigId())
             .orElseGet(() -> createEmptyDurations(entity.getJobConfigId())));
