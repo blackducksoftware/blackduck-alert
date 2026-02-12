@@ -66,6 +66,7 @@ class NotificationReceivedEventHandlerTestIT {
     private AlertProperties alertProperties;
 
     private Long blackDuckGlobalConfigId;
+    private UUID batchId;
     private TestProperties properties;
 
     int pageSize = 10;
@@ -92,6 +93,7 @@ class NotificationReceivedEventHandlerTestIT {
                 blackduckApiKey,
                 blackduckTimeout));
         blackDuckGlobalConfigId = blackduckConfigurationModel.getConfigurationId();
+        batchId = UUID.randomUUID();
     }
 
     @AfterEach
@@ -119,7 +121,7 @@ class NotificationReceivedEventHandlerTestIT {
             notificationMappingProcessor,
             eventManager
         );
-        notificationReceivedEventHandler.handle(new NotificationReceivedEvent(blackDuckGlobalConfigId));
+        notificationReceivedEventHandler.handle(new NotificationReceivedEvent(blackDuckGlobalConfigId, batchId));
 
         testAlertNotificationModels(savedModels);
     }
@@ -130,7 +132,7 @@ class NotificationReceivedEventHandlerTestIT {
         notificationContent.add(createAlertNotificationModel(true));
         notificationContent.add(createAlertNotificationModel(true));
 
-        List<AlertNotificationModel> savedModels = defaultNotificationAccessor.saveAllNotifications(notificationContent);
+        List<AlertNotificationModel> savedModels = defaultNotificationAccessor.saveAllNotificationsInBatch(batchId, notificationContent);
         assertNotNull(savedModels);
         assertEquals(0, defaultNotificationAccessor.getFirstPageOfNotificationsNotProcessed(pageSize).getModels().size());
 
@@ -140,7 +142,7 @@ class NotificationReceivedEventHandlerTestIT {
             notificationMappingProcessor,
             eventManager
         );
-        notificationReceivedEventHandler.handle(new NotificationReceivedEvent(blackDuckGlobalConfigId));
+        notificationReceivedEventHandler.handle(new NotificationReceivedEvent(blackDuckGlobalConfigId, batchId));
 
         testAlertNotificationModels(savedModels);
     }
@@ -151,7 +153,7 @@ class NotificationReceivedEventHandlerTestIT {
         notificationContent.add(createAlertNotificationModel(true));
         notificationContent.add(createAlertNotificationModel(false));
 
-        List<AlertNotificationModel> savedModels = defaultNotificationAccessor.saveAllNotifications(notificationContent);
+        List<AlertNotificationModel> savedModels = defaultNotificationAccessor.saveAllNotificationsInBatch(batchId, notificationContent);
         assertNotNull(savedModels);
 
         NotificationMappingProcessor notificationMappingProcessor = createNotificationMappingProcessor();
@@ -160,7 +162,7 @@ class NotificationReceivedEventHandlerTestIT {
             notificationMappingProcessor,
             eventManager
         );
-        notificationReceivedEventHandler.handle(new NotificationReceivedEvent(blackDuckGlobalConfigId));
+        notificationReceivedEventHandler.handle(new NotificationReceivedEvent(blackDuckGlobalConfigId, batchId));
 
         testAlertNotificationModels(savedModels);
     }
@@ -173,7 +175,7 @@ class NotificationReceivedEventHandlerTestIT {
         for (int index = 0; index < totalNotifications; index++) {
             notificationContent.add(createAlertNotificationModel(false));
         }
-        List<AlertNotificationModel> savedModels = defaultNotificationAccessor.saveAllNotifications(notificationContent);
+        List<AlertNotificationModel> savedModels = defaultNotificationAccessor.saveAllNotificationsInBatch(batchId, notificationContent);
         assertNotNull(savedModels);
 
         NotificationMappingProcessor notificationMappingProcessor = createNotificationMappingProcessor();
@@ -182,7 +184,7 @@ class NotificationReceivedEventHandlerTestIT {
             notificationMappingProcessor,
             eventManagerSpy
         );
-        notificationReceivedEventHandler.handle(new NotificationReceivedEvent(blackDuckGlobalConfigId));
+        notificationReceivedEventHandler.handle(new NotificationReceivedEvent(blackDuckGlobalConfigId,batchId));
 
         assertEquals(200, defaultNotificationAccessor.getFirstPageOfNotificationsNotProcessed(200).getModels().size());
     }

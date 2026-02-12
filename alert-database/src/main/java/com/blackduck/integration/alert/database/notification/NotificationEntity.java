@@ -15,11 +15,13 @@ import com.blackduck.integration.alert.database.BaseEntity;
 import com.blackduck.integration.alert.database.DatabaseEntity;
 import com.blackduck.integration.alert.database.audit.AuditNotificationRelation;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
@@ -55,6 +57,10 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
 
     @OneToMany(mappedBy = "notificationContent")
     private final List<AuditNotificationRelation> auditNotificationRelations = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "notification_id", referencedColumnName = "id",  insertable = false, updatable = false)
+    private List<NotificationBatchEntity> notificationBatches = new ArrayList<>();
 
     public NotificationEntity() {
         // JPA requires default constructor definitions
@@ -167,5 +173,9 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
 
     public void setMappingToJobsToTrue() {
         this.mappingToJobs = true;
+    }
+
+    public List<NotificationBatchEntity> getNotificationBatches() {
+        return notificationBatches;
     }
 }

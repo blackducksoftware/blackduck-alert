@@ -10,6 +10,7 @@ package com.blackduck.integration.alert.database.notification;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -92,9 +93,25 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
 
     long countByProviderConfigIdAndNotificationType(long providerConfigId, String notificationType);
 
-    Page<NotificationEntity> findByProviderConfigIdAndMappingToJobsFalseAndProcessedFalseOrderByProviderCreationTimeAsc(long providerConfigId, Pageable pageable);
+    @Query(value ="SELECT entity FROM NotificationEntity entity"
+        + " INNER JOIN NotificationBatchEntity batch ON entity.id = batch.notificationId"
+        + " WHERE batch.batchId = :batchId"
+        + " AND entity.providerConfigId = :providerId"
+        + " AND entity.mappingToJobs = false"
+        + " AND entity.processed = false"
+        + " ORDER BY entity.providerCreationTime ASC")
+    Page<NotificationEntity> findNotMappedAndNotProcessedNotifications(@Param("providerId") long providerConfigId, @Param("batchId") UUID batchId, Pageable pageable);
 
-    boolean existsByProviderConfigIdAndMappingToJobsFalse(long providerConfigId);
+    @Query(value = "SELECT CASE WHEN EXISTS ("
+        + " SELECT 1 FROM NotificationEntity entity"
+        + " INNER JOIN NotificationBatchEntity batch ON entity.id = batch.notificationId"
+        + " WHERE batch.batchId = :batchId"
+        + " AND entity.providerConfigId = :providerId"
+        + " AND entity.mappingToJobs = false"
+        + " AND entity.processed = false"
+        + ") THEN true ELSE false END"
+        + " FROM NotificationEntity entity")
+    boolean existsByProviderConfigIdAndMappingToJobsFalse(@Param("providerId") long providerConfigId, @Param("batchId")  UUID batchId);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE NotificationEntity entity "

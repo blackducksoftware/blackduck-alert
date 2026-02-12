@@ -9,16 +9,17 @@ import com.blackduck.integration.alert.common.persistence.accessor.Configuration
 import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationModel;
-import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 
 @Component
 @Order(80)
@@ -47,19 +48,32 @@ public class NotificationMappingInitializer extends StartupComponent {
                         .map(Boolean::parseBoolean)
                         .orElse(false);
                 // only start processing for enabled provider configurations.
-                if(providerEnabled) {
+                if (providerEnabled) {
                     long providerConfigId = providerConfiguration.getConfigurationId();
-                    AlertPagedModel<AlertNotificationModel> incompleteMappingNotifications = notificationAccessor.getFirstPageOfNotificationsNotProcessed(providerConfigId, 1);
-                    if (!incompleteMappingNotifications.getModels().isEmpty()) {
-                        // send event to start mapping notifications for provided
-                        String providerName = providerConfiguration.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)
-                                .flatMap(ConfigurationFieldModel::getFieldValue)
-                                .orElse(StringUtils.EMPTY);
-                        logger.info("Restarting notification mappings for provider: {}({})", providerName, providerConfigId);
+                    String providerName = providerConfiguration.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)
+                        .flatMap(ConfigurationFieldModel::getFieldValue)
+                        .orElse(StringUtils.EMPTY);
+                    if (notificationAccessor.hasMoreNotificationsToProcess(providerConfigId)) {
                         notificationAccessor.setNotificationsMappingFalseWhenProcessedFalse(providerConfigId);
-                        eventManager.sendEvent(new NotificationReceivedEvent(providerConfiguration.getConfigurationId()));
+                        reprocessNotifications(providerName, providerConfigId);
                     }
                 }
+            }
+        }
+    }
+
+    private void reprocessNotifications(final String providerName, final long providerConfigId) {
+        PageRequest pageRequest = PageRequest.of(0, 100);
+        AlertPagedModel<UUID> batchIdsToReprocess = notificationAccessor.findUniqueBatchesForProviderWithNotificationsNotProcessed(pageRequest, providerConfigId);
+        while (pageRequest.getPageNumber() < batchIdsToReprocess.getTotalPages() && !batchIdsToReprocess.getModels().isEmpty()) {
+            // send event to start mapping notifications for provided
+            for (UUID batchId : batchIdsToReprocess.getModels()) {
+                logger.info("Restarting notification mappings for provider: {}({}) batch: {}", providerName, providerConfigId, batchId);
+                eventManager.sendEvent(new NotificationReceivedEvent(providerConfigId, batchId));
+            }
+            pageRequest = pageRequest.next();
+            if (pageRequest.getPageNumber() < batchIdsToReprocess.getTotalPages()) {
+                batchIdsToReprocess = notificationAccessor.findUniqueBatchesForProviderWithNotificationsNotProcessed(pageRequest, providerConfigId);
             }
         }
     }

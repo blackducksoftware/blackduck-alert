@@ -58,26 +58,38 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
     private void processNotifications(NotificationReceivedEvent event) {
         UUID correlationID = event.getCorrelationId();
         long providerConfigId = event.getProviderConfigId();
-        AlertPagedModel<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotMapped(providerConfigId, PAGE_SIZE);
+        UUID accumulationBatchId = event.getBatchId();
+        AlertPagedModel<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotMapped(providerConfigId, accumulationBatchId, PAGE_SIZE);
         if (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels())) {
             List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getModels();
-            logger.info("Starting to process batch for provider({}): {} = {} notifications.", providerConfigId, correlationID, notifications.size());
+            logger.info("Starting to process batch for provider({}): batch: {} correlation id: {} = {} notifications.", providerConfigId, accumulationBatchId, correlationID, notifications.size());
             notificationMappingProcessor.processNotifications(correlationID, notifications, List.of(FrequencyType.REAL_TIME));
-            boolean hasMoreNotificationsToMap = notificationAccessor.hasMoreNotificationsToMap(providerConfigId);
+            boolean hasMoreNotificationsToMap = notificationAccessor.hasMoreNotificationsToMap(providerConfigId, accumulationBatchId);
+            String sendingMappedEvent = "";
+
+            if (logger.isDebugEnabled()) {
+                sendingMappedEvent = String.format("Sending mapped event for correlation id %s", correlationID);
+            }
+
             if (hasMoreNotificationsToMap) {
                 NotificationReceivedEvent continueProcessingEvent;
                 if (notificationMappingProcessor.hasExceededBatchLimit(correlationID)) {
                     logger.info("Mapping batch limit of {} exceeded for correlation id: {}. Continuing processing in next batch.", notificationMappingProcessor.getNotificationMappingBatchLimit(), correlationID);
+                    logger.debug(sendingMappedEvent);
                     eventManager.sendEvent(new JobNotificationMappedEvent(correlationID));
-                    continueProcessingEvent = new NotificationReceivedEvent(providerConfigId);
+                    continueProcessingEvent = new NotificationReceivedEvent(providerConfigId, accumulationBatchId);
                 } else {
-                    continueProcessingEvent = new NotificationReceivedEvent(correlationID, providerConfigId);
+                    continueProcessingEvent = new NotificationReceivedEvent(correlationID, providerConfigId, accumulationBatchId);
                 }
+                logger.debug("More notifications to process for provider({}) batch: {} correlation id: {}", providerConfigId, accumulationBatchId, correlationID);
                 eventManager.sendEvent(continueProcessingEvent);
             } else {
+                logger.debug(sendingMappedEvent);
                 eventManager.sendEvent(new JobNotificationMappedEvent(correlationID));
             }
+        } else {
+            logger.debug("No notifications to process for provider({}): batch: {} correlation id: {}", providerConfigId, accumulationBatchId, correlationID);
         }
-        logger.info("Finished processing batch for provider({}): {} event for notifications.", providerConfigId, correlationID);
+        logger.info("Finished processing batch for provider({}): batch: {} correlation id: {} event for notifications.", providerConfigId, accumulationBatchId, correlationID);
     }
 }

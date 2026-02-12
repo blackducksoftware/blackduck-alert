@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +38,8 @@ import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.database.audit.AuditEntryRepository;
+import com.blackduck.integration.alert.database.notification.NotificationBatchEntity;
+import com.blackduck.integration.alert.database.notification.NotificationBatchRepository;
 import com.blackduck.integration.alert.database.notification.NotificationContentRepository;
 import com.blackduck.integration.alert.database.notification.NotificationEntity;
 
@@ -47,16 +50,19 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     private final NotificationContentRepository notificationContentRepository;
     private final AuditEntryRepository auditEntryRepository;
     private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
+    private final NotificationBatchRepository notificationBatchRepository;
 
     @Autowired
     public DefaultNotificationAccessor(
         NotificationContentRepository notificationContentRepository,
         AuditEntryRepository auditEntryRepository,
-        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor,
+        NotificationBatchRepository notificationBatchRepository
     ) {
         this.notificationContentRepository = notificationContentRepository;
         this.auditEntryRepository = auditEntryRepository;
         this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
+        this.notificationBatchRepository = notificationBatchRepository;
     }
 
     @Override
@@ -72,10 +78,31 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
                 entitiesToSave.add(fromModel(model));
             }
         }
+
         return notificationContentRepository.saveAllAndFlush(entitiesToSave)
             .stream()
             .map(this::toModel)
             .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public List<AlertNotificationModel> saveAllNotificationsInBatch(final UUID batchId, final Collection<AlertNotificationModel> notifications) {
+        List<AlertNotificationModel> models = saveAllNotifications(notifications);
+        if(!models.isEmpty()) {
+            List<NotificationBatchEntity> batchDataList = models.stream()
+                .map(notification -> new NotificationBatchEntity(notification.getProviderConfigId(), batchId, notification.getId()))
+                .toList();
+            notificationBatchRepository.saveAllAndFlush(batchDataList);
+        }
+        return models;
+    }
+
+    @Override
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public AlertPagedModel<UUID> findUniqueBatchesForProviderWithNotificationsNotProcessed(PageRequest pageRequest, Long providerId) {
+        Page<UUID> pageOfIds = notificationBatchRepository.findUniqueBatchIdsForProviderWhereNotificationsNotProcessed(providerId, pageRequest);
+        return new AlertPagedModel<>(pageOfIds.getTotalPages(), pageOfIds.getNumber(), pageOfIds.getSize(), pageOfIds.getContent());
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
@@ -239,12 +266,13 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
 
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotMapped(long providerConfigId, int pageSize) {
+    public AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotMapped(long providerConfigId, UUID batchId, int pageSize) {
         int currentPage = 0;
         Sort.Order sortingOrder = Sort.Order.asc(COLUMN_NAME_PROVIDER_CREATION_TIME);
         PageRequest pageRequest = PageRequest.of(currentPage, pageSize, Sort.by(sortingOrder));
-        Page<AlertNotificationModel> pageOfNotifications = notificationContentRepository.findByProviderConfigIdAndMappingToJobsFalseAndProcessedFalseOrderByProviderCreationTimeAsc(
+        Page<AlertNotificationModel> pageOfNotifications = notificationContentRepository.findNotMappedAndNotProcessedNotifications(
                         providerConfigId,
+                        batchId,
                         pageRequest
                 )
                 .map(this::toModel);
@@ -271,8 +299,8 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
 
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public boolean hasMoreNotificationsToMap(long providerConfigId) {
-        return notificationContentRepository.existsByProviderConfigIdAndMappingToJobsFalse(providerConfigId);
+    public boolean hasMoreNotificationsToMap(long providerConfigId,  UUID batchId) {
+        return notificationContentRepository.existsByProviderConfigIdAndMappingToJobsFalse(providerConfigId, batchId);
     }
 
     @Override

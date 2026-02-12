@@ -38,18 +38,19 @@ import com.google.gson.Gson;
 class NotificationReceivedEventHandlerTest {
 
     private final MockAlertProperties alertProperties = new MockAlertProperties();
+    private final UUID batchId = UUID.randomUUID();
 
     @Test
     void handleEventTest() throws IOException {
         AlertNotificationModel alertNotificationModel = createAlertNotificationModel(1L, false, false);
         List<AlertNotificationModel> alertNotificationModels = List.of(alertNotificationModel);
-        NotificationAccessor notificationAccessor = new MockNotificationAccessor(alertNotificationModels);
+        NotificationAccessor notificationAccessor = new MockNotificationAccessor(alertNotificationModels, batchId);
         NotificationMappingProcessor notificationMappingProcessor = Mockito.mock(NotificationMappingProcessor.class);
         EventManager eventManager = mockEventManager();
         NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationMappingProcessor, eventManager);
 
         try {
-            eventHandler.handle(new NotificationReceivedEvent(2L));
+            eventHandler.handle(new NotificationReceivedEvent(2L, batchId));
         } catch (RuntimeException e) {
             fail("Unable to handle event", e);
         }
@@ -57,7 +58,7 @@ class NotificationReceivedEventHandlerTest {
 
     @Test
     void notificationsTableEmptyTest() {
-        NotificationAccessor notificationAccessor = new MockNotificationAccessor(List.of());
+        NotificationAccessor notificationAccessor = new MockNotificationAccessor(List.of(), batchId);
         NotificationDetailExtractionDelegator notificationDetailExtractionDelegator = Mockito.mock(NotificationDetailExtractionDelegator.class);
         JobNotificationMapper2 jobNotificationMapper = Mockito.mock(JobNotificationMapper2.class);
 
@@ -65,7 +66,7 @@ class NotificationReceivedEventHandlerTest {
         RecordingEventManager eventManager = mockEventManager();
 
         NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationMappingProcessor, eventManager);
-        eventHandler.handle(new NotificationReceivedEvent(2L));
+        eventHandler.handle(new NotificationReceivedEvent(2L, batchId));
 
         Assertions.assertTrue(eventManager.getEventList().isEmpty());
     }
@@ -79,7 +80,7 @@ class NotificationReceivedEventHandlerTest {
         for(int index = 0; index < count; index++) {
             alertNotificationModels.add(createAlertNotificationModel(counter.getAndIncrement(), false, false));
         }
-        NotificationAccessor notificationAccessor = new MockNotificationAccessor(alertNotificationModels);
+        NotificationAccessor notificationAccessor = new MockNotificationAccessor(alertNotificationModels,batchId);
         NotificationDetailExtractionDelegator notificationDetailExtractionDelegator = Mockito.mock(NotificationDetailExtractionDelegator.class);
         JobNotificationMapper2 jobNotificationMapper = Mockito.mock(JobNotificationMapper2.class);
         // the batch limit has been exceeded
@@ -89,7 +90,7 @@ class NotificationReceivedEventHandlerTest {
         RecordingEventManager eventManager = mockEventManager();
 
         NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationMappingProcessor, eventManager);
-        eventHandler.handle(new NotificationReceivedEvent(2L));
+        eventHandler.handle(new NotificationReceivedEvent(2L, batchId));
 
         List<Long> notificationIds = alertNotificationModels.stream()
                                 .map(AlertNotificationModel::getId)
@@ -113,7 +114,7 @@ class NotificationReceivedEventHandlerTest {
         for(int index = 0; index < count; index++) {
             alertNotificationModels.add(createAlertNotificationModel(counter.getAndIncrement(), false, false));
         }
-        NotificationAccessor notificationAccessor = new MockNotificationAccessor(alertNotificationModels);
+        NotificationAccessor notificationAccessor = new MockNotificationAccessor(alertNotificationModels, batchId);
         NotificationDetailExtractionDelegator notificationDetailExtractionDelegator = Mockito.mock(NotificationDetailExtractionDelegator.class);
         JobNotificationMapper2 jobNotificationMapper = Mockito.mock(JobNotificationMapper2.class);
 
@@ -121,7 +122,7 @@ class NotificationReceivedEventHandlerTest {
         RecordingEventManager eventManager = mockEventManager();
 
         NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationMappingProcessor, eventManager);
-        eventHandler.handle(new NotificationReceivedEvent(2L));
+        eventHandler.handle(new NotificationReceivedEvent(2L, batchId));
 
         List<Long> notificationIds = alertNotificationModels.stream()
                 .map(AlertNotificationModel::getId)
@@ -146,7 +147,7 @@ class NotificationReceivedEventHandlerTest {
         for(int index = 0; index < count; index++) {
             alertNotificationModels.add(createAlertNotificationModel(counter.getAndIncrement(), false, false));
         }
-        NotificationAccessor notificationAccessor = new MockNotificationAccessor(alertNotificationModels);
+        NotificationAccessor notificationAccessor = new MockNotificationAccessor(alertNotificationModels, batchId);
         NotificationDetailExtractionDelegator notificationDetailExtractionDelegator = Mockito.mock(NotificationDetailExtractionDelegator.class);
         JobNotificationMapper2 jobNotificationMapper = Mockito.mock(JobNotificationMapper2.class);
         // the batch limit has been exceeded
@@ -156,7 +157,7 @@ class NotificationReceivedEventHandlerTest {
         RecordingEventManager eventManager = mockEventManager();
 
         NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationMappingProcessor, eventManager);
-        eventHandler.handle(new NotificationReceivedEvent(2L));
+        eventHandler.handle(new NotificationReceivedEvent(2L, batchId));
         AlertNotificationModel updatedNotificationModel = notificationAccessor.findById(notificationId).orElseThrow(() -> new AssertionError("Expected notification not found.  Expected to find a notification with id: " + notificationId));
 
         Assertions.assertTrue(updatedNotificationModel.isMappingToJobs());

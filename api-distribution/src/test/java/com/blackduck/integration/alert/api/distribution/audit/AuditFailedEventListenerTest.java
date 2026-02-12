@@ -37,6 +37,7 @@ import com.blackduck.integration.alert.api.distribution.mock.MockAuditFailedNoti
 import com.blackduck.integration.alert.api.distribution.mock.MockAuditNotificationRepository;
 import com.blackduck.integration.alert.api.distribution.mock.MockJobCompletionStatusDurationsRepository;
 import com.blackduck.integration.alert.api.distribution.mock.MockJobCompletionStatusRepository;
+import com.blackduck.integration.alert.api.distribution.mock.MockNotificationBatchRepository;
 import com.blackduck.integration.alert.api.distribution.mock.MockNotificationContentRepository;
 import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
 import com.blackduck.integration.alert.common.enumeration.FrequencyType;
@@ -62,10 +63,10 @@ import com.blackduck.integration.alert.database.audit.AuditNotificationRelationP
 import com.blackduck.integration.alert.database.audit.AuditNotificationRepository;
 import com.blackduck.integration.alert.database.job.api.DefaultJobCompletionStatusModelAccessor;
 import com.blackduck.integration.alert.database.job.api.DefaultNotificationAccessor;
-import com.blackduck.integration.alert.database.job.api.DefaultProcessingAuditAccessor;
 import com.blackduck.integration.alert.database.job.api.DefaultProcessingFailedAccessor;
 import com.blackduck.integration.alert.database.job.execution.JobCompletionDurationsRepository;
 import com.blackduck.integration.alert.database.job.execution.JobCompletionRepository;
+import com.blackduck.integration.alert.database.notification.NotificationBatchRepository;
 import com.blackduck.integration.alert.database.notification.NotificationContentRepository;
 import com.blackduck.integration.alert.database.notification.NotificationEntity;
 import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
@@ -75,13 +76,12 @@ class AuditFailedEventListenerTest {
     public static final String TEST_JOB_NAME = "Test Job";
     private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
     private final TaskExecutor taskExecutor = new SyncTaskExecutor();
-    private ProcessingAuditAccessor processingAuditAccessor;
-    private AuditEntryRepository auditEntryRepository;
     private ExecutingJobManager executingJobManager;
     private final AtomicLong idContainer = new AtomicLong(0L);
 
     private AuditFailedEntryRepository auditFailedEntryRepository;
 
+    private NotificationBatchRepository notificationBatchRepository;
     private NotificationContentRepository notificationContentRepository;
     private final AtomicLong notificationIdContainer = new AtomicLong(0);
     private NotificationAccessor notificationAccessor;
@@ -92,12 +92,13 @@ class AuditFailedEventListenerTest {
     public void init() {
         AuditNotificationRepository auditNotificationRepository = new MockAuditNotificationRepository(this::generateRelationKey);
         AuditEntryRepository auditEntryRepository = new MockAuditEntryRepository(this::generateEntityKey, auditNotificationRepository);
-        processingAuditAccessor = new DefaultProcessingAuditAccessor(auditEntryRepository, auditNotificationRepository);
+
+        notificationBatchRepository = new MockNotificationBatchRepository();
         notificationContentRepository = new MockNotificationContentRepository(this::generateNotificationId);
         auditFailedEntryRepository = new MockAuditFailedEntryRepository(AuditFailedEntity::getId);
         auditFailedNotificationRepository = new MockAuditFailedNotificationRepository(AuditFailedNotificationEntity::getNotificationId);
         ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
-        notificationAccessor = new DefaultNotificationAccessor(notificationContentRepository, auditEntryRepository, configurationModelConfigurationAccessor);
+        notificationAccessor = new DefaultNotificationAccessor(notificationContentRepository, auditEntryRepository, configurationModelConfigurationAccessor, notificationBatchRepository);
         JobCompletionDurationsRepository jobCompletionDurationsRepository = new MockJobCompletionStatusDurationsRepository();
         JobCompletionRepository jobCompletionRepository = new MockJobCompletionStatusRepository(jobCompletionDurationsRepository);
 
