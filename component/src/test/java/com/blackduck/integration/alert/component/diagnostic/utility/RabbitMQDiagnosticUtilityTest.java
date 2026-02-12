@@ -46,7 +46,7 @@ class RabbitMQDiagnosticUtilityTest {
         assertEquals(destinationName, alertQueueInformation.getName());
         assertEquals(messageCount, alertQueueInformation.getMessageCount());
         assertEquals(consumerCount, alertQueueInformation.getConsumerCount());
-        assertEquals(averageMessageSize, alertQueueInformation.getAverageMessageSize());
+        assertEquals(averageMessageSize, alertQueueInformation.getAverageMessageSizeBytes());
     }
 
     @Test

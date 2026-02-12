@@ -15,13 +15,13 @@ public class AlertQueueInformation extends AlertSerializableModel {
     private final String name;
     private final int messageCount;
     private final int consumerCount;
-    private final double averageMessageSize;
+    private final double averageMessageSizeBytes;
 
-    public AlertQueueInformation(String name, int messageCount, int consumerCount, double averageMessageSize) {
+    public AlertQueueInformation(String name, int messageCount, int consumerCount, double averageMessageSizeBytes) {
         this.name = name;
         this.messageCount = messageCount;
         this.consumerCount = consumerCount;
-        this.averageMessageSize = averageMessageSize;
+        this.averageMessageSizeBytes = averageMessageSizeBytes;
     }
 
     public String getName() {
@@ -35,7 +35,7 @@ public class AlertQueueInformation extends AlertSerializableModel {
     public int getConsumerCount() {
         return consumerCount;
     }
-    public double getAverageMessageSize() {
-        return averageMessageSize;
+    public double getAverageMessageSizeBytes() {
+        return averageMessageSizeBytes;
     }
 }

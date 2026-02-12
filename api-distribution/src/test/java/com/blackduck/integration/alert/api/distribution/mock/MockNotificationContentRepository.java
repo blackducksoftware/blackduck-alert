@@ -11,6 +11,7 @@ import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
@@ -25,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.blackduck.integration.alert.database.notification.NotificationBatchEntity;
 import com.blackduck.integration.alert.database.notification.NotificationContentRepository;
+import com.blackduck.integration.alert.database.notification.NotificationCountsPerHour;
 import com.blackduck.integration.alert.database.notification.NotificationEntity;
 import com.blackduck.integration.alert.test.common.database.MockRepositoryContainer;
 
@@ -272,5 +274,17 @@ public class MockNotificationContentRepository extends MockRepositoryContainer<L
                 false,
                 entity.getContentId(),
                 false);
+    }
+
+    @Override
+    public List<NotificationCountsPerHour> findNotificationCountsPerHourByProviderConfigId(final long providerConfigId) {
+        Map<OffsetDateTime, Long> notificationsPerHourMap = findAll().stream()
+            .filter(entity -> entity.getProviderConfigId().equals(providerConfigId))
+            .collect(Collectors.groupingBy(NotificationEntity::getCreatedAt, Collectors.counting()));
+
+        return notificationsPerHourMap.entrySet().stream()
+            .map(entry -> new NotificationCountsPerHour(entry.getKey(), entry.getValue()))
+            .sorted(Comparator.comparing(NotificationCountsPerHour::getAccumulationHour))
+            .toList();
     }
 }
