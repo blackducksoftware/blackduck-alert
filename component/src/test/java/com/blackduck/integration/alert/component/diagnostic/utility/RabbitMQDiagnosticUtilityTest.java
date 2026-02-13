@@ -35,6 +35,7 @@ class RabbitMQDiagnosticUtilityTest {
         QueueInformation queueInformation = new QueueInformation(destinationName, messageCount, consumerCount);
 
         Mockito.when(alertMessageListener.getDestinationName()).thenReturn(destinationName);
+        Mockito.when(alertMessageListener.getHandedMessageCount()).thenReturn((long) messageCount);
         Mockito.when(alertMessageListener.calculateAverageMessageSize()).thenReturn(averageMessageSize);
         Mockito.when(amqpAdmin.getQueueInfo(destinationName)).thenReturn(queueInformation);
 
@@ -46,6 +47,7 @@ class RabbitMQDiagnosticUtilityTest {
         assertEquals(destinationName, alertQueueInformation.getName());
         assertEquals(messageCount, alertQueueInformation.getMessageCount());
         assertEquals(consumerCount, alertQueueInformation.getConsumerCount());
+        assertEquals(messageCount, alertQueueInformation.getHandledMessageCount());
         assertEquals(averageMessageSize, alertQueueInformation.getAverageMessageSizeBytes());
     }
 

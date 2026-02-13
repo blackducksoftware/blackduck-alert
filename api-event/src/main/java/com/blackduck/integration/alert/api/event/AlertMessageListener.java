@@ -72,6 +72,10 @@ public abstract class AlertMessageListener<T extends AlertEvent> implements Mess
         }
     }
 
+    public Long getHandedMessageCount() {
+        return messageCounter.get();
+    }
+
     public final Double calculateAverageMessageSize() {
         long totalBytes = totalBytesCounter.get();
         long messageCount = messageCounter.get();

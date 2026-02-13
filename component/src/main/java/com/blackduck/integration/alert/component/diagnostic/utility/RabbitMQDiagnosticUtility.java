@@ -41,6 +41,7 @@ public class RabbitMQDiagnosticUtility {
                     queueInformation.getName(),
                     queueInformation.getMessageCount(),
                     queueInformation.getConsumerCount(),
+                    listener.getHandedMessageCount(),
                     listener.calculateAverageMessageSize()));
             }
         }
