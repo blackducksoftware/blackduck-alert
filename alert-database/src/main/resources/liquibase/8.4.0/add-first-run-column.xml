@@ -9,8 +9,11 @@
         </preConditions>
         <addColumn schemaName="alert" tableName="job_completion_status">
             <column name="first_run" type="timestamp" >
-                <constraints nullable="false"/>
             </column>
         </addColumn>
+        <update schemaName="alert" tableName="job_completion_status">
+            <column name="first_run" valueComputed="last_run"/>
+        </update>
+        <addNotNullConstraint schemaName="alert" tableName="job_completion_status" columnName="first_run" columnDataType="timestamp"/>
     </changeSet>
 </databaseChangeLog>
