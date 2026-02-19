@@ -93,6 +93,7 @@ public class JobCompletionStatusEntity extends BaseEntity {
     public OffsetDateTime getLastRun() {
         return lastRun;
     }
+    
     public OffsetDateTime getFirstRun() { return firstRun; }
 
 }
