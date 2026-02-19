@@ -131,7 +131,7 @@ dockerImagesToBuild.each { imageName ->
     project.tasks.create(name: dockerImageBuildTaskName, type: Exec, dependsOn: [dockerSetupStagingAreaDirectory], group: 'Docker', description: "Build docker image. <sub-task>") {
         outputs.upToDateWhen { false }
 
-        def buildCommand = ['docker', 'build', '.', '-t', fullDockerImageName, '--pull', '--force-rm', '--build-arg', "VERSION=${project.version}", '--build-arg', "COMMITHASH=${project.ext.commitHash}"]
+        def buildCommand = ['docker', 'build', '.', '-t', fullDockerImageName, '--pull', '--force-rm', '--no-cache', '--build-arg', "VERSION=${project.version}", '--build-arg', "COMMITHASH=${project.ext.commitHash}"]
         rootProject.ext.properties.each { key, value ->
             if (key.startsWith('dockerBuildParam_')) {
                 String adjKey = key.substring(key.indexOf('_') + 1)
