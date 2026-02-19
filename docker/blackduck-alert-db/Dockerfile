@@ -1,4 +1,3 @@
-
 # The ARG for the FROM image comes from Gradle. It is based off of postgresContainerVersion,
 # and used in buildSrc/docker.gradle
 ARG POSTGRESIMAGEVERSION_MIGRATION="default"
