@@ -44,6 +44,7 @@ import com.blackduck.integration.alert.component.diagnostic.model.DiagnosticMode
 import com.blackduck.integration.alert.component.diagnostic.model.JobExecutionDiagnosticModel;
 import com.blackduck.integration.alert.component.diagnostic.model.JobExecutionsDiagnosticModel;
 import com.blackduck.integration.alert.component.diagnostic.model.JobStageDiagnosticModel;
+import com.blackduck.integration.alert.component.diagnostic.model.NotificationCountsPerHourDiagnosticModel;
 import com.blackduck.integration.alert.component.diagnostic.model.NotificationDiagnosticModel;
 import com.blackduck.integration.alert.component.diagnostic.model.NotificationTypeCount;
 import com.blackduck.integration.alert.component.diagnostic.model.ProviderNotificationCounts;
@@ -53,6 +54,7 @@ import com.blackduck.integration.alert.component.diagnostic.utility.RabbitMQDiag
 import com.blackduck.integration.alert.database.audit.AuditEntryRepository;
 import com.blackduck.integration.alert.database.job.api.StaticJobAccessor;
 import com.blackduck.integration.alert.database.notification.NotificationContentRepository;
+import com.blackduck.integration.alert.database.notification.NotificationCountsPerHour;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component
@@ -130,7 +132,16 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
                 long count = notificationContentRepository.countByProviderConfigIdAndNotificationType(providerConfigId, notificationType.name());
                 notificationTypeCounts.add(new NotificationTypeCount(notificationType, count));
             }
-            providerCounts.add(new ProviderNotificationCounts(providerConfigId, notificationTypeCounts));
+            List<NotificationCountsPerHour> notificationCountsPerHour = notificationContentRepository.findNotificationCountsPerHourByProviderConfigId(providerConfigId);
+            List<NotificationCountsPerHourDiagnosticModel> notificationCountsPerHourDiagnosticModel = new LinkedList<>();
+
+            if (!notificationCountsPerHour.isEmpty()) {
+                notificationCountsPerHourDiagnosticModel = notificationCountsPerHour.stream()
+                    .map(data -> new NotificationCountsPerHourDiagnosticModel(DateUtils.formatDateAsJsonString(data.getAccumulationHour()), data.getNotificationCount()))
+                    .toList();
+            }
+
+            providerCounts.add(new ProviderNotificationCounts(providerConfigId, notificationTypeCounts, notificationCountsPerHourDiagnosticModel));
         }
         return providerCounts;
     }
@@ -188,7 +199,7 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
         while (page.getCurrentPage() <= page.getTotalPages()) {
             jobExecutions.addAll(page.getModels().stream()
                 .map(this::convertExecutionData)
-                .collect(Collectors.toList()));
+                .toList());
             pageNumber++;
             page = executingJobManager.getExecutingJobs(pageNumber, pageSize);
         }
@@ -200,7 +211,7 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
         List<JobStageDiagnosticModel> stageData = job.getStages().values()
             .stream()
             .map(this::convertJobStageData)
-            .collect(Collectors.toList());
+            .toList();
         Optional<DistributionJobModel> distributionJobModel = jobAccessor.getJobById(job.getJobConfigId());
         String jobName = distributionJobModel.map(DistributionJobModelData::getName).orElse(String.format("Unknown Job (%s)", job.getJobConfigId()));
         String channelName = distributionJobModel.map(DistributionJobModel::getChannelDescriptorName).orElse("Unknown Channel");
@@ -257,6 +268,7 @@ public class DefaultDiagnosticAccessor implements DiagnosticAccessor {
             jobCompletionStatusModel.getSuccessCount(),
             jobCompletionStatusModel.getFailureCount(),
             jobCompletionStatusModel.getLatestStatus(),
+            DateUtils.formatDateAsJsonString(jobCompletionStatusModel.getFirstRun()),
             DateUtils.formatDateAsJsonString(jobCompletionStatusModel.getLastRun()),
             durationDiagnosticModel
         );

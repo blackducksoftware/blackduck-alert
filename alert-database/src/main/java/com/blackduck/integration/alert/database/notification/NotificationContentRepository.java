@@ -127,4 +127,11 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
             + "AND entity.processed = false"
     )
     void setMappingToJobsFalseWhenProcessedFalse(@Param("providerConfigId") long providerConfigId);
+
+    @Query("SELECT new com.blackduck.integration.alert.database.notification.NotificationCountsPerHour(DATE_TRUNC('hour', entity.createdAt), COUNT(entity))"
+        + " FROM NotificationEntity entity"
+        + " WHERE entity.providerConfigId = :providerConfigId"
+        + " GROUP BY DATE_TRUNC('hour', entity.createdAt)"
+        + " ORDER BY DATE_TRUNC('hour', entity.createdAt) ")
+    List<NotificationCountsPerHour> findNotificationCountsPerHourByProviderConfigId(@Param("providerConfigId") long providerConfigId);
 }

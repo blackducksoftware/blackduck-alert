@@ -8,6 +8,7 @@
 package com.blackduck.integration.alert.common.persistence.model.job.executions;
 
 import java.time.OffsetDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
@@ -21,6 +22,7 @@ public class JobCompletionStatusModel extends AlertSerializableModel {
     private final long failureCount;
     private final String latestStatus;
     private final OffsetDateTime lastRun;
+    private final OffsetDateTime firstRun;
     private final JobCompletionStatusDurations durations;
 
     public JobCompletionStatusModel(
@@ -31,6 +33,7 @@ public class JobCompletionStatusModel extends AlertSerializableModel {
         long failureCount,
         String latestStatus,
         OffsetDateTime lastRun,
+        OffsetDateTime firstRun,
         JobCompletionStatusDurations durations
     ) {
         this.jobConfigId = jobConfigId;
@@ -40,6 +43,7 @@ public class JobCompletionStatusModel extends AlertSerializableModel {
         this.failureCount = failureCount;
         this.latestStatus = latestStatus;
         this.lastRun = lastRun;
+        this.firstRun = firstRun;
         this.durations = durations;
     }
 
@@ -70,6 +74,7 @@ public class JobCompletionStatusModel extends AlertSerializableModel {
     public OffsetDateTime getLastRun() {
         return lastRun;
     }
+    public OffsetDateTime getFirstRun() { return firstRun; }
 
     public JobCompletionStatusDurations getDurations() {
         return durations;

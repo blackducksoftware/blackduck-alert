@@ -9,6 +9,7 @@ package com.blackduck.integration.alert.api.distribution.execution;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -98,6 +99,7 @@ public class ExecutingJobManager {
         logger.debug("Starting stage {} for job execution {} at {}", stage, executionId, startTimeDateFormatted);
         Optional<ExecutingJob> executingJob = Optional.ofNullable(executingJobMap.getOrDefault(executionId, null));
         executingJob.ifPresent(job -> job.addStage(ExecutingJobStage.createStage(executionId, stage, DateUtils.fromInstantUTC(start).toInstant())));
+        executingJob.ifPresent(execution -> jobCompletionStatusAccessor.saveExecutionDurations(createStatusModel(execution)));
     }
 
     public void endStage(UUID executionId, JobStage stage, Instant end) {
@@ -107,6 +109,7 @@ public class ExecutingJobManager {
         executingJob
             .flatMap(job -> job.getStage(stage))
             .ifPresent(jobStage -> jobStage.endStage(DateUtils.fromInstantUTC(end).toInstant()));
+        executingJob.ifPresent(execution -> jobCompletionStatusAccessor.saveExecutionDurations(createStatusModel(execution)));
     }
 
     public void purgeJob(UUID executionId) {
@@ -160,6 +163,7 @@ public class ExecutingJobManager {
     }
 
     private JobCompletionStatusModel createEmptyStatusModel(UUID jobConfigId) {
+        OffsetDateTime startTime = DateUtils.createCurrentDateTimestamp();
         return new JobCompletionStatusModel(
             jobConfigId,
             0L,
@@ -167,7 +171,8 @@ public class ExecutingJobManager {
             0L,
             0L,
             AuditEntryStatus.PENDING.name(),
-            DateUtils.createCurrentDateTimestamp(),
+            startTime,
+            startTime,
             JobCompletionStatusDurations.empty()
         );
     }
@@ -196,6 +201,8 @@ public class ExecutingJobManager {
         UUID jobConfigId = executingJob.getJobConfigId();
         long successCount = AuditEntryStatus.SUCCESS == jobStatus ? 1L : 0L;
         long failureCount = AuditEntryStatus.FAILURE == jobStatus ? 1L : 0L;
+        OffsetDateTime startTime = DateUtils.fromInstantUTC(executingJob.getStart());
+        OffsetDateTime endTime = executingJob.getEnd().map(DateUtils::fromInstantUTC).orElse(DateUtils.createCurrentDateTimestamp());
 
         JobCompletionStatusDurations durations = new JobCompletionStatusDurations(
             calculateNanosecondDuration(executingJob.getStart(), executingJob.getEnd().orElse(Instant.now())),
@@ -209,11 +216,12 @@ public class ExecutingJobManager {
         return new JobCompletionStatusModel(
             jobConfigId,
             executingJob.getNotificationsSent(),
-            executingJob.getNotificationsSent(),
+            executingJob.getTotalNotificationCount(),
             successCount,
             failureCount,
             jobStatus.name(),
-            executingJob.getEnd().map(DateUtils::fromInstantUTC).orElse(null),
+            endTime,
+            startTime,
             durations
         );
     }

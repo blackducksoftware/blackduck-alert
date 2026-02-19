@@ -7,12 +7,13 @@
  */
 package com.blackduck.integration.alert.component.diagnostic.utility;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.amqp.core.QueueInformation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,24 +24,27 @@ import com.blackduck.integration.alert.component.diagnostic.model.RabbitMQDiagno
 @Component
 public class RabbitMQDiagnosticUtility {
     private final AmqpAdmin amqpAdmin;
-    private final Set<String> alertMessageListenerNames;
+    private final List<AlertMessageListener<?>> alertMessageListeners;
 
     @Autowired
     public RabbitMQDiagnosticUtility(AmqpAdmin amqpAdmin, List<AlertMessageListener<?>> allAlertMessageListeners) {
         this.amqpAdmin = amqpAdmin;
-        this.alertMessageListenerNames = allAlertMessageListeners
-            .stream()
-            .map(AlertMessageListener::getDestinationName)
-            .collect(Collectors.toSet());
+        this.alertMessageListeners = allAlertMessageListeners;
     }
 
     public RabbitMQDiagnosticModel getRabbitMQDiagnostics() {
-        List<AlertQueueInformation> alertQueueInformation = alertMessageListenerNames
-            .stream()
-            .map(amqpAdmin::getQueueInfo)
-            .filter(Objects::nonNull)
-            .map(queueInfo -> new AlertQueueInformation(queueInfo.getName(), queueInfo.getMessageCount(), queueInfo.getConsumerCount()))
-            .collect(Collectors.toList());
+        List<AlertQueueInformation> alertQueueInformation = new LinkedList<>();
+        for(AlertMessageListener<?> listener: alertMessageListeners) {
+            QueueInformation queueInformation = amqpAdmin.getQueueInfo(listener.getDestinationName());
+            if(Objects.nonNull(queueInformation)) {
+                alertQueueInformation.add(new AlertQueueInformation(
+                    queueInformation.getName(),
+                    queueInformation.getMessageCount(),
+                    queueInformation.getConsumerCount(),
+                    listener.getHandedMessageCount(),
+                    listener.calculateAverageMessageSize()));
+            }
+        }
         return new RabbitMQDiagnosticModel(alertQueueInformation);
     }
 }

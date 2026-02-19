@@ -7,6 +7,7 @@
  */
 package com.blackduck.integration.alert.database.job.api;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -78,6 +79,16 @@ public class DefaultJobCompletionStatusModelAccessor implements JobCompletionSta
         jobCompletionDurationsRepository.save(durations);
     }
 
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void saveExecutionDurations(final JobCompletionStatusModel statusModel) {
+        Optional<JobCompletionStatusModel> currentStatusModel = getJobExecutionStatus(statusModel.getJobConfigId());
+        if (currentStatusModel.isPresent()) {
+            JobCompletionStatusDurationsEntity durations = convertDurationFromModel(statusModel.getJobConfigId(), statusModel.getDurations());
+            jobCompletionDurationsRepository.save(durations);
+        }
+    }
+
     private JobCompletionStatusModel convertToModel(JobCompletionStatusEntity entity) {
         JobCompletionStatusDurations durations = convertDurationToModel(jobCompletionDurationsRepository.findById(entity.getJobConfigId())
             .orElseGet(() -> createEmptyDurations(entity.getJobConfigId())));
@@ -89,6 +100,7 @@ public class DefaultJobCompletionStatusModelAccessor implements JobCompletionSta
             entity.getFailureCount(),
             entity.getLatestStatus(),
             entity.getLastRun(),
+            entity.getFirstRun(),
             durations
         );
     }
@@ -112,7 +124,8 @@ public class DefaultJobCompletionStatusModelAccessor implements JobCompletionSta
             model.getSuccessCount(),
             model.getFailureCount(),
             model.getLatestStatus(),
-            model.getLastRun()
+            model.getLastRun(),
+            model.getFirstRun()
         );
     }
 
@@ -149,6 +162,12 @@ public class DefaultJobCompletionStatusModelAccessor implements JobCompletionSta
     private JobCompletionStatusModel updateCompletedJobStatus(JobCompletionStatusModel savedStatus, JobCompletionStatusModel latestData) {
         long successCount = savedStatus.getSuccessCount();
         long failureCount = savedStatus.getFailureCount();
+        OffsetDateTime firstRun = latestData.getLastRun();
+
+        if (latestData.getLastRun() != null && savedStatus.getFirstRun().isBefore(latestData.getLastRun())) {
+           firstRun = savedStatus.getFirstRun();
+        }
+
         AuditEntryStatus jobStatus = AuditEntryStatus.valueOf(latestData.getLatestStatus());
 
         if (jobStatus == AuditEntryStatus.SUCCESS) {
@@ -169,6 +188,7 @@ public class DefaultJobCompletionStatusModelAccessor implements JobCompletionSta
             failureCount,
             jobStatus.name(),
             latestData.getLastRun(),
+            firstRun,
             calculateDurations(latestData.getDurations(), savedStatus.getDurations())
         );
     }
