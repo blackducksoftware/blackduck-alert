@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { EXISTING_CHANNELS, EXISTING_PROVIDERS } from 'common/DescriptorInfo';
 import AboutProviderTable from './AboutProviderTable';
 import AboutChannelsTable from './AboutChannelsTable';
+import SystemDiagnosticsSection from './SystemDiagnosticsSection';
 
 const useStyles = createUseStyles({
     aboutInfoContainer: {
@@ -142,6 +143,8 @@ const AboutInfo = ({
                         </div>
                     </div>
                 )}
+
+                <SystemDiagnosticsSection alertVersion={version} />
             </div>
         </div>
     );
