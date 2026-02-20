@@ -15,9 +15,10 @@ function fetchingSystemDiagnostics() {
     };
 }
 
-function fetchingSystemDiagnosticsFail() {
+function fetchingSystemDiagnosticsFail(message) {
     return {
-        type: SYSTEM_DIAGNOSTICS_GET_FAIL
+        type: SYSTEM_DIAGNOSTICS_GET_FAIL,
+        message
     };
 }
 

@@ -12,7 +12,7 @@ const initialState = {
     error: HTTPErrorUtils.createEmptyErrorObject(),
 };
 
-const provider = (state = initialState, action) => {
+const systemDiagnostics = (state = initialState, action) => {
     switch (action.type) {
         case SYSTEM_DIAGNOSTICS_GET_REQUEST:
             return {
@@ -39,4 +39,4 @@ const provider = (state = initialState, action) => {
     }
 };
 
-export default provider;
+export default systemDiagnostics;
