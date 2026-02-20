@@ -11,6 +11,7 @@ import jiraServer from 'store/reducers/jira-server';
 import provider from 'store/reducers/provider';
 import session from 'store/reducers/session';
 import system from 'store/reducers/system';
+import systemDiagnostics from 'store/reducers/system-diagnostics';
 import refresh from 'store/reducers/refresh';
 import roles from 'store/reducers/roles';
 import tasks from 'store/reducers/tasks';
@@ -28,6 +29,7 @@ const rootReducer = (history) => combineReducers({
     provider,
     session,
     system,
+    systemDiagnostics,
     refresh,
     roles,
     tasks,
