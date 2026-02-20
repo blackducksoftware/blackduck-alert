@@ -12,6 +12,8 @@ import { EXISTING_CHANNELS, EXISTING_PROVIDERS } from 'common/DescriptorInfo';
 import AboutProviderTable from './AboutProviderTable';
 import AboutChannelsTable from './AboutChannelsTable';
 import SystemDiagnosticsSection from './SystemDiagnosticsSection';
+import { doesDescriptorExist } from '../../common/util/descriptorUtilities';
+import { SETTINGS_INFO } from '../settings/SettingsModel';
 
 const useStyles = createUseStyles({
     aboutInfoContainer: {
@@ -67,6 +69,7 @@ const AboutInfo = ({
     const providersMissing = !providerData || providerData.length <= 0;
     const channelsMissing = !channelData || channelData.length <= 0;
     const commitHashUrl = `${projectUrl}/commit/${commitHash}`;
+    const hasAdminLevelAccess = doesDescriptorExist(globalDescriptorMap, SETTINGS_INFO.key)
 
     return (
         <div>
@@ -144,7 +147,11 @@ const AboutInfo = ({
                     </div>
                 )}
 
-                <SystemDiagnosticsSection alertVersion={version} />
+                {hasAdminLevelAccess ? (
+                    <SystemDiagnosticsSection alertVersion={version} />
+                ) : null
+                }
+                
             </div>
         </div>
     );
