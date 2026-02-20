@@ -10,7 +10,6 @@ const initialState = {
     data: [],
     fetching: false,
     error: HTTPErrorUtils.createEmptyErrorObject(),
-    fieldErrors: {}
 };
 
 const provider = (state = initialState, action) => {
@@ -19,21 +18,18 @@ const provider = (state = initialState, action) => {
             return {
                 ...state,
                 fetching: true,
-                fieldErrors: action.errors || {},
             };
         case SYSTEM_DIAGNOSTICS_GET_FAIL:
             return {
                 ...state,
                 fetching: false,
                 error: HTTPErrorUtils.createErrorObject(action),
-                fieldErrors: action.errors || {},
             };
         case SYSTEM_DIAGNOSTICS_GET_SUCCESS:
             return {
                 ...state,
                 fetching: false,
                 data: action.data,
-                fieldErrors: action.errors || {},
             };
         case SERIALIZE:
             return initialState;

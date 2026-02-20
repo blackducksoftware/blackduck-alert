@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { useDispatch } from 'react-redux';
 import { fetchSystemDiagnostics } from '../../store/actions/system-diagnostics';
@@ -34,31 +35,34 @@ const SystemDiagnosticsSection = ({ alertVersion }) => {
 
     const handleDownload = async () => {
         setIsLoading(true);
+        setError(null);
         
         try {
             const diagnosticsData = await dispatch(fetchSystemDiagnostics());
+
+            const dataToWrite = (diagnosticsData && Object.keys(diagnosticsData).length > 0)
+                ? diagnosticsData
+                : {};
             
-            if (diagnosticsData && Object.keys(diagnosticsData).length > 0) {
-                // Create a Blob from the diagnostics data
-                const jsonString = JSON.stringify(diagnosticsData, null, 2);
-                const blob = new Blob([jsonString], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
+            // Create a Blob from the diagnostics data
+            const jsonString = JSON.stringify(dataToWrite, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
 
-                // Create Filename
-                const dateStamp = new Date();
-                const filename = `system-diagnostics-${alertVersion}-${dateStamp.toISOString()}.json`;
-                
-                // Create a temporary link and append it to the document
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = filename;
-                document.body.appendChild(link);
+            // Create Filename
+            const dateStamp = new Date();
+            const filename = `system-diagnostics-${alertVersion}-${dateStamp.toISOString()}.json`;
+            
+            // Create a temporary link and append it to the document
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
 
-                // Trigger the download and clean up
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-            }
+            // Trigger the download and clean up
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
         } catch (error) {
             setError(error);
         } finally {
@@ -89,6 +93,10 @@ const SystemDiagnosticsSection = ({ alertVersion }) => {
             </div>
         </section>
     );
+};
+
+SystemDiagnosticsSection.propTypes = {
+    alertVersion: PropTypes.string
 };
 
 export default SystemDiagnosticsSection;
