@@ -2,6 +2,7 @@ import { ABOUT_INFO_FETCH_ERROR, ABOUT_INFO_FETCHED, ABOUT_INFO_FETCHING } from 
 
 import { unauthorized } from 'store/actions/session';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
+import HeaderUtilities from 'common/util/HeaderUtilities';
 
 const ABOUT_INFO_URL = '/alert/api/about';
 
@@ -29,13 +30,23 @@ function aboutInfoError(message, errors) {
 }
 
 export function getAboutInfo() {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         dispatch(fetchingAboutInfo());
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(unauthorized));
-        fetch(ABOUT_INFO_URL)
-            .then((response) => {
+
+        const { csrfToken } = getState().session;
+
+        const headersUtil = new HeaderUtilities();
+        headersUtil.addApplicationJsonContentType();
+        headersUtil.addXCsrfToken(csrfToken);
+
+        fetch(ABOUT_INFO_URL, {
+            credentials: 'same-origin',
+            headers: headersUtil.getHeaders(),
+            redirect: 'manual'
+        }).then((response) => {
                 response.json()
                     .then((responseData) => {
                         if (response.ok) {
