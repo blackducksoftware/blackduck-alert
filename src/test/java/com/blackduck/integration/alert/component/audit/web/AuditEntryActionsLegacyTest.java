@@ -54,7 +54,7 @@ import com.blackduck.integration.alert.database.notification.NotificationEntity;
 import com.blackduck.integration.alert.mock.entity.MockNotificationContent;
 import com.blackduck.integration.alert.test.common.OutputLogger;
 
-public class AuditEntryActionsLegacyTest {
+class AuditEntryActionsLegacyTest {
     private OutputLogger outputLogger;
 
     @BeforeEach
@@ -68,7 +68,7 @@ public class AuditEntryActionsLegacyTest {
     }
 
     @Test
-    public void testGetNull() {
+    void testGetNull() {
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.when(authorizationManager.hasReadPermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
         AuditDescriptorKey auditDescriptorKey = new AuditDescriptorKey();
@@ -95,7 +95,7 @@ public class AuditEntryActionsLegacyTest {
     }
 
     @Test
-    public void testGetAuditInfoForJobNull() {
+    void testGetAuditInfoForJobNull() {
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.when(authorizationManager.hasReadPermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
         AuditDescriptorKey auditDescriptorKey = new AuditDescriptorKey();
@@ -111,7 +111,7 @@ public class AuditEntryActionsLegacyTest {
     }
 
     @Test
-    public void testResendNotificationException() {
+    void testResendNotificationException() {
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.when(authorizationManager.hasExecutePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
         AuditDescriptorKey auditDescriptorKey = new AuditDescriptorKey();
@@ -150,7 +150,7 @@ public class AuditEntryActionsLegacyTest {
     }
 
     @Test
-    public void testPagedRequest() {
+    void testPagedRequest() {
         int totalPages = 2;
         int currentPage = 0;
         int pageSize = 2;
@@ -168,7 +168,6 @@ public class AuditEntryActionsLegacyTest {
             String.format("content-id-%s", UUID.randomUUID()),
             false
         );
-        entity_1.setId(1L);
         AlertNotificationModel entity_2 = new AlertNotificationModel(
             2L,
             2L,
@@ -182,7 +181,6 @@ public class AuditEntryActionsLegacyTest {
             String.format("content-id-%s", UUID.randomUUID()),
             false
         );
-        entity_2.setId(2L);
         List<AlertNotificationModel> pagedEntryList = Arrays.asList(entity_1, entity_2);
         Page<AlertNotificationModel> pageResponse = Mockito.mock(Page.class);
 
@@ -207,7 +205,7 @@ public class AuditEntryActionsLegacyTest {
         Mockito.when(jobAccessor.getJobById(Mockito.any())).thenReturn(null);
         ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
 
-        NotificationEntity notificationContent = new MockNotificationContent(DateUtils.createCurrentDateTimestamp(), "provider", DateUtils.createCurrentDateTimestamp(), "notificationType", "{content: \"content is here...\"}", 1L, 1L)
+        NotificationEntity notificationContent = new MockNotificationContent(DateUtils.createCurrentDateTimestamp(), "provider", DateUtils.createCurrentDateTimestamp(), "notificationType", "{content: \"content is here...\"}", 1L)
             .createEntity();
         ContentConverter contentConverter = new ContentConverter(new DefaultConversionService());
 
@@ -252,7 +250,7 @@ public class AuditEntryActionsLegacyTest {
     }
 
     @Test
-    public void testPagedRequestEmptyList() {
+    void testPagedRequestEmptyList() {
         int totalPages = 1;
         int currentPage = 1;
         int pageSize = 1;
@@ -279,7 +277,7 @@ public class AuditEntryActionsLegacyTest {
         ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
 
         ContentConverter contentConverter = new ContentConverter(new DefaultConversionService());
-        NotificationEntity notificationContent = new MockNotificationContent(DateUtils.createCurrentDateTimestamp(), "provider", DateUtils.createCurrentDateTimestamp(), "notificationType", "{content: \"content is here...\"}", 1L, 1L)
+        NotificationEntity notificationContent = new MockNotificationContent(DateUtils.createCurrentDateTimestamp(), "provider", DateUtils.createCurrentDateTimestamp(), "notificationType", "{content: \"content is here...\"}", 1L)
             .createEntity();
         DistributionJobModel distributionJob = DistributionJobModel.builder()
             .jobId(UUID.randomUUID()).enabled(true).blackDuckGlobalConfigId(2L).channelDescriptorName("distributionType").name("name").createdAt(OffsetDateTime.now())

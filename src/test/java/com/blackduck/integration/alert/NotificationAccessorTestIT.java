@@ -115,17 +115,10 @@ class NotificationAccessorTestIT {
 
     @AfterEach
     public void cleanUpDB() {
-        configurationModelConfigurationAccessor.deleteConfiguration(providerConfigModel.getConfigurationId());
         cleanDB();
     }
 
     private void cleanDB() {
-        notificationContentRepository.flush();
-        notificationContentRepository.flush();
-        auditNotificationRepository.flush();
-        auditEntryRepository.flush();
-        descriptorConfigRepository.flush();
-        fieldValueRepository.flush();
         notificationContentRepository.deleteAllInBatch();
         notificationContentRepository.deleteAllInBatch();
         auditNotificationRepository.deleteAllInBatch();
@@ -431,7 +424,7 @@ class NotificationAccessorTestIT {
     }
 
     private AlertNotificationModel createNotificationModel(OffsetDateTime createdAt) {
-        return new AlertNotificationModel(1L,
+        return new AlertNotificationModel(null,
             providerConfigModel.getConfigurationId(),
             "provider",
             "providerConfigName",
@@ -451,7 +444,7 @@ class NotificationAccessorTestIT {
     }
 
     private NotificationEntity createNotificationContent(OffsetDateTime createdAt) {
-        MockNotificationContent mockedNotificationContent = new MockNotificationContent(createdAt, "provider", createdAt, NOTIFICATION_TYPE, "{content: \"content is here...\"}", null, providerConfigModel.getConfigurationId());
+        MockNotificationContent mockedNotificationContent = new MockNotificationContent(createdAt, "provider", createdAt, NOTIFICATION_TYPE, "{content: \"content is here...\"}", providerConfigModel.getConfigurationId());
         return mockedNotificationContent.createEntity();
     }
 

@@ -295,7 +295,7 @@ class ProcessingJobAccessor2TestIT {
 
     private AlertNotificationModel createAlertNotificationModel(NotificationType notificationType) {
         return new AlertNotificationModel(
-            CURRENT_NOTIFICATION_ID.incrementAndGet(),
+            null,
             providerConfigId,
             "provider",
             PROVIDER_CONFIG_NAME,

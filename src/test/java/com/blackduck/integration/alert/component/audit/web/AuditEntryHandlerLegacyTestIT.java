@@ -138,13 +138,6 @@ class AuditEntryHandlerLegacyTestIT {
 
     @AfterEach
     public void cleanup() {
-        configurationModelConfigurationAccessor.deleteConfiguration(providerConfigModel.getConfigurationId());
-
-        auditEntryRepository.flush();
-        notificationContentRepository.flush();
-        descriptorConfigRepository.flush();
-        fieldValueRepository.flush();
-
         auditEntryRepository.deleteAllInBatch();
         notificationContentRepository.deleteAllInBatch();
         descriptorConfigRepository.deleteAllInBatch();
@@ -174,7 +167,6 @@ class AuditEntryHandlerLegacyTestIT {
                 DateUtils.createCurrentDateTimestamp(),
                 "notificationType",
                 "{}",
-                234L,
                 providerConfigModel.getConfigurationId()
             ).createEntity());
 
@@ -243,7 +235,6 @@ class AuditEntryHandlerLegacyTestIT {
             DateUtils.createCurrentDateTimestamp(),
             "POLICY_OVERRIDE",
             content,
-            1L,
             providerConfigModel.getConfigurationId()
         );
 
