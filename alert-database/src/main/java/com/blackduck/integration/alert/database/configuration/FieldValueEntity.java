@@ -39,10 +39,6 @@ public class FieldValueEntity extends BaseEntity implements DatabaseEntity {
     @JoinColumn(name = "field_id", referencedColumnName = "id", insertable = false, updatable = false)
     private DefinedFieldEntity definedFieldEntity;
 
-    @ManyToOne
-    @JoinColumn(name = "config_id", referencedColumnName = "id", insertable = false, updatable = false)
-    private DescriptorConfigEntity descriptorConfigEntity;
-
     public FieldValueEntity() {
         // JPA requires default constructor definitions
     }
@@ -79,7 +75,4 @@ public class FieldValueEntity extends BaseEntity implements DatabaseEntity {
         return definedFieldEntity;
     }
 
-    public DescriptorConfigEntity getDescriptorConfigEntity() {
-        return descriptorConfigEntity;
-    }
 }
