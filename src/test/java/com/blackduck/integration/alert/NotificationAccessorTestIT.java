@@ -424,7 +424,7 @@ class NotificationAccessorTestIT {
     }
 
     private AlertNotificationModel createNotificationModel(OffsetDateTime createdAt) {
-        return new AlertNotificationModel(null,
+        return new AlertNotificationModel(
             providerConfigModel.getConfigurationId(),
             "provider",
             "providerConfigName",
