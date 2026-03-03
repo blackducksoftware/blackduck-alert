@@ -35,7 +35,7 @@ const useStyles = createUseStyles(theme => ({
         transitionDuration: '100ms',
         transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
         '&:hover': {
-            border: ['solid', '2px', theme.colors.purple.default],
+            border: ['solid', '2px', theme.colors.purple.lightPurple],
             color: theme.colors.purple.default,
             boxShadow: `0 1px 3px 0 ${theme.colors.blue.darkerBlue}, 0 1px 2px -1px ${theme.colors.blue.darkerBlue}`,
             cursor: 'pointer'
