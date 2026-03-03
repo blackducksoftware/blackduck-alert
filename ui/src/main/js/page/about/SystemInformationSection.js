@@ -4,14 +4,14 @@ import { createUseStyles } from 'react-jss';
 import SectionCard from '../../common/component/SectionCard';
 import TitleContentPair from '../../common/component/TitleContentPair';
 
-const useStyles = createUseStyles({
+const useStyles = createUseStyles(theme => ({
     systemInformationContainer: {
         display: 'grid',
         gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
         gap: '30px'
     },
     versionBadge: {
-        border: 'solid 1px #0000001a',
+        border: theme.defaultBorder,
         borderRadius: '12px',
         width: 'fit-content',
         padding: '0 8px'
@@ -29,7 +29,7 @@ const useStyles = createUseStyles({
             textDecoration: 'underline'
         }
     }
-});
+}));
 
 const InfoLink = ({ url, text }) => {
     const classes = useStyles();
@@ -46,7 +46,7 @@ InfoLink.propTypes = {
     text: PropTypes.string.isRequired
 };
 
-const AlertInformationContainer = ({
+const SystemInformationSection = ({
     commitHash, commitHashUrl, documentationUrl, projectUrl, version
 }) => {
     const classes = useStyles();
@@ -76,7 +76,7 @@ const AlertInformationContainer = ({
     );
 };
 
-AlertInformationContainer.propTypes = {
+SystemInformationSection.propTypes = {
     commitHash: PropTypes.string.isRequired,
     commitHashUrl: PropTypes.string.isRequired,
     documentationUrl: PropTypes.string.isRequired,
@@ -84,4 +84,4 @@ AlertInformationContainer.propTypes = {
     version: PropTypes.string.isRequired
 };
 
-export default AlertInformationContainer;
+export default SystemInformationSection;

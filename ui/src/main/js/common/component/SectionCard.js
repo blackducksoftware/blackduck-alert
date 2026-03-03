@@ -7,10 +7,10 @@ const useStyles = createUseStyles(theme => ({
     sectionCard: {
         borderRadius: '12px',
         backgroundColor: theme.colors.white.default,
-        border: ['solid', '1px', '#0000001a'],
+        border: theme.defaultBorder,
         padding: '20px',
         flexGrow: 1,
-        boxShadow: '0 1px 3px 0 #0000001a, 0 1px 2px -1px #0000001a',
+        boxShadow: `0 1px 3px 0 ${theme.colors.blue.darkerBlue}, 0 1px 2px -1px ${theme.colors.blue.darkerBlue}`,
         '& > form': {
             marginBottom: 0
         }
@@ -31,7 +31,7 @@ const useStyles = createUseStyles(theme => ({
     description: {
         marginTop: '8px',
         fontSize: '16px',
-        color: '#6a7282'
+        color: theme.colors.grey.darkerGrey
     },
     content: {
         marginTop: '28px'

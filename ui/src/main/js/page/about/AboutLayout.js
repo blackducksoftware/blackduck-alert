@@ -4,11 +4,11 @@ import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { getAboutInfo } from 'store/actions/about';
 import { EXISTING_CHANNELS } from 'common/DescriptorInfo';
-import AlertInformationContainer from './AlertInformationContainer';
+import SystemInformationSection from './SystemInformationSection';
 import DistributionChannelsSection from './DistributionChannelsSection';
 import SystemMessagesSection from './SystemMessagesSection';
 
-const useStyles = createUseStyles({
+const useStyles = createUseStyles((theme) => ({
     aboutPageLayout: {
         margin: '20px'
     },
@@ -20,7 +20,7 @@ const useStyles = createUseStyles({
     },
     aboutPageDescription: {
         fontSize: '16px',
-        color: '#4a5565',
+        color: theme.colors.grey.darkerGrey,
         paddingBottom: '24px',
         whiteSpace: 'nowrap'
     },
@@ -29,7 +29,7 @@ const useStyles = createUseStyles({
         flexDirection: 'column',
         rowGap: '20px'
     }
-});
+}));
 
 const AboutLayout = ({ globalDescriptorMap, distributionDescriptorMap }) => {
     const classes = useStyles();
@@ -71,7 +71,7 @@ const AboutLayout = ({ globalDescriptorMap, distributionDescriptorMap }) => {
             <h1 className={classes.aboutPageHeader}>Home</h1>
             <p className={classes.aboutPageDescription}>This application provides the ability to send notifications from a provider to various distribution channels.</p>
             <section className={classes.aboutPageContent}>
-                <AlertInformationContainer
+                <SystemInformationSection
                     commitHash={commitHash}
                     commitHashUrl={commitHashUrl}
                     documentationUrl={documentationUrl}

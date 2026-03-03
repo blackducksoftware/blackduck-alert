@@ -27,7 +27,7 @@ const useStyles = createUseStyles(theme => ({
         height: '80px',
         borderRadius: '12px',
         backgroundColor: theme.colors.white.default,
-        border: ['solid', '2px', '#0000001a'],
+        border: ['solid', '2px', theme.colors.blue.darkerBlue],
         padding: '20px',
         textDecoration: 'none',
         color: 'inherit',
@@ -35,9 +35,9 @@ const useStyles = createUseStyles(theme => ({
         transitionDuration: '100ms',
         transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
         '&:hover': {
-            border: ['solid', '2px', '#dab2ff'],
-            color: '#9810fa',
-            boxShadow: '0 1px 3px 0 #0000001a, 0 1px 2px -1px #0000001a',
+            border: ['solid', '2px', theme.colors.purple.default],
+            color: theme.colors.purple.default,
+            boxShadow: `0 1px 3px 0 ${theme.colors.blue.darkerBlue}, 0 1px 2px -1px ${theme.colors.blue.darkerBlue}`,
             cursor: 'pointer'
         }
     },
@@ -102,9 +102,7 @@ function generateChannelData(descriptorMapping, existingData) {
         });
 }
 
-const DistributionChannelsSection = ({
-    channelDescriptorData
-}) => {
+const DistributionChannelsSection = ({ channelDescriptorData }) => {
     const classes = useStyles();
     const channelData = generateChannelData(channelDescriptorData, EXISTING_CHANNELS);
     return (
