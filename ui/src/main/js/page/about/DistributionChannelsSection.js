@@ -1,8 +1,9 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { EXISTING_CHANNELS } from 'common/DescriptorInfo';
-import SectionCard from '../../common/component/SectionCard';
+import SectionCard from 'common/component/SectionCard';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { AZURE_BOARDS_URLS } from 'page/channel/azure/AzureBoardsModel';
 import { EMAIL_URLS } from 'page/channel/email/EmailModels';
@@ -23,11 +24,11 @@ const useStyles = createUseStyles(theme => ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        minWidth: '300px',
+        minWidth: 'fit-content',
         height: '80px',
         borderRadius: '12px',
         backgroundColor: theme.colors.white.default,
-        border: ['solid', '2px', theme.colors.blue.darkerBlue],
+        border: ['solid', '2px', theme.colors.borderColor],
         padding: '20px',
         textDecoration: 'none',
         color: 'inherit',
@@ -37,7 +38,7 @@ const useStyles = createUseStyles(theme => ({
         '&:hover': {
             border: ['solid', '2px', theme.colors.purple.lightPurple],
             color: theme.colors.purple.default,
-            boxShadow: `0 1px 3px 0 ${theme.colors.blue.darkerBlue}, 0 1px 2px -1px ${theme.colors.blue.darkerBlue}`,
+            boxShadow: `0 1px 3px 0 ${theme.colors.borderColor}, 0 1px 2px -1px ${theme.colors.borderColor}`,
             cursor: 'pointer'
         }
     },
@@ -48,6 +49,16 @@ const useStyles = createUseStyles(theme => ({
     channelIcon: {
         color: theme.colors.grey.lightGrey,
         opacity: 0.5
+    },
+    channelItemDisabled: {
+        extend: 'channelItem',
+        color: theme.colors.grey.lightGrey,
+        '&:hover': {
+            border: ['solid', '2px', theme.colors.borderColor],
+            color: theme.colors.grey.lightGrey,
+            boxShadow: `0 1px 3px 0 ${theme.colors.borderColor}, 0 1px 2px -1px ${theme.colors.borderColor}`,
+            cursor: 'not-allowed'
+        }
     }
 }));
 
@@ -102,6 +113,45 @@ function generateChannelData(descriptorMapping, existingData) {
         });
 }
 
+const ChannelCard = ({ channel }) => {
+    const classes = useStyles();
+
+    if (!channel.urlName) {
+        return (
+            <div className={classes.channelItemDisabled}>
+                <div className={classes.channelName}>
+                    {channel.name}
+                </div>
+                <div className={classes.channelIcon}>
+                    <FontAwesomeIcon icon={channel.icon} size="5x"/>
+                </div> 
+            </div>
+        );
+    }
+
+    return (
+        <NavLink to={getUrl(channel.urlName)} className={classes.channelItem}>
+            <div className={classes.channelName}>
+                {channel.name}
+            </div>
+            <div className={classes.channelIcon}>
+                <FontAwesomeIcon icon={channel.icon} size="5x"/>
+            </div> 
+        </NavLink>
+    );
+}
+
+ChannelCard.propTypes = {
+    channel: PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        urlName: PropTypes.string,
+        icon: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.array
+        ]).isRequired
+    }).isRequired
+};
+
 const DistributionChannelsSection = ({ channelDescriptorData }) => {
     const classes = useStyles();
     const channelData = generateChannelData(channelDescriptorData, EXISTING_CHANNELS);
@@ -114,18 +164,7 @@ const DistributionChannelsSection = ({ channelDescriptorData }) => {
             >
                 <div className={classes.channelListContainer}>
                     {channelData.map((channel) => (
-                        <a
-                            href={getUrl(channel.urlName)}
-                            className={classes.channelItem}
-                            key={channel.name}
-                        >
-                            <div className={classes.channelName}>
-                                {channel.name}
-                            </div>
-                            <div className={classes.channelIcon}>
-                                <FontAwesomeIcon icon={channel.icon} size="5x"/>
-                            </div> 
-                        </a>
+                        <ChannelCard channel={channel} key={channel.name} />
                     ))}
                 </div>
             </SectionCard>

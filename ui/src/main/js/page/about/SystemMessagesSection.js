@@ -3,8 +3,8 @@ import { createUseStyles } from 'react-jss';
 import { useSelector } from 'react-redux';
 import classNames from 'classnames';
 
-import SectionCard from '../../common/component/SectionCard';
-import theme from '../../_theme';
+import SectionCard from 'common/component/SectionCard';
+import theme from '_theme';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const useStyles = createUseStyles((theme) => ({
@@ -108,10 +108,10 @@ const SystemMessagesSection = () => {
         <SectionCard title="System Messages" icon="bullhorn">
             {!fetching && latestMessages && latestMessages.length > 0 ? (
                 <ul className={classes.systemMessageList}>
-                    {latestMessages.map((message, index) => {
+                    {latestMessages.map((message) => {
                         const { icon, color } = getIconConfig(message.severity);
                         return (
-                            <li key={index} className={getMessageClassName(message.severity)}>
+                            <li key={message.createdAt} className={getMessageClassName(message.severity)}>
                                 <div className={getIconClassName(message.severity)}>
                                     <FontAwesomeIcon icon={icon} color={color} size="lg" />
                                 </div>

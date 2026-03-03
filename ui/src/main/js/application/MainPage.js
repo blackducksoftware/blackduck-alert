@@ -43,7 +43,7 @@ import { unauthorized } from 'store/actions/session';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import DescriptorRoute from 'common/component/descriptor/DescriptorRoute';
 import EmailGlobalConfiguration from 'page/channel/email/EmailGlobalConfiguration';
-import AboutLayout from '../page/about/AboutLayout';
+import AboutLayout from 'page/about/AboutLayout';
 
 const useStyles = createUseStyles({
     blackDuckAlertApp: {

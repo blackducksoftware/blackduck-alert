@@ -10,7 +10,7 @@ const useStyles = createUseStyles(theme => ({
         border: theme.defaultBorder,
         padding: '20px',
         flexGrow: 1,
-        boxShadow: `0 1px 3px 0 ${theme.colors.blue.darkerBlue}, 0 1px 2px -1px ${theme.colors.blue.darkerBlue}`,
+        boxShadow: `0 1px 3px 0 ${theme.colors.borderColor}, 0 1px 2px -1px ${theme.colors.borderColor}`,
         '& > form': {
             marginBottom: 0
         }

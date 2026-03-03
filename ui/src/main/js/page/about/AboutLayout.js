@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { getAboutInfo } from 'store/actions/about';
 import { EXISTING_CHANNELS } from 'common/DescriptorInfo';
-import SystemInformationSection from './SystemInformationSection';
-import DistributionChannelsSection from './DistributionChannelsSection';
-import SystemMessagesSection from './SystemMessagesSection';
+import SystemInformationSection from 'page/about/SystemInformationSection';
+import DistributionChannelsSection from 'page/about/DistributionChannelsSection';
+import SystemMessagesSection from 'page/about/SystemMessagesSection';
 
 const useStyles = createUseStyles((theme) => ({
     aboutPageLayout: {
@@ -21,8 +21,7 @@ const useStyles = createUseStyles((theme) => ({
     aboutPageDescription: {
         fontSize: '16px',
         color: theme.colors.grey.darkerGrey,
-        paddingBottom: '24px',
-        whiteSpace: 'nowrap'
+        paddingBottom: '24px'
     },
     aboutPageContent: {
         display: 'flex',

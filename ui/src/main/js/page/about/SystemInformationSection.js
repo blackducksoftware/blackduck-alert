@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
-import SectionCard from '../../common/component/SectionCard';
-import TitleContentPair from '../../common/component/TitleContentPair';
+import SectionCard from 'common/component/SectionCard';
+import TitleContentPair from 'common/component/TitleContentPair';
 
 const useStyles = createUseStyles(theme => ({
     systemInformationContainer: {

@@ -1,7 +1,4 @@
 const colors = {
-    blue: {
-        darkerBlue: '#0000001a'
-    },
     green: {
         darkGreen: '#3B7D3C'
     },
@@ -24,6 +21,7 @@ const colors = {
     white: {
         default: '#FFFFFF'
     },
+    borderColor: '#0000001a',
     defaultAlertColor: '#2E3B4E',
     darkGreyAlertColor: '#646E81',
     statusFailure: '#E15241',
@@ -32,7 +30,7 @@ const colors = {
     warning: '#E07C05'
 };
 
-const defaultBorder = `solid 1px ${colors.blue.darkerBlue}`;
+const defaultBorder = `solid 1px ${colors.borderColor}`;
 
 const theme = {
     colors,
