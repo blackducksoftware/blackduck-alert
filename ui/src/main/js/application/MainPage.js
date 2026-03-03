@@ -44,6 +44,7 @@ import { unauthorized } from 'store/actions/session';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import DescriptorRoute from 'common/component/descriptor/DescriptorRoute';
 import EmailGlobalConfiguration from 'page/channel/email/EmailGlobalConfiguration';
+import AboutLayout from '../page/about/AboutLayout';
 
 const useStyles = createUseStyles({
     blackDuckAlertApp: {
@@ -278,7 +279,8 @@ const MainPage = ({
                 )}
             />
             <Route exact path="/alert/general/about">
-                <AboutInfo globalDescriptorMap={globalDescriptorMap} distributionDescriptorMap={distributionDescriptorMap} />
+                {/* <AboutInfo globalDescriptorMap={globalDescriptorMap} distributionDescriptorMap={distributionDescriptorMap} /> */}
+                <AboutLayout globalDescriptorMap={globalDescriptorMap} distributionDescriptorMap={distributionDescriptorMap} />
             </Route>
         </div>
     );
