@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import SectionCard from 'common/component/SectionCard';
 import TitleContentPair from 'common/component/TitleContentPair';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAboutInfo } from 'store/actions/about';
 
 const useStyles = createUseStyles(theme => ({
     systemInformationContainer: {
@@ -46,10 +48,16 @@ InfoLink.propTypes = {
     text: PropTypes.string.isRequired
 };
 
-const SystemInformationSection = ({
-    commitHash, commitHashUrl, documentationUrl, projectUrl, version
-}) => {
+const SystemInformationSection = () => {
     const classes = useStyles();
+    const dispatch = useDispatch();
+    const { version, projectUrl, commitHash, documentationUrl } = useSelector((state) => state.about);
+
+    useEffect(() => {
+        dispatch(getAboutInfo());
+    }, []);
+
+    const commitHashUrl = `${projectUrl}/commit/${commitHash}`;
 
     return (
         <SectionCard title="System Information" icon="cubes">
@@ -74,14 +82,6 @@ const SystemInformationSection = ({
             </div>
         </SectionCard>
     );
-};
-
-SystemInformationSection.propTypes = {
-    commitHash: PropTypes.string.isRequired,
-    commitHashUrl: PropTypes.string.isRequired,
-    documentationUrl: PropTypes.string.isRequired,
-    projectUrl: PropTypes.string.isRequired,
-    version: PropTypes.string.isRequired
 };
 
 export default SystemInformationSection;

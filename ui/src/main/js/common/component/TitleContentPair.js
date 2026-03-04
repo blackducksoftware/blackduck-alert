@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 
-const useStyles = createUseStyles({
+const useStyles = createUseStyles(theme => ({
     titleContentContainer: {
         display: 'flex',
         flexDirection: 'column'
@@ -10,9 +10,9 @@ const useStyles = createUseStyles({
     title: {
         marginBottom: '4px',
         fontSize: '14px',
-        color: '#6a7282'
+        color: theme.colors.grey.default
     }
-});
+}));
 
 /**
  * Common component for displaying a stacked title and content pair. Used in the about page to display system information.

@@ -155,6 +155,12 @@ ChannelCard.propTypes = {
 const DistributionChannelsSection = ({ channelDescriptorData }) => {
     const classes = useStyles();
     const channelData = generateChannelData(channelDescriptorData, EXISTING_CHANNELS);
+
+    // If there's no channel data or all channels are missing, don't render the section at all
+    if (!channelData || channelData.length <= 0) {
+        return null;
+    }
+
     return (
         <>
             <SectionCard

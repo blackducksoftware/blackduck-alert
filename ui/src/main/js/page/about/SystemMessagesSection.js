@@ -36,6 +36,7 @@ const useStyles = createUseStyles((theme) => ({
         borderRadius: '4px'
      },
     statusIconContainer: {
+        alignSelf: 'stretch',
         padding: '12px',
         width: 'fit-content',
         borderTopLeftRadius: '4px',
@@ -60,7 +61,7 @@ const useStyles = createUseStyles((theme) => ({
     },
     messageTimestamp: {
         fontSize: '14px',
-        color: '#6a7282',
+        color: theme.colors.grey.darkGrey,
         margin: [0, '12px', 0, 'auto'],
         padding: 0
     }
@@ -99,11 +100,6 @@ const SystemMessagesSection = () => {
         })
     }
 
-    function getTimestamp(timestamp) {
-        const date = new Date(timestamp);
-        return date.toISOString();
-    }
-
     return (
         <SectionCard title="System Messages" icon="bullhorn">
             {!fetching && latestMessages && latestMessages.length > 0 ? (
@@ -119,7 +115,7 @@ const SystemMessagesSection = () => {
                                     {message.content}
                                 </p>
                                 <p className={classes.messageTimestamp}>
-                                    {getTimestamp(message.createdAt)}
+                                    {message.createdAt}
                                 </p>
                             </li>
                         )
