@@ -1,5 +1,5 @@
 FROM blackducksoftware/hub-docker-common:1.0.7 AS docker-common
-FROM rabbitmq:3.13-alpine
+FROM rabbitmq:4.2-alpine
 
 ARG VERSION
 ARG COMMITHASH
