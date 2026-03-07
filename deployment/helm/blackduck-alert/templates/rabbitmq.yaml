@@ -77,6 +77,8 @@ spec:
         checksum/rabbitmq-config: {{ include (print $.Template.BasePath "/rabbitmq-config.yaml") . | sha256sum }}
       name: {{ .Release.Name }}-rabbitmq
     spec:
+      hostname: {{ .Release.Name }}-rabbitmq
+      subdomain: {{ .Release.Name }}-rabbitmq-headless
       containers:
       - env:
         {{- if .Values.rabbitmq.credential.secretName }}
@@ -98,6 +100,10 @@ spec:
             key: {{ required ".Values.rabbitmq.cluster.erlangCookie.cookieKey is missing." .Values.rabbitmq.cluster.erlangCookie.cookieKey }}
             name: {{ .Values.rabbitmq.cluster.erlangCookie.secretName }}
         {{- end }}
+        - name: RABBITMQ_USE_LONGNAME
+          value: "true"
+        - name: RABBITMQ_NODENAME
+          value: rabbit@{{ .Release.Name }}-rabbitmq.{{ .Release.Name }}-rabbitmq-headless.{{ .Release.Namespace }}.svc.cluster.local
         envFrom:
         - configMapRef:
             name: {{ .Release.Name}}-rabbitmq-config
