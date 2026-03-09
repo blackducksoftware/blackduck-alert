@@ -206,7 +206,6 @@ public class BlackDuckAccumulator extends ProviderTask {
         String jsonContent = notification.getJson();
         String hashOfUrl = createContentId(getProviderProperties().getConfigId(), notification);
         return new AlertNotificationModel(
-            null,
             getProviderProperties().getConfigId(),
             provider,
             getProviderProperties().getConfigName(),
