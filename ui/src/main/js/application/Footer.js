@@ -16,7 +16,6 @@ const useStyles = createUseStyles(theme => ({
         backgroundColor: theme.colors.grey.blackout,
         height: '36px',
         lineHeight: '24px',
-        borderTop: '`1px solid ${theme.colors.defaultBorderColor}`',
         padding: '0 15px 0 15px',
         fontFamily: ['Roboto', 'Arial', 'sans-serif'],
         fontSize: '11px',

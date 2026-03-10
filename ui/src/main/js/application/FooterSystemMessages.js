@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import { createUseStyles } from 'react-jss';
 import { useDispatch, useSelector } from 'react-redux';
 import { Overlay, Popover, PopoverBody, PopoverHeader } from 'react-bootstrap';
-import { getAboutInfo } from 'store/actions/about';
 import { getLatestMessages } from 'store/actions/system';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import SystemMessage from 'common/component/SystemMessage';
@@ -45,79 +44,69 @@ const useStyles = createUseStyles((theme) => ({
     }
 }));
 
+function containsSeverity(messages, severity) {
+    return messages?.some((message) => message.severity === severity) ?? false;
+};
+
 const FooterSystemMessages = () => {
     const dispatch = useDispatch();
     const classes = useStyles();
     const [showOverlay, setShowOverlay] = useState(false);
     const [hideOverlayByUser, setHideOverlayByUser] = useState(false);
     const targetRef = useRef(null);
-    const { latestMessages, fetching } = useSelector((state) => state.system);
+    const { latestMessages } = useSelector((state) => state.system);
+    const hasErrorMessage = containsSeverity(latestMessages, 'ERROR');
+    const hasWarningMessage = containsSeverity(latestMessages, 'WARNING');
     
     useEffect(() => {
         dispatch(getLatestMessages());
     }, []);
 
-     useEffect(() => {
-        if (fetching === false) {
-            const showOverlayValue = hasErrorMessages(latestMessages);
-            if (!hideOverlayByUser) {
-                setShowOverlay(showOverlayValue);
-            }
+    // If there are error messages, and the user has not manually hidden the popover we want to highlight these messages
+    // by showing the popover.
+    useEffect(() => {
+        if (!hideOverlayByUser) {
+            setShowOverlay(hasErrorMessage);
         }
-
-    }, [fetching]);
-
-    const containsSeverity = (messages, severity) => {
-        if (messages && messages.length > 0) {
-            if (messages.find((message) => message.severity === severity)) {
-                return true;
-            }
-            return false;
-        }
-        return false;
-    };
-
-    const hasErrorMessages = (messages) => {
-        return containsSeverity(messages, 'ERROR');
-    };
-
-    const hasWarningMessages = (messages) => {
-        return containsSeverity(messages, 'WARNING');
-    };
-
-    const getFontAwesomeIcon = () => {
-        if (hasErrorMessages(latestMessages) || hasWarningMessages(latestMessages)) {
-            return 'exclamation-triangle';
-        }
-        return 'check-circle';
-    };
+    }, [latestMessages, hideOverlayByUser]);
 
     const iconClass = classNames(classes.statusIcon, {
-        [classes.errorStatus]: hasErrorMessages(latestMessages),
-        [classes.warningStatus]: !hasErrorMessages(latestMessages) && hasWarningMessages(latestMessages),
-        [classes.validStatus]: !hasErrorMessages(latestMessages) && !hasWarningMessages(latestMessages)
+        [classes.errorStatus]: hasErrorMessage,
+        [classes.warningStatus]: !hasErrorMessage && hasWarningMessage,
+        [classes.validStatus]: !hasErrorMessage && !hasWarningMessage
     });
 
     const createMessageList = () => {
         if (latestMessages && latestMessages.length > 0) {
             return latestMessages.map((message) => {
-                const itemKey = `system_message_${message.createdAt}`;
-                return (<SystemMessage key={itemKey} createdAt={message.createdAt} content={message.content} severity={message.severity} />);
+                const messageId = `system_message_${message.createdAt}`;
+                return (
+                    <SystemMessage
+                        key={messageId}
+                        id={messageId}
+                        createdAt={message.createdAt}
+                        content={message.content}
+                        severity={message.severity}
+                    />
+                );
             });
         }
         return null;
     };
 
     const handleOverlayButton = () => {
+        if (!showOverlay) {
+            reload();
+        }
+
         setShowOverlay(!showOverlay);
         setHideOverlayByUser(!hideOverlayByUser);
     };
     
     const reload = () => {
-        getAboutInfo();
-        getLatestMessages();
+        dispatch(getLatestMessages());
     };
-    
+
     return (
         <div id="about-FooterSystemMessages-status" className={classes.statusPopover}>
             <div
@@ -125,7 +114,10 @@ const FooterSystemMessages = () => {
                 onClick={handleOverlayButton}
             >
                 <div className={iconClass}>
-                    <FontAwesomeIcon icon={getFontAwesomeIcon()} size="lg" />
+                    <FontAwesomeIcon
+                        icon={hasErrorMessage || hasWarningMessage ? 'exclamation-triangle' : 'check-circle'}
+                        size="lg"
+                    />
                 </div>
             </div>
             <Overlay

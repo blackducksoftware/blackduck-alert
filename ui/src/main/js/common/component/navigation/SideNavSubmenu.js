@@ -113,6 +113,7 @@ SideNavSubmenu.propTypes = {
     subMenuItems: PropTypes.arrayOf(PropTypes.shape({
         id: PropTypes.string,
         label: PropTypes.string,
+        icon: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
         href: PropTypes.string,
         showOption: PropTypes.bool
     }))
