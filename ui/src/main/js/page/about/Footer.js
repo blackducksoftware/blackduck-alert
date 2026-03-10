@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAboutInfo } from 'store/actions/about';
-import BlackDuckLogoAllBlack from '/src/main/img/BlackDuckLogoAllBlack.png';
+import BlackDuckLogoAllBlack from '/src/main/img/BlackDuckLogo.png';
 import FooterSystemMessages from './FooterSystemMessages';
 import { createUseStyles } from 'react-jss';
 
@@ -13,19 +13,19 @@ const useStyles = createUseStyles(theme => ({
         bottom: 0,
         left: 0,
         width: '100%',
-        backgroundColor: theme.colors.defaultBackgroundColor,
+        backgroundColor: theme.colors.grey.blackout,
         height: '36px',
         lineHeight: '24px',
-        borderTop: `1px solid ${theme.colors.defaultBorderColor}`,
+        borderTop: '`1px solid ${theme.colors.defaultBorderColor}`',
         padding: '0 15px 0 15px',
         fontFamily: ['Roboto', 'Arial', 'sans-serif'],
         fontSize: '11px',
-        color: theme.colors.defaultAlertColor,
+        color: theme.colors.defaultBorderColor,
         transition: 'opacity .3s ease-in-out 0s',
         zIndex: 9999,
 
         '& a': {
-            color: theme.colors.defaultAlertColor
+            color: theme.colors.defaultBorderColor,
         }
     },
     logoContainer: {
@@ -40,20 +40,23 @@ const useStyles = createUseStyles(theme => ({
         maxHeight: '14px'
     },
     logoDivider: {
-        borderLeft: 'solid 1px',
+        borderLeft: `solid 1px ${theme.colors.grey.default}`,
         height: '11px',
         marginTop: '2px'
     },
     footerAlertText: {
+        color: theme.colors.defaultBorderColor,
         lineHeight: '2em',
         fontFamily: ['Roboto', 'Arial', 'sans-serif']
     },
     productVersion: {
+        color: theme.colors.defaultBorderColor,
         textAlign: 'left',
         marginLeft: '.4em',
         marginRight: 'auto'
     },
     copyright: {
+        color: theme.colors.defaultBorderColor,
         marginLeft: 'auto',
         textAlign: 'left',
         float: 'right'

@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { NavLink } from 'react-router-dom';
 import Dropdown from 'react-bootstrap/Dropdown';
 
-const useStyles = createUseStyles({
+const useStyles = createUseStyles(theme => ({
     navLabel: {
         gridArea: 'label',
         opacity: 0.66,
@@ -47,10 +47,11 @@ const useStyles = createUseStyles({
         }
     },
     navMenu: {
-        backgroundColor: '#222',
+        backgroundColor: theme.colors.grey.blackout,
         color: 'white',
         minWidth: '200px',
         border: '1px solid #dddddd',
+        borderRadius: '3px',
         boxShadow: '0 8px 16px rgba(0, 0, 0, 0.175)',
         fontSize: '13px'
     },
@@ -76,7 +77,7 @@ const useStyles = createUseStyles({
             color: 'white',
         }
     }
-});
+}));
 
 const SideNavSubmenu = ({ icon, id, label, subMenuItems }) => {
     const classes = useStyles();

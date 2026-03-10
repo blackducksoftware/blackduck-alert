@@ -27,11 +27,11 @@ import { JIRA_SERVER_URLS } from 'page/channel/jira/server/JiraServerModel';
 import { SLACK_URLS } from 'page/channel/slack/SlackModels';
 import { MSTEAMS_URLS } from 'page/channel/msteams/MSTeamsModel';
 
-const useStyles = createUseStyles({
+const useStyles = createUseStyles(theme => ({
     sideNavContent: {
         height: '100%',
         border: 'solid 1px',
-        background: '#222'
+        background: theme.colors.grey.blackout
     },
     sideNav: {
         display: 'flex',
@@ -39,9 +39,9 @@ const useStyles = createUseStyles({
         height: '100%',
         listStyle: 'none',
         paddingLeft: 0,
-        color: '#ffffff'
+        color: theme.colors.white.default
     }
-});
+}));
 
 const Navigation = ({ confirmLogoutPressed, cancelLogout, globalDescriptorMap }) => {
     const classes = useStyles();
