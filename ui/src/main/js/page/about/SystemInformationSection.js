@@ -37,7 +37,13 @@ const InfoLink = ({ url, text }) => {
     const classes = useStyles();
 
     return (
-        <a href={url} className={classes.contentLink} target="_blank" rel="noopener noreferrer">
+        <a
+            href={url}
+            className={classes.contentLink}
+            disabled={!url}
+            target="_blank"
+            rel="noopener noreferrer"
+        >
             {text}
         </a>
     );

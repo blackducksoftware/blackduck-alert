@@ -73,7 +73,7 @@ const SystemMessagesSection = () => {
     const classes = useStyles();
     const { fetching, latestMessages } = useSelector((state) => state.system);
 
-    // TODO: These two functions are used in SystemMesssage.js - export these to a common utility file and import them in both places
+    // TODO: These two functions are used in SystemMessage.js - export these to a common utility file and import them in both places
     function getIconConfig(severity) {
         if (severity === 'ERROR') {
             return {icon: 'exclamation-triangle', color: theme.colors.red.lightRed};
@@ -102,6 +102,8 @@ const SystemMessagesSection = () => {
 
     return (
         <SectionCard title="System Messages" icon="bullhorn">
+            {fetching && <p className={classes.messageContent}>Loading system messages...</p>}
+
             {!fetching && latestMessages && latestMessages.length > 0 ? (
                 <ul className={classes.systemMessageList}>
                     {latestMessages.map((message) => {
