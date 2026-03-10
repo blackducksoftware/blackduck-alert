@@ -6,7 +6,12 @@ const colors = {
         lighterGrey: '#E8E6E6',
         lightGrey: '#D9D9D9',
         default: '#808080',
-        darkGrey: '#666666'
+        darkGrey: '#666666',
+        darkerGrey: '#4a5565'
+    },
+    purple: {
+        lightPurple: '#dab2ff',
+        default: '#9810fa'
     },
     red: {
         lighterRed: '#EA7B73',
@@ -16,6 +21,7 @@ const colors = {
     white: {
         default: '#FFFFFF'
     },
+    borderColor: '#0000001a',
     defaultAlertColor: '#2E3B4E',
     darkGreyAlertColor: '#646E81',
     statusFailure: '#E15241',
@@ -24,8 +30,11 @@ const colors = {
     warning: '#E07C05'
 };
 
+const defaultBorder = `solid 1px ${colors.borderColor}`;
+
 const theme = {
-    colors
+    colors,
+    defaultBorder
 };
 
 export default theme;
