@@ -30,7 +30,7 @@ const useStyles = createUseStyles(theme => ({
             backgroundColor: 'transparent',
             '&:hover, &:focus': {
                 color: 'white',
-                background: '#313944',
+                background: 'rgba(255, 255, 255, 0.1)',
                 textDecoration: 'none',
                 outlineOffset: -2
             },
@@ -54,7 +54,7 @@ const SideNavItem = ({ ...props }) => {
     const NavItem = hasSubMenu ? SideNavSubmenu : SideNavButtonItem;
 
     return (
-        <li className={classes.navItem} role={null}>
+        <li className={classes.navItem} role={null} id={props.id}>
             <NavItem {...props} />
         </li>
     );
@@ -62,7 +62,8 @@ const SideNavItem = ({ ...props }) => {
 
 SideNavItem.propTypes = {
     hasSubMenu: PropTypes.bool,
-    subMenuItems: PropTypes.array
+    subMenuItems: PropTypes.array,
+    id: PropTypes.string.isRequired
 };
 
 export default SideNavItem;
