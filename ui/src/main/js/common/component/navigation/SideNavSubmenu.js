@@ -36,9 +36,10 @@ const useStyles = createUseStyles({
         padding: '12px 0',
         width: '100%',
         rowGap: '6px',
+        borderRadius: 0,
         '&:hover, &:focus, &:active': {
             color: 'white',
-            background: '#313944 !important',
+            background: 'rgba(255, 255, 255, 0.1) !important',
             textDecoration: 'none'
         },
         '&::after': {
@@ -46,18 +47,20 @@ const useStyles = createUseStyles({
         }
     },
     navMenu: {
-        backgroundColor: 'black',
+        backgroundColor: '#222',
         color: 'white',
         minWidth: '200px',
         border: '1px solid #dddddd',
-        borderRadius: '3px',
         boxShadow: '0 8px 16px rgba(0, 0, 0, 0.175)',
         fontSize: '13px'
     },
     navMenuItem: {
         color: 'white',
         padding: ['8px', 0, '8px', '24px'],
-        display: 'block',
+        display: 'flex',
+        columnGap: '8px',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
         width: '100%',
         fontWeight: 400,
         whiteSpace: 'nowrap',
@@ -66,6 +69,11 @@ const useStyles = createUseStyles({
             background: '#313944',
             color: 'white',
             textDecoration: 'none'
+        },
+        
+        '&.active': {
+            background: '#313944',
+            color: 'white',
         }
     }
 });
@@ -87,6 +95,7 @@ const SideNavSubmenu = ({ icon, id, label, subMenuItems }) => {
                     }
                     return (
                         <Dropdown.Item as={NavLink} to={item.href} className={classes.navMenuItem} key={item.id}>
+                            <FontAwesomeIcon size="1x" icon={item.icon} />
                             {item.label}
                         </Dropdown.Item>
                     );

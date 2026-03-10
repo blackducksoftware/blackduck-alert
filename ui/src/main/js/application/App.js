@@ -5,7 +5,7 @@ import { withRouter } from 'react-router-dom';
 
 import MainPage from 'application/MainPage';
 import LoginPage from 'application/auth/LoginPage';
-import AboutInfoFooter from 'page/about/AboutInfoFooter';
+import Footer from 'page/about/Footer';
 import { verifyLogin, verifySaml } from 'store/actions/session';
 import * as IconUtility from 'common/util/iconUtility';
 import LogoutPage from 'application/auth/LogoutPage';
@@ -47,7 +47,7 @@ class App extends Component {
                     {contentPage}
                 </div>
                 <div style={{ height: '3.5vh' }}>
-                    <AboutInfoFooter />
+                    <Footer />
                 </div>
             </div>
         );
