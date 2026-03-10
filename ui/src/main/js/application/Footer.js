@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAboutInfo } from 'store/actions/about';
 import BlackDuckLogoAllBlack from '/src/main/img/BlackDuckLogo.png';
-import FooterSystemMessages from './FooterSystemMessages';
+import FooterSystemMessages from 'application/FooterSystemMessages';
 import { createUseStyles } from 'react-jss';
 
 const useStyles = createUseStyles(theme => ({

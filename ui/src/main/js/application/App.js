@@ -5,7 +5,7 @@ import { withRouter } from 'react-router-dom';
 
 import MainPage from 'application/MainPage';
 import LoginPage from 'application/auth/LoginPage';
-import Footer from 'page/about/Footer';
+import Footer from 'application/Footer';
 import { verifyLogin, verifySaml } from 'store/actions/session';
 import * as IconUtility from 'common/util/iconUtility';
 import LogoutPage from 'application/auth/LogoutPage';
