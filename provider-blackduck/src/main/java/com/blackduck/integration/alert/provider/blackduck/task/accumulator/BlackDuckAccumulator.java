@@ -9,6 +9,7 @@ package com.blackduck.integration.alert.provider.blackduck.task.accumulator;
 
 import java.time.OffsetDateTime;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -45,10 +46,15 @@ import com.blackduck.integration.blackduck.api.manual.view.NotificationView;
 import com.blackduck.integration.exception.IntegrationException;
 
 public class BlackDuckAccumulator extends ProviderTask {
+    private static final EnumSet<NotificationType> EXCLUDED = EnumSet.of(
+        NotificationType.VERSION_BOM_CODE_LOCATION_BOM_COMPUTED,
+        NotificationType.BOM_EDIT
+    );
+
     private static final List<String> SUPPORTED_NOTIFICATION_TYPES = Stream.of(NotificationType.values())
-        .filter(type -> type != NotificationType.VERSION_BOM_CODE_LOCATION_BOM_COMPUTED)
+        .filter(type -> !EXCLUDED.contains(type))
         .map(Enum::name)
-        .collect(Collectors.toList());
+        .toList();
 
     private final Logger logger = LoggerFactory.getLogger(BlackDuckAccumulator.class);
     private final Logger notificationLogger = AlertLoggerFactory.getNotificationLogger(getClass());

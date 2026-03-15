@@ -61,7 +61,6 @@ export const DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS = [
     { label: 'Rule Violation', value: 'RULE_VIOLATION' },
     { label: 'Rule Violation Cleared', value: 'RULE_VIOLATION_CLEARED' },
     { label: 'Vulnerability', value: 'VULNERABILITY' },
-    { label: 'Bom Edit', value: 'BOM_EDIT' },
     { label: 'Project', value: 'PROJECT' },
     { label: 'Project Version', value: 'PROJECT_VERSION' },
     { label: 'Component Unknown Version', value: 'COMPONENT_UNKNOWN_VERSION' }
