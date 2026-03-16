@@ -40,7 +40,7 @@ const useStyles = createUseStyles(theme => ({
     }
 }));
 
-const TableFooter = ({ data, onPage, onPageSize, showPageSize, pageSize }) => {
+const TableFooter = ({ data, onPage, onPageSize, pageSize }) => {
     const classes = useStyles();
 
     // Default table row amounts are 10, 25, 30, and 50 - these were collected from legacy code
@@ -53,26 +53,18 @@ const TableFooter = ({ data, onPage, onPageSize, showPageSize, pageSize }) => {
                     <Pagination data={data} onPage={onPage} />
                 </div>
             )}
-            {/* Until all endpoints are converted to HATEOAS, we need to use showPageSize prop to determine which tables should have this capability */}
-            {(showPageSize) && (
-                <div className={classes.rowCountSelector}>
-                    <p className={classes.countSelectorText}>Rows per page:</p>
-                    <DropdownField options={onPageOptions} onChange={onPageSize} selectedValue={pageSize} id="row-count-selector" />
-                </div>
-            )}
+            <div className={classes.rowCountSelector}>
+                <p className={classes.countSelectorText}>Rows per page:</p>
+                <DropdownField options={onPageOptions} onChange={onPageSize} selectedValue={pageSize} id="row-count-selector" />
+            </div>
         </div>
     );
-};
-
-TableFooter.defaultProps = {
-    showPageSize: false
 };
 
 TableFooter.propTypes = {
     data: PropTypes.object,
     onPage: PropTypes.func,
     onPageSize: PropTypes.func,
-    showPageSize: PropTypes.bool,
     pageSize: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
 };
 

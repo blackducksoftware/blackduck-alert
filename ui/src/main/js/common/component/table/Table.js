@@ -34,7 +34,7 @@ const useStyles = createUseStyles(theme => ({
 const Table = ({
     columns, multiSelect, selected, onSelected, disableSelectOptions, tableData, handleSearchChange,
     searchBarPlaceholder, tableActions, onToggle, active, onSort, sortConfig, data, onPage, emptyTableConfig,
-    defaultSearchValue, onPageSize, showPageSize, pageSize, cellId, isLoading, showFooter
+    defaultSearchValue, onPageSize, showPageSize, pageSize, cellId, isLoading
 }) => {
     const classes = useStyles();
 
@@ -93,8 +93,10 @@ const Table = ({
                             cellId={cellId}
                         />
                     </table>
-
-                    <TableFooter data={data} onPage={onPage} onPageSize={onPageSize} showPageSize={showPageSize} pageSize={pageSize} />
+                    
+                    {showPageSize && (
+                        <TableFooter data={data} onPage={onPage} onPageSize={onPageSize} showPageSize={showPageSize} pageSize={pageSize} />
+                    )}
                 </>
             )}
         </div>
@@ -132,8 +134,7 @@ Table.propTypes = {
     defaultSearchValue: PropTypes.string,
     pageSize: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     cellId: PropTypes.string,
-    isLoading: PropTypes.bool,
-    showFooter: PropTypes.bool
+    isLoading: PropTypes.bool
 };
 
 export default Table;
