@@ -169,7 +169,17 @@ const AuditFailureTable = () => {
             showPageSize
             data={data}
             emptyTableConfig={emptyTableConfig}
-            tableActions={() => <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} />}
+            tableActions={() => 
+                <Button 
+                    onClick={handleRefresh} 
+                    type="button"
+                    text="Refresh"
+                    isDisabled={fetching}
+                    showLoader={fetching}
+                    buttonStyle="action"
+                    icon="arrows-rotate"
+                />
+            }
         />
     );
 };

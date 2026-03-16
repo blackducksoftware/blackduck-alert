@@ -8,6 +8,9 @@ const useStyles = createUseStyles({
         width: '45px'
     },
     inputStyle: {
+        '&:hover': {
+            cursor: 'pointer'
+        },
         '&:disabled': {
             cursor: 'not-allowed'
         }

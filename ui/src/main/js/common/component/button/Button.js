@@ -65,6 +65,38 @@ const useStyles = createUseStyles((theme) => ({
     },
     loader: {
         marginLeft: '5px'
+    },
+
+    action: {
+        color: theme.colors.white.default,
+        backgroundColor: 'oklch(55.8% 0.288 302.321)',
+        border: 'none',
+        borderRadius: '6px',
+        padding: ['8px', '14px'],
+        display: 'flex',
+        alignItems: 'center',
+        columnGap: '8px',
+        '&:hover': {
+            backgroundColor: 'oklch(43.8% 0.218 303.724)'
+        }
+    },
+    actionSecondary: {
+        color: 'oklch(37.3% 0.034 259.733)',
+        backgroundColor: theme.colors.white.default,
+        border: `solid 1px ${theme.colors.grey.lightGrey}`,
+        borderRadius: '6px',
+        padding: ['8px', '14px'],
+        display: 'flex',
+        alignItems: 'center',
+        columnGap: '8px',
+        '&:not(:disabled):hover': {
+            color: 'oklch(37.3% 0.034 259.733)',
+            backgroundColor: theme.colors.grey.lighterGrey,
+            border: `solid 1px ${theme.colors.grey.default}`
+        },
+        '&:disabled': {
+            color: theme.colors.grey.default
+        }
     }
 }));
 
@@ -73,7 +105,9 @@ const Button = ({ id, icon, type, isDisabled, onClick, role, buttonStyle = 'defa
     const btnClass = classNames(classes.button, {
         [classes.delete]: buttonStyle === 'delete',
         [classes.default]: buttonStyle === 'default',
-        [classes.transparent]: buttonStyle === 'transparent'
+        [classes.transparent]: buttonStyle === 'transparent',
+        [classes.action]: buttonStyle === 'action',
+        [classes.actionSecondary]: buttonStyle === 'actionSecondary'
     });
 
     return (
@@ -87,7 +121,7 @@ const Button = ({ id, icon, type, isDisabled, onClick, role, buttonStyle = 'defa
             disabled={isDisabled}
         >
             {icon && (
-                <FontAwesomeIcon icon={icon} size="sm" />
+                <FontAwesomeIcon icon={icon} />
             )}
             <div>
                 {text}
@@ -111,7 +145,7 @@ Button.propTypes = {
     onClick: PropTypes.func,
     isDisabled: PropTypes.bool,
     role: PropTypes.string,
-    buttonStyle: PropTypes.oneOf(['default', 'transparent', 'delete']),
+    buttonStyle: PropTypes.oneOf(['default', 'transparent', 'delete', 'action', 'actionSecondary']),
     title: PropTypes.string,
     type: PropTypes.string,
     text: PropTypes.string.isRequired,

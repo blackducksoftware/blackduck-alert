@@ -16,6 +16,7 @@ const colors = {
     white: {
         default: '#FFFFFF'
     },
+    borderColor: '#0000001a',
     defaultAlertColor: '#2E3B4E',
     darkGreyAlertColor: '#646E81',
     statusFailure: '#E15241',

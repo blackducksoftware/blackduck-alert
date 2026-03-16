@@ -20,7 +20,7 @@ const useStyles = createUseStyles((theme) => ({
         }
     },
     activePage: {
-        backgroundColor: theme.colors.defaultAlertColor,
+        backgroundColor: 'oklch(55.8% 0.288 302.321)',
         border: 'solid .5px'
     },
     inactivePage: {

@@ -110,7 +110,17 @@ const TaskManagementTable = () => {
             onSort={onSort}
             sortConfig={sortConfig}
             emptyTableConfig={emptyTableConfig}
-            tableActions={() => <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} />}
+            tableActions={() => 
+                <Button
+                    onClick={handleRefresh}
+                    type="button"
+                    text="Refresh"
+                    isDisabled={fetching}
+                    showLoader={fetching}
+                    buttonStyle="action"
+                    icon="arrows-rotate"
+                />
+            }
         />
     );
 };

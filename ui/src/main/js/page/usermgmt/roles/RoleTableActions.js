@@ -48,7 +48,7 @@ const RoleTableActions = ({ canCreate, canDelete, data, selected, setSelected })
             )}
 
             { canCreate && (
-                <Button onClick={handleCreateRole} type="button" icon="plus" text="Create Role" />
+                <Button onClick={handleCreateRole} type="button" icon="plus" text="Create Role" buttonStyle="action" />
             )}
 
             {canDelete && (
@@ -58,11 +58,11 @@ const RoleTableActions = ({ canCreate, canDelete, data, selected, setSelected })
                     type="button"
                     icon="trash"
                     text="Delete"
-                    buttonStyle="delete"
+                    buttonStyle="actionSecondary"
                 />
             )}
 
-            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} />
+            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching}  buttonStyle="actionSecondary" icon="arrows-rotate" />
 
             {showCreateModal && (
                 <RoleModal

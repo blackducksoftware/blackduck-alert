@@ -5,9 +5,13 @@ import { createUseStyles } from 'react-jss';
 const useStyles = createUseStyles({
     multiSelectStyle: {
         textAlign: 'center',
-        width: '45px'
+        width: '45px',
+        padding: 0
     },
     inputStyle: {
+        '&:hover': {
+            cursor: 'pointer'
+        },
         '&:disabled': {
             cursor: 'not-allowed'
         }

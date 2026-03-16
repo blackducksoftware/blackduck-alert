@@ -9,33 +9,37 @@ import EmptyTableView from 'common/component/table/EmptyTableView';
 import TableFooter from 'common/component/table/TableFooter';
 import TableSkeleton from 'common/component/table/TableSkeleton';
 
-const useStyles = createUseStyles({
+const useStyles = createUseStyles(theme => ({
+    tableContainer: {
+        border: 'solid 1px #ddd',
+        borderRadius: '8px',
+        backgroundColor: theme.colors.white.default,
+        boxShadow: `0 1px 3px 0 ${theme.colors.borderColor}, 0 1px 2px -1px ${theme.colors.borderColor}`
+    },
     table: {
         width: '100%',
         border: 0,
-        '& tr:nth-child(even)': {
-            backgroundColor: '#f0f0fb'
-        },
         '& tr:hover': {
-            backgroundColor: '#c6c6c6'
+            backgroundColor: '#F8F8F9'
         }
     },
     tableActions: {
         display: 'flex',
         alignItems: 'center',
-        margin: ['10px', 0, '2px', 0]
+        backgroundColor: theme.colors.white.default,
+        margin: ['18px', '20px', '18px']
     }
-});
+}));
 
 const Table = ({
     columns, multiSelect, selected, onSelected, disableSelectOptions, tableData, handleSearchChange,
     searchBarPlaceholder, tableActions, onToggle, active, onSort, sortConfig, data, onPage, emptyTableConfig,
-    defaultSearchValue, onPageSize, showPageSize, pageSize, cellId, isLoading
+    defaultSearchValue, onPageSize, showPageSize, pageSize, cellId, isLoading, showFooter
 }) => {
     const classes = useStyles();
 
     return (
-        <>
+        <div className={classes.tableContainer}>
             {(tableActions || handleSearchChange || onToggle) && (
                 <div className={classes.tableActions}>
                     {tableActions ? tableActions() : null}
@@ -93,7 +97,7 @@ const Table = ({
                     <TableFooter data={data} onPage={onPage} onPageSize={onPageSize} showPageSize={showPageSize} pageSize={pageSize} />
                 </>
             )}
-        </>
+        </div>
     );
 };
 
@@ -128,7 +132,8 @@ Table.propTypes = {
     defaultSearchValue: PropTypes.string,
     pageSize: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     cellId: PropTypes.string,
-    isLoading: PropTypes.bool
+    isLoading: PropTypes.bool,
+    showFooter: PropTypes.bool
 };
 
 export default Table;

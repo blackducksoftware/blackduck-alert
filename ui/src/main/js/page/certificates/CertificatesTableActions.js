@@ -32,9 +32,9 @@ const CertificatesTableActions = ({ data, selected, setSelected }) => {
 
     return (
         <>
-            <Button onClick={handleCreateCertificateClick} type="button" icon="plus" text="Create Certificate" />
-            <Button onClick={handleDeleteCertificateClick} isDisabled={selected.length === 0} icon="trash" text="Delete" buttonStyle="delete" />
-            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} />
+            <Button onClick={handleCreateCertificateClick} type="button" icon="plus" text="Create Certificate" buttonStyle="action" />
+            <Button onClick={handleDeleteCertificateClick} isDisabled={selected.length === 0} icon="trash" text="Delete" buttonStyle="actionSecondary" />
+            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} buttonStyle="actionSecondary" icon="arrows-rotate" />
 
             {showCreateModal && (
                 <CertificateModal
