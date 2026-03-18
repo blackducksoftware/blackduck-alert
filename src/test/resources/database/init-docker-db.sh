@@ -1,17 +1,18 @@
 #!/bin/bash
 
 usage() {
-  echo "---------------------------------------------------------------------------------------"
-  echo "- Usage: ./init-docker-db.sh                                                          -"
-  echo "- Parameters                                                                          -"
-  echo "-   -n: specify the container name to be created                                      -"
-  echo "-   -p: postgres password                                                             -"
-  echo "-   -e: exposed container port                                                        -"
-  echo "-   -v: volume path                                                                   -"
-  echo "-                                                                                     -"
-  echo "- Example:                                                                            -"
-  echo "    ./init-docker-db.sh -n alert-postgres -p blackduck -v ~/database/alert-10 -e 5432 -"
-  echo "_______________________________________________________________________________________"
+  echo "------------------------------------------------------------------------------------------------------"
+  echo "- Usage: ./init-docker-db.sh                                                                         -"
+  echo "- Parameters                                                                                         -"
+  echo "-   -n: specify the container name to be created                                                     -"
+  echo "-   -p: postgres password                                                                            -"
+  echo "-   -e: exposed container port                                                                       -"
+  echo "-   -v: volume path                                                                                  -"
+  echo "-   -d: postgres version                                                                             -"
+  echo "-                                                                                                    -"
+  echo "- Example:                                                                                           -"
+  echo "    ./init-docker-db.sh -n alert-postgres -p blackduck -v ~/database/alert-10 -e 5432 -d 16.9-alpine -"
+  echo "______________________________________________________________________________________________________"
 }
 
 if [ $# -eq 0 ]
@@ -26,8 +27,9 @@ container_name='alert-postgres'
 postgres_password='blackduck'
 exposed_port=5432
 volume_path=''
+postgres_version='16.9-alpine'
 
-while getopts "e:,n:,p:,v:,h" option; do
+while getopts "e:,n:,p:,v:,d:,h" option; do
   case ${option} in
     n) 
       container_name="${OPTARG}"
@@ -40,6 +42,9 @@ while getopts "e:,n:,p:,v:,h" option; do
       ;;
     v)
       volume_path="${OPTARG}"
+      ;;
+    d)
+      postgres_version="${OPTARG}"
       ;;
     h)
       usage
@@ -56,6 +61,7 @@ echo "----------------------------"
 echo "- Parameters               -"
 echo "    Container Name:    $container_name"
 echo "    Postgres Password: $postgres_password"
+echo "    Postgres Version:  $postgres_version"
 echo "    Exposed Port:      $exposed_port"
 echo "    Local Volume Path: $volume_path"
 echo "____________________________"
@@ -63,9 +69,9 @@ echo "____________________________"
 if [ -z $volume_path ]
   then
       echo "Volume Path not set."
-      docker run -d --name "$container_name" -e POSTGRES_PASSWORD=$postgres_password --mount type=volume,source=$container_name-volume,destination=/var/lib/postgresql/data -p $exposed_port:5432 postgres:16.9-alpine
+      docker run -d --name "$container_name" -e POSTGRES_PASSWORD=$postgres_password --mount type=volume,source=$container_name-volume,destination=/var/lib/postgresql/data -p $exposed_port:5432 "postgres:$postgres_version"
   else 
-    docker run -d --name "$container_name" -e POSTGRES_PASSWORD=$postgres_password --mount type=bind,source=$volume_path,destination=/var/lib/postgresql/data -p $exposed_port:5432 postgres:16.9-alpine
+    docker run -d --name "$container_name" -e POSTGRES_PASSWORD=$postgres_password --mount type=bind,source=$volume_path,destination=/var/lib/postgresql/data -p $exposed_port:5432 "postgres:$postgres_version"
 fi
 
 echo -n "Waiting for postgres "
