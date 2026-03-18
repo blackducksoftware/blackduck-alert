@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
+import { Tab } from 'react-bootstrap';
 import PageHeader from 'common/component/navigation/PageHeader';
+import ViewTabs from '../../common/component/navigation/ViewTabs';
 import CertificatesTable from 'page/certificates/CertificatesTable';
 import MTLSCertificateLayout from 'page/certificates/MTLSCertificateLayout';
 import { CERTIFICATE_INFO } from 'page/certificates/CertificateModel';
-import { Tab, Tabs } from 'react-bootstrap';
 
 const CertificatesPageLayout = ({ csrfToken, errorHandler }) => {
     return (
@@ -15,7 +15,7 @@ const CertificatesPageLayout = ({ csrfToken, errorHandler }) => {
                 description="This page allows you to configure certificates for Alert to establish secure communication."
                 icon="award"
             />
-            <Tabs defaultActiveKey={1} id="certificate-tabs">
+            <ViewTabs defaultActiveKey={1} id="certificate-tabs">
                 <Tab eventKey={1} title="Server">
                     <CertificatesTable />
                 </Tab>
@@ -25,7 +25,7 @@ const CertificatesPageLayout = ({ csrfToken, errorHandler }) => {
                         errorHandler={errorHandler}
                     />
                 </Tab>
-            </Tabs>
+            </ViewTabs>
         </div>
     );
 };
