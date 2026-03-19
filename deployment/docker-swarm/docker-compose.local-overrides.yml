@@ -58,6 +58,7 @@ version: '3.6'
 #      - ALERT_COMPONENT_SETTINGS_SETTINGS_PROXY_PORT=
 #      - ALERT_COMPONENT_SETTINGS_SETTINGS_PROXY_USERNAME=
 #      - ALERT_COMPONENT_SETTINGS_SETTINGS_PROXY_PASSWORD=
+#      - ALERT_COMPONENT_SETTINGS_SETTINGS_NON_PROXY_HOSTS=
 #
 #     # -- Uncomment to change batch mapping limits. Only change this environment variable from the default if recommended by support in regards to a performance issue.
 #     # The batch size can be set to a value between 1000 - 10000. The default is 10000.
