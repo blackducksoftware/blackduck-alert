@@ -3,22 +3,17 @@ import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-// TODO: Rework additional info, should accept more than lastUpdated
-// TODO: Last updated has perfect ability to become LabelValuePair reusable component
-
 const useStyles = createUseStyles((theme) => ({
     pageHeader: {
         padding: '30px',
         backgroundColor: theme.colors.white.default,
         width: '100%',
-        alignItems: 'start',
         display: 'flex',
         flexDirection: 'row',
         columnGap: '12px',
         borderBottom: `solid 1px ${theme.colors.grey.lighterGrey}`
     },
     logoContainer: {
-        gridArea: 'logo',
         height: '65px',
         minWidth: '65px',
         color: theme.colors.grey.darkerGrey,

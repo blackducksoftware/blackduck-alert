@@ -20,9 +20,11 @@ const PageLayout = ({ title, description, headerIcon, children, lastUpdated }) =
                 icon={headerIcon}
                 lastUpdated={lastUpdated}
             />
-            <div className={classes.bodyContent}>
-                {children}
-            </div>
+            {children && (
+                <div className={classes.bodyContent}>
+                    {children}
+                </div>
+            )}
         </>
     );
 };
