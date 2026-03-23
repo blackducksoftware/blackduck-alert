@@ -1,30 +1,32 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import ProviderModal from 'page/provider/ProviderModal';
-import ProviderDeleteModal from 'page/provider/ProviderDeleteModal';
+import RoleModal from 'page/usermgmt/roles/RoleModal';
+import RoleDeleteModal from 'page/usermgmt/roles/RoleDeleteModal';
 import StatusMessage from 'common/component/StatusMessage';
 import Dropdown from 'react-bootstrap/Dropdown';
 import RowActionsCell from 'common/component/table/cell/RowActionsCell';
 
-const ProviderRowActionsCell = ({ data, settings }) => {
+const NON_DELETABLE_ROLES = ['ALERT_ADMIN', 'ALERT_JOB_MANAGER', 'ALERT_USER'];
+
+const RoleRowActionsCell = ({ data, settings }) => {
     const [showCopyModal, setShowCopyModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedData, setSelectedData] = useState(data);
     const [statusMessage, setStatusMessage] = useState();
+    const isAdministrativeRole = NON_DELETABLE_ROLES.includes(data.roleName);
 
     const copyModalOptions = {
         type: 'COPY',
+        title: 'Copy Role',
         submitText: 'Save',
-        title: 'Copy Provider',
-        copyDescription: `Performing this action will create a new provider by using the same settings as '${data.name}'`
+        copyDescription: `Performing this action will create a new role by using the same settings as '${data.roleName}'`
     };
 
     const editModalOptions = {
         type: 'EDIT',
-        submitText: 'Save Edit',
-        title: 'Edit Provider',
-        successMessage: `Successfully updated ${data.name}`
+        title: 'Edit Role',
+        submitText: 'Save'
     };
 
     function handleEditClick() {
@@ -36,13 +38,7 @@ const ProviderRowActionsCell = ({ data, settings }) => {
     function handleCopyClick() {
         setStatusMessage();
         setShowCopyModal(true);
-        setSelectedData((rowData) => ({
-            ...rowData,
-            id: null,
-            name: '',
-            createdAt: null,
-            lastUpdated: null
-        }));
+        setSelectedData((roleData) => ({ ...roleData, id: null }));
     }
     
     function handleDeleteClick() {
@@ -63,41 +59,46 @@ const ProviderRowActionsCell = ({ data, settings }) => {
                 <Dropdown.Item as="button" onClick={handleEditClick} disabled={settings.readonly}>
                     Edit
                 </Dropdown.Item>
-                <Dropdown.Item onClick={handleCopyClick} disabled={settings.readonly}>
+                <Dropdown.Item as="button" onClick={handleCopyClick} disabled={settings.readonly}>
                     Copy
                 </Dropdown.Item>
-                <Dropdown.Divider />
-                <Dropdown.Item onClick={handleDeleteClick} disabled={settings.readonly}>
-                    Delete
-                </Dropdown.Item>
+                
+                {!isAdministrativeRole && (
+                    <>
+                        <Dropdown.Divider />
+                        <Dropdown.Item as="button" onClick={handleDeleteClick} disabled={settings.readonly}>
+                            Delete
+                        </Dropdown.Item>
+                    </>
+                )}
+                
             </RowActionsCell>
 
             { showCopyModal && (
-                <ProviderModal
+                <RoleModal
                     data={selectedData}
                     isOpen={showCopyModal}
                     toggleModal={setShowCopyModal}
                     modalOptions={copyModalOptions}
                     setStatusMessage={setStatusMessage}
-                    successMessage="Successfully created 1 new provider."
+                    successMessage="Successfully created 1 role."
                     readonly={settings.readonly}
                 />
             )}
 
             { showEditModal && (
-                <ProviderModal
+                <RoleModal
                     data={selectedData}
                     isOpen={showEditModal}
                     toggleModal={setShowEditModal}
                     modalOptions={editModalOptions}
                     setStatusMessage={setStatusMessage}
-                    successMessage={editModalOptions.successMessage}
-                    readonly={settings.readonly}
+                    successMessage="Successfully edited 1 Role."
                 />
             )}
 
             { showDeleteModal && (
-                <ProviderDeleteModal
+                <RoleDeleteModal
                     data={[data]}
                     isOpen={showDeleteModal}
                     toggleModal={setShowDeleteModal}
@@ -111,11 +112,11 @@ const ProviderRowActionsCell = ({ data, settings }) => {
     );
 };
 
-ProviderRowActionsCell.propTypes = {
+RoleRowActionsCell.propTypes = {
     data: PropTypes.object,
     settings: PropTypes.shape({
         readonly: PropTypes.bool
     })
 };
 
-export default ProviderRowActionsCell;
+export default RoleRowActionsCell;

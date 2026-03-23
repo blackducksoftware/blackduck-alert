@@ -6,6 +6,9 @@ import Dropdown from 'react-bootstrap/Dropdown';
 
 const useStyles = createUseStyles(theme => ({
     toggleButton: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         backgroundColor: '#F8F8F9  !important',
         border: `1px solid ${theme.colors.borderColor}` + ' !important',
         color: theme.colors.grey.default + ' !important',
@@ -13,6 +16,7 @@ const useStyles = createUseStyles(theme => ({
         width: '30px',
         borderRadius: '50%',
         padding: 0,
+        margin: [0, '12px', 0, 'auto'],
 
         '&::after': {
             display: 'none !important'
@@ -44,9 +48,10 @@ const useStyles = createUseStyles(theme => ({
         '& > .dropdown-item': {
             fontSize: '13px',
             padding: ['6px', '16px'],
+            margin: 0,
 
             '&:hover': {
-            backgroundColor: theme.colors.grey.lighterGrey,
+            backgroundColor: theme.colors.grey.lighterGrey
         },
         }
     },

@@ -24,7 +24,7 @@ const useStyles = createUseStyles((theme) => ({
     }
 }));
 
-const DistributionEditCell = ({ data }) => {
+const DistributionStatusCell = ({ data }) => {
     const classes = useStyles();
     const { auditStatus } = data;
 
@@ -53,10 +53,10 @@ const DistributionEditCell = ({ data }) => {
     )
 };
 
-DistributionEditCell.propTypes = {
+DistributionStatusCell.propTypes = {
     data: PropTypes.shape({
         auditStatus: PropTypes.string
     })
 };
 
-export default DistributionEditCell;
+export default DistributionStatusCell;

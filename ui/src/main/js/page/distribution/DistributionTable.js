@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Table from 'common/component/table/Table';
 import DistributionTableActions from 'page/distribution/DistributionTableActions';
-import DistributionActionCell from 'page/distribution/DistributionActionCell';
+import DistributionRowActionsCell from 'page/distribution/DistributionRowActionsCell';
 import DistributionStatusCell from 'page/distribution/DistributionStatusCell';
 import ChannelCell from 'page/distribution/ChannelCell';
 import ProviderCell from 'page/distribution/ProviderCell';
@@ -46,17 +46,11 @@ const COLUMNS = [{
     customCell: ProviderEnabledCell,
     settings: { alignment: 'center' }
 }, {
-    key: 'edit',
-    label: 'Edit',
+    key: 'distributionRowActions',
+    label: '',
     sortable: false,
-    customCell: DistributionActionCell,
-    settings: { alignment: 'center', type: 'edit' }
-}, {
-    key: 'copy',
-    label: 'Copy',
-    sortable: false,
-    customCell: DistributionActionCell,
-    settings: { alignment: 'center', type: 'copy' }
+    customCell: DistributionRowActionsCell,
+    settings: { alignment: 'center' }
 }];
 
 const emptyTableConfig = {

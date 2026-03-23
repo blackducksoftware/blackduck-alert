@@ -1,30 +1,34 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import ProviderModal from 'page/provider/ProviderModal';
-import ProviderDeleteModal from 'page/provider/ProviderDeleteModal';
+import UserModal from 'page/usermgmt/user/UserModal';
+import UserDeleteModal from 'page/usermgmt/user/UserDeleteModal';
 import StatusMessage from 'common/component/StatusMessage';
 import Dropdown from 'react-bootstrap/Dropdown';
 import RowActionsCell from 'common/component/table/cell/RowActionsCell';
 
-const ProviderRowActionsCell = ({ data, settings }) => {
+const NON_DELETABLE_USERNAMES = ['alertuser', 'jobmanager', 'sysadmin'];
+
+const UserRowActionsCell = ({ data, settings }) => {
     const [showCopyModal, setShowCopyModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedData, setSelectedData] = useState(data);
     const [statusMessage, setStatusMessage] = useState();
+    const isExternalUser = data.authenticationType !== 'DATABASE';
+    const isAdministrativeUser = NON_DELETABLE_USERNAMES.includes(data.username);
 
     const copyModalOptions = {
         type: 'COPY',
-        submitText: 'Save',
-        title: 'Copy Provider',
-        copyDescription: `Performing this action will create a new provider by using the same settings as '${data.name}'`
+        submitText: 'Create',
+        title: `Copy User, '${data.username}'`,
+        copyDescription: `Performing this action will create a new user by using the same settings as '${data.username}'`
     };
 
     const editModalOptions = {
         type: 'EDIT',
         submitText: 'Save Edit',
-        title: 'Edit Provider',
-        successMessage: `Successfully updated ${data.name}`
+        title: 'Edit User',
+        successMessage: `Successfully updated ${data.username}`
     };
 
     function handleEditClick() {
@@ -39,9 +43,11 @@ const ProviderRowActionsCell = ({ data, settings }) => {
         setSelectedData((rowData) => ({
             ...rowData,
             id: null,
-            name: '',
-            createdAt: null,
-            lastUpdated: null
+            username: '',
+            password: '',
+            passwordSet: false,
+            emailAddress: selectedData.emailAddress || '',
+            roleNames: selectedData.roleNames
         }));
     }
     
@@ -63,17 +69,25 @@ const ProviderRowActionsCell = ({ data, settings }) => {
                 <Dropdown.Item as="button" onClick={handleEditClick} disabled={settings.readonly}>
                     Edit
                 </Dropdown.Item>
-                <Dropdown.Item onClick={handleCopyClick} disabled={settings.readonly}>
-                    Copy
-                </Dropdown.Item>
-                <Dropdown.Divider />
-                <Dropdown.Item onClick={handleDeleteClick} disabled={settings.readonly}>
-                    Delete
-                </Dropdown.Item>
+                { !isExternalUser && (
+                    <Dropdown.Item as="button" onClick={handleCopyClick} disabled={settings.readonly}>
+                        Copy
+                    </Dropdown.Item>
+                )}
+                
+                {!isAdministrativeUser && (
+                    <>
+                        <Dropdown.Divider />
+                        <Dropdown.Item as="button" onClick={handleDeleteClick} disabled={settings.readonly}>
+                            Delete
+                        </Dropdown.Item>
+                    </>
+                )}
+                
             </RowActionsCell>
 
             { showCopyModal && (
-                <ProviderModal
+                <UserModal
                     data={selectedData}
                     isOpen={showCopyModal}
                     toggleModal={setShowCopyModal}
@@ -85,19 +99,18 @@ const ProviderRowActionsCell = ({ data, settings }) => {
             )}
 
             { showEditModal && (
-                <ProviderModal
+                <UserModal
                     data={selectedData}
                     isOpen={showEditModal}
                     toggleModal={setShowEditModal}
                     modalOptions={editModalOptions}
                     setStatusMessage={setStatusMessage}
                     successMessage={editModalOptions.successMessage}
-                    readonly={settings.readonly}
                 />
             )}
 
             { showDeleteModal && (
-                <ProviderDeleteModal
+                <UserDeleteModal
                     data={[data]}
                     isOpen={showDeleteModal}
                     toggleModal={setShowDeleteModal}
@@ -111,11 +124,11 @@ const ProviderRowActionsCell = ({ data, settings }) => {
     );
 };
 
-ProviderRowActionsCell.propTypes = {
+UserRowActionsCell.propTypes = {
     data: PropTypes.object,
     settings: PropTypes.shape({
         readonly: PropTypes.bool
     })
 };
 
-export default ProviderRowActionsCell;
+export default UserRowActionsCell;

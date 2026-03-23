@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchRoles } from 'store/actions/roles';
 import Table from 'common/component/table/Table';
-import RoleCopyCell from 'page/usermgmt/roles//RoleCopyCell';
-import RoleEditCell from 'page/usermgmt/roles/RoleEditCell';
+import RoleRowActionsCell from 'page/usermgmt/roles/RoleRowActionsCell';
 import RoleTableActions from 'page/usermgmt/roles/RoleTableActions';
 
 const COLUMNS = [{
@@ -12,16 +11,10 @@ const COLUMNS = [{
     label: 'Name',
     sortable: true
 }, {
-    key: 'editRole',
-    label: 'Edit',
+    key: 'roleManagementRowActions',
+    label: '',
     sortable: false,
-    customCell: RoleEditCell,
-    settings: { alignment: 'center' }
-}, {
-    key: 'copyRole',
-    label: 'Copy',
-    sortable: false,
-    customCell: RoleCopyCell,
+    customCell: RoleRowActionsCell,
     settings: { alignment: 'center' }
 }];
 
