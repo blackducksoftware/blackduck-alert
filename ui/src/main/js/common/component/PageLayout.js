@@ -9,7 +9,7 @@ const useStyles = createUseStyles({
     }
 });
 
-const PageLayout = ({ title, description, headerIcon, children }) => {
+const PageLayout = ({ title, description, headerIcon, children, lastUpdated }) => {
     const classes = useStyles();
 
     return (
@@ -18,6 +18,7 @@ const PageLayout = ({ title, description, headerIcon, children }) => {
                 title={title}
                 description={description}
                 icon={headerIcon}
+                lastUpdated={lastUpdated}
             />
             <div className={classes.bodyContent}>
                 {children}
@@ -29,6 +30,7 @@ const PageLayout = ({ title, description, headerIcon, children }) => {
 PageLayout.propTypes = {
     title: PropTypes.string.isRequired,
     description: PropTypes.string,
+    lastUpdated: PropTypes.string,
     headerIcon: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.array

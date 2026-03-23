@@ -21,17 +21,17 @@ const useStyles = createUseStyles((theme) => ({
         gridArea: 'logo',
         height: '65px',
         minWidth: '65px',
-        border: `solid 1px ${theme.colors.grey.default}`,
         color: theme.colors.grey.darkerGrey,
         borderRadius: '14px',
         padding: '8px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: theme.colors.grey.lighterGrey,
+        backgroundColor: '#1e2939',
+        boxShadow: '0 6px 12px rgba(0, 0, 0, 0.175)',
     },
     logoGlyph: {
-        fontSize: '22px'
+        fontSize: '30px'
     },
     titleContainer: {
         display: 'flex',
@@ -51,11 +51,22 @@ const useStyles = createUseStyles((theme) => ({
         color: theme.colors.grey.darkGrey
     },
     additionalInfo: {
-        gridArea: 'additionalInfo',
-        alignSelf: 'start',
-        '&:empty + $title': {
-            gridColumnEnd: 'additionalInfo'
-        }
+        alignSelf: 'center',
+        marginLeft: 'auto',
+        paddingLeft: '20px',
+        minWidth: 'fit-content'
+    },
+    lastUpdatedTitle: {
+        fontSize: '13px',
+        color: theme.colors.grey.darkGrey,
+        marginRight: '4px'
+    },
+    lastUpdatedBadge: {
+        fontSize: '13px',
+        color: theme.colors.grey.darkerGrey,
+        backgroundColor: theme.colors.grey.lighterGrey,
+        padding: '4px 12px',
+        borderRadius: '4px'
     }
 }));
 
@@ -66,7 +77,7 @@ const PageHeader = ({ title, description, icon, lastUpdated }) => {
         <header className={classes.pageHeader}>
             {icon ? (
                 <div className={classes.logoContainer}>
-                    <FontAwesomeIcon icon={icon} className={classes.logoGlyph} />
+                    <FontAwesomeIcon icon={icon} className={classes.logoGlyph} color="white" />
                 </div>
             ) : null}
             <div className={classes.titleContainer}>
@@ -78,15 +89,14 @@ const PageHeader = ({ title, description, icon, lastUpdated }) => {
                 </div>
             </div>
 
-            {/* <div className={classes.additionalInfo}>
-                {lastUpdated
-                && (
+            <div className={classes.additionalInfo}>
+                {lastUpdated && (
                     <div>
-                        <label className="text-right">Last Updated:</label>
-                        <div className="d-inline-flex p-2">{lastUpdated}</div>
+                        <div className={classes.lastUpdatedTitle}>Last Updated:</div>
+                        <div className={classes.lastUpdatedBadge}>{lastUpdated}</div>
                     </div>
                 )}
-            </div> */}
+            </div>
         </header>
     );
 };
