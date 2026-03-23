@@ -13,8 +13,8 @@ const useStyles = createUseStyles(theme => ({
     inputContainer: {
         position: 'relative',
         border: `solid 1px ${theme.colors.grey.lightGrey}`,
-        padding: ['8px', '14px'],
-        borderRadius: '6px',
+        padding: ['6px', '14px'],
+        borderRadius: '4px',
         display: 'flex',
         alignItems: 'center'
     },

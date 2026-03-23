@@ -8,7 +8,7 @@ const ProviderPageLayout = ({ readonly }) => (
     <PageLayout
         title={BLACKDUCK_INFO.label}
         description={BLACKDUCK_INFO.description}
-        headerIcon="shield"
+        headerIcon="handshake"
     >
         <ProviderTable readonly={readonly} />
     </PageLayout>

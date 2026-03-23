@@ -19,29 +19,28 @@ const useStyles = createUseStyles((theme) => ({
     },
     logoContainer: {
         gridArea: 'logo',
-        height: '50px',
-        minWidth: '50px',
-        backgroundColor: theme.colors.white.default,
-        border: 'solid 1px #ddd',
-        color: theme.colors.white.default,
+        height: '65px',
+        minWidth: '65px',
+        border: `solid 1px ${theme.colors.grey.default}`,
+        color: theme.colors.grey.darkerGrey,
         borderRadius: '14px',
         padding: '8px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'oklch(55.8% 0.288 302.321)',
-        boxShadow: `0 1px 3px 0 #0000001a, 0 1px 2px -1px #0000001a`
+        backgroundColor: theme.colors.grey.lighterGrey,
     },
     logoGlyph: {
-        fontSize: '20px'
+        fontSize: '22px'
     },
     titleContainer: {
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        justifyContent: 'space-between'
     },
     title: {
-        paddingBottom: 0,
-        margin: ['4px', 0, '10px'],
+        padding: 0,
+        marginBottom: '10px',
         position: 'relative',
         fontWeight: '900',
         borderBottom: 'none',

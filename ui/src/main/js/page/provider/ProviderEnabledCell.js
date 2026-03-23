@@ -11,7 +11,7 @@ const useStyles = createUseStyles(theme => ({
         columnGap: '6px',
         borderRadius: '8px',
         width: 'fit-content',
-        padding: '2px 12px',
+        padding: '0 10px',
         margin: 'auto',
         fontSize: '13px'
     },
@@ -38,7 +38,6 @@ const ProviderEnabledCell = ({ data }) => {
 
     return (
         <div className={cellClass}>
-            <FontAwesomeIcon icon={enabled ? 'check' : 'times'} size='1x'/>
             {enabled ? 'Enabled' : 'Disabled'}
         </div>
     );

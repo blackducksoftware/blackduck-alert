@@ -27,7 +27,7 @@ const useStyles = createUseStyles(theme => ({
         display: 'flex',
         alignItems: 'center',
         backgroundColor: theme.colors.white.default,
-        margin: ['18px', '20px', '18px']
+        margin: ['14px', '20px']
     }
 }));
 

@@ -7,7 +7,7 @@ import { createUseStyles } from 'react-jss';
 
 const useStyles = createUseStyles(theme => ({
     tableRow: {
-        height: '55px',
+        height: '52px',
         borderBottom: `1px solid ${theme.colors.grey.lighterGrey}`,
     },
     nonMultiSelect: {

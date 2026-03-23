@@ -10,8 +10,7 @@ const useStyles = createUseStyles(theme => ({
         display: 'flex',
         alignItems: 'center',
         width: '100%',
-        padding: ['10px', '20px'],
-        height: '65px'
+        padding: ['14px', '20px']
     },
     paginationContainer: {
         position: 'absolute',

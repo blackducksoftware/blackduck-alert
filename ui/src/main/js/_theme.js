@@ -6,7 +6,8 @@ const colors = {
         lighterGrey: '#E8E6E6',
         lightGrey: '#D9D9D9',
         default: '#808080',
-        darkGrey: '#666666'
+        darkGrey: '#666666',
+        darkerGrey: '#364153'
     },
     red: {
         lighterRed: '#EA7B73',
