@@ -10,7 +10,7 @@ import {
     SCHEDULING_PURGE_FREQUENCY_OPTIONS
 } from 'page/scheduling/SchedulingModel';
 import * as PropTypes from 'prop-types';
-import PageLayout from 'common/component/PageLayout';
+import PageHeader from 'common/component/navigation/PageHeader';
 import DynamicSelectInput from 'common/component/input/DynamicSelectInput';
 import ReadOnlyField from 'common/component/input/field/ReadOnlyField';
 import * as GlobalRequestHelper from 'common/configuration/global/GlobalRequestHelper';
@@ -28,12 +28,13 @@ const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly, displaySav
     };
 
     return (
-        <PageLayout
-            title={SCHEDULING_INFO.label}
-            description="This page shows when system scheduled tasks will run next, as well as allow you to configure the frequency of the system tasks."
-            headerIcon="calendar"
-            lastUpdated={formData.lastUpdated}
-        >
+        <div>
+            <PageHeader
+                title={SCHEDULING_INFO.label}
+                description="This page shows when system scheduled tasks will run next, as well as allow you to configure the frequency of the system tasks."
+                lastUpdated={formData.lastUpdated}
+                icon="calendar"
+            />
             <CommonGlobalConfigurationForm
                 setErrors={(error) => setErrors(error)}
                 formData={formData}
@@ -120,7 +121,7 @@ const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly, displaySav
                     errorValue={errors.fieldErrors[SCHEDULING_FIELD_KEYS.purgeDataAuditFailedNextRun]}
                 />
             </CommonGlobalConfigurationForm>
-        </PageLayout>
+        </div>
     );
 };
 

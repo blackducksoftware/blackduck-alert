@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import PageLayout from 'common/component/PageLayout';
+import PageHeader from 'common/component/navigation/PageHeader';
 import LdapForm from 'application/auth/LdapForm';
 import SamlForm from 'application/auth/SamlForm';
 
@@ -29,12 +29,13 @@ const AuthenticationPageLayout = ({
     }, []);
 
     return (
-        <PageLayout
-            title={AUTHENTICATION_INFO.label}
-            description="This page allows you to configure user authentication for Alert."
-            lastUpdated={formData.lastUpdated}
-            headerIcon="fingerprint"
-        >
+        <div>
+            <PageHeader
+                title={AUTHENTICATION_INFO.label}
+                description="This page allows you to configure user authentication for Alert."
+                lastUpdated={formData.lastUpdated}
+                icon="fingerprint"
+            />
             <Tabs defaultActiveKey={1} id="user-management-tabs">
                 <Tab eventKey={1} title="LDAP">
                     <LdapForm
@@ -57,7 +58,7 @@ const AuthenticationPageLayout = ({
                     />
                 </Tab>
             </Tabs>
-        </PageLayout>
+        </div>
     );
 };
 

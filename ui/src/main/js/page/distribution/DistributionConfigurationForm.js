@@ -38,10 +38,10 @@ import JiraCloudDistributionConfiguration from 'page/channel/jira/cloud/JiraClou
 import JiraServerDistributionConfiguration from 'page/channel/jira/server/JiraServerDistributionConfiguration';
 import MsTeamsDistributionConfiguration from 'page/channel/msteams/MsTeamsDistributionConfiguration';
 import SlackDistributionConfiguration from 'page/channel/slack/SlackDistributionConfiguration';
+import PageHeader from 'common/component/navigation/PageHeader';
 import { createNewConfigurationRequest } from 'common/util/configurationRequestBuilder';
 import DynamicSelectInput from 'common/component/input/DynamicSelectInput';
 import ProjectSelectModal from 'page/distribution/ProjectSelectModal';
-import PageLayout from 'common/component/PageLayout';
 
 const DistributionConfigurationForm = ({
     csrfToken, errorHandler, descriptors
@@ -341,11 +341,12 @@ const DistributionConfigurationForm = ({
 
     // TODO need to provide finer grain control with permissions.
     return (
-        <PageLayout
-            title={DISTRIBUTION_CONFIGURATION_INFO.label}
-            description={DISTRIBUTION_CONFIGURATION_INFO.description}
-            headerIcon={['fas', 'tasks']}
-        >
+        <>
+            <PageHeader
+                title={DISTRIBUTION_CONFIGURATION_INFO.label}
+                description={DISTRIBUTION_CONFIGURATION_INFO.description}
+                icon={['fas', 'tasks']}
+            />
             <CommonDistributionConfigurationForm
                 setErrors={setErrors}
                 formData={formData}
@@ -626,7 +627,7 @@ const DistributionConfigurationForm = ({
                 />
                 {renderChannelFields()}
             </CommonDistributionConfigurationForm>
-        </PageLayout>
+        </>
     );
 };
 

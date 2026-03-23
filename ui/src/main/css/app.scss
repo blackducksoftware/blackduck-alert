@@ -48,8 +48,10 @@ button + button {
 }
 
 .contentArea {
+  background-color: $blackduck-color-section-background;
   height: 100%;
   overflow: auto;
+  padding: 15px;
 }
 
 .btn {

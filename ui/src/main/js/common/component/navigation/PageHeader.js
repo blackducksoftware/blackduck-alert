@@ -8,47 +8,47 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const useStyles = createUseStyles((theme) => ({
     pageHeader: {
-        padding: '30px',
-        backgroundColor: theme.colors.white.default,
         width: '100%',
-        alignItems: 'start',
-        display: 'flex',
-        flexDirection: 'row',
-        columnGap: '12px',
-        borderBottom: `solid 1px ${theme.colors.grey.lighterGrey}`
+        alignItems: 'center',
+        display: 'grid',
+        gridTemplateAreas: `
+            "logo title  additionalInfo"
+            "bottom bottom bottom"
+            "separator separator separator"
+        `,
+        gridTemplateColumns: 'auto 1fr auto',
+        padding: '8px'
     },
     logoContainer: {
         gridArea: 'logo',
-        height: '65px',
-        minWidth: '65px',
-        border: `solid 1px ${theme.colors.grey.default}`,
-        color: theme.colors.grey.darkerGrey,
-        borderRadius: '14px',
+        height: '50px',
+        width: '50px',
+        backgroundColor: theme.colors.white.default,
+        border: 'solid 1px #ddd',
+        color: '#24256',
+        borderRadius: '50%',
         padding: '8px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: theme.colors.grey.lighterGrey,
+        marginRight: '8px'
     },
     logoGlyph: {
-        fontSize: '22px'
-    },
-    titleContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between'
+        opacity: '0.5',
+        width: '100%',
+        height: '100%'
     },
     title: {
-        padding: 0,
-        marginBottom: '10px',
-        position: 'relative',
-        fontWeight: '900',
-        borderBottom: 'none',
-        fontSize: '26px'
-    },
-    description: {
-        fontSize: '15px',
-        color: theme.colors.grey.darkGrey
+        gridArea: 'title',
+
+        '& > h1': {
+            margin: 0
+        },
+
+        '& > small': {
+            fontSize: '1rem',
+            lineHeight: 1
+        }
     },
     additionalInfo: {
         gridArea: 'additionalInfo',
@@ -56,6 +56,16 @@ const useStyles = createUseStyles((theme) => ({
         '&:empty + $title': {
             gridColumnEnd: 'additionalInfo'
         }
+    },
+    bottom: {
+        gridArea: 'bottom',
+        padding: '5px'
+    },
+    headerSeperator: {
+        gridArea: 'separator',
+        borderBottom: `solid 1px ${theme.colors.grey.default}`,
+        margin: '10px 0',
+        width: '100%'
     }
 }));
 
@@ -66,19 +76,15 @@ const PageHeader = ({ title, description, icon, lastUpdated }) => {
         <header className={classes.pageHeader}>
             {icon ? (
                 <div className={classes.logoContainer}>
-                    <FontAwesomeIcon icon={icon} className={classes.logoGlyph} />
+                    <FontAwesomeIcon icon={icon} className={classes.logoGlyph} size="2x" />
                 </div>
             ) : null}
-            <div className={classes.titleContainer}>
-                <h1 className={classes.title}>
+            <div className={classes.title}>
+                <h1 className="descriptorHeader">
                     {title}
                 </h1>
-                <div className={classes.description}>
-                    {description}
-                </div>
             </div>
-
-            {/* <div className={classes.additionalInfo}>
+            <div className={classes.additionalInfo}>
                 {lastUpdated
                 && (
                     <div>
@@ -86,7 +92,13 @@ const PageHeader = ({ title, description, icon, lastUpdated }) => {
                         <div className="d-inline-flex p-2">{lastUpdated}</div>
                     </div>
                 )}
-            </div> */}
+            </div>
+            <div className={classes.bottom}>
+                <div>
+                    {description}
+                </div>
+            </div>
+            <div className={classes.headerSeperator} />
         </header>
     );
 };
