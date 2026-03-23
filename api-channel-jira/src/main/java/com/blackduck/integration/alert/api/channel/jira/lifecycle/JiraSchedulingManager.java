@@ -44,12 +44,12 @@ public class JiraSchedulingManager {
     public void unscheduleTasks(String configId) {
         logger.debug("Performing unscheduling jira tasks for config: id={}", configId);
 
-        List<JiraPropertyTask> tasks = taskManager.getTasksByClass(JiraPropertyTask.class)
+        List<JiraTask> tasks = taskManager.getTasksByClass(JiraTask.class)
                 .stream()
                 .filter(task -> task.getConfigId().equals(configId))
                 .toList();
 
-        for (JiraPropertyTask task : tasks) {
+        for (JiraTask task : tasks) {
             unscheduleTask(task);
         }
         logger.debug("Finished unscheduling jira tasks for config: id={}", configId);
