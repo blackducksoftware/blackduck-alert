@@ -69,7 +69,7 @@ const useStyles = createUseStyles((theme) => ({
 
     action: {
         color: theme.colors.white.default,
-        backgroundColor: '#5a2d83',
+        backgroundColor: '#1e2939',
         border: 'none',
         borderRadius: '4px',
         padding: ['6px', '14px'],
@@ -77,7 +77,7 @@ const useStyles = createUseStyles((theme) => ({
         alignItems: 'center',
         columnGap: '8px',
         '&:hover': {
-            backgroundColor: 'oklch(43.8% 0.218 303.724)'
+            backgroundColor: '#343E4C'
         }
     },
     actionSecondary: {
