@@ -96,10 +96,10 @@ public abstract class JiraTask extends ScheduledTask {
 
     protected void checkThresholdAndIncrementFailures() {
         if (consecutiveFailures >= FAILURE_THRESHOLD) {
-            logger.info("Jira Task {} has exceeded consecutive failure threshold of {}.", taskName, FAILURE_THRESHOLD);
+            logger.error("Jira Task {} has exceeded consecutive failure threshold of {}.", taskName, FAILURE_THRESHOLD);
             unScheduleTask();
         } else {
-            logger.info("Jira Task {} has failed {} out of the {} allowed.", taskName, consecutiveFailures, FAILURE_THRESHOLD);
+            logger.error("Jira Task {} has failed {} out of the {} allowed.", taskName, consecutiveFailures, FAILURE_THRESHOLD);
             incrementConsecutiveFailures();
         }
     }
