@@ -28,7 +28,7 @@ const JiraServerTable = ({ readOnly, allowDelete }) => {
         }
     });
 
-    const COLUMNS = [{
+    const columns = [{
         key: 'name',
         label: 'Name',
         sortable: true
@@ -141,7 +141,7 @@ const JiraServerTable = ({ readOnly, allowDelete }) => {
     return (
         <Table
             tableData={data?.models}
-            columns={COLUMNS}
+            columns={columns}
             multiSelect
             searchBarPlaceholder="Search Jira Server..."
             handleSearchChange={handleSearchChange}

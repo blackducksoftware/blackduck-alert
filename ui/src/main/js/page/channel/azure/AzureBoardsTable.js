@@ -55,7 +55,7 @@ const AzureBoardsTable = ({ readonly, allowDelete }) => {
         label: '',
         sortable: false,
         customCell: AzureBoardsRowActionsCell,
-        settings: { alignment: 'center', readonly, paramsConfig, setParamsConfig }
+        settings: { alignment: 'center', readonly, allowDelete, paramsConfig, setParamsConfig }
     }];
 
     useEffect(() => {

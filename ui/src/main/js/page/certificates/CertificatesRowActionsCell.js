@@ -42,7 +42,7 @@ const CertificatesRowActionsCell = ({ data, settings }) => {
                     Edit
                 </Dropdown.Item>
                 <Dropdown.Divider />
-                <Dropdown.Item onClick={handleDeleteClick} disabled={readOnly}>
+                <Dropdown.Item as="button" onClick={handleDeleteClick} disabled={readOnly}>
                     Delete
                 </Dropdown.Item>
             </RowActionsCell>
@@ -72,10 +72,7 @@ const CertificatesRowActionsCell = ({ data, settings }) => {
 CertificatesRowActionsCell.propTypes = {
     data: PropTypes.object,
     settings: PropTypes.shape({
-        readonly: PropTypes.bool,
-        paramsConfig: PropTypes.object,
-        setParamsConfig: PropTypes.func,
-        setSelected: PropTypes.func
+        readonly: PropTypes.bool
     })
 };
 

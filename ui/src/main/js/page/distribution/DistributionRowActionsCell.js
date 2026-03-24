@@ -41,11 +41,11 @@ const DistributionRowActionsCell = ({ data, settings }) => {
                 <Dropdown.Item as="button" onClick={handleEditClick} disabled={readonly}>
                     Edit
                 </Dropdown.Item>
-                <Dropdown.Item onClick={handleCopyClick} disabled={readonly}>
+                <Dropdown.Item as="button" onClick={handleCopyClick} disabled={readonly}>
                     Copy
                 </Dropdown.Item>
                 <Dropdown.Divider />
-                <Dropdown.Item onClick={handleDeleteClick} disabled={readonly}>
+                <Dropdown.Item as="button" onClick={handleDeleteClick} disabled={readonly}>
                     Delete
                 </Dropdown.Item>
             </RowActionsCell>

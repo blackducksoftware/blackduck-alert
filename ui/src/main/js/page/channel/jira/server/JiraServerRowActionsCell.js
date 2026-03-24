@@ -12,7 +12,7 @@ const JiraServerRowActionsCell = ({ data, settings }) => {
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedData, setSelectedData] = useState(data);
     const [statusMessage, setStatusMessage] = useState();
-    const { readOnly, paramsConfig, setParamsConfig, setSelected } = settings;
+    const { readOnly, paramsConfig, setParamsConfig } = settings;
     const dataStagedForDelete = { models: [data] };
 
     const copyModalOptions = {
@@ -63,11 +63,11 @@ const JiraServerRowActionsCell = ({ data, settings }) => {
                 <Dropdown.Item as="button" onClick={handleEditClick} disabled={readOnly}>
                     Edit
                 </Dropdown.Item>
-                <Dropdown.Item onClick={handleCopyClick} disabled={readOnly}>
+                <Dropdown.Item as="button" onClick={handleCopyClick} disabled={readOnly}>
                     Copy
                 </Dropdown.Item>
                 <Dropdown.Divider />
-                <Dropdown.Item onClick={handleDeleteClick} disabled={readOnly}>
+                <Dropdown.Item as="button" onClick={handleDeleteClick} disabled={readOnly}>
                     Delete
                 </Dropdown.Item>
             </RowActionsCell>

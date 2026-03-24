@@ -12,7 +12,7 @@ const AzureBoardRowActionsCell = ({ data, settings }) => {
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedData, setSelectedData] = useState(data);
     const [statusMessage, setStatusMessage] = useState();
-    const { readonly, paramsConfig, setParamsConfig } = settings;
+    const { readonly, allowDelete, paramsConfig, setParamsConfig } = settings;
     const dataStagedForDelete = { models: [data] };
 
     const copyModalOptions = {
@@ -63,11 +63,11 @@ const AzureBoardRowActionsCell = ({ data, settings }) => {
                 <Dropdown.Item as="button" onClick={handleEditClick} disabled={readonly}>
                     Edit
                 </Dropdown.Item>
-                <Dropdown.Item onClick={handleCopyClick} disabled={readonly}>
+                <Dropdown.Item as="button" onClick={handleCopyClick} disabled={readonly}>
                     Copy
                 </Dropdown.Item>
                 <Dropdown.Divider />
-                <Dropdown.Item onClick={handleDeleteClick} disabled={readonly}>
+                <Dropdown.Item as="button" onClick={handleDeleteClick} disabled={readonly || !allowDelete}>
                     Delete
                 </Dropdown.Item>
             </RowActionsCell>
@@ -116,6 +116,7 @@ AzureBoardRowActionsCell.propTypes = {
     data: PropTypes.object,
     settings: PropTypes.shape({
         readonly: PropTypes.bool,
+        allowDelete: PropTypes.bool,
         paramsConfig: PropTypes.object,
         setParamsConfig: PropTypes.func,
     })
