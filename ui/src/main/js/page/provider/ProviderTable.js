@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Table from 'common/component/table/Table';
-import ProviderEnabledCell from 'page/provider/ProviderEnabledCell';
+import EnabledCell from 'common/component/table/cell/EnabledCell';
 import ProviderRowActionsCell from 'page/provider/ProviderRowActionsCell';
 import ProviderTableActions from 'page/provider/ProviderTableActions';
 import { fetchProviders } from 'store/actions/provider';
@@ -39,7 +39,7 @@ function ProviderTable({ readonly }) {
         key: 'enabled',
         label: 'Enabled',
         sortable: false,
-        customCell: ProviderEnabledCell,
+        customCell: EnabledCell,
         settings: { alignment: 'center' }
     }, {
         key: 'providerRowActions',

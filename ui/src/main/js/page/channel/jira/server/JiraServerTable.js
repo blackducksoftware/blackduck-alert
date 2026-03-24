@@ -3,16 +3,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Table from 'common/component/table/Table';
 import AuthenticationTypeCell from 'page/channel/jira/server/AuthenticationTypeCell';
-import JiraServerEditCell from 'page/channel/jira/server/JiraServerEditCell';
+import JiraServerRowActionsCell from 'page/channel/jira/server/JiraServerRowActionsCell';
 import JiraServerTableActions from 'page/channel/jira/server/JiraServerTableActions';
-import JiraServerCopyCell from 'page/channel/jira/server/JiraServerCopyCell';
 import { fetchJiraServer } from 'store/actions/jira-server';
 
 const emptyTableConfig = {
     message: 'There are no records to display for this table.  Please create a Jira Server connection to use this table.'
 };
 
-const JiraServerTable = ({ readonly, allowDelete }) => {
+const JiraServerTable = ({ readOnly, allowDelete }) => {
     const dispatch = useDispatch();
     const { data } = useSelector((state) => state.jiraServer);
     const refreshStatus = JSON.parse(window.localStorage.getItem('JIRA_SERVER_REFRESH_STATUS') || true);
@@ -51,17 +50,11 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
         label: 'Last Updated',
         sortable: true
     }, {
-        key: 'editJiraServer',
-        label: 'Edit',
+        key: 'jiraServerRowActions',
+        label: '',
         sortable: false,
-        customCell: JiraServerEditCell,
-        settings: { alignment: 'center', paramsConfig }
-    }, {
-        key: 'copyJiraServer',
-        label: 'Copy',
-        sortable: false,
-        customCell: JiraServerCopyCell,
-        settings: { alignment: 'center', paramsConfig }
+        customCell: JiraServerRowActionsCell,
+        settings: { alignment: 'center', readOnly, paramsConfig, setParamsConfig, setSelected }
     }];
 
     useEffect(() => {
@@ -167,7 +160,7 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
             tableActions={() => (
                 <JiraServerTableActions
                     data={data}
-                    readonly={readonly}
+                    readonly={readOnly}
                     allowDelete={allowDelete}
                     selected={selected}
                     setSelected={setSelected}
@@ -180,7 +173,7 @@ const JiraServerTable = ({ readonly, allowDelete }) => {
 };
 
 JiraServerTable.propTypes = {
-    readonly: PropTypes.bool,
+    readOnly: PropTypes.bool,
     allowDelete: PropTypes.bool
 };
 

@@ -57,7 +57,9 @@ const DistributionRowActionsCell = ({ data, settings }) => {
                     toggleModal={setShowDeleteModal}
                     selected={[data.jobId]}
                     setStatusMessage={setStatusMessage}
-                    setSelected={() => console.log('setting')}
+                    setSelected={settings.setSelected}
+                    paramsConfig={settings.paramsConfig}
+                    setParamsConfig={settings.setParamsConfig}
                 />
             )}
         </>

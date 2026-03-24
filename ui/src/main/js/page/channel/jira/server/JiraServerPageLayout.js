@@ -11,7 +11,7 @@ const JiraServerPageLayout = ({ readonly, allowDelete }) => (
             description="Configure the Jira Server instance that Alert will send issue updates to."
             icon="server"
         />
-        <JiraServerTable readonly={readonly} allowDelete={allowDelete} />
+        <JiraServerTable readOnly={readonly} allowDelete={allowDelete} />
     </div>
 );
 

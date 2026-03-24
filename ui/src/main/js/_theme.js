@@ -1,5 +1,6 @@
 const colors = {
     green: {
+        lightGreen: '#89c12d',
         darkGreen: '#3B7D3C'
     },
     grey: {
@@ -17,6 +18,25 @@ const colors = {
     white: {
         default: '#FFFFFF'
     },
+
+    status: {
+        failure: {
+            border: '#ffc9c9',
+            default: '#9f0712',
+            background: '#ffe2e2'
+        },
+        success: {
+            border: '#b9f8cf',
+            default: '#016630',
+            background: '#dcfce7'
+        },
+        warning: {
+            border: '#ffd6a8',
+            default: '#9f2d00',
+            background: '#ffedd4'
+        }
+    },
+
     borderColor: '#0000001a',
     defaultAlertColor: '#2E3B4E',
     darkGreyAlertColor: '#646E81',

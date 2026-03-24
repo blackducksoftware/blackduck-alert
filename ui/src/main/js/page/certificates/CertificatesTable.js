@@ -3,7 +3,20 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchCertificates } from 'store/actions/certificates';
 import Table from 'common/component/table/Table';
 import CertificatesEditCell from 'page/certificates/CertificatesEditCell';
+import CertificatesRowActionsCell from 'page/certificates/CertificatesRowActionsCell';
 import CertificatesTableActions from 'page/certificates/CertificatesTableActions';
+
+const dummyData = [
+    {
+        id: 1,
+        alias: 'Certificate 1',
+        lastUpdated: '2024-01-01'
+    }, {
+        id: 2,
+        alias: 'Certificate 2',
+        lastUpdated: '2024-02-01'
+    }
+]
 
 const COLUMNS = [{
     key: 'alias',
@@ -19,6 +32,12 @@ const COLUMNS = [{
     sortable: false,
     customCell: CertificatesEditCell,
     settings: { alignment: 'right' }
+}, {
+    key: 'certificatesRowActions',
+    label: '',
+    sortable: false,
+    customCell: CertificatesRowActionsCell,
+    settings: { alignment: 'center' }
 }];
 
 const emptyTableConfig = {
@@ -103,7 +122,7 @@ const CertificatesTable = () => {
 
     return (
         <Table
-            tableData={tableData}
+            tableData={dummyData}
             columns={COLUMNS}
             searchBarPlaceholder="Search Certificates..."
             handleSearchChange={handleSearchChange}
@@ -115,7 +134,7 @@ const CertificatesTable = () => {
             onSort={onSort}
             sortConfig={sortConfig}
             emptyTableConfig={emptyTableConfig}
-            tableActions={() => <CertificatesTableActions data={tableData} selected={selected} setSelected={setSelected} />}
+            tableActions={() => <CertificatesTableActions data={dummyData} selected={selected} setSelected={setSelected} />}
         />
     );
 };

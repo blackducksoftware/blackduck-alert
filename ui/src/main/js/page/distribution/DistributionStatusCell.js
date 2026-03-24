@@ -5,22 +5,29 @@ import classNames from 'classnames';
 
 const useStyles = createUseStyles((theme) => ({
     badge: {
-        padding: ['1px', '4px'],
-        fontSize: '0.9em',
-        textAlign: 'center',
-        borderRadius: '2px'
-    },
-    fail: {
-        backgroundColor: theme.colors.statusFailure,
-        color: theme.colors.white.default
-    },
-    pending: {
-        backgroundColor: theme.colors.statusPending,
-        border: '1px solid #F2B560'
+        display: 'flex',
+        alignItems: 'center',
+        columnGap: '6px',
+        borderRadius: '8px',
+        width: 'fit-content',
+        padding: '0 10px',
+        margin: 'auto',
+        fontSize: '13px'
     },
     success: {
-        backgroundColor: theme.colors.statusSuccess,
-        color: theme.colors.white.default
+        color: theme.colors.status.success.default,
+        border: `1px solid ${theme.colors.status.success.border}`,
+        backgroundColor: theme.colors.status.success.background
+    },
+    fail: {
+        color: theme.colors.status.failure.default,
+        border: `1px solid ${theme.colors.status.failure.border}`,
+        backgroundColor: theme.colors.status.failure.background
+    },
+    pending: {
+        color: theme.colors.status.warning.default,
+        border: `1px solid ${theme.colors.status.warning.border}`,
+        backgroundColor: theme.colors.status.warning.background
     }
 }));
 
@@ -30,7 +37,7 @@ const DistributionStatusCell = ({ data }) => {
 
     const statusClass = classNames(classes.badge, {
         [classes.fail]: auditStatus === 'FAILURE',
-        [classes.pending]: auditStatus === 'PENDING',
+        [classes.pending]: auditStatus !== 'SUCCESS' && auditStatus !== 'FAILURE',
         [classes.success]: auditStatus === 'SUCCESS',
     });
     
@@ -42,7 +49,7 @@ const DistributionStatusCell = ({ data }) => {
         } else if (status === 'PENDING') {
             return 'Pending'
         } else {
-            return '\u2014'
+            return 'Pending'
         }
     }
     

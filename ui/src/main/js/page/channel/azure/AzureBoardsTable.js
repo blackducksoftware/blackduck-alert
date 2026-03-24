@@ -5,6 +5,7 @@ import Table from 'common/component/table/Table';
 import AzureBoardsTableActions from 'page/channel/azure/AzureBoardsTableActions';
 import AzureBoardsEditCell from 'page/channel/azure/AzureBoardsEditCell';
 import AzureBoardsCopyCell from 'page/channel/azure/AzureBoardsCopyCell';
+import AzureBoardsRowActionsCell from 'page/channel/azure/AzureBoardsRowActionsCell';
 import AzureBoardsModal from 'page/channel/azure/AzureBoardsModal';
 import StatusMessage from 'common/component/StatusMessage';
 import { useLocation } from 'react-router-dom';
@@ -63,6 +64,12 @@ const AzureBoardsTable = ({ readonly, allowDelete }) => {
         sortable: false,
         customCell: AzureBoardsCopyCell,
         settings: { alignment: 'center', paramsConfig }
+    }, {
+        key: 'azureBoardRowActions',
+        label: '',
+        sortable: false,
+        customCell: AzureBoardsRowActionsCell,
+        settings: { alignment: 'center', readonly, paramsConfig, setParamsConfig, setSelected }
     }];
 
     useEffect(() => {
