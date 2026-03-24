@@ -15,6 +15,11 @@ const RoleRowActionsCell = ({ data, settings }) => {
     const [selectedData, setSelectedData] = useState(data);
     const [statusMessage, setStatusMessage] = useState();
     const isAdministrativeRole = NON_DELETABLE_ROLES.includes(data.roleName);
+    const { canCreate, canDelete } = settings;
+
+    if (!canCreate && !canDelete) {
+        return null;
+    }
 
     const copyModalOptions = {
         type: 'COPY',
@@ -32,7 +37,6 @@ const RoleRowActionsCell = ({ data, settings }) => {
     function handleEditClick() {
         setStatusMessage();
         setShowEditModal(true);
-        setSelectedData(data);
     }
 
     function handleCopyClick() {
@@ -56,17 +60,17 @@ const RoleRowActionsCell = ({ data, settings }) => {
             )}
 
             <RowActionsCell>
-                <Dropdown.Item as="button" onClick={handleEditClick} disabled={settings.readonly}>
+                <Dropdown.Item as="button" onClick={handleEditClick} disabled={!canCreate}>
                     Edit
                 </Dropdown.Item>
-                <Dropdown.Item as="button" onClick={handleCopyClick} disabled={settings.readonly}>
+                <Dropdown.Item as="button" onClick={handleCopyClick} disabled={!canCreate}>
                     Copy
                 </Dropdown.Item>
                 
                 {!isAdministrativeRole && (
                     <>
                         <Dropdown.Divider />
-                        <Dropdown.Item as="button" onClick={handleDeleteClick} disabled={settings.readonly}>
+                        <Dropdown.Item as="button" onClick={handleDeleteClick} disabled={!canDelete}>
                             Delete
                         </Dropdown.Item>
                     </>
@@ -82,13 +86,12 @@ const RoleRowActionsCell = ({ data, settings }) => {
                     modalOptions={copyModalOptions}
                     setStatusMessage={setStatusMessage}
                     successMessage="Successfully created 1 role."
-                    readonly={settings.readonly}
                 />
             )}
 
             { showEditModal && (
                 <RoleModal
-                    data={selectedData}
+                    data={data}
                     isOpen={showEditModal}
                     toggleModal={setShowEditModal}
                     modalOptions={editModalOptions}
@@ -104,7 +107,6 @@ const RoleRowActionsCell = ({ data, settings }) => {
                     toggleModal={setShowDeleteModal}
                     selected={[data.id]}
                     setStatusMessage={setStatusMessage}
-                    setSelected={() => console.log('setting')}
                 />
             )}
         </>
@@ -115,7 +117,8 @@ const RoleRowActionsCell = ({ data, settings }) => {
 RoleRowActionsCell.propTypes = {
     data: PropTypes.object,
     settings: PropTypes.shape({
-        readonly: PropTypes.bool
+        canCreate: PropTypes.bool,
+        canDelete: PropTypes.bool
     })
 };
 

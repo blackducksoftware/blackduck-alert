@@ -1,50 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 import { fetchCertificates } from 'store/actions/certificates';
 import Table from 'common/component/table/Table';
-import CertificatesEditCell from 'page/certificates/CertificatesEditCell';
 import CertificatesRowActionsCell from 'page/certificates/CertificatesRowActionsCell';
 import CertificatesTableActions from 'page/certificates/CertificatesTableActions';
-
-const dummyData = [
-    {
-        id: 1,
-        alias: 'Certificate 1',
-        lastUpdated: '2024-01-01'
-    }, {
-        id: 2,
-        alias: 'Certificate 2',
-        lastUpdated: '2024-02-01'
-    }
-]
-
-const COLUMNS = [{
-    key: 'alias',
-    label: 'Certificate Alias',
-    sortable: true
-}, {
-    key: 'lastUpdated',
-    label: 'Last Updated',
-    sortable: true
-}, {
-    key: 'editCertificate',
-    label: 'Edit Certificate',
-    sortable: false,
-    customCell: CertificatesEditCell,
-    settings: { alignment: 'right' }
-}, {
-    key: 'certificatesRowActions',
-    label: '',
-    sortable: false,
-    customCell: CertificatesRowActionsCell,
-    settings: { alignment: 'center' }
-}];
 
 const emptyTableConfig = {
     message: 'There are no records to display for this table.  Please create a Certificate to use this table.'
 };
 
-const CertificatesTable = () => {
+const CertificatesTable = ({ readOnly }) => {
     const dispatch = useDispatch();
     const refreshStatus = JSON.parse(window.localStorage.getItem('CERTIFICATES_REFRESH_STATUS') || true);
     const [autoRefresh, setAutoRefresh] = useState(refreshStatus);
@@ -53,6 +19,22 @@ const CertificatesTable = () => {
     const [search, setNewSearch] = useState('');
     const [selected, setSelected] = useState([]);
     const certificates = useSelector((state) => state.certificates.data);
+
+    const columns = [{
+        key: 'alias',
+        label: 'Certificate Alias',
+        sortable: true
+    }, {
+        key: 'lastUpdated',
+        label: 'Last Updated',
+        sortable: true
+    }, {
+        key: 'certificatesRowActions',
+        label: '',
+        sortable: false,
+        customCell: CertificatesRowActionsCell,
+        settings: { alignment: 'center', readOnly }
+    }];
 
     useEffect(() => {
         dispatch(fetchCertificates());
@@ -122,8 +104,8 @@ const CertificatesTable = () => {
 
     return (
         <Table
-            tableData={dummyData}
-            columns={COLUMNS}
+            tableData={tableData}
+            columns={columns}
             searchBarPlaceholder="Search Certificates..."
             handleSearchChange={handleSearchChange}
             active={autoRefresh}
@@ -134,9 +116,13 @@ const CertificatesTable = () => {
             onSort={onSort}
             sortConfig={sortConfig}
             emptyTableConfig={emptyTableConfig}
-            tableActions={() => <CertificatesTableActions data={dummyData} selected={selected} setSelected={setSelected} />}
+            tableActions={() => <CertificatesTableActions data={tableData} selected={selected} setSelected={setSelected} />}
         />
     );
 };
+
+CertificatesTable.propTypes = {
+    readOnly: PropTypes.bool.isRequired
+}
 
 export default CertificatesTable;

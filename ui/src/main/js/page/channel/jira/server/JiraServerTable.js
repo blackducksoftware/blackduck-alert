@@ -54,7 +54,7 @@ const JiraServerTable = ({ readOnly, allowDelete }) => {
         label: '',
         sortable: false,
         customCell: JiraServerRowActionsCell,
-        settings: { alignment: 'center', readOnly, paramsConfig, setParamsConfig, setSelected }
+        settings: { alignment: 'center', readOnly, paramsConfig, setParamsConfig }
     }];
 
     useEffect(() => {

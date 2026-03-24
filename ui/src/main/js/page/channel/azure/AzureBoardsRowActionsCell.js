@@ -12,7 +12,7 @@ const AzureBoardRowActionsCell = ({ data, settings }) => {
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedData, setSelectedData] = useState(data);
     const [statusMessage, setStatusMessage] = useState();
-    const { readonly, paramsConfig, setParamsConfig, setSelected } = settings;
+    const { readonly, paramsConfig, setParamsConfig } = settings;
     const dataStagedForDelete = { models: [data] };
 
     const copyModalOptions = {
@@ -31,7 +31,6 @@ const AzureBoardRowActionsCell = ({ data, settings }) => {
     function handleEditClick() {
         setStatusMessage();
         setShowEditModal(true);
-        setSelectedData(data);
     }
 
     function handleCopyClick() {
@@ -87,7 +86,7 @@ const AzureBoardRowActionsCell = ({ data, settings }) => {
 
             { showEditModal && (
                 <AzureBoardsModal
-                    data={selectedData}
+                    data={data}
                     isOpen={showEditModal}
                     toggleModal={setShowEditModal}
                     modalOptions={editModalOptions}
@@ -104,7 +103,6 @@ const AzureBoardRowActionsCell = ({ data, settings }) => {
                     toggleModal={setShowDeleteModal}
                     selected={[data.id]}
                     setStatusMessage={setStatusMessage}
-                    setSelected={setSelected}
                     paramsConfig={paramsConfig}
                     setParamsConfig={setParamsConfig}
                 />
@@ -120,7 +118,6 @@ AzureBoardRowActionsCell.propTypes = {
         readonly: PropTypes.bool,
         paramsConfig: PropTypes.object,
         setParamsConfig: PropTypes.func,
-        setSelected: PropTypes.func
     })
 };
 

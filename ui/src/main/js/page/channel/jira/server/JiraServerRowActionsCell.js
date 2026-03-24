@@ -31,7 +31,6 @@ const JiraServerRowActionsCell = ({ data, settings }) => {
     function handleEditClick() {
         setStatusMessage();
         setShowEditModal(true);
-        setSelectedData(data);
     }
 
     function handleCopyClick() {
@@ -87,7 +86,7 @@ const JiraServerRowActionsCell = ({ data, settings }) => {
 
             { showEditModal && (
                 <JiraServerModal
-                    data={selectedData}
+                    data={data}
                     isOpen={showEditModal}
                     toggleModal={setShowEditModal}
                     modalOptions={editModalOptions}
@@ -104,7 +103,6 @@ const JiraServerRowActionsCell = ({ data, settings }) => {
                     toggleModal={setShowDeleteModal}
                     selected={[data.id]}
                     setStatusMessage={setStatusMessage}
-                    setSelected={setSelected}
                     paramsConfig={paramsConfig}
                     setParamsConfig={setParamsConfig}
                 />
@@ -120,7 +118,6 @@ JiraServerRowActionsCell.propTypes = {
         readonly: PropTypes.bool,
         paramsConfig: PropTypes.object,
         setParamsConfig: PropTypes.func,
-        setSelected: PropTypes.func
     })
 };
 

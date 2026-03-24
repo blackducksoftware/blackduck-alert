@@ -12,14 +12,14 @@ const DistributionRowActionsCell = ({ data, settings }) => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
     const dataStagedForDelete = { models: [data] };
+    const { paramsConfig, setParamsConfig, readonly } = settings;
 
+    function handleCopyClick() {
+        history.push(`${DISTRIBUTION_URLS.distributionConfigCopyUrl}/${data.jobId}`);
+    }
 
-    function handleClick(type) {
-        const url = type === 'edit'
-            ? `${DISTRIBUTION_URLS.distributionConfigUrl}/${data.jobId}`
-            : `${DISTRIBUTION_URLS.distributionConfigCopyUrl}/${data.jobId}`;
-
-        history.push(url);
+    function handleEditClick() {
+        history.push(`${DISTRIBUTION_URLS.distributionConfigUrl}/${data.jobId}`);
     }
     
     function handleDeleteClick() {
@@ -38,14 +38,14 @@ const DistributionRowActionsCell = ({ data, settings }) => {
             )}
 
             <RowActionsCell>
-                <Dropdown.Item as="button" onClick={() => handleClick('edit')} disabled={settings.readonly}>
+                <Dropdown.Item as="button" onClick={handleEditClick} disabled={readonly}>
                     Edit
                 </Dropdown.Item>
-                <Dropdown.Item onClick={() => handleClick('copy')} disabled={settings.readonly}>
+                <Dropdown.Item onClick={handleCopyClick} disabled={readonly}>
                     Copy
                 </Dropdown.Item>
                 <Dropdown.Divider />
-                <Dropdown.Item onClick={handleDeleteClick} disabled={settings.readonly}>
+                <Dropdown.Item onClick={handleDeleteClick} disabled={readonly}>
                     Delete
                 </Dropdown.Item>
             </RowActionsCell>
@@ -57,9 +57,8 @@ const DistributionRowActionsCell = ({ data, settings }) => {
                     toggleModal={setShowDeleteModal}
                     selected={[data.jobId]}
                     setStatusMessage={setStatusMessage}
-                    setSelected={settings.setSelected}
-                    paramsConfig={settings.paramsConfig}
-                    setParamsConfig={settings.setParamsConfig}
+                    paramsConfig={paramsConfig}
+                    setParamsConfig={setParamsConfig}
                 />
             )}
         </>
@@ -70,7 +69,9 @@ const DistributionRowActionsCell = ({ data, settings }) => {
 DistributionRowActionsCell.propTypes = {
     data: PropTypes.object,
     settings: PropTypes.shape({
-        readonly: PropTypes.bool
+        readonly: PropTypes.bool,
+        paramsConfig: PropTypes.object,
+        setParamsConfig: PropTypes.func,
     })
 };
 

@@ -12,6 +12,7 @@ const ProviderRowActionsCell = ({ data, settings }) => {
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedData, setSelectedData] = useState(data);
     const [statusMessage, setStatusMessage] = useState();
+    const { readonly } = settings;
 
     const copyModalOptions = {
         type: 'COPY',
@@ -30,7 +31,6 @@ const ProviderRowActionsCell = ({ data, settings }) => {
     function handleEditClick() {
         setStatusMessage();
         setShowEditModal(true);
-        setSelectedData(data);
     }
 
     function handleCopyClick() {
@@ -60,14 +60,14 @@ const ProviderRowActionsCell = ({ data, settings }) => {
             )}
 
             <RowActionsCell>
-                <Dropdown.Item as="button" onClick={handleEditClick} disabled={settings.readonly}>
+                <Dropdown.Item as="button" onClick={handleEditClick} disabled={readonly}>
                     Edit
                 </Dropdown.Item>
-                <Dropdown.Item onClick={handleCopyClick} disabled={settings.readonly}>
+                <Dropdown.Item onClick={handleCopyClick} disabled={readonly}>
                     Copy
                 </Dropdown.Item>
                 <Dropdown.Divider />
-                <Dropdown.Item onClick={handleDeleteClick} disabled={settings.readonly}>
+                <Dropdown.Item onClick={handleDeleteClick} disabled={readonly}>
                     Delete
                 </Dropdown.Item>
             </RowActionsCell>
@@ -80,19 +80,19 @@ const ProviderRowActionsCell = ({ data, settings }) => {
                     modalOptions={copyModalOptions}
                     setStatusMessage={setStatusMessage}
                     successMessage="Successfully created 1 new provider."
-                    readonly={settings.readonly}
+                    readonly={readonly}
                 />
             )}
 
             { showEditModal && (
                 <ProviderModal
-                    data={selectedData}
+                    data={data}
                     isOpen={showEditModal}
                     toggleModal={setShowEditModal}
                     modalOptions={editModalOptions}
                     setStatusMessage={setStatusMessage}
                     successMessage={editModalOptions.successMessage}
-                    readonly={settings.readonly}
+                    readonly={readonly}
                 />
             )}
 

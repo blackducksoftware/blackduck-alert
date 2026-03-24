@@ -7,7 +7,7 @@ import MTLSCertificateLayout from 'page/certificates/MTLSCertificateLayout';
 import { CERTIFICATE_INFO } from 'page/certificates/CertificateModel';
 import { Tab, Tabs } from 'react-bootstrap';
 
-const CertificatesPageLayout = ({ csrfToken, errorHandler }) => {
+const CertificatesPageLayout = ({ csrfToken, errorHandler, readOnly }) => {
     return (
         <div>
             <PageHeader
@@ -17,7 +17,7 @@ const CertificatesPageLayout = ({ csrfToken, errorHandler }) => {
             />
             <Tabs defaultActiveKey={1} id="certificate-tabs">
                 <Tab eventKey={1} title="Server">
-                    <CertificatesTable />
+                    <CertificatesTable readOnly={readOnly} />
                 </Tab>
                 <Tab eventKey={2} title="Client">
                     <MTLSCertificateLayout
@@ -32,7 +32,8 @@ const CertificatesPageLayout = ({ csrfToken, errorHandler }) => {
 
 CertificatesPageLayout.propTypes = {
     csrfToken: PropTypes.string.isRequired,
-    errorHandler: PropTypes.object.isRequired
+    errorHandler: PropTypes.object.isRequired,
+    readOnly: PropTypes.bool.isRequired
 }
 
 export default CertificatesPageLayout;

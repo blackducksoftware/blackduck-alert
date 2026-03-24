@@ -72,7 +72,7 @@ const DistributionTable = ({ readonly }) => {
         label: '',
         sortable: false,
         customCell: DistributionRowActionsCell,
-        settings: { alignment: 'center', paramsConfig, setParamsConfig, setSelected }
+        settings: { alignment: 'center', paramsConfig, setParamsConfig, readonly }
     }];
 
     useEffect(() => {

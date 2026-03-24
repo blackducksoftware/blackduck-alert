@@ -16,6 +16,11 @@ const UserRowActionsCell = ({ data, settings }) => {
     const [statusMessage, setStatusMessage] = useState();
     const isExternalUser = data.authenticationType !== 'DATABASE';
     const isAdministrativeUser = NON_DELETABLE_USERNAMES.includes(data.username);
+    const { canCreate, canDelete } = settings;
+
+    if (!canCreate && !canDelete) {
+        return null;
+    }
 
     const copyModalOptions = {
         type: 'COPY',
@@ -66,11 +71,11 @@ const UserRowActionsCell = ({ data, settings }) => {
             )}
 
             <RowActionsCell>
-                <Dropdown.Item as="button" onClick={handleEditClick} disabled={settings.readonly}>
+                <Dropdown.Item as="button" onClick={handleEditClick} disabled={!canCreate}>
                     Edit
                 </Dropdown.Item>
                 { !isExternalUser && (
-                    <Dropdown.Item as="button" onClick={handleCopyClick} disabled={settings.readonly}>
+                    <Dropdown.Item as="button" onClick={handleCopyClick} disabled={!canCreate}>
                         Copy
                     </Dropdown.Item>
                 )}
@@ -78,7 +83,7 @@ const UserRowActionsCell = ({ data, settings }) => {
                 {!isAdministrativeUser && (
                     <>
                         <Dropdown.Divider />
-                        <Dropdown.Item as="button" onClick={handleDeleteClick} disabled={settings.readonly}>
+                        <Dropdown.Item as="button" onClick={handleDeleteClick} disabled={!canDelete}>
                             Delete
                         </Dropdown.Item>
                     </>
@@ -94,7 +99,6 @@ const UserRowActionsCell = ({ data, settings }) => {
                     modalOptions={copyModalOptions}
                     setStatusMessage={setStatusMessage}
                     successMessage="Successfully created 1 new provider."
-                    readonly={settings.readonly}
                 />
             )}
 
@@ -116,7 +120,6 @@ const UserRowActionsCell = ({ data, settings }) => {
                     toggleModal={setShowDeleteModal}
                     selected={[data.id]}
                     setStatusMessage={setStatusMessage}
-                    setSelected={() => console.log('setting')}
                 />
             )}
         </>
@@ -127,7 +130,8 @@ const UserRowActionsCell = ({ data, settings }) => {
 UserRowActionsCell.propTypes = {
     data: PropTypes.object,
     settings: PropTypes.shape({
-        readonly: PropTypes.bool
+        canCreate: PropTypes.bool,
+        canDelete: PropTypes.bool
     })
 };
 

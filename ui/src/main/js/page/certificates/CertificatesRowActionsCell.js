@@ -9,9 +9,8 @@ import RowActionsCell from 'common/component/table/cell/RowActionsCell';
 const CertificatesRowActionsCell = ({ data, settings }) => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
-    const [selectedData, setSelectedData] = useState(data);
     const [statusMessage, setStatusMessage] = useState();
-    const { readOnly, setSelected } = settings;
+    const { readOnly } = settings;
 
     const editModalOptions = {
         type: 'EDIT',
@@ -22,7 +21,6 @@ const CertificatesRowActionsCell = ({ data, settings }) => {
     function handleEditClick() {
         setStatusMessage();
         setShowEditModal(true);
-        setSelectedData(data);
     }
     
     function handleDeleteClick() {
@@ -51,7 +49,7 @@ const CertificatesRowActionsCell = ({ data, settings }) => {
 
             { showEditModal && (
                 <CertificateModal
-                    data={selectedData}
+                    data={data}
                     isOpen={showEditModal}
                     toggleModal={setShowEditModal}
                     modalOptions={editModalOptions}
@@ -64,7 +62,6 @@ const CertificatesRowActionsCell = ({ data, settings }) => {
                     isOpen={showDeleteModal}
                     toggleModal={setShowDeleteModal}
                     selected={[data.id]}
-                    setSelected={setSelected}
                 />
             )}
         </>

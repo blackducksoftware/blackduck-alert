@@ -6,18 +6,6 @@ import Table from 'common/component/table/Table';
 import RoleRowActionsCell from 'page/usermgmt/roles/RoleRowActionsCell';
 import RoleTableActions from 'page/usermgmt/roles/RoleTableActions';
 
-const COLUMNS = [{
-    key: 'roleName',
-    label: 'Name',
-    sortable: true
-}, {
-    key: 'roleManagementRowActions',
-    label: '',
-    sortable: false,
-    customCell: RoleRowActionsCell,
-    settings: { alignment: 'center' }
-}];
-
 const emptyTableConfig = {
     message: 'There are no records to display for this table. Please create a Role to use this table.'
 };
@@ -37,6 +25,18 @@ const RoleTable = ({ canCreate, canDelete }) => {
         disabledItems: ['ALERT_ADMIN', 'ALERT_JOB_MANAGER', 'ALERT_USER'],
         title: 'System created role, unable to select for deletion.'
     };
+
+    const columns = [{
+        key: 'roleName',
+        label: 'Name',
+        sortable: true
+    }, {
+        key: 'roleManagementRowActions',
+        label: '',
+        sortable: false,
+        customCell: RoleRowActionsCell,
+        settings: { alignment: 'center', canCreate, canDelete }
+    }];
 
     useEffect(() => {
         dispatch(fetchRoles());
@@ -106,7 +106,7 @@ const RoleTable = ({ canCreate, canDelete }) => {
         <>
             <Table
                 tableData={tableData}
-                columns={COLUMNS}
+                columns={columns}
                 multiSelect
                 selected={selected}
                 onSelected={onSelected}
