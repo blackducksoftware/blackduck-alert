@@ -1,16 +1,11 @@
 package com.blackduck.integration.alert.api.channel.jira.lifecycle;
 
 import com.blackduck.integration.alert.api.channel.jira.JiraConstants;
-import com.blackduck.integration.alert.api.channel.jira.JiraIssueSearchProperties;
-import com.blackduck.integration.alert.api.task.ScheduledTask;
 import com.blackduck.integration.alert.api.task.TaskManager;
-import com.blackduck.integration.alert.api.task.TaskMetaData;
-import com.blackduck.integration.alert.api.task.TaskMetaDataProperty;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.model.response.IssuePropertyResponseModel;
 import com.blackduck.integration.jira.common.rest.service.IssuePropertyService;
 import com.google.gson.Gson;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
