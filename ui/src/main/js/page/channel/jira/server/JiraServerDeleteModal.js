@@ -19,7 +19,6 @@ const useStyles = createUseStyles({
 });
 
 function getStagedForDelete(data, selected) {
-    console.log(data, selected );
     const staged = data.models.filter((server) => selected.includes(server.id));
     return staged.map((server) => ({ ...server, staged: true }));
 }
