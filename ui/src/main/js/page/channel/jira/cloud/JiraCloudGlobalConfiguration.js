@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
-import CommonGlobalConfiguration from 'common/configuration/global/CommonGlobalConfiguration';
 import { JIRA_CLOUD_GLOBAL_FIELD_KEYS, JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';
 import CommonGlobalConfigurationForm from 'common/configuration/global/CommonGlobalConfigurationForm';
 import TextInput from 'common/component/input/TextInput';
@@ -12,6 +11,7 @@ import EndpointButtonField from 'common/component/input/field/EndpointButtonFiel
 import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 import * as GlobalRequestHelper from 'common/configuration/global/GlobalRequestHelper';
 import NumberInput from 'common/component/input/NumberInput';
+import PageLayout from 'common/component/PageLayout';
 
 const JiraCloudGlobalConfiguration = ({
     csrfToken, errorHandler, readonly, displayTest, displaySave, displayDelete
@@ -42,9 +42,10 @@ const JiraCloudGlobalConfiguration = ({
     };
 
     return (
-        <CommonGlobalConfiguration
-            label={JIRA_CLOUD_INFO.label}
+        <PageLayout
+            title={JIRA_CLOUD_INFO.label}
             description="Configure the Jira Cloud instance that Alert will send issue updates to."
+            headerIcon={['fab', 'jira']}
             lastUpdated={formData.lastUpdated}
         >
             <CommonGlobalConfigurationForm
@@ -143,7 +144,7 @@ const JiraCloudGlobalConfiguration = ({
                     errorValue={errors.fieldErrors[JIRA_CLOUD_GLOBAL_FIELD_KEYS.configurePlugin]}
                 />
             </CommonGlobalConfigurationForm>
-        </CommonGlobalConfiguration>
+        </PageLayout>
     );
 };
 
