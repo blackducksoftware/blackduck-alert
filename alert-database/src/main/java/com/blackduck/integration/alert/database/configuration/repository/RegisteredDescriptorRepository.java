@@ -23,6 +23,7 @@ public interface RegisteredDescriptorRepository extends JpaRepository<Registered
 
     List<RegisteredDescriptorEntity> findByTypeId(Long descriptorTypeId);
 
+    @Deprecated
     @Query(value = "SELECT entity FROM RegisteredDescriptorEntity entity "
                        + "INNER JOIN entity.descriptorConfigEntities descriptorConfigEntity ON entity.id = descriptorConfigEntity.descriptorId "
                        + "INNER JOIN descriptorConfigEntity.fieldValueEntities fieldValueEntity ON descriptorConfigEntity.id = fieldValueEntity.configId "

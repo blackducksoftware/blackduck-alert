@@ -27,6 +27,34 @@ public class AlertNotificationModel extends AlertSerializableModel {
     private final boolean mappingToJobs;
 
     public AlertNotificationModel(
+        Long providerConfigId,
+        String provider,
+        String providerConfigName,
+        String notificationType,
+        String content,
+        OffsetDateTime createdAt,
+        OffsetDateTime providerCreationTime,
+        boolean processed,
+        String contentId,
+        boolean mappingToJobs
+    ) {
+        this(
+            null,
+            providerConfigId,
+            provider,
+            providerConfigName,
+            notificationType,
+            content,
+            createdAt,
+            providerCreationTime,
+            processed,
+            contentId,
+            mappingToJobs
+        );
+
+    }
+
+    public AlertNotificationModel(
         Long id,
         Long providerConfigId,
         String provider,
@@ -54,10 +82,6 @@ public class AlertNotificationModel extends AlertSerializableModel {
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Long getProviderConfigId() {

@@ -198,7 +198,7 @@ class NotificationReceivedEventHandlerTestIT {
             + "}"
             + "}";
         MockNotificationContent notificationMocker = new MockNotificationContent(DateUtils.createCurrentDateTimestamp(), blackDuckProviderKey.getUniversalKey(), DateUtils.createCurrentDateTimestamp(), NotificationType.BOM_EDIT.name(),
-            bomEditContent, null, blackDuckGlobalConfigId);
+            bomEditContent, blackDuckGlobalConfigId);
         NotificationEntity entity = notificationMocker.createEntity();
         return new AlertNotificationModel(
             null,

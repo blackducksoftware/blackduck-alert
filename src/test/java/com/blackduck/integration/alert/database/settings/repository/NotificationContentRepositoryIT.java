@@ -68,7 +68,7 @@ import com.blackduck.integration.rest.RestConstants;
 
 @Transactional
 @AlertIntegrationTest
-public class NotificationContentRepositoryIT {
+class NotificationContentRepositoryIT {
     @Autowired
     private NotificationContentRepository notificationContentRepository;
     @Autowired
@@ -114,7 +114,7 @@ public class NotificationContentRepositoryIT {
     }
 
     @Test
-    public void testSaveEntity() throws Exception {
+    void testSaveEntity() throws Exception {
         NotificationEntity entity = createEntity(RestConstants.formatDate(new Date()));
         NotificationEntity savedEntity = notificationContentRepository.save(entity);
         long count = notificationContentRepository.count();
@@ -129,7 +129,7 @@ public class NotificationContentRepositoryIT {
     }
 
     @Test
-    public void testFindByDate() throws Exception {
+    void testFindByDate() throws Exception {
         Set<String> validResultDates = new HashSet<>();
         NotificationEntity savedEntity = createEntity("2017-10-15T1:00:00.000Z");
         validResultDates.add(DateUtils.formatDateAsJsonString(savedEntity.getCreatedAt()));
@@ -169,7 +169,7 @@ public class NotificationContentRepositoryIT {
         @Tag(TestTags.DEFAULT_PERFORMANCE),
         @Tag(TestTags.CUSTOM_DATABASE_CONNECTION)
     })
-    public void findMatchingNotificationTest() throws ParseException, AlertException {
+    void findMatchingNotificationTest() throws ParseException, AlertException {
         notificationQueryTest(notificationContentRepository::findMatchingNotification);
     }
 
@@ -180,7 +180,7 @@ public class NotificationContentRepositoryIT {
         @Tag(TestTags.DEFAULT_PERFORMANCE),
         @Tag(TestTags.CUSTOM_DATABASE_CONNECTION)
     })
-    public void findMatchingSentNotificationTest() throws ParseException, AlertException {
+    void findMatchingSentNotificationTest() throws ParseException, AlertException {
         notificationQueryTest(notificationContentRepository::findMatchingSentNotification);
     }
 
@@ -249,7 +249,7 @@ public class NotificationContentRepositoryIT {
         OffsetDateTime providerCreationTime = DateUtils.parseDateFromJsonString(dateString);
         final String provider = "provider_blackduck";
         final String notificationType = "type_1";
-        NotificationEntity entity = new MockNotificationContent(providerCreationTime, provider, providerCreationTime, notificationType, content, null, providerConfigModel.getConfigurationId()).createEntity();
+        NotificationEntity entity = new MockNotificationContent(providerCreationTime, provider, providerCreationTime, notificationType, content, providerConfigModel.getConfigurationId()).createEntity();
         NotificationEntity savedEntity = notificationContentRepository.save(entity);
         return savedEntity;
     }

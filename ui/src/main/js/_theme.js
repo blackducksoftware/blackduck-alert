@@ -11,7 +11,8 @@ const colors = {
     },
     purple: {
         lightPurple: '#dab2ff',
-        default: '#9810fa'
+        default: '#9810fa',
+        blackout: '#222222'
     },
     red: {
         lighterRed: '#EA7B73',
@@ -24,6 +25,9 @@ const colors = {
     borderColor: '#0000001a',
     defaultAlertColor: '#2E3B4E',
     darkGreyAlertColor: '#646E81',
+    defaultAlertColor: '#2E3B4E',
+    defaultBackgroundColor: '#F7F7FA',
+    defaultBorderColor: '#B1B3B3',
     statusFailure: '#E15241',
     statusPending: '#F0AD4E',
     statusSuccess: '#509D51',

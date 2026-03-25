@@ -36,17 +36,18 @@ public class MockNotificationContent extends MockEntityUtil<NotificationEntity> 
     private Long providerConfigId;
 
     public MockNotificationContent() {
-        this(DateUtils.createCurrentDateTimestamp(), "provider", DateUtils.createCurrentDateTimestamp(), DEFAULT_NOTIFICATION_TYPE_NAME, BOM_EDIT_CONTENT, 1L, 1L);
+        this(DateUtils.createCurrentDateTimestamp(), "provider", DateUtils.createCurrentDateTimestamp(), DEFAULT_NOTIFICATION_TYPE_NAME, BOM_EDIT_CONTENT, 1L);
     }
 
-    public MockNotificationContent(OffsetDateTime createdAt, String provider, OffsetDateTime providerCreationTime, String notificationType, String content, Long id, Long providerConfigId) {
+    public MockNotificationContent(OffsetDateTime createdAt, String provider, OffsetDateTime providerCreationTime, String notificationType, String content,  Long providerConfigId) {
         this.createdAt = createdAt;
         this.provider = provider;
         this.providerCreationTime = providerCreationTime;
         this.notificationType = notificationType;
         this.content = content;
-        this.id = id;
         this.providerConfigId = providerConfigId;
+
+        this.id = null;
     }
 
     @Override
@@ -62,7 +63,7 @@ public class MockNotificationContent extends MockEntityUtil<NotificationEntity> 
             String.format("content-id-%s", UUID.randomUUID()),
             false
         );
-        notificationContent.setId(id);
+        notificationContent.setId(null);
         return notificationContent;
     }
 
@@ -80,7 +81,6 @@ public class MockNotificationContent extends MockEntityUtil<NotificationEntity> 
         json.addProperty("providerCreationTime", providerCreationTime.toString());
         json.addProperty("notificationType", notificationType);
         json.addProperty("content", content);
-        json.addProperty("id", id);
         json.addProperty("providerConfigId", providerConfigId);
         return json.toString();
     }
