@@ -20,7 +20,7 @@ const useStyles = createUseStyles((theme) => ({
         justifyContent: 'center'
     },
     warningStyle: {
-        color: theme.colors.warning
+        color: theme.colors.status.warning.text
     },
     descriptor: {
         fontSize: '14px',
@@ -60,7 +60,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
         // We want to disable the submit button until the user enters a password and confirms it
         if (!password || !confirmPassword) {
             return true;
-        } else if (password && confirmPassword){
+        } else if (password && confirmPassword) {
             return false;
         }
 

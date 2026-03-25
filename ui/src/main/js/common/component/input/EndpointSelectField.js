@@ -59,7 +59,6 @@ const EndpointSelectField = ({
             if (response.ok) {
                 response.json().then((data) => {
                     const selectOptions = convertDataToOptions ? convertDataToOptions(data) : defaultConvertToOptions(data);
-                    // console.log('selectOptions', selectOptions, data);
                     setOptions(selectOptions);
                     setRequestErrorValue(null);
                 });

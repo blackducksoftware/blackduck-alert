@@ -9,46 +9,53 @@ const useStyles = createUseStyles((theme) => ({
         padding: '3px'
     },
     errorStatus: {
-        color: theme.colors.red.lightRed
+        color: theme.colors.status.error.text
     },
     warningStatus: {
-        color: theme.colors.warning
+        color: theme.colors.status.warning.text
     },
     validStatus: {
-        color: theme.colors.green.darkGreen
+        color: theme.colors.status.success.text
+    },
+    messageHeader: {
+        width: '100%',
+        borderTop: `1px solid ${theme.colors.darkGreyAlertColor}`
+    },
+    messageDate: {
+        marginLeft: '5px',
+        marginRight: '5px',
+        fontWeight: 'bold'
     }
 }));
 
 const SystemMessage = ({ createdAt, content, severity, id }) => {
     const classes = useStyles();
 
-    function getIcon(severity) {        
-        return (severity === 'ERROR' || severity === 'WARNING') ? 'exclamation-triangle' : 'check-circle';
+    function getIcon(messageSeverity) {
+        return (messageSeverity === 'ERROR' || messageSeverity === 'WARNING') ? 'exclamation-triangle' : 'check-circle';
     }
 
-    function getClassName(severity) {
-        return classNames({
-            [classes.alertIcon]: true,
-            [classes.errorStatus]: (severity === 'ERROR'),
-            [classes.warningStatus]: (severity === 'WARNING'),
-            [classes.validStatus]: (severity !== 'ERROR' && severity !== 'WARNING'),
-        })
+    function getClassName(messageSeverity) {
+        return classNames(classes.alertIcon, {
+            [classes.errorStatus]: (messageSeverity === 'ERROR'),
+            [classes.warningStatus]: (messageSeverity === 'WARNING'),
+            [classes.validStatus]: (messageSeverity !== 'ERROR' && messageSeverity !== 'WARNING')
+        });
     }
 
     return (
-        <div id={id} className="messageHeader">
+        <div id={id} className={classes.messageHeader}>
             <FontAwesomeIcon
                 icon={getIcon(severity)}
                 className={getClassName(severity)}
                 size="lg"
                 title={severity}
             />
-            <span className="messageDate">{createdAt}</span>
+            <span className={classes.messageDate}>{createdAt}</span>
             <div>{content}</div>
         </div>
     );
-
-}
+};
 
 SystemMessage.propTypes = {
     id: PropTypes.string,
