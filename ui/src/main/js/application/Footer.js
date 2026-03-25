@@ -16,8 +16,7 @@ const useStyles = createUseStyles(theme => ({
         backgroundColor: theme.colors.grey.blackout,
         height: '36px',
         lineHeight: '24px',
-        padding: '0 15px 0 15px',
-        fontFamily: ['Roboto', 'Arial', 'sans-serif'],
+        padding: [0, '15px'],
         fontSize: '11px',
         color: theme.colors.defaultBorderColor,
         transition: 'opacity .3s ease-in-out 0s',
@@ -33,20 +32,16 @@ const useStyles = createUseStyles(theme => ({
         columnGap: '6px'
     },
     blackduckFooterLogo: {
-        background: 'none',
-        margin: 'auto',
-        width: 'auto',
-        maxHeight: '14px'
+        maxHeight: '16px',
+        marginBottom: '2px'
     },
     logoDivider: {
         borderLeft: `solid 1px ${theme.colors.grey.default}`,
-        height: '11px',
-        marginTop: '2px'
+        height: '16px'
     },
     footerAlertText: {
         color: theme.colors.defaultBorderColor,
-        lineHeight: '2em',
-        fontFamily: ['Roboto', 'Arial', 'sans-serif']
+        lineHeight: '2em'
     },
     productVersion: {
         color: theme.colors.defaultBorderColor,

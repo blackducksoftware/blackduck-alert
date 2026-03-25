@@ -52,23 +52,20 @@ const FooterSystemMessages = () => {
     const dispatch = useDispatch();
     const classes = useStyles();
     const [showOverlay, setShowOverlay] = useState(false);
-    const [hideOverlayByUser, setHideOverlayByUser] = useState(false);
     const targetRef = useRef(null);
     const { latestMessages } = useSelector((state) => state.system);
     const hasErrorMessage = containsSeverity(latestMessages, 'ERROR');
     const hasWarningMessage = containsSeverity(latestMessages, 'WARNING');
-    
+
     useEffect(() => {
         dispatch(getLatestMessages());
     }, []);
 
-    // If there are error messages, and the user has not manually hidden the popover we want to highlight these messages
-    // by showing the popover.
     useEffect(() => {
-        if (!hideOverlayByUser) {
+        if (!showOverlay) {
             setShowOverlay(hasErrorMessage);
         }
-    }, [latestMessages, hideOverlayByUser]);
+    }, [latestMessages, showOverlay]);
 
     const iconClass = classNames(classes.statusIcon, {
         [classes.errorStatus]: hasErrorMessage,
@@ -100,7 +97,6 @@ const FooterSystemMessages = () => {
         }
 
         setShowOverlay(!showOverlay);
-        setHideOverlayByUser(!hideOverlayByUser);
     };
     
     const reload = () => {
@@ -125,7 +121,6 @@ const FooterSystemMessages = () => {
                 show={showOverlay}
                 onHide={() => {
                     setShowOverlay(false);
-                    setHideOverlayByUser(true);
                 }}
                 placement="top"
                 target={() => ReactDOM.findDOMNode(targetRef.current)}
