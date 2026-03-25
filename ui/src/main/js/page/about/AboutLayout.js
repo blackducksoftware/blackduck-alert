@@ -7,13 +7,14 @@ import SystemMessagesSection from 'page/about/SystemMessagesSection';
 
 const useStyles = createUseStyles((theme) => ({
     aboutPageLayout: {
-        margin: '20px'
+        margin: '32px'
     },
     aboutPageHeader: {
         fontSize: '32px',
         fontWeight: 'bold',
         paddingBottom: '10px',
-        marginBottom: 0
+        marginBottom: 0,
+        borderBottom: 'none'
     },
     aboutPageDescription: {
         fontSize: '16px',
