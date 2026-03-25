@@ -77,11 +77,14 @@ public class JiraSearchCommentUpdateTask extends JiraTask {
                 unScheduleTask();
             }
             logger.info("Jira Cloud search comment task ended.");
+            resetConsecutiveFailures();
         } catch (IntegrationException e) {
             logger.error("Error getting Jira Cloud Configuration.", e);
+            checkThresholdAndIncrementFailures();
         } catch (InterruptedException e) {
             logger.error("Error updating Jira Cloud issues with new search key comment.", e);
             Thread.currentThread().interrupt();
+            checkThresholdAndIncrementFailures();
         }
     }
 
