@@ -3,7 +3,7 @@ import * as PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { Tabs } from 'react-bootstrap';
 
-const useStyles = createUseStyles(theme => ({
+const useStyles = createUseStyles((theme) => ({
     tabNavigation: {
         display: 'flex',
         flexDirection: 'column',
@@ -61,7 +61,7 @@ const ViewTabs = ({ children, defaultActiveKey = 1, id }) => {
 ViewTabs.propTypes = {
     children: PropTypes.node.isRequired,
     defaultActiveKey: PropTypes.number,
-    id: PropTypes.string.isRequired,
+    id: PropTypes.string.isRequired
 };
 
 export default ViewTabs;

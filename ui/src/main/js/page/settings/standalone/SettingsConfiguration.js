@@ -35,7 +35,7 @@ const SettingsConfiguration = ({
                     displayDelete={displayDelete}
                 />
             </Tab>
-        </ViewTabs>        
+        </ViewTabs>
     </div>
 );
 

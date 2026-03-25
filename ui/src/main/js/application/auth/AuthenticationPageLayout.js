@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import PageHeader from 'common/component/navigation/PageHeader';
-import ViewTabs from '../../common/component/navigation/ViewTabs';
+import ViewTabs from 'common/component/navigation/ViewTabs';
 import LdapForm from 'application/auth/LdapForm';
 import SamlForm from 'application/auth/SamlForm';
 
