@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '3.4.13'
+        springBootVersion = '3.5.11'
     }
 
     apply from: 'https://raw.githubusercontent.com/blackducksoftware/integration-resources/master/gradle_common/buildscript-repositories.gradle', to: buildscript
@@ -99,6 +99,7 @@ subprojects {
 
         dependencies {
             implementation platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+            testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
         }
     }
 }
@@ -203,6 +204,7 @@ dependencies {
     testRuntimeOnly 'com.playtika.testcontainers:embedded-postgresql'
     testRuntimeOnly 'com.playtika.testcontainers:embedded-rabbitmq'
     testRuntimeOnly 'org.springframework.cloud:spring-cloud-starter-bootstrap'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     if (getGradle().getStartParameter().taskNames.contains('runServer')) {
         def containsExternalDbArg = getGradle().getStartParameter().taskNames.contains("--externaldb")
