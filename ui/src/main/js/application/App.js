@@ -7,6 +7,7 @@ import MainPage from 'application/MainPage';
 import LoginPage from 'application/auth/LoginPage';
 import Footer from 'application/Footer';
 import { verifyLogin, verifySaml } from 'store/actions/session';
+import { getAboutInfo } from 'store/actions/about';
 import * as IconUtility from 'common/util/iconUtility';
 import LogoutPage from 'application/auth/LogoutPage';
 import SessionUnauthorizedPage from 'application/auth/SessionUnauthorizedPage';
@@ -24,6 +25,7 @@ class App extends Component {
     componentDidMount() {
         this.props.verifyLogin();
         this.props.verifySaml();
+        this.props.getAboutInfo();
     }
 
     render() {
@@ -73,7 +75,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     verifyLogin: () => dispatch(verifyLogin()),
-    verifySaml: () => dispatch(verifySaml())
+    verifySaml: () => dispatch(verifySaml()),
+    getAboutInfo: () => dispatch(getAboutInfo())
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));

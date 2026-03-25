@@ -1,10 +1,9 @@
 import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import SectionCard from 'common/component/SectionCard';
 import TitleContentPair from 'common/component/TitleContentPair';
-import { useDispatch, useSelector } from 'react-redux';
-import { getAboutInfo } from 'store/actions/about';
 
 const useStyles = createUseStyles((theme) => ({
     systemInformationContainer: {
@@ -56,12 +55,7 @@ InfoLink.propTypes = {
 
 const SystemInformationSection = () => {
     const classes = useStyles();
-    const dispatch = useDispatch();
     const { version, projectUrl, commitHash, documentationUrl } = useSelector((state) => state.about);
-
-    useEffect(() => {
-        dispatch(getAboutInfo());
-    }, []);
 
     const commitHashUrl = `${projectUrl}/commit/${commitHash}`;
 
