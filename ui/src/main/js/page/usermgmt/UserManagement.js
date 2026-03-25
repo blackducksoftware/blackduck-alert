@@ -1,8 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Tab, Tabs } from 'react-bootstrap';
+import { Tab } from 'react-bootstrap';
 import PageLayout from 'common/component/PageLayout';
+import ViewTabs from 'common/component/navigation/ViewTabs';
 import UserTable from 'page/usermgmt/user/UserTable';
 import RoleTable from 'page/usermgmt/roles/RoleTable';
 import * as DescriptorUtilities from 'common/util/descriptorUtilities';
@@ -19,14 +20,14 @@ const UserManagement = ({ descriptors }) => {
             description="This page allows you to configure users and roles for Alert."
             headerIcon="user"
         >
-            <Tabs defaultActiveKey={1} id="user-management-tabs">
+            <ViewTabs id="user-management-tabs">
                 <Tab eventKey={1} title="Users">
                     <UserTable canCreate={canCreate} canDelete={canDelete} />
                 </Tab>
                 <Tab eventKey={2} title="Roles">
                     <RoleTable canCreate={canCreate} canDelete={canDelete} />
                 </Tab>
-            </Tabs>
+            </ViewTabs>
         </PageLayout>
     );
 };

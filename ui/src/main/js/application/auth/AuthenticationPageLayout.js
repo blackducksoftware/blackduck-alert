@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import PageLayout from 'common/component/PageLayout';
+import ViewTabs from 'common/component/navigation/ViewTabs';
 import LdapForm from 'application/auth/LdapForm';
 import SamlForm from 'application/auth/SamlForm';
 
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import * as GlobalRequestHelper from 'common/configuration/global/GlobalRequestHelper';
 
-import { Tab, Tabs } from 'react-bootstrap';
+import { Tab } from 'react-bootstrap';
 import { AUTHENTICATION_INFO } from 'application/auth/AuthenticationModel';
 import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 
@@ -35,7 +36,7 @@ const AuthenticationPageLayout = ({
             lastUpdated={formData.lastUpdated}
             headerIcon="fingerprint"
         >
-            <Tabs defaultActiveKey={1} id="user-management-tabs">
+            <ViewTabs defaultActiveKey={1} id="authentication-tabs">
                 <Tab eventKey={1} title="LDAP">
                     <LdapForm
                         csrfToken={csrfToken}
@@ -56,8 +57,8 @@ const AuthenticationPageLayout = ({
                         fileDelete={fileDelete}
                     />
                 </Tab>
-            </Tabs>
-        </PageLayout>
+            </ViewTabs>
+        </PageLayout>            
     );
 };
 

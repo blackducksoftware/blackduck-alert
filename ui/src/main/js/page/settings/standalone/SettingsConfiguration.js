@@ -1,7 +1,8 @@
 import React from 'react';
 import * as PropTypes from 'prop-types';
-import { Tab, Tabs } from 'react-bootstrap';
+import { Tab } from 'react-bootstrap';
 import PageLayout from 'common/component/PageLayout';
+import ViewTabs from 'common/component/navigation/ViewTabs';
 import { SETTINGS_INFO } from 'page/settings/SettingsModel';
 import SettingsEncryptionConfiguration from 'page/settings/standalone/SettingsEncryptionConfiguration.js';
 import SettingsProxyConfiguration from 'page/settings/standalone/SettingsProxyConfiguration';
@@ -14,7 +15,7 @@ const SettingsConfiguration = ({
         description="This page allows you to configure the global settings."
         headerIcon="cog"
     >
-        <Tabs defaultActiveKey={1} id="settings-tabs">
+        <ViewTabs id="settings-tabs">
             <Tab eventKey={1} title="Encryption">
                 <SettingsEncryptionConfiguration
                     csrfToken={csrfToken}
@@ -33,7 +34,7 @@ const SettingsConfiguration = ({
                     displayDelete={displayDelete}
                 />
             </Tab>
-        </Tabs>
+        </ViewTabs>
     </PageLayout>
 );
 
