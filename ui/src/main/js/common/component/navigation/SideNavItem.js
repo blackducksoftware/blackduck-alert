@@ -4,7 +4,7 @@ import { createUseStyles } from 'react-jss';
 import SideNavButtonItem from 'common/component/navigation/SideNavButtonItem';
 import SideNavSubmenu from 'common/component/navigation/SideNavSubmenu';
 
-const useStyles = createUseStyles(theme => ({
+const useStyles = createUseStyles({
     navItem: {
         color: 'white',
         fontSize: '0.85em',
@@ -16,7 +16,7 @@ const useStyles = createUseStyles(theme => ({
             color: 'white',
             display: 'grid',
             gridTemplateAreas: `
-                ". icon caret"
+                ".     icon  caret"
                 "label label label"
             `,
             gridTemplateColumns: '16px 1fr 16px',
@@ -40,7 +40,7 @@ const useStyles = createUseStyles(theme => ({
 
         }
     }
-}));
+});
 
 const SideNavItem = ({ ...props }) => {
     const classes = useStyles();
@@ -54,11 +54,11 @@ const SideNavItem = ({ ...props }) => {
     const NavItem = hasSubMenu ? SideNavSubmenu : SideNavButtonItem;
 
     return (
-        <li className={classes.navItem} role={null} id={props.id}>
+        <li className={classes.navItem} id={props.id}>
             <NavItem {...props} />
         </li>
     );
-}
+};
 
 SideNavItem.propTypes = {
     hasSubMenu: PropTypes.bool,

@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { NavLink } from 'react-router-dom';
 import Dropdown from 'react-bootstrap/Dropdown';
 
-const useStyles = createUseStyles(theme => ({
+const useStyles = createUseStyles((theme) => ({
     navLabel: {
         gridArea: 'label',
         opacity: 0.66,
@@ -23,7 +23,7 @@ const useStyles = createUseStyles(theme => ({
     navItem: {
         display: 'grid',
         gridTemplateAreas: `
-            ". icon caret"
+            ".     icon  caret"
             "label label label"
         `,
         gridTemplateColumns: '16px 1fr 16px',
@@ -71,10 +71,9 @@ const useStyles = createUseStyles(theme => ({
             color: 'white',
             textDecoration: 'none'
         },
-        
         '&.active': {
             background: '#313944',
-            color: 'white',
+            color: 'white'
         }
     }
 }));

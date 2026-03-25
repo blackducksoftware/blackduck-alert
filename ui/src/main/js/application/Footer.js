@@ -5,7 +5,7 @@ import BlackDuckLogoAllBlack from '/src/main/img/BlackDuckLogo.png';
 import FooterSystemMessages from 'application/FooterSystemMessages';
 import { createUseStyles } from 'react-jss';
 
-const useStyles = createUseStyles(theme => ({
+const useStyles = createUseStyles((theme) => ({
     footer: {
         display: 'flex',
         alignItems: 'center',
@@ -23,7 +23,7 @@ const useStyles = createUseStyles(theme => ({
         zIndex: 9999,
 
         '& a': {
-            color: theme.colors.defaultBorderColor,
+            color: theme.colors.defaultBorderColor
         }
     },
     logoContainer: {
@@ -61,11 +61,12 @@ const Footer = () => {
     const dispatch = useDispatch();
     const classes = useStyles();
     const { version, projectUrl, copyrightYear } = useSelector((state) => state.about);
-    
+    const copyrightYearDisplay = `© ${copyrightYear}`;
+
     useEffect(() => {
         dispatch(getAboutInfo());
     }, []);
-    
+
     return (
         <div className={classes.footer}>
             <span className={classes.logoContainer}>
@@ -84,13 +85,15 @@ const Footer = () => {
                 {version}
             </span>
             <span className={classes.copyright}>
-                &nbsp;© {copyrightYear}&nbsp;
+                &nbsp;
+                {copyrightYearDisplay}
+                &nbsp;
                 <a id="aboutLink" href="https://www.blackduck.com/">Black Duck Software, Inc.</a>
                 &nbsp;All rights reserved
             </span>
             <FooterSystemMessages />
         </div>
     );
-}
+};
 
 export default Footer;

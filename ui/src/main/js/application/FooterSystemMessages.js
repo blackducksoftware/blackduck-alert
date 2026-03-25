@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import { createUseStyles } from 'react-jss';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,25 +7,29 @@ import { getLatestMessages } from 'store/actions/system';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import SystemMessage from 'common/component/SystemMessage';
 
-
 const useStyles = createUseStyles((theme) => ({
     statusIcon: {
         padding: '3px'
     },
     '@keyframes errorBlinker': {
-        '50%':{
+        '50%': {
             opacity: 0
         }
     },
     errorStatus: {
         color: theme.colors.red.lightRed,
-        animation: `$errorBlinker 3s linear infinite`
+        animation: '$errorBlinker 3s linear infinite'
     },
     warningStatus: {
         color: theme.colors.warning
     },
     validStatus: {
         color: theme.colors.green.darkGreen
+    },
+    popoverButton: {
+        background: 'none',
+        border: 'none',
+        padding: 0
     },
     statusPopover: {
         float: 'right',
@@ -38,7 +41,7 @@ const useStyles = createUseStyles((theme) => ({
             cursor: 'pointer'
         }
     },
-    popoverContainer:{
+    popoverContainer: {
         width: '50%',
         zIndex: 1000000
     }
@@ -46,7 +49,7 @@ const useStyles = createUseStyles((theme) => ({
 
 function containsSeverity(messages, severity) {
     return messages?.some((message) => message.severity === severity) ?? false;
-};
+}
 
 const FooterSystemMessages = () => {
     const dispatch = useDispatch();
@@ -91,6 +94,10 @@ const FooterSystemMessages = () => {
         return null;
     };
 
+    const reload = () => {
+        dispatch(getLatestMessages());
+    };
+
     const handleOverlayButton = () => {
         if (!showOverlay) {
             reload();
@@ -98,14 +105,12 @@ const FooterSystemMessages = () => {
 
         setShowOverlay(!showOverlay);
     };
-    
-    const reload = () => {
-        dispatch(getLatestMessages());
-    };
 
     return (
         <div id="about-FooterSystemMessages-status" className={classes.statusPopover}>
-            <div
+            <button
+                className={classes.popoverButton}
+                type="button"
                 ref={targetRef}
                 onClick={handleOverlayButton}
             >
@@ -115,7 +120,7 @@ const FooterSystemMessages = () => {
                         size="lg"
                     />
                 </div>
-            </div>
+            </button>
             <Overlay
                 rootClose
                 show={showOverlay}
@@ -123,7 +128,7 @@ const FooterSystemMessages = () => {
                     setShowOverlay(false);
                 }}
                 placement="top"
-                target={() => ReactDOM.findDOMNode(targetRef.current)}
+                target={targetRef.current}
             >
                 <Popover id="system-errors-popover" className={classes.popoverContainer}>
                     <PopoverHeader>System Messages</PopoverHeader>
@@ -134,6 +139,6 @@ const FooterSystemMessages = () => {
             </Overlay>
         </div>
     );
-}
+};
 
 export default FooterSystemMessages;

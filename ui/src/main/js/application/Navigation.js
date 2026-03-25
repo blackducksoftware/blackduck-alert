@@ -4,30 +4,24 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import SideNavItem from 'common/component/navigation/SideNavItem';
-import { cancelLogout, confirmLogout } from 'store/actions/session';
-import { SLACK_INFO } from 'page/channel/slack/SlackModels';
-import { EMAIL_INFO } from 'page/channel/email/EmailModels';
-import { JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';
-import { JIRA_SERVER_INFO } from 'page/channel/jira/server/JiraServerModel';
-import { MSTEAMS_INFO } from 'page/channel/msteams/MSTeamsModel';
-import { AZURE_BOARDS_INFO } from 'page/channel/azure/AzureBoardsModel';
+import { confirmLogout } from 'store/actions/session';
+import { AUDIT_INFO } from 'page/audit/AuditModel';
+import { AUTHENTICATION_INFO } from 'application/auth/AuthenticationModel';
+import { AZURE_BOARDS_INFO, AZURE_BOARDS_URLS } from 'page/channel/azure/AzureBoardsModel';
+import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
+import { CERTIFICATE_INFO } from 'page/certificates/CertificateModel';
+import { DESCRIPTOR_TYPE, doesDescriptorExist } from 'common/util/descriptorUtilities';
+import { EMAIL_INFO, EMAIL_URLS } from 'page/channel/email/EmailModels';
+import { JIRA_CLOUD_INFO, JIRA_CLOUD_URLS } from 'page/channel/jira/cloud/JiraCloudModel';
+import { JIRA_SERVER_INFO, JIRA_SERVER_URLS } from 'page/channel/jira/server/JiraServerModel';
+import { MSTEAMS_INFO, MSTEAMS_URLS } from 'page/channel/msteams/MSTeamsModel';
 import { SCHEDULING_INFO } from 'page/scheduling/SchedulingModel';
 import { SETTINGS_INFO } from 'page/settings/SettingsModel';
-import { AUTHENTICATION_INFO } from 'application/auth/AuthenticationModel';
-import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
-import { AUDIT_INFO } from 'page/audit/AuditModel';
-import { CERTIFICATE_INFO } from 'page/certificates/CertificateModel';
+import { SLACK_INFO, SLACK_URLS } from 'page/channel/slack/SlackModels';
 import { TASK_MANAGEMENT_INFO } from 'page/task/TaskManagementModel';
 import { USER_MANAGEMENT_INFO } from 'page/usermgmt/UserModel';
-import { DESCRIPTOR_TYPE, doesDescriptorExist } from 'common/util/descriptorUtilities';
-import { AZURE_BOARDS_URLS } from 'page/channel/azure/AzureBoardsModel';
-import { EMAIL_URLS } from 'page/channel/email/EmailModels';
-import { JIRA_CLOUD_URLS } from 'page/channel/jira/cloud/JiraCloudModel';
-import { JIRA_SERVER_URLS } from 'page/channel/jira/server/JiraServerModel';
-import { SLACK_URLS } from 'page/channel/slack/SlackModels';
-import { MSTEAMS_URLS } from 'page/channel/msteams/MSTeamsModel';
 
-const useStyles = createUseStyles(theme => ({
+const useStyles = createUseStyles((theme) => ({
     sideNavContent: {
         height: '100%',
         border: 'solid 1px',
@@ -43,7 +37,7 @@ const useStyles = createUseStyles(theme => ({
     }
 }));
 
-const Navigation = ({ confirmLogoutPressed, cancelLogout, globalDescriptorMap }) => {
+const Navigation = ({ confirmLogoutPressed, globalDescriptorMap }) => {
     const classes = useStyles();
 
     const hasType = (descriptorType) => Object.values(globalDescriptorMap).some((descriptor) => descriptorType === descriptor.type);
@@ -132,21 +126,21 @@ const Navigation = ({ confirmLogoutPressed, cancelLogout, globalDescriptorMap })
                 { (hasType(DESCRIPTOR_TYPE.PROVIDER) && doesDescriptorExist(globalDescriptorMap, BLACKDUCK_INFO.key)) ? (
                     <SideNavItem href="/alert/providers/blackduck" icon="truck" id="providers" label="Provider" type="link" />
                 ) : null }
-                
+
                 { hasType(DESCRIPTOR_TYPE.CHANNEL) ? (
                     <SideNavItem hasSubMenu subMenuItems={channelGroup} label="Channels" id="channels" icon="stream" />
                 ) : null }
-                
+
                 <SideNavItem href="/alert/jobs/distribution" icon="archive" id="archive" label="Jobs" type="link" />
 
                 { hasType(DESCRIPTOR_TYPE.COMPONENT) ? (
                     <SideNavItem hasSubMenu subMenuItems={manageGroup} label="Manage" id="manage" icon="toolbox" />
                 ) : null }
-                
+
                 { doesDescriptorExist(globalDescriptorMap, SETTINGS_INFO.key) ? (
                     <SideNavItem href="/alert/components/settings" label="Settings" id="settings" icon="cog" type="link" />
-                ) :  null }
-                
+                ) : null }
+
                 <SideNavItem label="Logout" id="logout" icon="sign-out-alt" onClick={() => confirmLogoutPressed()} />
             </ul>
         </div>
@@ -159,8 +153,7 @@ Navigation.propTypes = {
 };
 
 const mapDispatchToProps = (dispatch) => ({
-    confirmLogoutPressed: () => dispatch(confirmLogout()),
-    cancelLogout: () => dispatch(cancelLogout())
+    confirmLogoutPressed: () => dispatch(confirmLogout())
 });
 
 export default withRouter(connect(null, mapDispatchToProps)(Navigation));
