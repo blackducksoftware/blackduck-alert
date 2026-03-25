@@ -60,7 +60,7 @@ const ViewTabs = ({ children, defaultActiveKey = 1, id }) => {
 
 ViewTabs.propTypes = {
     children: PropTypes.node.isRequired,
-    defaultActiveKey: PropTypes.number,
+    defaultActiveKey: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     id: PropTypes.string.isRequired
 };
 
