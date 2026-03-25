@@ -23,7 +23,7 @@ const useStyles = createUseStyles((theme) => ({
     channelItem: {
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        gap: '16px',
         minWidth: 'fit-content',
         height: '80px',
         borderRadius: '12px',
@@ -47,7 +47,7 @@ const useStyles = createUseStyles((theme) => ({
         fontWeight: 'bold'
     },
     channelIcon: {
-        color: theme.colors.grey.lightGrey,
+        color: theme.colors.grey.default,
         opacity: 0.5
     },
     channelItemDisabled: {
@@ -131,11 +131,11 @@ const ChannelCard = ({ channel }) => {
 
     return (
         <NavLink to={getUrl(channel.urlName)} className={classes.channelItem}>
+            <div className={classes.channelIcon}>
+                <FontAwesomeIcon icon={channel.icon} size="3x" />
+            </div>
             <div className={classes.channelName}>
                 {channel.name}
-            </div>
-            <div className={classes.channelIcon}>
-                <FontAwesomeIcon icon={channel.icon} size="5x" />
             </div>
         </NavLink>
     );
