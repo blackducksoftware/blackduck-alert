@@ -1,12 +1,15 @@
 import React from 'react';
-import PageHeader from 'common/component/navigation/PageHeader';
+import PageLayout from 'common/component/PageLayout';
 import { SLACK_INFO } from 'page/channel/slack/SlackModels';
 
 const SlackGlobalConfiguration = () => (
-    <PageHeader
+    <PageLayout
         title={SLACK_INFO.label}
         description="Configure Slack for Alert."
-    />
+        headerIcon={['fab', 'slack']}
+    >
+        <p>No global configuration is required for Slack.</p>
+    </PageLayout>
 );
 
 export default SlackGlobalConfiguration;

@@ -7,7 +7,8 @@ const colors = {
         lightGrey: '#D9D9D9',
         default: '#808080',
         darkGrey: '#666666',
-        darkerGrey: '#4a5565',
+        darkerGrey: '#364153',
+        // darkerGrey: '#4a5565', TODO: Consolidate these two
         blackout: '#222222'
     },
     purple: {

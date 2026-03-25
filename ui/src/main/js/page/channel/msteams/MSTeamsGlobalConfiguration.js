@@ -1,12 +1,15 @@
 import React from 'react';
-import PageHeader from 'common/component/navigation/PageHeader';
+import PageLayout from 'common/component/PageLayout';
 import { MSTEAMS_INFO } from 'page/channel/msteams/MSTeamsModel';
 
 const MSTeamsGlobalConfiguration = () => (
-    <PageHeader
+    <PageLayout
         title={MSTEAMS_INFO.label}
         description="Configure MS Teams for Alert."
-    />
+        headerIcon={['fab', 'windows']}
+    >
+        <p>No global configuration is required for Microsoft Teams.</p>
+    </PageLayout>
 );
 
 export default MSTeamsGlobalConfiguration;

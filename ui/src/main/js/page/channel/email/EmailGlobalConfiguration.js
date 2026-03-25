@@ -10,7 +10,7 @@ import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBu
 import * as fieldModelUtilities from 'common/util/fieldModelUtilities';
 import FluidFieldMappingField from 'common/component/input/mapping/FluidFieldMappingField';
 import NumberInput from 'common/component/input/NumberInput';
-import PageHeader from 'common/component/navigation/PageHeader';
+import PageLayout from 'common/component/PageLayout';
 
 const EmailGlobalConfiguration = ({
     csrfToken, errorHandler, readonly, displayTest, displaySave, displayDelete
@@ -48,12 +48,12 @@ const EmailGlobalConfiguration = ({
     };
 
     return (
-        <div>
-            <PageHeader
-                title={`${EMAIL_INFO.label}`}
-                description="Configure the email server that Alert will send emails to."
-                lastUpdated={emailConfig.lastUpdated}
-            />
+        <PageLayout
+            title={EMAIL_INFO.label}
+            description="Configure the email server that Alert will send emails to."
+            headerIcon="envelope"
+            lastUpdated={emailConfig.lastUpdated}
+        >
             <ConcreteConfigurationForm
                 csrfToken={csrfToken}
                 formDataId={emailConfig.id}
@@ -155,7 +155,7 @@ const EmailGlobalConfiguration = ({
                     errorValue={errors.fieldErrors[additionalPropertiesName]}
                 />
             </ConcreteConfigurationForm>
-        </div>
+        </PageLayout>
     );
 };
 
