@@ -7,6 +7,7 @@ import MainPage from 'application/MainPage';
 import LoginPage from 'application/auth/LoginPage';
 import Footer from 'application/Footer';
 import { verifyLogin, verifySaml } from 'store/actions/session';
+import { getAboutInfo } from 'store/actions/about';
 import * as IconUtility from 'common/util/iconUtility';
 import LogoutPage from 'application/auth/LogoutPage';
 import SessionUnauthorizedPage from 'application/auth/SessionUnauthorizedPage';
@@ -22,24 +23,34 @@ IconUtility.loadIconData();
 
 class App extends Component {
     componentDidMount() {
-        this.props.verifyLogin();
-        this.props.verifySaml();
+        const { verifyLogin: verifyLoginAction, verifySaml: verifySamlAction, getAboutInfo: getAboutInfoAction } = this.props;
+
+        verifyLoginAction();
+        verifySamlAction();
+        getAboutInfoAction();
     }
 
     render() {
-        if (this.props.initializing) {
+        const {
+            initializing,
+            logoutPerformed,
+            sessionUnauthorizationPerformed,
+            loggedIn
+        } = this.props;
+
+        if (initializing) {
             return (<div />);
         }
 
-        if (this.props.logoutPerformed) {
+        if (logoutPerformed) {
             return <LogoutPage />;
         }
 
-        if (this.props.sessionUnauthorizationPerformed) {
+        if (sessionUnauthorizationPerformed) {
             return <SessionUnauthorizedPage />;
         }
 
-        const contentPage = (this.props.loggedIn) ? <MainPage /> : <LoginPage />;
+        const contentPage = loggedIn ? <MainPage /> : <LoginPage />;
 
         return (
             <div>
@@ -61,6 +72,7 @@ App.propTypes = {
     initializing: PropTypes.bool.isRequired,
     verifyLogin: PropTypes.func.isRequired,
     verifySaml: PropTypes.func.isRequired,
+    getAboutInfo: PropTypes.func.isRequired
 };
 
 // Redux mappings to be used later....
@@ -68,12 +80,13 @@ const mapStateToProps = (state) => ({
     loggedIn: state.session.loggedIn,
     logoutPerformed: state.session.logoutPerformed,
     sessionUnauthorizationPerformed: state.session.sessionUnauthorizationPerformed,
-    initializing: state.session.initializing,
+    initializing: state.session.initializing
 });
 
 const mapDispatchToProps = (dispatch) => ({
     verifyLogin: () => dispatch(verifyLogin()),
-    verifySaml: () => dispatch(verifySaml())
+    verifySaml: () => dispatch(verifySaml()),
+    getAboutInfo: () => dispatch(getAboutInfo())
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));

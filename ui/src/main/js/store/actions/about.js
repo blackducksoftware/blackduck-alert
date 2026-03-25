@@ -47,16 +47,15 @@ export function getAboutInfo() {
             headers: headersUtil.getHeaders(),
             redirect: 'manual'
         }).then((response) => {
-                response.json()
-                    .then((responseData) => {
-                        if (response.ok) {
-                            dispatch(aboutInfoFetched(responseData));
-                        } else {
-                            const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                            dispatch(handler(response.status));
-                        }
-                    });
-            })
-            .catch(console.error);
+            response.json()
+                .then((responseData) => {
+                    if (response.ok) {
+                        dispatch(aboutInfoFetched(responseData));
+                    } else {
+                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                        dispatch(handler(response.status));
+                    }
+                });
+        }).catch(console.error);
     };
 }
