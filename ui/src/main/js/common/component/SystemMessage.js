@@ -9,13 +9,13 @@ const useStyles = createUseStyles((theme) => ({
         padding: '3px'
     },
     errorStatus: {
-        color: theme.colors.red.lightRed
+        color: theme.colors.status.error.text
     },
     warningStatus: {
-        color: theme.colors.warning
+        color: theme.colors.status.warning.text
     },
     validStatus: {
-        color: theme.colors.green.darkGreen
+        color: theme.colors.status.success.text
     },
     messageHeader: {
         width: '100%',
@@ -31,17 +31,16 @@ const useStyles = createUseStyles((theme) => ({
 const SystemMessage = ({ createdAt, content, severity, id }) => {
     const classes = useStyles();
 
-    function getIcon(severity) {        
-        return (severity === 'ERROR' || severity === 'WARNING') ? 'exclamation-triangle' : 'check-circle';
+    function getIcon(messageSeverity) {
+        return (messageSeverity === 'ERROR' || messageSeverity === 'WARNING') ? 'exclamation-triangle' : 'check-circle';
     }
 
-    function getClassName(severity) {
-        return classNames({
-            [classes.alertIcon]: true,
-            [classes.errorStatus]: (severity === 'ERROR'),
-            [classes.warningStatus]: (severity === 'WARNING'),
-            [classes.validStatus]: (severity !== 'ERROR' && severity !== 'WARNING'),
-        })
+    function getClassName(messageSeverity) {
+        return classNames(classes.alertIcon, {
+            [classes.errorStatus]: (messageSeverity === 'ERROR'),
+            [classes.warningStatus]: (messageSeverity === 'WARNING'),
+            [classes.validStatus]: (messageSeverity !== 'ERROR' && messageSeverity !== 'WARNING')
+        });
     }
 
     return (
@@ -56,8 +55,7 @@ const SystemMessage = ({ createdAt, content, severity, id }) => {
             <div>{content}</div>
         </div>
     );
-
-}
+};
 
 SystemMessage.propTypes = {
     id: PropTypes.string,

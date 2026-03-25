@@ -17,14 +17,14 @@ const useStyles = createUseStyles((theme) => ({
         }
     },
     errorStatus: {
-        color: theme.colors.red.lightRed,
+        color: theme.colors.status.error.text,
         animation: '$errorBlinker 3s linear infinite'
     },
     warningStatus: {
-        color: theme.colors.warning
+        color: theme.colors.status.warning.text
     },
     validStatus: {
-        color: theme.colors.green.darkGreen
+        color: theme.colors.status.success.text
     },
     popoverButton: {
         background: 'none',
