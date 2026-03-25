@@ -20,9 +20,9 @@ const useStyles = createUseStyles((theme) => ({
         backgroundColor: theme.colors.status.success.background
     },
     fail: {
-        color: theme.colors.status.failure.default,
-        border: `1px solid ${theme.colors.status.failure.border}`,
-        backgroundColor: theme.colors.status.failure.background
+        color: theme.colors.status.error.default,
+        border: `1px solid ${theme.colors.status.error.border}`,
+        backgroundColor: theme.colors.status.error.background
     },
     pending: {
         color: theme.colors.status.warning.default,
