@@ -2,8 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import theme from '../../_theme';
 
-const useStyles = createUseStyles(theme => ({
+const useStyles = createUseStyles({
     sectionCard: {
         borderRadius: '12px',
         backgroundColor: theme.colors.white.default,
@@ -15,11 +16,10 @@ const useStyles = createUseStyles(theme => ({
             marginBottom: 0
         }
     },
-
     sectionTitle: {
         display: 'flex',
         flexDirection: 'row',
-        
+
         alignItems: 'center',
         columnGap: '8px'
     },
@@ -36,9 +36,16 @@ const useStyles = createUseStyles(theme => ({
     content: {
         marginTop: '28px'
     }
-    
-}));
+});
 
+/**
+ * Common component for displaying a section with a title and content. Used in the about page to display different sections of information.
+ * @param {string} title - The title to be displayed above the content
+ * @param {string} description - A description to be displayed below the title and above the content
+ * @param {string} icon - An optional FontAwesome icon name to be displayed to the left of the title
+ * @param {string | ReactNode} children - The content to be displayed below the title and description
+ * @returns
+ */
 export default function SectionCard({ children, title, icon, description }) {
     const classes = useStyles();
 
@@ -46,11 +53,11 @@ export default function SectionCard({ children, title, icon, description }) {
         <section className={classes.sectionCard}>
             {title && (
                 <div className={classes.sectionTitle}>
-                    {icon && <FontAwesomeIcon icon={icon} size="lg" color="#4a5565" />}
+                    {icon && <FontAwesomeIcon icon={icon} size="lg" color={theme.colors.grey.darkerGrey} />}
                     <h4 className={classes.sectionHeader}>{title}</h4>
                 </div>
             )}
-            
+
             {description && <div className={classes.description}>{description}</div>}
 
             <div className={classes.content}>

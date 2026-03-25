@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 
-const useStyles = createUseStyles(theme => ({
+const useStyles = createUseStyles((theme) => ({
     titleContentContainer: {
         display: 'flex',
         flexDirection: 'column'
@@ -18,7 +18,7 @@ const useStyles = createUseStyles(theme => ({
  * Common component for displaying a stacked title and content pair. Used in the about page to display system information.
  * @param {string} title - The title to be displayed above the content
  * @param {string | ReactNode} children - The content to be displayed below the title
- * @returns 
+ * @returns
  */
 const TitleContentPair = ({
     title, children

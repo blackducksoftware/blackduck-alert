@@ -12,7 +12,7 @@ import { JIRA_SERVER_URLS } from 'page/channel/jira/server/JiraServerModel';
 import { MSTEAMS_URLS } from 'page/channel/msteams/MSTeamsModel';
 import { SLACK_URLS } from 'page/channel/slack/SlackModels';
 
-const useStyles = createUseStyles(theme => ({
+const useStyles = createUseStyles((theme) => ({
     channelListContainer: {
         padding: '10px',
         borderRadius: '12px',
@@ -99,7 +99,7 @@ function getUrl(channel) {
     }
 }
 
-function generateChannelData(descriptorMapping, existingData) { 
+function generateChannelData(descriptorMapping, existingData) {
     return Object.values(descriptorMapping)
         .filter((descriptor) => existingData[descriptor.name])
         .map((descriptor) => {
@@ -123,8 +123,8 @@ const ChannelCard = ({ channel }) => {
                     {channel.name}
                 </div>
                 <div className={classes.channelIcon}>
-                    <FontAwesomeIcon icon={channel.icon} size="5x"/>
-                </div> 
+                    <FontAwesomeIcon icon={channel.icon} size="5x" />
+                </div>
             </div>
         );
     }
@@ -135,11 +135,11 @@ const ChannelCard = ({ channel }) => {
                 {channel.name}
             </div>
             <div className={classes.channelIcon}>
-                <FontAwesomeIcon icon={channel.icon} size="5x"/>
-            </div> 
+                <FontAwesomeIcon icon={channel.icon} size="5x" />
+            </div>
         </NavLink>
     );
-}
+};
 
 ChannelCard.propTypes = {
     channel: PropTypes.shape({

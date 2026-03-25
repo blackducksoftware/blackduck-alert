@@ -20,7 +20,7 @@ const useStyles = createUseStyles((theme) => ({
         justifyContent: 'center'
     },
     warningStyle: {
-        color: theme.colors.warning
+        color: theme.colors.status.warning.text
     },
     descriptor: {
         fontSize: '14px',

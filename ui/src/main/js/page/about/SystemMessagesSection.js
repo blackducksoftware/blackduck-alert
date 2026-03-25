@@ -7,7 +7,7 @@ import SectionCard from 'common/component/SectionCard';
 import theme from '_theme';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const useStyles = createUseStyles((theme) => ({
+const useStyles = createUseStyles({
     systemMessageList: {
         listStyleType: 'none',
         padding: 0,
@@ -18,23 +18,23 @@ const useStyles = createUseStyles((theme) => ({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: '8px',
-        columnGap: '12px',
+        columnGap: '12px'
     },
     errorMessageItem: {
-        border: ['solid', '1px', theme.colors.red.lightRed + '1a'],
+        border: ['solid', '1px', theme.colors.status.error.background],
         borderLeft: 'none',
         borderRadius: '4px'
     },
     warningMessageItem: {
-        border: ['solid', '1px', theme.colors.warning + '1a'],
+        border: ['solid', '1px', theme.colors.status.warning.background],
         borderLeft: 'none',
         borderRadius: '4px'
     },
     validMessageItem: {
-        border: ['solid', '1px', theme.colors.green.darkGreen + '1a'],
+        border: ['solid', '1px', theme.colors.status.success.background],
         borderLeft: 'none',
         borderRadius: '4px'
-     },
+    },
     statusIconContainer: {
         alignSelf: 'stretch',
         padding: '12px',
@@ -43,16 +43,16 @@ const useStyles = createUseStyles((theme) => ({
         borderBottomLeftRadius: '4px'
     },
     errorIconStatus: {
-        borderLeft: ['4px', 'solid', theme.colors.red.lightRed],
-        backgroundColor: theme.colors.red.lightRed + '1a'
+        borderLeft: ['4px', 'solid', theme.colors.status.error.text],
+        backgroundColor: theme.colors.status.error.background
     },
     warningIconStatus: {
-        borderLeft: ['4px', 'solid', theme.colors.warning],
-        backgroundColor: theme.colors.warning + '1a'
+        borderLeft: ['4px', 'solid', theme.colors.status.warning.text],
+        backgroundColor: theme.colors.status.warning.background
     },
     validIconStatus: {
-        borderLeft: ['4px', 'solid', theme.colors.green.darkGreen],
-        backgroundColor: theme.colors.green.darkGreen + '1a'
+        borderLeft: ['4px', 'solid', theme.colors.status.success.text],
+        backgroundColor: theme.colors.status.success.background
     },
     messageContent: {
         fontSize: '14px',
@@ -65,39 +65,37 @@ const useStyles = createUseStyles((theme) => ({
         margin: [0, '12px', 0, 'auto'],
         padding: 0
     }
-}));
-
+});
 
 // TODO: Dispatch this action in parent and pass it to this component and footer component
 const SystemMessagesSection = () => {
     const classes = useStyles();
     const { fetching, latestMessages } = useSelector((state) => state.system);
 
-    // TODO: These two functions are used in SystemMessage.js - export these to a common utility file and import them in both places
     function getIconConfig(severity) {
         if (severity === 'ERROR') {
-            return {icon: 'exclamation-triangle', color: theme.colors.red.lightRed};
+            return { icon: 'exclamation-triangle', color: theme.colors.status.error.text };
         } else if (severity === 'WARNING') {
-            return {icon: 'exclamation-triangle', color: theme.colors.warning};
+            return { icon: 'exclamation-triangle', color: theme.colors.status.warning.text };
         } else {
-            return {icon: 'check-circle', color: theme.colors.green.darkGreen};
-        }   
+            return { icon: 'check-circle', color: theme.colors.status.success.text };
+        }
     }
-    
+
     function getIconClassName(severity) {
         return classNames(classes.statusIconContainer, {
             [classes.errorIconStatus]: (severity === 'ERROR'),
             [classes.warningIconStatus]: (severity === 'WARNING'),
-            [classes.validIconStatus]: (severity !== 'ERROR' && severity !== 'WARNING'),
-        })
+            [classes.validIconStatus]: (severity !== 'ERROR' && severity !== 'WARNING')
+        });
     }
 
     function getMessageClassName(severity) {
         return classNames(classes.messageItem, {
             [classes.errorMessageItem]: (severity === 'ERROR'),
             [classes.warningMessageItem]: (severity === 'WARNING'),
-            [classes.validMessageItem]: (severity !== 'ERROR' && severity !== 'WARNING'),
-        })
+            [classes.validMessageItem]: (severity !== 'ERROR' && severity !== 'WARNING')
+        });
     }
 
     return (
@@ -120,7 +118,7 @@ const SystemMessagesSection = () => {
                                     {message.createdAt}
                                 </p>
                             </li>
-                        )
+                        );
                     })}
                 </ul>
             ) : (

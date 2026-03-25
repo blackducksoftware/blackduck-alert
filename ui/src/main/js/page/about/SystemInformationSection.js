@@ -6,7 +6,7 @@ import TitleContentPair from 'common/component/TitleContentPair';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAboutInfo } from 'store/actions/about';
 
-const useStyles = createUseStyles(theme => ({
+const useStyles = createUseStyles((theme) => ({
     systemInformationContainer: {
         display: 'grid',
         gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
@@ -77,7 +77,7 @@ const SystemInformationSection = () => {
                 <TitleContentPair title="Commit Hash">
                     <InfoLink url={commitHashUrl} text={commitHash} />
                 </TitleContentPair>
-            
+
                 <TitleContentPair title="Project URL">
                     <InfoLink url={projectUrl} text={projectUrl} />
                 </TitleContentPair>
