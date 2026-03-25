@@ -23,25 +23,34 @@ IconUtility.loadIconData();
 
 class App extends Component {
     componentDidMount() {
-        this.props.verifyLogin();
-        this.props.verifySaml();
-        this.props.getAboutInfo();
+        const { verifyLogin: verifyLoginAction, verifySaml: verifySamlAction, getAboutInfo: getAboutInfoAction } = this.props;
+
+        verifyLoginAction();
+        verifySamlAction();
+        getAboutInfoAction();
     }
 
     render() {
-        if (this.props.initializing) {
+        const {
+            initializing,
+            logoutPerformed,
+            sessionUnauthorizationPerformed,
+            loggedIn
+        } = this.props;
+
+        if (initializing) {
             return (<div />);
         }
 
-        if (this.props.logoutPerformed) {
+        if (logoutPerformed) {
             return <LogoutPage />;
         }
 
-        if (this.props.sessionUnauthorizationPerformed) {
+        if (sessionUnauthorizationPerformed) {
             return <SessionUnauthorizedPage />;
         }
 
-        const contentPage = (this.props.loggedIn) ? <MainPage /> : <LoginPage />;
+        const contentPage = loggedIn ? <MainPage /> : <LoginPage />;
 
         return (
             <div>
@@ -71,7 +80,7 @@ const mapStateToProps = (state) => ({
     loggedIn: state.session.loggedIn,
     logoutPerformed: state.session.logoutPerformed,
     sessionUnauthorizationPerformed: state.session.sessionUnauthorizationPerformed,
-    initializing: state.session.initializing,
+    initializing: state.session.initializing
 });
 
 const mapDispatchToProps = (dispatch) => ({

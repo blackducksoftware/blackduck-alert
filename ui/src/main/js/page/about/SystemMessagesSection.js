@@ -64,7 +64,7 @@ const useStyles = createUseStyles({
         color: theme.colors.grey.darkGrey,
         margin: [0, '12px', 0, 'auto'],
         padding: 0,
-        textWrap: 'nowrap' 
+        textWrap: 'nowrap'
     }
 });
 

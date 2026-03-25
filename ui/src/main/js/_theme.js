@@ -52,7 +52,7 @@ const colors = {
             default: '#9f2d00',
             text: '#E07C05'
         }
-    },
+    }
 };
 
 const defaultBorder = `solid 1px ${colors.borderColor}`;
