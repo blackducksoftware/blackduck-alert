@@ -14,7 +14,6 @@ const AzureBoardsLayout = ({ readonly, allowDelete }) => (
     </PageLayout>
 );
 
-
 AzureBoardsLayout.propTypes = {
     readonly: PropTypes.bool,
     allowDelete: PropTypes.bool

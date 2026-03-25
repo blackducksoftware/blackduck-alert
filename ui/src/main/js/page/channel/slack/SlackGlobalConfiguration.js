@@ -7,7 +7,9 @@ const SlackGlobalConfiguration = () => (
         title={SLACK_INFO.label}
         description="Configure Slack for Alert."
         headerIcon={['fab', 'slack']}
-    />
+    >
+        <p>No global configuration is required for Slack.</p>
+    </PageLayout>
 );
 
 export default SlackGlobalConfiguration;

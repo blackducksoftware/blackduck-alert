@@ -10,7 +10,7 @@ const DistributionConfiguration = ({ readonly }) => (
         description={DISTRIBUTION_INFO.description}
         headerIcon={['fas', 'tasks']}
     >
-        <DistributionTable readonly={readonly}/>
+        <DistributionTable readonly={readonly} />
     </PageLayout>
 );
 

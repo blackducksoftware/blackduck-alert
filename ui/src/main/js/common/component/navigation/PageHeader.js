@@ -23,7 +23,7 @@ const useStyles = createUseStyles((theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#1e2939',
-        boxShadow: '0 6px 12px rgba(0, 0, 0, 0.175)',
+        boxShadow: '0 6px 12px rgba(0, 0, 0, 0.175)'
     },
     logoGlyph: {
         fontSize: '30px'

@@ -58,7 +58,7 @@ const AuthenticationPageLayout = ({
                     />
                 </Tab>
             </ViewTabs>
-        </PageLayout>            
+        </PageLayout>
     );
 };
 
