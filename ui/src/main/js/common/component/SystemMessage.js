@@ -16,6 +16,15 @@ const useStyles = createUseStyles((theme) => ({
     },
     validStatus: {
         color: theme.colors.green.darkGreen
+    },
+    messageHeader: {
+        width: '100%',
+        borderTop: `1px solid ${theme.colors.darkGreyAlertColor}`
+    },
+    messageDate: {
+        marginLeft: '5px',
+        marginRight: '5px',
+        fontWeight: 'bold'
     }
 }));
 
@@ -36,14 +45,14 @@ const SystemMessage = ({ createdAt, content, severity, id }) => {
     }
 
     return (
-        <div id={id} className="messageHeader">
+        <div id={id} className={classes.messageHeader}>
             <FontAwesomeIcon
                 icon={getIcon(severity)}
                 className={getClassName(severity)}
                 size="lg"
                 title={severity}
             />
-            <span className="messageDate">{createdAt}</span>
+            <span className={classes.messageDate}>{createdAt}</span>
             <div>{content}</div>
         </div>
     );

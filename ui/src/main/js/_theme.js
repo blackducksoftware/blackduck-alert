@@ -6,7 +6,8 @@ const colors = {
         lighterGrey: '#E8E6E6',
         lightGrey: '#D9D9D9',
         default: '#808080',
-        darkGrey: '#666666'
+        darkGrey: '#666666',
+        blackout: '#222222'
     },
     red: {
         lighterRed: '#EA7B73',
@@ -16,8 +17,10 @@ const colors = {
     white: {
         default: '#FFFFFF'
     },
-    defaultAlertColor: '#2E3B4E',
     darkGreyAlertColor: '#646E81',
+    defaultAlertColor: '#2E3B4E',
+    defaultBackgroundColor: '#F7F7FA',
+    defaultBorderColor: '#B1B3B3',
     statusFailure: '#E15241',
     statusPending: '#F0AD4E',
     statusSuccess: '#509D51',
