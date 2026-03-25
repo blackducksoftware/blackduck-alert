@@ -21,17 +21,17 @@ const useStyles = createUseStyles({
         columnGap: '12px'
     },
     errorMessageItem: {
-        border: ['solid', '1px', theme.colors.status.error.background],
+        border: ['solid', '1px', theme.colors.status.error.border],
         borderLeft: 'none',
         borderRadius: '4px'
     },
     warningMessageItem: {
-        border: ['solid', '1px', theme.colors.status.warning.background],
+        border: ['solid', '1px', theme.colors.status.warning.border],
         borderLeft: 'none',
         borderRadius: '4px'
     },
     validMessageItem: {
-        border: ['solid', '1px', theme.colors.status.success.background],
+        border: ['solid', '1px', theme.colors.status.success.border],
         borderLeft: 'none',
         borderRadius: '4px'
     },
@@ -63,7 +63,8 @@ const useStyles = createUseStyles({
         fontSize: '14px',
         color: theme.colors.grey.darkGrey,
         margin: [0, '12px', 0, 'auto'],
-        padding: 0
+        padding: 0,
+        textWrap: 'nowrap' 
     }
 });
 

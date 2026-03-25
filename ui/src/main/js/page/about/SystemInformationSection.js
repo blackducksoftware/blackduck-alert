@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
@@ -34,6 +34,18 @@ const useStyles = createUseStyles((theme) => ({
 
 const InfoLink = ({ url, text }) => {
     const classes = useStyles();
+
+    // Very unlikely scenario, but if there is no URL, render the text without a link.
+    if (!url) {
+        return (
+            <span
+                className={classes.contentLink}
+                aria-disabled="true"
+            >
+                {text}
+            </span>
+        );
+    }
 
     return (
         <a

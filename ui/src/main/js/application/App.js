@@ -63,6 +63,7 @@ App.propTypes = {
     initializing: PropTypes.bool.isRequired,
     verifyLogin: PropTypes.func.isRequired,
     verifySaml: PropTypes.func.isRequired,
+    getAboutInfo: PropTypes.func.isRequired
 };
 
 // Redux mappings to be used later....
