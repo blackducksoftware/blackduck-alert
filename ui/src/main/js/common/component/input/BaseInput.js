@@ -61,7 +61,7 @@ BaseInput.propTypes = {
     readOnly: PropTypes.bool,
     autoFocus: PropTypes.bool,
     name: PropTypes.string,
-    value: PropTypes.string,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     onChange: PropTypes.func,
     errorValue: PropTypes.object,
     placeholder: PropTypes.string,

@@ -25,6 +25,7 @@ const TextInput = ({
             placeholder={placeholder}
             name={name}
             value={value}
+            errorValue={errorValue}
             onChange={onChange}
             isDisabled={isDisabled}
         />

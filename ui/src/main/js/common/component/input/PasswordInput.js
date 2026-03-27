@@ -4,7 +4,7 @@ import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input
 import BaseInput from 'common/component/input/BaseInput';
 
 const PasswordInput = ({
-    id, description, errorName, errorValue, isSet, label, 
+    id, description, errorName, errorValue, isSet, label,
     name, onChange, readOnly, required, value, placeholder, customDescription, isDisabled
 }) => {
     const placeholderText = (isSet) ? '***********' : null;
@@ -21,12 +21,13 @@ const PasswordInput = ({
             required={required}
         >
             <BaseInput
-                id={id} 
-                type="password" 
-                readOnly={readOnly} name={name} 
-                value={value} 
-                onChange={onChangeHandler} 
-                placeholder={placeholderText || placeholder} 
+                id={id}
+                type="password"
+                readOnly={readOnly} name={name}
+                value={value}
+                onChange={onChangeHandler}
+                placeholder={placeholderText || placeholder}
+                errorValue={errorValue}
                 isDisabled={isDisabled}
             />
         </LabeledField>
