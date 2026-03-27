@@ -1,6 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import Button from 'common/component/button/Button';
+import { createUseStyles } from 'react-jss';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import BaseInput from 'common/component/input/BaseInput';
+import Button from '../../button/Button';
+
+const useStyles = createUseStyles((theme) => ({
+    fieldMappingRow: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px'
+    },
+    fieldMappingContent: {
+        display: 'flex',
+        flexDirection: 'row',
+        columnGap: '10px',
+        alignItems: 'center'
+    },
+    deleteRowButton: {
+        background: 'none',
+        border: 'none',
+        fontSize: '14px',
+        borderRadius: '8px',
+        padding: ['5px', '10px'],
+        color: theme.colors.grey.lightGrey,
+        '&:hover': {
+            color: theme.colors.status.error.text,
+            backgroundColor: theme.colors.status.error.background
+        }
+    }
+}));
 
 const FieldMappingRow = ({
     index,
@@ -11,6 +40,7 @@ const FieldMappingRow = ({
     mappingSymbol,
     readonly
 }) => {
+    const classes = useStyles();
     const [currentLeftSide, setCurrentLeftSide] = useState(leftSide);
     const [currentRightSide, setCurrentRightSide] = useState(rightSide);
 
@@ -24,31 +54,35 @@ const FieldMappingRow = ({
     }, [leftSide, rightSide]);
 
     return (
-        <div className="row align-items-start form-group">
-            <div className="col-sm">
-                <input
-                    id="left-side"
-                    type="text"
-                    readOnly={readonly}
-                    className="form-control"
-                    name="left-side"
-                    value={currentLeftSide}
-                    onChange={({ target }) => setCurrentLeftSide(target.value)}
-                />
+        <div className={classes.fieldMappingRow}>
+            <div className={classes.fieldMappingContent}>
+                <div className="col-sm">
+                    <BaseInput
+                        id="left-side"
+                        type="text"
+                        readOnly={readonly}
+                        className="form-control"
+                        name="left-side"
+                        value={currentLeftSide}
+                        onChange={({ target }) => setCurrentLeftSide(target.value)}
+                        placeholder="Property Name"
+                    />
+                </div>
+                {mappingSymbol}
+                <div className="col-sm">
+                    <BaseInput
+                        id="right-side"
+                        type="text"
+                        readOnly={readonly}
+                        className="form-control"
+                        name="right-side"
+                        value={currentRightSide}
+                        onChange={({ target }) => setCurrentRightSide(target.value)}
+                        placeholder="Property Value"
+                    />
+                </div>
             </div>
-            {mappingSymbol}
-            <div className="col-sm">
-                <input
-                    id="right-side"
-                    type="text"
-                    readOnly={readonly}
-                    className="form-control"
-                    name="right-side"
-                    value={currentRightSide}
-                    onChange={({ target }) => setCurrentRightSide(target.value)}
-                />
-            </div>
-            <Button id="delete-mapping" onClick={() => deleteRow(index)} text="Remove Property" icon="minus" />
+            <Button id="delete-mapping" onClick={() => deleteRow(index)} icon="x" text="Remove Property" buttonStyle="actionSecondaryDelete" />
         </div>
     );
 };

@@ -6,6 +6,7 @@ import theme from '../../_theme';
 
 const useStyles = createUseStyles({
     sectionCard: {
+        width: ({ width }) => width,
         borderRadius: '12px',
         backgroundColor: theme.colors.white.default,
         border: theme.defaultBorder,
@@ -32,9 +33,6 @@ const useStyles = createUseStyles({
         marginTop: '8px',
         fontSize: '16px',
         color: theme.colors.grey.darkerGrey
-    },
-    content: {
-        marginTop: '28px'
     }
 });
 
@@ -44,10 +42,11 @@ const useStyles = createUseStyles({
  * @param {string} description - A description to be displayed below the title and above the content
  * @param {string} icon - An optional FontAwesome icon name to be displayed to the left of the title
  * @param {string | ReactNode} children - The content to be displayed below the title and description
+ * @param {string} width - The width of the section card, default is 100%
  * @returns
  */
-export default function SectionCard({ children, title, icon, description }) {
-    const classes = useStyles();
+export default function SectionCard({ children, title, icon, description, width = '100%' }) {
+    const classes = useStyles({ width });
 
     return (
         <section className={classes.sectionCard}>
@@ -60,9 +59,7 @@ export default function SectionCard({ children, title, icon, description }) {
 
             {description && <div className={classes.description}>{description}</div>}
 
-            <div className={classes.content}>
-                {children}
-            </div>
+            {children}
         </section>
     );
 }

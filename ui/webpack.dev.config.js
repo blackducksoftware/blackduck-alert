@@ -19,7 +19,7 @@ module.exports = merge.smart(commonConfig, {
         ],
         https: true,
         hot: true,
-        port: 9000,
+        port: 2187,
         compress: true,
         historyApiFallback: true,
         allowedHosts: 'all',

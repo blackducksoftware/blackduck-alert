@@ -1,162 +1,149 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Modal from 'common/component/modal/Modal';
 import Button from 'common/component/button/Button';
+import { createUseStyles } from 'react-jss';
 
-class ConfigButtons extends Component {
-    constructor(props) {
-        super();
-        this.handleDelete = this.handleDelete.bind(this);
-        this.handleDeleteConfirmed = this.handleDeleteConfirmed.bind(this);
-        this.handleDeleteCancelled = this.handleDeleteCancelled.bind(this);
-        this.state = {
-            showDeleteConfirmation: false
-        };
+const useStyles = createUseStyles(theme => ({
+    configButtonContainer: {
+        display: 'flex',
+        justifyContent: 'end',
+        paddingTop: '20px',
+        borderTop: `1px solid ${theme.colors.defaultBackgroundColor}`
     }
+}));
 
-    createTestButton() {
-        const {
-            includeTest, onTestClick, testLabel, testId, isTestDisabled
-        } = this.props;
-        if (includeTest) {
-            return (
-                <div style={{
-                    display: 'inline-block',
-                    paddingRight: '12px',
-                    marginRight: '12px',
-                    borderRight: '1px solid #aaa'
-                }}
+const TestButton = ({ includeTest, testId, onTestClick, testLabel, isTestDisabled }) => {
+    if (includeTest) {
+        return (
+            <Button
+                id={testId}
+                onClick={onTestClick}
+                text={testLabel}
+                isDisabled={isTestDisabled}
+                buttonStyle="actionSecondary"
+            />
+        );
+    }
+    return null;
+};
+
+const SaveButton = ({ includeSave, submitId, submitLabel, isSaveDisabled }) => {
+    if (includeSave) {
+        return (
+            <Button
+                id={submitId}
+                text={submitLabel}
+                type="submit"
+                isDisabled={isSaveDisabled}
+                buttonStyle="action"
+            />
+        );
+    }
+    return null;
+};
+
+const CancelButton = ({ includeCancel, cancelId, onCancelClick, cancelLabel }) => {
+    if (includeCancel) {
+        return (
+            <Button id={cancelId} onClick={onCancelClick} text={cancelLabel} buttonStyle="transparent" />
+        );
+    }
+    return null;
+};
+
+const DeleteButton = ({ includeDelete, deleteId, handleDelete, deleteLabel, isDeleteDisabled }) => {
+    if (includeDelete) {
+        return (
+            <Button 
+                id={deleteId} 
+                onClick={handleDelete} 
+                text={deleteLabel} 
+                isDisabled={isDeleteDisabled}
+                buttonStyle="actionSecondaryDelete"
+            />
+        );
+    }
+    return null;
+};
+
+const ConfigButtons =  ({ 
+    cancelId, submitId, testId, deleteId, includeCancel, includeSave, 
+    includeTest, includeDelete, onCancelClick, onTestClick, onDeleteClick,
+    performingAction, submitLabel, testLabel, cancelLabel, deleteLabel, 
+    confirmDeleteTitle, confirmDeleteMessage, isSaveDisabled, 
+    isDeleteDisabled, isTestDisabled
+}) => {
+    const classes = useStyles();
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+
+    const handleDelete = () => {
+        setShowDeleteConfirmation(true);
+    };
+
+    const handleDeleteConfirmed = () => {
+        setShowDeleteConfirmation(false);
+        onDeleteClick();
+    };
+
+    const handleDeleteCancelled = () => {
+        setShowDeleteConfirmation(false);
+    };
+
+    return (
+        <div className={classes.configButtonContainer}>
+            <div className="progressContainer">
+                <div className="progressIcon">
+                    {performingAction
+                    && <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />}
+                </div>
+            </div>
+            <TestButton
+                includeTest={includeTest}
+                testId={testId}
+                onTestClick={onTestClick}
+                testLabel={testLabel}
+                isTestDisabled={isTestDisabled}
+            />
+            <DeleteButton
+                includeDelete={includeDelete}
+                deleteId={deleteId}
+                handleDelete={handleDelete}
+                deleteLabel={deleteLabel}
+                isDeleteDisabled={isDeleteDisabled}
+            />
+            <CancelButton
+                includeCancel={includeCancel}
+                cancelId={cancelId}
+                onCancelClick={onCancelClick}
+                cancelLabel={cancelLabel}
+            />
+            <SaveButton
+                includeSave={includeSave}
+                submitId={submitId}
+                submitLabel={submitLabel}
+                isSaveDisabled={isSaveDisabled}
+            />
+            <div>
+                <Modal
+                    isOpen={showDeleteConfirmation}
+                    size="sm"
+                    title={confirmDeleteTitle}
+                    closeModal={handleDeleteCancelled}
+                    handleCancel={handleDeleteCancelled}
+                    handleSubmit={handleDeleteConfirmed}
+                    submitText="Delete"
+                    style="delete"
                 >
-                    <Button id={testId} onClick={onTestClick} text={testLabel} isDisabled={isTestDisabled} />
-                </div>
-            );
-        }
-        return null;
-    }
-
-    createSaveButton() {
-        const { includeSave, submitLabel, submitId, isSaveDisabled } = this.props;
-        if (includeSave) {
-            return (
-                <Button id={submitId} text={submitLabel} type="submit" isDisabled={isSaveDisabled} />
-            );
-        }
-        return null;
-    }
-
-    createCancelButton() {
-        const {
-            includeCancel, onCancelClick, cancelLabel, cancelId
-        } = this.props;
-
-        if (includeCancel) {
-            return (
-                <Button id={cancelId} onClick={onCancelClick} text={cancelLabel} buttonStyle="transparent" />
-            );
-        }
-        return null;
-    }
-
-    createDeleteButton() {
-        const {
-            includeDelete, includeSave, deleteLabel, deleteId, isDeleteDisabled
-        } = this.props;
-        const borderLeft = includeSave ? '1px solid #aaa' : 'none';
-        const style = {
-            display: 'inline-block',
-            paddingLeft: '12px',
-            marginLeft: '12px'
-        };
-        if (includeDelete) {
-            return (
-                <div style={Object.assign(style, { borderLeft })}>
-                    <Button id={deleteId} onClick={this.handleDelete} text={deleteLabel} isDisabled={isDeleteDisabled} />
-                </div>
-            );
-        }
-        return null;
-    }
-
-    handleDelete() {
-        this.setState({
-            showDeleteConfirmation: true
-        });
-    }
-
-    handleDeleteConfirmed() {
-        this.setState({
-            showDeleteConfirmation: false
-        });
-        this.props.onDeleteClick();
-    }
-
-    handleDeleteCancelled() {
-        this.setState({
-            showDeleteConfirmation: false
-        });
-    }
-
-    createButtonContent() {
-        const {
-            performingAction, confirmDeleteMessage, confirmDeleteTitle
-        } = this.props;
-
-        const { showDeleteConfirmation } = this.state;
-        const testButton = this.createTestButton();
-        const saveButton = this.createSaveButton();
-        const cancelButton = this.createCancelButton();
-        const deleteButton = this.createDeleteButton();
-        return (
-            <div className="configButtonContainer">
-                <div className="progressContainer">
-                    <div className="progressIcon">
-                        {performingAction
-                        && <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />}
+                    <div className="modal-description">
+                        {confirmDeleteMessage}
                     </div>
-                </div>
-                {testButton}
-                {saveButton}
-                {deleteButton}
-                {cancelButton}
-                <div>
-                    <Modal
-                        isOpen={showDeleteConfirmation}
-                        size="sm"
-                        title={confirmDeleteTitle}
-                        closeModal={this.handleDeleteCancelled}
-                        handleCancel={this.handleDeleteCancelled}
-                        handleSubmit={this.handleDeleteConfirmed}
-                        submitText="Delete"
-                        style="delete"
-                    >
-                        <div className="modal-description">
-                            {confirmDeleteMessage}
-                        </div>
-                    </Modal>
-                </div>
+                </Modal>
             </div>
-        );
-    }
-
-    render() {
-        const {
-            isFixed
-        } = this.props;
-        
-        const wrapperStyles = isFixed ? 'fixedButtonGroup' : `d-inline-flex offset-sm-4 col-sm-8`;
-
-        return (
-            <div className="form-group">
-                {isFixed
-                && <div className="fixedButtonGroupBuffer" />}
-                <div className={wrapperStyles}>
-                    {this.createButtonContent()}
-                </div>
-            </div>
-        );
-    }
-}
+        </div>
+    );
+};
 
 ConfigButtons.propTypes = {
     cancelId: PropTypes.string,
@@ -175,7 +162,6 @@ ConfigButtons.propTypes = {
     testLabel: PropTypes.string,
     cancelLabel: PropTypes.string,
     deleteLabel: PropTypes.string,
-    isFixed: PropTypes.bool,
     confirmDeleteTitle: PropTypes.string,
     confirmDeleteMessage: PropTypes.string,
     isSaveDisabled: PropTypes.bool,
@@ -200,7 +186,6 @@ ConfigButtons.defaultProps = {
     testLabel: 'Test Configuration',
     deleteLabel: 'Delete',
     cancelLabel: 'Cancel',
-    isFixed: true,
     confirmDeleteTitle: 'Confirm Delete',
     confirmDeleteMessage: 'Are you sure you want to delete?'
 };

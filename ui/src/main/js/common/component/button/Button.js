@@ -65,6 +65,56 @@ const useStyles = createUseStyles((theme) => ({
     },
     loader: {
         marginLeft: '5px'
+    },
+    action: {
+        color: theme.colors.white.default,
+        backgroundColor: '#1e2939',
+        border: 'solid 1px #1e2939',
+        borderRadius: '8px',
+        padding: ['6px', '14px'],
+        display: 'flex',
+        alignItems: 'center',
+        columnGap: '8px',
+        '&:hover': {
+            backgroundColor: '#343E4C'
+        }
+    },
+    actionSecondary: {
+        color: 'oklch(37.3% 0.034 259.733)',
+        backgroundColor: theme.colors.white.default,
+        border: `solid 1px ${theme.colors.grey.lightGrey}`,
+        borderRadius: '8px',
+        padding: ['6px', '14px'],
+        display: 'flex',
+        alignItems: 'center',
+        columnGap: '8px',
+        '&:not(:disabled):hover': {
+            color: 'oklch(37.3% 0.034 259.733)',
+            backgroundColor: theme.colors.grey.lighterGrey,
+            border: `solid 1px ${theme.colors.grey.default}`
+        },
+        '&:disabled': {
+            color: theme.colors.grey.default
+        }
+    },
+    actionSecondaryDelete: {
+        color: 'oklch(37.3% 0.034 259.733)',
+        backgroundColor: theme.colors.white.default,
+        border: `solid 1px ${theme.colors.grey.lightGrey}`,
+        borderRadius: '8px',
+        padding: ['6px', '14px'],
+        display: 'flex',
+        alignItems: 'center',
+        columnGap: '8px',
+        fontSize: '14px',
+        '&:not(:disabled):hover': {
+            color: theme.colors.status.error.text,
+            backgroundColor: theme.colors.status.error.background,
+            border: `solid 1px ${theme.colors.status.error.border}`
+        },
+        '&:disabled': {
+            color: theme.colors.grey.default
+        }
     }
 }));
 
@@ -73,7 +123,10 @@ const Button = ({ id, icon, type, isDisabled, onClick, role, buttonStyle = 'defa
     const btnClass = classNames(classes.button, {
         [classes.delete]: buttonStyle === 'delete',
         [classes.default]: buttonStyle === 'default',
-        [classes.transparent]: buttonStyle === 'transparent'
+        [classes.transparent]: buttonStyle === 'transparent',
+        [classes.action]: buttonStyle === 'action',
+        [classes.actionSecondary]: buttonStyle === 'actionSecondary',
+        [classes.actionSecondaryDelete]: buttonStyle === 'actionSecondaryDelete'
     });
 
     return (
@@ -111,7 +164,7 @@ Button.propTypes = {
     onClick: PropTypes.func,
     isDisabled: PropTypes.bool,
     role: PropTypes.string,
-    buttonStyle: PropTypes.oneOf(['default', 'transparent', 'delete']),
+    buttonStyle: PropTypes.oneOf(['default', 'transparent', 'delete', 'action', 'actionSecondary', 'actionSecondaryDelete']),
     title: PropTypes.string,
     type: PropTypes.string,
     text: PropTypes.string.isRequired,

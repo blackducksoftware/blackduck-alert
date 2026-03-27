@@ -11,7 +11,7 @@ const useStyles = createUseStyles({
     systemMessageList: {
         listStyleType: 'none',
         padding: 0,
-        margin: 0
+        margin: ['28px', 0, 0, 0]
     },
     messageItem: {
         display: 'flex',

@@ -1,4 +1,7 @@
 const colors = {
+    blue: {
+        lightBlue: '#8ec5ff',
+    },
     green: {
         darkGreen: '#3B7D3C'
     },
@@ -7,7 +10,7 @@ const colors = {
         lightGrey: '#D9D9D9',
         default: '#808080',
         darkGrey: '#666666',
-        darkerGrey: '#364153',
+        darkerGrey: '#364153', // Check if this is websafe
         // darkerGrey: '#4a5565', TODO: Consolidate these two
         blackout: '#222222'
     },
@@ -30,6 +33,8 @@ const colors = {
     defaultAlertColor: '#2E3B4E',
     defaultBackgroundColor: '#F7F7FA',
     defaultBorderColor: '#B1B3B3',
+    inputDisabled: '#f9fafb',
+    inputEnabled: '#f3f3f5',
     statusFailure: '#E15241',
     statusPending: '#F0AD4E',
     statusSuccess: '#509D51',

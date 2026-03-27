@@ -63,6 +63,7 @@ small {
 .fieldError {
   color: $blackduck-color-platform-red;
   padding: 4px 0px 0px;
+  margin: 0;
 }
 
 .fieldWarning {
@@ -135,16 +136,6 @@ small {
 .fadingField {
   opacity: 0;
   transition: opacity 2s ease-in-out 0s;
-}
-
-
-.fixedButtonGroupBuffer {
-  height: 29px;
-}
-
-.fixedButtonGroup {
-  display: flex;
-  justify-content: center;
 }
 
 .selectButton {

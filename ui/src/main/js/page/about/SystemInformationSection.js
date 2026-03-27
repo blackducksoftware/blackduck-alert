@@ -9,7 +9,8 @@ const useStyles = createUseStyles((theme) => ({
     systemInformationContainer: {
         display: 'grid',
         gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-        gap: '30px'
+        gap: '30px',
+        marginTop: '28px'
     },
     versionBadge: {
         border: theme.defaultBorder,

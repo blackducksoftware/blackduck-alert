@@ -2,7 +2,8 @@
 
 html,
 body {
-  background-color: $blackduck-color-footer-background;
+  // background-color: $blackduck-color-footer-background;
+  background-color: #f9fafc;
   font-size: $base-font-size;
   font-weight: $base-font-weight;
   font-family: 'Roboto', 'Arial', sans-serif;
@@ -243,11 +244,6 @@ form.form-horizontal.loginForm {
 .progressIcon {
   display: inline;
   margin: 0 10px;
-}
-
-.configButtonContainer {
-  display: flex;
-  margin: 0px auto;
 }
 
 .missingData {

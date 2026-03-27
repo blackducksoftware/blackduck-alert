@@ -1,11 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input/field/LabeledField';
+import BaseInput from 'common/component/input/BaseInput';
 
 const NumberInput = ({
-    readOnly, inputClass, id, name, value, onChange, labelClass, description, showDescriptionPlaceHolder, label, errorName, errorValue, required, customDescription, minimumValue, maximumValue
+    readOnly, id, name, value, onChange, description, label, errorName, 
+    errorValue, required, customDescription, minimumValue, maximumValue, width
 }) => {
     const onChangeHandler = readOnly ? null : onChange;
+
     return (
         <LabeledField
             id={id}
@@ -14,13 +17,19 @@ const NumberInput = ({
             errorName={errorName}
             errorValue={errorValue}
             label={label}
-            labelClass={labelClass}
             required={required}
-            showDescriptionPlaceHolder={showDescriptionPlaceHolder}
         >
-            <div className="d-inline-flex flex-column p-2 col-sm-3">
-                <input id={id} type="number" className={inputClass} readOnly={readOnly} name={name} value={value} onChange={onChangeHandler} min={minimumValue} max={maximumValue} />
-            </div>
+            <BaseInput
+                id={id}
+                type="number"
+                width={width}
+                readOnly={readOnly}
+                name={name}
+                value={value}
+                onChange={onChangeHandler}
+                min={minimumValue}
+                max={maximumValue}
+            />
         </LabeledField>
     );
 };
@@ -28,7 +37,6 @@ const NumberInput = ({
 NumberInput.propTypes = {
     id: PropTypes.string,
     readOnly: PropTypes.bool,
-    inputClass: PropTypes.string,
     name: PropTypes.string,
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     onChange: PropTypes.func,
@@ -36,9 +44,7 @@ NumberInput.propTypes = {
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
-    labelClass: PropTypes.string,
     required: PropTypes.bool,
-    showDescriptionPlaceHolder: PropTypes.bool,
     customDescription: PropTypes.string,
     minimumValue: PropTypes.number,
     maximumValue: PropTypes.number
@@ -47,7 +53,6 @@ NumberInput.defaultProps = {
     id: 'numberInputId',
     value: '',
     readOnly: false,
-    inputClass: 'form-control',
     name: 'name',
     onChange: () => true,
     description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
@@ -55,7 +60,6 @@ NumberInput.defaultProps = {
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
-    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT,
     minimumValue: 0,
     maximumValue: Number.MAX_SAFE_INTEGER
 };
