@@ -44,6 +44,14 @@ public class IssueTrackerAsyncMessageSender<T> implements AsyncMessageSender<T> 
         this.executingJobManager = executingJobManager;
     }
 
+    public UUID getJobExecutionId() {
+        return jobExecutionId;
+    }
+
+    public Set<Long> getNotificationIds() {
+        return notificationIds;
+    }
+
     public final void sendAsyncMessages(List<T> issueTrackerMessages) {
         List<AlertEvent> eventList = issueTrackerMessages.stream()
             .map(this::createAlertEvents)

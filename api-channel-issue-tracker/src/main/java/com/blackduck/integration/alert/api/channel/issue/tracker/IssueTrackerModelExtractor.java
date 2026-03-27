@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.blackduck.integration.alert.api.channel.issue.tracker.convert.IssueTrackerMessageFormatter;
 import com.blackduck.integration.alert.api.channel.issue.tracker.convert.IssueTrackerSimpleMessageConverter;
 import com.blackduck.integration.alert.api.channel.issue.tracker.convert.ProjectIssueModelConverter;
@@ -29,6 +32,7 @@ import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
 
 public class IssueTrackerModelExtractor<T extends Serializable> {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final IssueTrackerSimpleMessageConverter issueTrackerSimpleMessageConverter;
     private final ProjectIssueModelConverter projectIssueModelConverter;
     private final IssueTrackerSearcher<T> issueTrackerSearcher;
@@ -66,6 +70,7 @@ public class IssueTrackerModelExtractor<T extends Serializable> {
             return convertExistingIssue(existingIssueDetails.get(), projectIssueModel, searchResult.getRequiredOperation());
         } else {
             IssueCreationModel issueCreationModel = projectIssueModelConverter.toIssueCreationModel(projectIssueModel, jobName, searchResult.getSearchQuery());
+            logger.debug("Issue not found; creating new issue model with Alert Issue ID: {}", issueCreationModel.getAlertIssueId());
             return new IssueTrackerModelHolder<>(List.of(issueCreationModel), List.of(), List.of());
         }
     }
@@ -75,9 +80,11 @@ public class IssueTrackerModelExtractor<T extends Serializable> {
         List<IssueCommentModel<T>> commentModels = new ArrayList<>(1);
         if (ItemOperation.UPDATE.equals(requiredOperation) || ItemOperation.INFO.equals(requiredOperation)) {
             IssueCommentModel<T> projectIssueCommentModel = projectIssueModelConverter.toIssueCommentModel(existingIssueDetails, projectIssueModel);
+            logger.debug("Issue already exists; creating comment model with Alert Issue ID: {}", projectIssueCommentModel.getAlertIssueId());
             commentModels.add(projectIssueCommentModel);
         } else {
             IssueTransitionModel<T> projectIssueTransitionModel = projectIssueModelConverter.toIssueTransitionModel(existingIssueDetails, projectIssueModel, requiredOperation);
+            logger.debug("Issue already exists; creating transition model with Alert Issue ID: {}", projectIssueTransitionModel.getAlertIssueId());
             transitionModels.add(projectIssueTransitionModel);
         }
         return new IssueTrackerModelHolder<>(List.of(), transitionModels, commentModels);
