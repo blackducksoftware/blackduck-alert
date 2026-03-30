@@ -10,6 +10,7 @@ const useStyles = createUseStyles(theme => ({
         display: 'flex',
         justifyContent: 'end',
         paddingTop: '20px',
+        marginTop: '10px',
         borderTop: `1px solid ${theme.colors.defaultBackgroundColor}`
     }
 }));

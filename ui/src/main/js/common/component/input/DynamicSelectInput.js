@@ -102,20 +102,24 @@ const DynamicSelectInput = ({
 
     // moves the dropdown in front of our fixed buttons
     const selectStyles = {
-        menu: (base, state) => ({
+        menu: (base) => ({
             ...base,
             zIndex: '101'
         }),
         control: (base, state) => ({
             ...base,
-            border: `1px solid ${theme.colors.grey.lighterGrey}`,
-            backgroundColor: theme.colors.inputEnabled,
+            border: `1px solid ${theme.colors.grey.lightGrey}`,
+            backgroundColor: 'white',
             borderRadius: '8px',
             fontSize: '14px',
             outline: state.isFocused ? `2px solid ${theme.colors.defaultBorderColor}` : 'none',
             '&:hover:not(:focus)': {
                 border: `1px solid ${theme.colors.defaultBorderColor}`
             }
+        }),
+        multiValue: (base) => ({
+            ...base,
+            borderRadius: '4px'
         })
     };
     const inputClass = classNames(classes.input, {

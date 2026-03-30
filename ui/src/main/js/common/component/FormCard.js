@@ -3,7 +3,7 @@ import * as PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import SectionCard from 'common/component/SectionCard';
 
-const useStyles = createUseStyles({
+const useStyles = createUseStyles(theme => ({
     formCard: {
         width: 'fit-content',
         margin: '0 auto'
@@ -11,10 +11,13 @@ const useStyles = createUseStyles({
     formCardContent: {
         padding: '10px',
         '& > h5': {
-            marginBottom: '20px'
+            marginBottom: '20px',
+            paddingBottom: '10px',
+            fontSize: '18px',
+            borderBottom: `1px solid ${theme.colors.defaultBackgroundColor}`
         }
     }
-});
+}));
 
 const FormCard = ({
     formTitle, children

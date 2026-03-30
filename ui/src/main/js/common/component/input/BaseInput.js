@@ -6,14 +6,14 @@ import classNames from 'classnames';
 
 const useStyles = createUseStyles(theme => ({
     input: {
-        border: `1px solid ${theme.colors.grey.lighterGrey}`,
-        backgroundColor: theme.colors.inputEnabled,
+        border: `1px solid ${theme.colors.grey.lightGrey}`,
+        backgroundColor: 'white',
         borderRadius: '8px',
         padding: '0.375rem 0.75rem',
         fontSize: '14px',
         width: ({ width }) => width,
         '&:focus': {
-            outline: `2px solid ${theme.colors.defaultBorderColor}`,
+            outline: `1px solid ${theme.colors.defaultBorderColor}`,
         },
         '&:hover': {
             border: `1px solid ${theme.colors.defaultBorderColor}`,

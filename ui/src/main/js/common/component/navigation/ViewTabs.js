@@ -27,15 +27,15 @@ const useStyles = createUseStyles((theme) => ({
         '& .nav-link': {
             width: '100%',
             textAlign: 'center',
-            borderRadius: '20px',
+            borderRadius: '12px',
             color: 'black',
             backgroundColor: theme.colors.grey.lightGrey,
             border: `1px solid ${theme.colors.grey.lightGrey}`
         },
         '& .nav-link.active': {
             color: theme.colors.white.default,
-            backgroundColor: 'black',
-            border: '1px solid black'
+            backgroundColor: theme.colors.purple.darkerPurple,
+            border: `1px solid ${theme.colors.purple.darkerPurple}`
         },
         '& .nav-item:not(:first-child) .nav-link': {
             borderBottomLeftRadius: 0,

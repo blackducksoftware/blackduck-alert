@@ -177,7 +177,6 @@ const ConcreteConfigurationForm = ({
                 actionMessage={actionMessage}
                 errorIsDetailed={errorIsDetailed}
             />
-            {/* <form className="form-horizontal" onSubmit={performSaveRequest} noValidate> */}
             <form onSubmit={performSaveRequest} noValidate>
                 <div>
                     {children}

@@ -6,14 +6,14 @@ import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input
 
 const useStyles = createUseStyles(theme => ({
     input: {
-        border: `1px solid ${theme.colors.grey.lighterGrey}`,
-        backgroundColor: theme.colors.inputEnabled,
+        border: `1px solid ${theme.colors.grey.lightGrey}`,
+        backgroundColor: 'white',
         borderRadius: '8px',
         padding: '0.375rem 0.75rem',
         fontSize: '14px',
         width: '100%',
         '&:focus': {
-            outline: `2px solid ${theme.colors.defaultBorderColor}`,
+            outline: `1px solid ${theme.colors.defaultBorderColor}`,
         },
         '&:hover:not(:focus)': {
             border: `1px solid ${theme.colors.defaultBorderColor}`,
