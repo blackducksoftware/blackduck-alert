@@ -61,7 +61,6 @@ const FieldMappingRow = ({
                         id="left-side"
                         type="text"
                         readOnly={readonly}
-                        className="form-control"
                         name="left-side"
                         value={currentLeftSide}
                         onChange={({ target }) => setCurrentLeftSide(target.value)}
@@ -74,7 +73,6 @@ const FieldMappingRow = ({
                         id="right-side"
                         type="text"
                         readOnly={readonly}
-                        className="form-control"
                         name="right-side"
                         value={currentRightSide}
                         onChange={({ target }) => setCurrentRightSide(target.value)}

@@ -19,7 +19,6 @@ const EndpointSelectField = ({
     errorName,
     errorValue,
     fieldKey,
-    inputClass,
     label,
     multiSelect,
     onChange,
@@ -82,7 +81,6 @@ const EndpointSelectField = ({
                 options={options}
                 id={id || fieldKey}
                 name={id || fieldKey}
-                inputClass={inputClass}
                 searchable={searchable}
                 placeholder={placeholder}
                 value={value}
@@ -110,7 +108,6 @@ EndpointSelectField.propTypes = {
     currentConfig: PropTypes.object,
     endpoint: PropTypes.string.isRequired,
     fieldKey: PropTypes.string.isRequired,
-    inputClass: PropTypes.string,
     multiSelect: PropTypes.bool,
     placeholder: PropTypes.string,
     onChange: PropTypes.func.isRequired,
@@ -135,7 +132,6 @@ EndpointSelectField.defaultProps = {
     id: 'endpointSelectFieldId',
     clearable: true,
     currentConfig: {},
-    inputClass: 'typeAheadField',
     multiSelect: false,
     placeholder: 'Choose a value',
     readOnly: false,

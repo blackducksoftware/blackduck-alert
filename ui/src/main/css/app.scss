@@ -2,8 +2,7 @@
 
 html,
 body {
-  // background-color: $blackduck-color-footer-background;
-  background-color: #f9fafc;
+  background-color: $page-content-background-color;
   font-size: $base-font-size;
   font-weight: $base-font-weight;
   font-family: 'Roboto', 'Arial', sans-serif;
@@ -40,14 +39,6 @@ button + button {
   margin-left: 5px;
 }
 
-.accumulator-countdown .btn {
-  margin-left: 20px;
-}
-
-.form-control {
-  font-size: 13px;
-}
-
 .contentArea {
   height: 100%;
   overflow: auto;
@@ -71,32 +62,10 @@ button + button {
   position: absolute;
 }
 
-.advancedWrapper {
-  text-align: right;
-  padding-right: 10px;
-}
-
 .advanced {
   cursor: pointer;
   color: $blackduck-color-platform-blue;
   text-align: right;
-}
-
-.alignCenter {
-  text-align: center;
-  margin-top: 0px;
-  margin-bottom: 0px;
-}
-
-.submitButtons {
-  margin-right: 10px;
-  color: $blackduck-color-section-background;
-  background: $blackduck-color-platform-blue;
-  text-align: center;
-  vertical-align: middle;
-  padding: 5px 10px 5px 10px;
-  font-size: 1em;
-  display: inline-block;
 }
 
 .submitContainers {
@@ -105,31 +74,6 @@ button + button {
   text-align: right;
   padding-right: 20px;
   width: 100%;
-}
-
-.submitButtonsFixed {
-  margin-right: 10px;
-  color: $blackduck-color-section-background;
-  background: $blackduck-color-platform-blue;
-  text-align: center;
-  vertical-align: middle;
-  padding: 5px 10px 5px 10px;
-  font-size: 1em;
-  display: inline-block;
-  margin: 10px;
-}
-
-.submitContainersFixed {
-  display: inline-block;
-  padding: 5px;
-  text-align: right;
-  padding-right: 20px;
-  width: 100%;
-}
-
-.configurationError {
-  color: $blackduck-color-platform-red;
-  text-align: center;
 }
 
 form.form-horizontal.loginForm {
@@ -158,17 +102,6 @@ form.form-horizontal.loginForm {
   width: 100%;
 }
 
-.topLevelModal {
-  background-color: $blackduck-color-section-background;
-  border: 0;
-  border-radius: $border-radius;
-  box-shadow: 1px 1px 100px $blackduck-color-dark-gray;
-}
-
-.modal-content {
-  border-radius: $border-radius;
-}
-
 .modal-description {
   margin: 10px
 }
@@ -177,38 +110,8 @@ form.form-horizontal.loginForm {
   border: 1px solid $border-color;
 }
 
-.alertHeader {
-  height: 100px;
-  line-height: 100px;
-  text-align: center;
-  font-size: 2.5em;
-  padding-top: 50px;
-}
-
-.alertHeaderTag {
-  margin: 0 auto;
-  padding-top: 10px;
-}
-
 .table {
   margin: 0 auto;
-}
-
-.tableBorder {
-  border: 1px solid $border-color;
-  margin: 0 auto;
-  margin-top: 10px;
-  width: 75%;
-  height: 100%;
-  padding: 10px;
-  background-color: $blackduck-color-section-background;
-  position: relative;
-  overflow: hidden;
-}
-
-.modalContainer {
-  padding: 15px;
-  margin-top: 65px;
 }
 
 .progressContainer {
@@ -223,16 +126,6 @@ form.form-horizontal.loginForm {
 .progressIcon {
   display: inline;
   margin: 0 10px;
-}
-
-.missingData {
-  color: $color-danger;
-  font-style: italic;
-  font-weight: bold;
-}
-
-.fontAwesomeLabel {
-  padding-right: 5px;
 }
 
 .productLogo {
@@ -258,15 +151,6 @@ form.form-horizontal.loginForm {
   }
 }
 
-.pull-right {
-  float: right;
-}
-
 .alert-icon {
   padding: 3px;
-}
-
-.mainBody {
-  position: relative;
-  clear: both;
 }

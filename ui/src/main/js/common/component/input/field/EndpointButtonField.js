@@ -95,7 +95,6 @@ const EndpointButtonField = ({
                     && (
                         <div className="d-inline-flex p-2 checkbox">
                             <input
-                                className="form-control"
                                 id={`${fieldKey}-confirmation`}
                                 type="checkbox"
                                 name={name}
