@@ -87,7 +87,7 @@ const BlackDuckSSOConfigImportModal = ({
                     label="Black Duck Configuration"
                     description="The Black Duck configuration from which to retrieve the SAML configuration."
                     clearable={false}
-                    readOnly={readOnly} 
+                    readOnly={readOnly}
                     required
                     createRequestBody={() => providerModel}
                     onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}

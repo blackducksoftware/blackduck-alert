@@ -21,7 +21,7 @@ const useStyles = createUseStyles({
 });
 
 const RadioInput = ({
-    id, description, errorName, errorValue, label, name, onChange, readOnly, 
+    id, description, errorName, errorValue, label, name, onChange, readOnly,
     required, radioOptions, checked, isInModal, customDescription
 }) => {
     const classes = useStyles();
@@ -89,7 +89,7 @@ RadioInput.defaultProps = {
     description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 };
 
 export default RadioInput;

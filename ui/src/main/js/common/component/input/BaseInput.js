@@ -4,7 +4,7 @@ import { LabelFieldPropertyDefaults } from 'common/component/input/field/Labeled
 import { createUseStyles } from 'react-jss';
 import classNames from 'classnames';
 
-const useStyles = createUseStyles(theme => ({
+const useStyles = createUseStyles((theme) => ({
     input: {
         border: `1px solid ${theme.colors.grey.lightGrey}`,
         backgroundColor: 'white',
@@ -13,14 +13,14 @@ const useStyles = createUseStyles(theme => ({
         fontSize: '14px',
         width: ({ width }) => width,
         '&:focus': {
-            outline: `1px solid ${theme.colors.defaultBorderColor}`,
+            outline: `1px solid ${theme.colors.defaultBorderColor}`
         },
         '&:hover': {
-            border: `1px solid ${theme.colors.defaultBorderColor}`,
+            border: `1px solid ${theme.colors.defaultBorderColor}`
         }
     },
     errorInput: {
-        outline: `1px solid ${theme.colors.red.default}`,
+        outline: `1px solid ${theme.colors.red.default}`
     },
     disabledInput: {
         backgroundColor: theme.colors.inputDisabled,
@@ -30,7 +30,7 @@ const useStyles = createUseStyles(theme => ({
 }));
 
 const BaseInput = ({
-    id, autoFocus, errorValue, name, onChange, readOnly, value, placeholder,
+    id, errorValue, name, onChange, readOnly, value, placeholder,
     isDisabled, width, type, min, max
 }) => {
     const classes = useStyles({ width });
@@ -45,7 +45,6 @@ const BaseInput = ({
             id={id}
             type={type}
             readOnly={readOnly}
-            autoFocus={autoFocus}
             className={inputClass}
             placeholder={placeholder}
             name={name}
@@ -61,7 +60,6 @@ const BaseInput = ({
 BaseInput.propTypes = {
     id: PropTypes.string,
     readOnly: PropTypes.bool,
-    autoFocus: PropTypes.bool,
     name: PropTypes.string,
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     onChange: PropTypes.func,
@@ -76,7 +74,6 @@ BaseInput.propTypes = {
 
 BaseInput.defaultProps = {
     id: 'BaseInputId',
-    autoFocus: false,
     name: 'name',
     onChange: () => true,
     readOnly: false,

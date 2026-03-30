@@ -3,7 +3,7 @@ import * as PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import SectionCard from 'common/component/SectionCard';
 
-const useStyles = createUseStyles(theme => ({
+const useStyles = createUseStyles((theme) => ({
     formCard: {
         width: 'fit-content',
         margin: '0 auto'

@@ -5,10 +5,10 @@ import FieldMappingRow from 'common/component/input/mapping/FieldMappingRow';
 import Button from 'common/component/button/Button';
 import { createUseStyles } from 'react-jss';
 
-const useStyles = createUseStyles(theme => ({
+const useStyles = createUseStyles((theme) => ({
     additionalFieldsContainer: {
         borderTop: `1px solid ${theme.colors.defaultBackgroundColor}`,
-        padding: ['20px', 0 ],
+        padding: ['20px', 0],
         marginTop: '20px'
     },
     additionalFieldsContent: {
@@ -32,7 +32,7 @@ const FluidFieldMappingField = ({
     errorName,
     errorValue,
     readonly,
-    required,
+    required
 }) => {
     const classes = useStyles();
     const [fieldMappings, setFieldMappings] = useState([]);
@@ -91,10 +91,10 @@ const FluidFieldMappingField = ({
             >
                 <p className={classes.additionalFieldsDescription}>{description}</p>
                 <div className={classes.additionalFieldsContent}>
-                        {renderExistingRows}
-                        <div>
-                            <Button id={id} onClick={addRow} text={buttonLabel} icon="plus" buttonStyle="actionSecondary" />
-                        </div>
+                    {renderExistingRows}
+                    <div>
+                        <Button id={id} onClick={addRow} text={buttonLabel} icon="plus" buttonStyle="actionSecondary" />
+                    </div>
                 </div>
             </LabeledField>
         </div>
@@ -110,7 +110,7 @@ FluidFieldMappingField.propTypes = {
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     readonly: PropTypes.bool,
-    required: PropTypes.bool,
+    required: PropTypes.bool
 };
 
 FluidFieldMappingField.defaultProps = {
@@ -119,7 +119,7 @@ FluidFieldMappingField.defaultProps = {
     description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 };
 
 export default FluidFieldMappingField;

@@ -68,5 +68,6 @@ SectionCard.propTypes = {
     children: PropTypes.any.isRequired,
     title: PropTypes.string,
     description: PropTypes.string,
-    icon: PropTypes.string
+    icon: PropTypes.string,
+    width: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
 };

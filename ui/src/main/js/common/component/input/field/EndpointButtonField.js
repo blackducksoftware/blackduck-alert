@@ -131,7 +131,7 @@ EndpointButtonField.propTypes = {
     description: PropTypes.string,
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
-    required: PropTypes.bool,
+    required: PropTypes.bool
 };
 
 EndpointButtonField.defaultProps = {
@@ -144,7 +144,7 @@ EndpointButtonField.defaultProps = {
     value: false,
     description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 };
 
 export default EndpointButtonField;

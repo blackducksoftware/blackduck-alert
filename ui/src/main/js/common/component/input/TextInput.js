@@ -4,7 +4,7 @@ import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input
 import BaseInput from 'common/component/input/BaseInput';
 
 const TextInput = ({
-    id, autoFocus, description, errorName, errorValue, label, 
+    id, description, errorName, errorValue, label,
     name, onChange, readOnly, required, value,
     placeholder, customDescription, isDisabled
 }) => (
@@ -21,7 +21,6 @@ const TextInput = ({
             id={id}
             type="text"
             readOnly={readOnly}
-            autoFocus={autoFocus}
             placeholder={placeholder}
             name={name}
             value={value}
@@ -35,7 +34,6 @@ const TextInput = ({
 TextInput.propTypes = {
     id: PropTypes.string,
     readOnly: PropTypes.bool,
-    autoFocus: PropTypes.bool,
     name: PropTypes.string,
     value: PropTypes.string,
     onChange: PropTypes.func,
@@ -51,7 +49,6 @@ TextInput.propTypes = {
 
 TextInput.defaultProps = {
     id: 'textInputId',
-    autoFocus: false,
     name: 'name',
     onChange: () => true,
     readOnly: false,

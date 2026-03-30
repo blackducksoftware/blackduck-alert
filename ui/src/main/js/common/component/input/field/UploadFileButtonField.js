@@ -16,14 +16,14 @@ const useStyles = createUseStyles((theme) => ({
     fileInput: {
         '&::file-selector-button': {
             color: theme.colors.white.default,
-            backgroundColor: '#1e2939',
-            border: 'solid 1px #1e2939',
+            backgroundColor: theme.colors.purple.darkerPurple,
+            border: `solid 1px ${theme.colors.purple.darkerPurple}`,
             borderRadius: '8px',
             padding: ['6px', '14px'],
             marginRight: '8px',
             cursor: 'pointer',
             '&:hover': {
-                backgroundColor: '#343E4C'
+                backgroundColor: theme.colors.purple.darkPurple
             }
         }
     }
@@ -147,7 +147,7 @@ const UploadFileButtonField = ({
                 label={label}
                 required={required}
             >
-                <div className="d-inline-flex p-2 col-sm-8"> 
+                <div className="d-inline-flex p-2 col-sm-8">
                     <div className={classes.uploadActionsContainer}>
                         <input
                             className={classes.fileInput}

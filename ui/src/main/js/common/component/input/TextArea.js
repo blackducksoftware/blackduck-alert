@@ -4,7 +4,7 @@ import { createUseStyles } from 'react-jss';
 import classNames from 'classnames';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input/field/LabeledField';
 
-const useStyles = createUseStyles(theme => ({
+const useStyles = createUseStyles((theme) => ({
     input: {
         border: `1px solid ${theme.colors.grey.lightGrey}`,
         backgroundColor: 'white',
@@ -13,14 +13,14 @@ const useStyles = createUseStyles(theme => ({
         fontSize: '14px',
         width: '100%',
         '&:focus': {
-            outline: `1px solid ${theme.colors.defaultBorderColor}`,
+            outline: `1px solid ${theme.colors.defaultBorderColor}`
         },
         '&:hover:not(:focus)': {
-            border: `1px solid ${theme.colors.defaultBorderColor}`,
+            border: `1px solid ${theme.colors.defaultBorderColor}`
         }
     },
     errorInput: {
-        outline: `1px solid ${theme.colors.red.default}`,
+        outline: `1px solid ${theme.colors.red.default}`
     },
     disabledInput: {
         backgroundColor: theme.colors.inputDisabled,
@@ -30,7 +30,7 @@ const useStyles = createUseStyles(theme => ({
 }));
 
 const TextArea = ({
-    id, description, errorName, errorValue, label, name, onChange, readOnly, required, 
+    id, description, errorName, errorValue, label, name, onChange, readOnly, required,
     value, customDescription, isDisabled, rows
 }) => {
     const classes = useStyles();

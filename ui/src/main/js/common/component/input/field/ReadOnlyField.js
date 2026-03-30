@@ -34,7 +34,7 @@ ReadOnlyField.propTypes = {
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
-    required: PropTypes.bool,
+    required: PropTypes.bool
 };
 
 ReadOnlyField.defaultProps = {
@@ -45,7 +45,7 @@ ReadOnlyField.defaultProps = {
     description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 };
 
 export default ReadOnlyField;

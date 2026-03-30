@@ -4,7 +4,7 @@ import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input
 import BaseInput from 'common/component/input/BaseInput';
 
 const NumberInput = ({
-    readOnly, id, name, value, onChange, description, label, errorName, 
+    readOnly, id, name, value, onChange, description, label, errorName,
     errorValue, required, customDescription, minimumValue, maximumValue, width
 }) => {
     const onChangeHandler = readOnly ? null : onChange;
@@ -47,8 +47,10 @@ NumberInput.propTypes = {
     required: PropTypes.bool,
     customDescription: PropTypes.string,
     minimumValue: PropTypes.number,
-    maximumValue: PropTypes.number
+    maximumValue: PropTypes.number,
+    width: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
 };
+
 NumberInput.defaultProps = {
     id: 'numberInputId',
     value: '',

@@ -68,19 +68,19 @@ const useStyles = createUseStyles((theme) => ({
     },
     action: {
         color: theme.colors.white.default,
-        backgroundColor: '#1e2939',
-        border: 'solid 1px #1e2939',
+        backgroundColor: theme.colors.purple.darkerPurple,
+        border: `solid 1px ${theme.colors.purple.darkerPurple}`,
         borderRadius: '8px',
         padding: ['6px', '14px'],
         display: 'flex',
         alignItems: 'center',
         columnGap: '8px',
         '&:hover': {
-            backgroundColor: '#343E4C'
+            backgroundColor: theme.colors.purple.darkPurple
         }
     },
     actionSecondary: {
-        color: 'oklch(37.3% 0.034 259.733)',
+        color: theme.colors.grey.darkerGrey,
         backgroundColor: theme.colors.white.default,
         border: `solid 1px ${theme.colors.grey.lightGrey}`,
         borderRadius: '8px',
@@ -89,7 +89,7 @@ const useStyles = createUseStyles((theme) => ({
         alignItems: 'center',
         columnGap: '8px',
         '&:not(:disabled):hover': {
-            color: 'oklch(37.3% 0.034 259.733)',
+            color: theme.colors.grey.darkerGrey,
             backgroundColor: theme.colors.grey.lighterGrey,
             border: `solid 1px ${theme.colors.grey.default}`
         },
@@ -98,7 +98,7 @@ const useStyles = createUseStyles((theme) => ({
         }
     },
     actionSecondaryDelete: {
-        color: 'oklch(37.3% 0.034 259.733)',
+        color: theme.colors.grey.darkerGrey,
         backgroundColor: theme.colors.white.default,
         border: `solid 1px ${theme.colors.grey.lightGrey}`,
         borderRadius: '8px',

@@ -31,8 +31,7 @@ const EndpointSelectField = ({
     searchable,
     selectSpacingClass,
     value,
-    customVal,
-    infieldDescription
+    customVal
 }) => {
     const [options, setOptions] = useState([]);
     const [requestErrorValue, setRequestErrorValue] = useState(null);
@@ -95,7 +94,6 @@ const EndpointSelectField = ({
                 errorName={errorName}
                 errorValue={errorValue || requestErrorValue}
                 required={required}
-                infieldDescription={infieldDescription}
             />
         </div>
     );
@@ -125,7 +123,7 @@ EndpointSelectField.propTypes = {
     createRequestBody: PropTypes.func,
     readOptionsRequest: PropTypes.func,
     convertDataToOptions: PropTypes.func,
-    customVal: PropTypes.oneOfType([ PropTypes.array, PropTypes.object])
+    customVal: PropTypes.oneOfType([PropTypes.array, PropTypes.object])
 };
 
 EndpointSelectField.defaultProps = {
@@ -146,7 +144,7 @@ EndpointSelectField.defaultProps = {
     description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 };
 
 export default EndpointSelectField;

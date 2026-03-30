@@ -23,7 +23,8 @@ const PasswordInput = ({
             <BaseInput
                 id={id}
                 type="password"
-                readOnly={readOnly} name={name}
+                readOnly={readOnly}
+                name={name}
                 value={value}
                 onChange={onChangeHandler}
                 placeholder={placeholderText || placeholder}
@@ -47,7 +48,8 @@ PasswordInput.propTypes = {
     errorValue: PropTypes.object,
     required: PropTypes.bool,
     customDescription: PropTypes.string,
-    isDisabled: PropTypes.bool
+    isDisabled: PropTypes.bool,
+    placeholder: PropTypes.string
 };
 
 PasswordInput.defaultProps = {

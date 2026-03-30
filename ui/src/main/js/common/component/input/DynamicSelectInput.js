@@ -15,7 +15,7 @@ const useStyles = createUseStyles({
         width: ({ width }) => width
     },
     errorInput: {
-        outline: `1px solid ${theme.colors.red.default}`,
+        outline: `1px solid ${theme.colors.red.default}`
     }
 });
 
@@ -42,8 +42,7 @@ const DynamicSelectInput = ({
     creatable,
     maxMenuHeight,
     customVal,
-    customSelect,
-    infieldDescription
+    customSelect
 }) => {
     const classes = useStyles({ width });
     const selectedOptions = options.filter((option) => value.includes(option.value));
@@ -124,8 +123,8 @@ const DynamicSelectInput = ({
     };
     const inputClass = classNames(classes.input, {
         // TODO: Double check this
-        [classes.errorInput]: errorValue?.severity === 'ERROR',
-    })
+        [classes.errorInput]: errorValue?.severity === 'ERROR'
+    });
 
     const createStandardSelect = () => (
         <Select
@@ -184,7 +183,6 @@ const DynamicSelectInput = ({
             errorValue={errorValue}
             label={label}
             required={required}
-            infieldDescription={infieldDescription}
         >
             {customSelect || selectComponent}
         </LabeledField>
@@ -213,7 +211,8 @@ DynamicSelectInput.propTypes = {
     maxMenuHeight: PropTypes.number,
     customDescription: PropTypes.string,
     customVal: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
-    customSelect: PropTypes.element
+    customSelect: PropTypes.element,
+    width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 DynamicSelectInput.defaultProps = {

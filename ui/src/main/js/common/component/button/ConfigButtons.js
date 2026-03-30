@@ -5,7 +5,7 @@ import Modal from 'common/component/modal/Modal';
 import Button from 'common/component/button/Button';
 import { createUseStyles } from 'react-jss';
 
-const useStyles = createUseStyles(theme => ({
+const useStyles = createUseStyles((theme) => ({
     configButtonContainer: {
         display: 'flex',
         justifyContent: 'end',
@@ -30,6 +30,14 @@ const TestButton = ({ includeTest, testId, onTestClick, testLabel, isTestDisable
     return null;
 };
 
+TestButton.propTypes = {
+    testId: PropTypes.string,
+    includeTest: PropTypes.bool,
+    onTestClick: PropTypes.func,
+    testLabel: PropTypes.string,
+    isTestDisabled: PropTypes.bool
+};
+
 const SaveButton = ({ includeSave, submitId, submitLabel, isSaveDisabled }) => {
     if (includeSave) {
         return (
@@ -45,6 +53,13 @@ const SaveButton = ({ includeSave, submitId, submitLabel, isSaveDisabled }) => {
     return null;
 };
 
+SaveButton.propTypes = {
+    submitId: PropTypes.string,
+    includeSave: PropTypes.bool,
+    submitLabel: PropTypes.string,
+    isSaveDisabled: PropTypes.bool
+};
+
 const CancelButton = ({ includeCancel, cancelId, onCancelClick, cancelLabel }) => {
     if (includeCancel) {
         return (
@@ -54,13 +69,20 @@ const CancelButton = ({ includeCancel, cancelId, onCancelClick, cancelLabel }) =
     return null;
 };
 
+CancelButton.propTypes = {
+    cancelId: PropTypes.string,
+    includeCancel: PropTypes.bool,
+    onCancelClick: PropTypes.func,
+    cancelLabel: PropTypes.string
+};
+
 const DeleteButton = ({ includeDelete, deleteId, handleDelete, deleteLabel, isDeleteDisabled }) => {
     if (includeDelete) {
         return (
-            <Button 
-                id={deleteId} 
-                onClick={handleDelete} 
-                text={deleteLabel} 
+            <Button
+                id={deleteId}
+                onClick={handleDelete}
+                text={deleteLabel}
                 isDisabled={isDeleteDisabled}
                 buttonStyle="actionSecondaryDelete"
             />
@@ -69,19 +91,27 @@ const DeleteButton = ({ includeDelete, deleteId, handleDelete, deleteLabel, isDe
     return null;
 };
 
-const ConfigButtons =  ({ 
-    cancelId, submitId, testId, deleteId, includeCancel, includeSave, 
+DeleteButton.propTypes = {
+    deleteId: PropTypes.string,
+    includeDelete: PropTypes.bool,
+    handleDelete: PropTypes.func,
+    deleteLabel: PropTypes.string,
+    isDeleteDisabled: PropTypes.bool
+};
+
+const ConfigButtons = ({
+    cancelId, submitId, testId, deleteId, includeCancel, includeSave,
     includeTest, includeDelete, onCancelClick, onTestClick, onDeleteClick,
-    performingAction, submitLabel, testLabel, cancelLabel, deleteLabel, 
-    confirmDeleteTitle, confirmDeleteMessage, isSaveDisabled, 
+    performingAction, submitLabel, testLabel, cancelLabel, deleteLabel,
+    confirmDeleteTitle, confirmDeleteMessage, isSaveDisabled,
     isDeleteDisabled, isTestDisabled
 }) => {
+    const classes = useStyles();
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+
     if (!includeSave && !includeCancel && !includeTest && !includeDelete) {
         return null;
     }
-
-    const classes = useStyles();
-    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
     const handleDelete = () => {
         setShowDeleteConfirmation(true);

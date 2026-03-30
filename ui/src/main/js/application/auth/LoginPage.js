@@ -53,7 +53,6 @@ const LoginPage = () => {
                             label="Username"
                             name="username"
                             onChange={handleChange}
-                            autoFocus
                             value={loginForm.username}
                             readOnly={false}
                         />

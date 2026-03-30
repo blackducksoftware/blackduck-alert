@@ -4,27 +4,27 @@ import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input
 import classNames from 'classnames';
 import { createUseStyles } from 'react-jss';
 
-const useStyles = createUseStyles(theme => ({
+const useStyles = createUseStyles((theme) => ({
     checkbox: {
         display: 'flex',
         alignItems: 'stretch',
         columnGap: '10px'
     },
     input: {
-        border: `1px solid ${theme.colors.grey.lightGrey}`,
+        border: `1px solid ${theme.colors.grey.lightGrey}`
     },
     errorInput: {
-        outline: `1px solid ${theme.colors.red.default}`,
+        outline: `1px solid ${theme.colors.red.default}`
     },
     checkboxValueLabel: {
         fontSize: '13px',
-        fontWeight: 'bold',
+        fontWeight: 'bold'
     },
     checkboxValueDescription: {
         padding: ['6px', 0, 0, '22px'],
         fontSize: '13px'
     }
-}))
+}));
 
 const CheckboxInput = ({
     id, description, errorName, errorValue, isChecked, label, name, onChange, readOnly, required, customDescription, checkboxValueLabel, checkboxValueDescription
@@ -78,7 +78,9 @@ CheckboxInput.propTypes = {
     onChange: PropTypes.func,
     readOnly: PropTypes.bool,
     required: PropTypes.bool,
-    customDescription: PropTypes.string
+    customDescription: PropTypes.string,
+    checkboxValueLabel: PropTypes.string,
+    checkboxValueDescription: PropTypes.string
 };
 
 CheckboxInput.defaultProps = {
@@ -90,7 +92,7 @@ CheckboxInput.defaultProps = {
     description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 };
 
 export default CheckboxInput;
