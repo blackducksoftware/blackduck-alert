@@ -52,16 +52,6 @@ button + button {
   display: none;
 }
 
-.wrapper {
-  padding: 0px;
-  font-size: $base-font-size;
-  height: 800px;
-  width: 100%;
-  font-family: 'Roboto', 'Arial', sans-serif;
-  display: inline-block;
-  position: absolute;
-}
-
 .advanced {
   cursor: pointer;
   color: $blackduck-color-platform-blue;
@@ -78,28 +68,6 @@ button + button {
 
 form.form-horizontal.loginForm {
   padding: 15px;
-}
-
-.loginContainer {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.loginBox {
-  background-color: $blackduck-color-section-background;
-  border: 0;
-  border-radius: $border-radius;
-  box-shadow: 1px 1px 10px $blackduck-color-light-gray;
-  margin-bottom: 20px;
-  max-width: 500px;
-  min-height: 175px;
-  min-width: 300px;
-  overflow: hidden;
-  position: fixed;
-  width: 100%;
 }
 
 .modal-description {

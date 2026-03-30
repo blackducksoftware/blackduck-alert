@@ -6,7 +6,7 @@ import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input
 import DescriptorOption from 'common/component/descriptor/DescriptorOption';
 import { createUseStyles } from 'react-jss';
 import classNames from 'classnames';
-import theme from '../../../_theme';
+import theme from '_theme';
 
 const { Option, SingleValue, MultiValue } = components;
 

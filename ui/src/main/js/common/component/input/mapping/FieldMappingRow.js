@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import BaseInput from 'common/component/input/BaseInput';
-import Button from '../../button/Button';
+import Button from 'common/component/button/Button';
 
 const useStyles = createUseStyles((theme) => ({
     fieldMappingRow: {

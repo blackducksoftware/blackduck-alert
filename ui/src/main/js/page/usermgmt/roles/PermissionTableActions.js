@@ -15,13 +15,12 @@ const useStyles = createUseStyles({
         backgroundColor: '#EDEDED',
         borderRadius: '5px',
         marginBottom: '10px',
-        paddingTop: '25px'
+        padding: '20px'
     },
     permissionOptions: {
         display: 'flex',
-        justifyContent: 'flex-end',
-        paddingRight: '95px',
-        columnGap: '35px',
+        justifyContent: 'center',
+        columnGap: '25px',
         marginBottom: '5px'
     },
     permissionFormActions: {
@@ -203,7 +202,7 @@ const PermissionTableActions = ({ data, handleValidatePermission }) => {
                         type="submit"
                         icon="plus"
                         text="Add Permission"
-                        style="default"
+                        buttonStyle="actionSecondary"
                         isDisabled={isDisabled}
                         title={isDisabled ? 'Configure input above to add permission' : 'Add permission'}
                     />

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import theme from '../../_theme';
+import theme from '_theme';
 
 const useStyles = createUseStyles({
     sectionCard: {
