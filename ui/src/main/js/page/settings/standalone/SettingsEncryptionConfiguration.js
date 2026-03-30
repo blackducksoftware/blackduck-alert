@@ -50,13 +50,11 @@ const SettingsEncryptionConfiguration = ({
                 displayDelete={false}
                 errorHandler={errorHandler}
             >
-                {/* <h2 key="settings-header">Encryption Configuration</h2> */}
                 <ReadOnlyField
                     label=""
                     description={null}
                     // This field is only used to display the source of truth for encryption values when they are read only, 
                     // so it doesn't need an id or name. It should be a message box at the top
-                    showDescriptionPlaceHolder
                     value={configSourceValue}
                 />
                 <PasswordInput

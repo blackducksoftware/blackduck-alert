@@ -18,13 +18,11 @@ const EndpointButtonField = ({
     fieldKey,
     fields,
     label,
-    labelClass,
     name,
     onChange,
     readOnly,
     required,
     requiredRelatedFields,
-    showDescriptionPlaceHolder,
     statusMessage,
     successBox,
     value
@@ -33,7 +31,6 @@ const EndpointButtonField = ({
     const [fieldError, setFieldError] = useState(errorValue);
     const [success, setSuccess] = useState(false);
     const [progress, setProgress] = useState(false);
-    const [modalConfig, setModalConfig] = useState({});
 
     useEffect(() => {
         if (fieldError !== errorValue) {
@@ -86,9 +83,7 @@ const EndpointButtonField = ({
         <div>
             <LabeledField
                 id={id}
-                labelClass={labelClass}
                 description={description}
-                showDescriptionPlaceHolder={showDescriptionPlaceHolder}
                 label={label}
                 required={required}
                 errorName={fieldKey}
@@ -137,9 +132,7 @@ EndpointButtonField.propTypes = {
     description: PropTypes.string,
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
-    labelClass: PropTypes.string,
     required: PropTypes.bool,
-    showDescriptionPlaceHolder: PropTypes.bool
 };
 
 EndpointButtonField.defaultProps = {
@@ -152,9 +145,7 @@ EndpointButtonField.defaultProps = {
     value: false,
     description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
-    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
 };
 
 export default EndpointButtonField;

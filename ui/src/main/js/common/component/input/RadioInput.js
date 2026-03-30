@@ -21,8 +21,8 @@ const useStyles = createUseStyles({
 });
 
 const RadioInput = ({
-    id, description, errorName, errorValue, label, labelClass, name, onChange, readOnly, 
-    required, showDescriptionPlaceHolder, radioOptions, checked, isInModal, customDescription
+    id, description, errorName, errorValue, label, name, onChange, readOnly, 
+    required, radioOptions, checked, isInModal, customDescription
 }) => {
     const classes = useStyles();
 
@@ -34,9 +34,7 @@ const RadioInput = ({
     return (
         <LabeledField
             id={id}
-            labelClass={labelClass}
             description={description}
-            showDescriptionPlaceHolder={showDescriptionPlaceHolder}
             label={label}
             errorName={errorName}
             errorValue={errorValue}
@@ -75,12 +73,10 @@ RadioInput.propTypes = {
     id: PropTypes.string,
     isInModal: PropTypes.bool,
     label: PropTypes.string.isRequired,
-    labelClass: PropTypes.string,
     name: PropTypes.string,
     onChange: PropTypes.func,
     readOnly: PropTypes.bool,
     required: PropTypes.bool,
-    showDescriptionPlaceHolder: PropTypes.bool,
     radioOptions: PropTypes.array
 };
 
@@ -93,10 +89,7 @@ RadioInput.defaultProps = {
     description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
-    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
-
 };
 
 export default RadioInput;

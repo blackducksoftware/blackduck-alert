@@ -6,11 +6,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { createUseStyles } from 'react-jss';
 
 export const LabelFieldPropertyDefaults = {
-    LABEL_CLASS_DEFAULT: 'col-sm-3 col-form-label',
     ERROR_NAME_DEFAULT: null,
     ERROR_VALUE_DEFAULT: null,
     DESCRIPTION_DEFAULT: null,
-    SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT: true,
     REQUIRED_DEFAULT: false
 };
 
@@ -46,7 +44,8 @@ const useStyles = createUseStyles((theme) => ({
     label: {
         fontWeight: 'unset',
         textAlign: 'left',
-        fontSize: '14px',
+        fontSize: '15px',
+        // fontWeight: 'bold',
         padding: 0,
         color: theme.colors.grey.darkerGrey
     },

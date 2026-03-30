@@ -21,7 +21,6 @@ const EndpointSelectField = ({
     fieldKey,
     inputClass,
     label,
-    labelClass,
     multiSelect,
     onChange,
     placeholder,
@@ -32,7 +31,6 @@ const EndpointSelectField = ({
     requiredRelatedFields,
     searchable,
     selectSpacingClass,
-    showDescriptionPlaceHolder,
     value,
     customVal,
     infieldDescription
@@ -94,9 +92,7 @@ const EndpointSelectField = ({
                 selectSpacingClass={selectSpacingClass}
                 readOnly={readOnly}
                 clearable={clearable}
-                labelClass={labelClass}
                 description={description}
-                showDescriptionPlaceHolder={showDescriptionPlaceHolder}
                 label={label}
                 errorName={errorName}
                 errorValue={errorValue || requestErrorValue}
@@ -128,9 +124,7 @@ EndpointSelectField.propTypes = {
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
-    labelClass: PropTypes.string,
     required: PropTypes.bool,
-    showDescriptionPlaceHolder: PropTypes.bool,
     createRequestBody: PropTypes.func,
     readOptionsRequest: PropTypes.func,
     convertDataToOptions: PropTypes.func,
@@ -142,7 +136,6 @@ EndpointSelectField.defaultProps = {
     clearable: true,
     currentConfig: {},
     inputClass: 'typeAheadField',
-    labelClass: 'col-sm-3',
     multiSelect: false,
     placeholder: 'Choose a value',
     readOnly: false,
@@ -158,7 +151,6 @@ EndpointSelectField.defaultProps = {
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
-    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
 };
 
 export default EndpointSelectField;

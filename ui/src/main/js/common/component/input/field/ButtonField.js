@@ -12,11 +12,9 @@ const ButtonField = ({
     fieldError,
     fieldKey,
     label,
-    labelClass,
     readOnly,
     onSendClick,
     required,
-    showDescriptionPlaceHolder,
     success,
     statusMessage
 }) => {
@@ -32,18 +30,14 @@ const ButtonField = ({
         <div>
             <LabeledField
                 id={id}
-                labelClass={labelClass}
                 customDescription={customDescription}
                 description={description}
-                showDescriptionPlaceHolder={showDescriptionPlaceHolder}
                 label={label}
                 required={required}
                 errorName={fieldKey}
                 errorValue={fieldError}
             >
-                <div className="d-inline-flex p-2 col-sm-8">
-                    <Button id={fieldKey} onClick={callOnSendClick} text={buttonLabel} disabled={readOnly} />
-                </div>
+                <Button id={fieldKey} onClick={callOnSendClick} text={buttonLabel} disabled={readOnly} buttonStyle="action" />
                 {success && <StatusMessage id={`${fieldKey}-status-message`} actionMessage={statusMessage} />}
             </LabeledField>
         </div>
@@ -60,9 +54,7 @@ ButtonField.propTypes = {
     description: PropTypes.string,
     fieldError: PropTypes.string,
     label: PropTypes.string.isRequired,
-    labelClass: PropTypes.string,
     required: PropTypes.bool,
-    showDescriptionPlaceHolder: PropTypes.bool,
     success: PropTypes.bool.isRequired,
     statusMessage: PropTypes.string,
     customDescription: PropTypes.string
@@ -73,9 +65,7 @@ ButtonField.defaultProps = {
     readOnly: false,
     description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     fieldError: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
-    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT,
     statusMessage: 'Success'
 };
 

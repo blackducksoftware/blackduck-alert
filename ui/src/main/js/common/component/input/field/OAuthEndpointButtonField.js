@@ -18,12 +18,10 @@ const OAuthEndpointButtonField = ({
     fields,
     fieldKey,
     label,
-    labelClass,
     onChange,
     readOnly,
     required,
     requiredRelatedFields,
-    showDescriptionPlaceHolder,
     statusMessage
 }) => {
     const [showModal, setShowModal] = useState(false);
@@ -83,9 +81,7 @@ const OAuthEndpointButtonField = ({
                 errorName={fieldKey}
                 errorValue={fieldError}
                 label={label}
-                labelClass={labelClass}
                 required={required}
-                showDescriptionPlaceHolder={showDescriptionPlaceHolder}
             >
                 <div className="d-inline-flex p-2 col-sm-8">
                     <GeneralButton
@@ -120,9 +116,7 @@ OAuthEndpointButtonField.propTypes = {
     statusMessage: PropTypes.string,
     description: PropTypes.string,
     label: PropTypes.string.isRequired,
-    labelClass: PropTypes.string,
     required: PropTypes.bool,
-    showDescriptionPlaceHolder: PropTypes.bool
 };
 
 OAuthEndpointButtonField.defaultProps = {
@@ -133,10 +127,7 @@ OAuthEndpointButtonField.defaultProps = {
     statusMessage: 'Success',
     description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
-    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
-
 };
 
 export default OAuthEndpointButtonField;

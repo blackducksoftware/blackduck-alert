@@ -40,11 +40,9 @@ const UploadFileButtonField = ({
     errorValue,
     fieldKey,
     label,
-    labelClass,
     name,
     readOnly,
     required,
-    showDescriptionPlaceHolder,
     statusMessage,
     permissions,
     onChange,
@@ -147,9 +145,7 @@ const UploadFileButtonField = ({
                 errorName={fieldKey}
                 errorValue={fieldError}
                 label={label}
-                labelClass={labelClass}
                 required={required}
-                showDescriptionPlaceHolder={showDescriptionPlaceHolder}
             >
                 <div className="d-inline-flex p-2 col-sm-8"> 
                     <div className={classes.uploadActionsContainer}>
@@ -207,9 +203,7 @@ UploadFileButtonField.propTypes = {
     description: PropTypes.string,
     errorValue: PropTypes.string,
     label: PropTypes.string.isRequired,
-    labelClass: PropTypes.string,
     required: PropTypes.bool,
-    showDescriptionPlaceHolder: PropTypes.bool,
     permissions: PropTypes.shape({
         read: PropTypes.bool,
         write: PropTypes.bool,
@@ -230,9 +224,7 @@ UploadFileButtonField.defaultProps = {
     statusMessage: 'Upload Metadata File Success',
     description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
-    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT,
     permissions: {
         read: true,
         write: true,
