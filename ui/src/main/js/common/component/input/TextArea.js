@@ -37,7 +37,6 @@ const TextArea = ({
     const onChangeHandler = readOnly ? null : onChange;
 
     const inputClass = classNames(classes.input, {
-        // TODO: Double check this
         [classes.errorInput]: errorValue?.severity === 'ERROR',
         [classes.disabledInput]: isDisabled
     });

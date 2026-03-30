@@ -122,7 +122,6 @@ const DynamicSelectInput = ({
         })
     };
     const inputClass = classNames(classes.input, {
-        // TODO: Double check this
         [classes.errorInput]: errorValue?.severity === 'ERROR'
     });
 

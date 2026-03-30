@@ -35,7 +35,6 @@ const BaseInput = ({
 }) => {
     const classes = useStyles({ width });
     const inputClass = classNames(classes.input, {
-        // TODO: Double check this
         [classes.errorInput]: errorValue?.severity === 'ERROR',
         [classes.disabledInput]: isDisabled
     });

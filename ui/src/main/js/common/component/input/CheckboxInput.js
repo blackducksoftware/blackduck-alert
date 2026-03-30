@@ -31,7 +31,6 @@ const CheckboxInput = ({
 }) => {
     const classes = useStyles();
     const inputClass = classNames(classes.input, {
-        // TODO: Double check this
         [classes.errorInput]: errorValue?.severity === 'ERROR'
     });
 
