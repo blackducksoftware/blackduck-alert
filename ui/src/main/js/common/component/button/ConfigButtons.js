@@ -177,7 +177,7 @@ ConfigButtons.propTypes = {
 ConfigButtons.defaultProps = {
     cancelId: 'cancelButton',
     submitId: 'submitButton',
-    testId: 'generalButton',
+    testId: 'testButton',
     deleteId: 'deleteButton',
     includeCancel: false,
     includeSave: true,
