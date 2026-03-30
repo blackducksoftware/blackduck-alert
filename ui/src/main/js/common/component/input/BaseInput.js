@@ -15,7 +15,7 @@ const useStyles = createUseStyles(theme => ({
         '&:focus': {
             outline: `2px solid ${theme.colors.defaultBorderColor}`,
         },
-        '&:hover:not(:focus)': {
+        '&:hover': {
             border: `1px solid ${theme.colors.defaultBorderColor}`,
         }
     },
@@ -33,13 +33,12 @@ const BaseInput = ({
     id, autoFocus, errorValue, name, onChange, readOnly, value, placeholder,
     isDisabled, width, type, min, max
 }) => {
-
     const classes = useStyles({ width });
     const inputClass = classNames(classes.input, {
         // TODO: Double check this
         [classes.errorInput]: errorValue?.severity === 'ERROR',
         [classes.disabledInput]: isDisabled
-    })
+    });
 
     return (
         <input

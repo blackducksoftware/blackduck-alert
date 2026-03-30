@@ -8,18 +8,9 @@ import { CLIENT_CERTIFICATE_URL, createDeleteRequest, createNewConfigurationRequ
 import PasswordInput from 'common/component/input/PasswordInput';
 import TextArea from 'common/component/input/TextArea';
 import ConcreteConfigurationForm from 'common/configuration/global/concrete/ConcreteConfigurationForm';
+import FormCard from 'common/component/FormCard';
 
 const useStyles = createUseStyles({
-    layout: {
-        margin: '20px 20px 0 20px'
-    },
-    certificateHeader: {
-        fontSize: '17px',
-        borderBottom: 'solid 1px #dddddd',
-        marginBottom: '16px',
-        marginTop: '4px',
-        paddingBottom: '4px'
-    },
     certificateDescription: {
         marginBottom: '20px'
     },
@@ -91,8 +82,7 @@ const MTLSCertificateLayout = ({ csrfToken, errorHandler }) => {
     }
 
     return (
-        <section className={classes.layout}>
-            <header className={classes.certificateHeader}>Client Certificate</header>
+        <FormCard formTitle="Client Certific">
             <div className={classes.certificateDescription}>Filling out the fields below will enable Mutual TLS (MTLS) communication, if required by any one of the Channels. This certificate will be used to provide valid authentication between a Channel and Alert.</div>
 
             { certificateEnabled && (
@@ -159,7 +149,7 @@ const MTLSCertificateLayout = ({ csrfToken, errorHandler }) => {
                     required
                 />
             </ConcreteConfigurationForm>
-        </section>
+        </FormCard>
     );
 };
 

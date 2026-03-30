@@ -75,6 +75,10 @@ const ConfigButtons =  ({
     confirmDeleteTitle, confirmDeleteMessage, isSaveDisabled, 
     isDeleteDisabled, isTestDisabled
 }) => {
+    if (!includeSave && !includeCancel && !includeTest && !includeDelete) {
+        return null;
+    }
+
     const classes = useStyles();
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 

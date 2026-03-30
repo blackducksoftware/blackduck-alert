@@ -1,46 +1,72 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { createUseStyles } from 'react-jss';
+import classNames from 'classnames';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input/field/LabeledField';
 
+const useStyles = createUseStyles(theme => ({
+    input: {
+        border: `1px solid ${theme.colors.grey.lighterGrey}`,
+        backgroundColor: theme.colors.inputEnabled,
+        borderRadius: '8px',
+        padding: '0.375rem 0.75rem',
+        fontSize: '14px',
+        width: '100%',
+        '&:focus': {
+            outline: `2px solid ${theme.colors.defaultBorderColor}`,
+        },
+        '&:hover:not(:focus)': {
+            border: `1px solid ${theme.colors.defaultBorderColor}`,
+        }
+    },
+    errorInput: {
+        outline: `1px solid ${theme.colors.red.default}`,
+    },
+    disabledInput: {
+        backgroundColor: theme.colors.inputDisabled,
+        border: `1px solid ${theme.colors.inputDisabled}`,
+        cursor: 'not-allowed'
+    }
+}));
+
 const TextArea = ({
-    id, description, errorName, errorValue, inputClass, label, labelClass, name, onChange, readOnly, required, showDescriptionPlaceHolder, 
-    sizeClass, value, customDescription, isDisabled, rows
+    id, description, errorName, errorValue, label, name, onChange, readOnly, required, 
+    value, customDescription, isDisabled, rows
 }) => {
-    const divClasses = `${sizeClass} d-inline-flex`;
+    const classes = useStyles();
     const onChangeHandler = readOnly ? null : onChange;
+
+    const inputClass = classNames(classes.input, {
+        // TODO: Double check this
+        [classes.errorInput]: errorValue?.severity === 'ERROR',
+        [classes.disabledInput]: isDisabled
+    });
+
     return (
         <LabeledField
-            labelClass={labelClass}
             customDescription={customDescription}
             description={description}
-            showDescriptionPlaceHolder={showDescriptionPlaceHolder}
             label={label}
             errorName={errorName}
             errorValue={errorValue}
             required={required}
         >
-            <div className={divClasses}>
-                <textarea id={id} rows={rows} cols="60" readOnly={readOnly} className={inputClass} name={name} value={value} onChange={onChangeHandler} disabled={isDisabled} />
-            </div>
+            <textarea className={inputClass} id={id} rows={rows} cols="60" readOnly={readOnly} name={name} value={value} onChange={onChangeHandler} disabled={isDisabled} />
         </LabeledField>
     );
 };
 
 TextArea.propTypes = {
     id: PropTypes.string,
-    inputClass: PropTypes.string,
     name: PropTypes.string,
     onChange: PropTypes.func,
     readOnly: PropTypes.bool,
-    sizeClass: PropTypes.string,
     value: PropTypes.string,
     description: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
-    labelClass: PropTypes.string,
     required: PropTypes.bool,
-    showDescriptionPlaceHolder: PropTypes.bool,
     customDescription: PropTypes.string,
     isDisabled: PropTypes.bool,
     rows: PropTypes.number
@@ -48,17 +74,13 @@ TextArea.propTypes = {
 
 TextArea.defaultProps = {
     id: 'textAreaId',
-    inputClass: 'form-control',
     name: 'name',
     onChange: () => true,
     readOnly: false,
-    sizeClass: 'col-sm-8',
     value: '',
-    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
-    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
     isDisabled: false,
     rows: 8
