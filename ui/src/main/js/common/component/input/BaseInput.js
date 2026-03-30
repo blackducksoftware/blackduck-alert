@@ -14,6 +14,9 @@ const useStyles = createUseStyles(theme => ({
         width: ({ width }) => width,
         '&:focus': {
             outline: `2px solid ${theme.colors.defaultBorderColor}`,
+        },
+        '&:hover:not(:focus)': {
+            border: `1px solid ${theme.colors.defaultBorderColor}`,
         }
     },
     errorInput: {

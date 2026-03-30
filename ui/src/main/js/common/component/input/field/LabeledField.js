@@ -78,11 +78,16 @@ const useStyles = createUseStyles((theme) => ({
         '--bs-tooltip-max-width': '600px',
         '--bs-tooltip-padding-x': '12px',
         '--bs-tooltip-padding-y': '8px'
+    },
+    infieldDescription: {
+        fontSize: '13px',
+        color: theme.colors.grey.darkerGrey,
+        margin: [0, 0, '8px', 0],
     }
 }));
 
 const LabeledField = ({
-    id, children, description, errorName, errorValue, label, required, customDescription
+    id, children, description, errorName, errorValue, label, required, customDescription, infieldDescription
 }) => {
     const classes = useStyles();
     const [showDescription, setShowDescription] = useState(false);
@@ -134,6 +139,9 @@ const LabeledField = ({
                     </div>
                 )}
             </div>
+            {infieldDescription && (
+                <p id={`${id}-infieldDescription`} className={classes.infieldDescription}>{infieldDescription}</p>
+            )}
             {children}
             {(errorName && errorValue) && (
                 <p id={`${id}-fieldError`} className={fieldErrorClass} name={errorName}>{errorMessage}</p>

@@ -34,7 +34,8 @@ const EndpointSelectField = ({
     selectSpacingClass,
     showDescriptionPlaceHolder,
     value,
-    customVal
+    customVal,
+    infieldDescription
 }) => {
     const [options, setOptions] = useState([]);
     const [requestErrorValue, setRequestErrorValue] = useState(null);
@@ -100,6 +101,7 @@ const EndpointSelectField = ({
                 errorName={errorName}
                 errorValue={errorValue || requestErrorValue}
                 required={required}
+                infieldDescription={infieldDescription}
             />
         </div>
     );

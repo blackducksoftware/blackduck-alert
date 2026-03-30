@@ -3,9 +3,31 @@ import PropTypes from 'prop-types';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input/field/LabeledField';
 import { createDeleteRequest, createFileUploadRequest, createReadRequest } from 'common/util/configurationRequestBuilder';
 import StatusMessage from 'common/component/StatusMessage';
-import GeneralButton from 'common/component/button/GeneralButton';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import Button from 'common/component/button/Button';
+import { createUseStyles } from 'react-jss';
+
+const useStyles = createUseStyles((theme) => ({
+    uploadActionsContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '10px'
+    },
+    fileInput: {
+        '&::file-selector-button': {
+            color: theme.colors.white.default,
+            backgroundColor: '#1e2939',
+            border: 'solid 1px #1e2939',
+            borderRadius: '8px',
+            padding: ['6px', '14px'],
+            marginRight: '8px',
+            cursor: 'pointer',
+            '&:hover': {
+                backgroundColor: '#343E4C'
+            }
+        }
+    }
+}));
 
 const UploadFileButtonField = ({
     id,
@@ -30,6 +52,7 @@ const UploadFileButtonField = ({
     value,
     valueToCheckFileExistsOnChange
 }) => {
+    const classes = useStyles();
     const [fieldError, setFieldError] = useState(errorValue);
     const [uploadedValue, setUploadedValue] = useState(value);
     const [success, setSuccess] = useState(false);
@@ -128,9 +151,10 @@ const UploadFileButtonField = ({
                 required={required}
                 showDescriptionPlaceHolder={showDescriptionPlaceHolder}
             >
-                <div className="d-inline-flex p-2 col-sm-8">
-                    <div>
+                <div className="d-inline-flex p-2 col-sm-8"> 
+                    <div className={classes.uploadActionsContainer}>
                         <input
+                            className={classes.fileInput}
                             ref={fileInputField}
                             type="file"
                             id={`${fieldKey}-file`}
@@ -146,7 +170,7 @@ const UploadFileButtonField = ({
                                     id={`${fieldKey}-upload`}
                                     onClick={onUploadClick}
                                     text={buttonLabel}
-                                    style="default"
+                                    buttonStyle="actionSecondary"
                                     disabled={readOnly || !permissions.read || !permissions.write}
                                 />
                                 {fileUploaded && (
@@ -154,7 +178,7 @@ const UploadFileButtonField = ({
                                         id={`${fieldKey}-delete`}
                                         onClick={onDeleteClick}
                                         text={removeFileUploadedText}
-                                        style="default"
+                                        buttonStyle="actionSecondaryDelete"
                                         disabled={readOnly || !permissions.read || !permissions.delete}
                                     />
                                 )}
