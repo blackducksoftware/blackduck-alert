@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
-import Checkbox from 'common/component/input/Checkbox';
+import CheckboxInput from 'common/component/input/CheckboxInput';
 import DynamicSelectInput from 'common/component/input/DynamicSelectInput';
 import Button from 'common/component/button/Button';
 
@@ -78,7 +78,7 @@ const PermissionTableActions = ({ data, handleValidatePermission }) => {
     }
 
     function handleCheckboxChange(e) {
-        const { checked, name } = e;
+        const { checked, name } = e.target;
         setNewPermission((permission) => ({ ...permission, [name]: checked }));
     }
 
@@ -156,41 +156,45 @@ const PermissionTableActions = ({ data, handleValidatePermission }) => {
                     errorValue={fieldErrors[CONTEXT]}
                 />
                 <div className={classes.permissionOptions}>
-                    <Checkbox
+                    <CheckboxInput
                         name="create"
                         id="create"
-                        label="Create"
+                        label=""
                         onChange={handleCheckboxChange}
                         isChecked={newPermission.create}
+                        checkboxValueLabel="Create"
                     />
-                    <Checkbox
+                    <CheckboxInput
                         name="delete"
                         id="delete"
-                        label="Delete"
+                        label=""
                         onChange={handleCheckboxChange}
                         isChecked={newPermission.delete}
+                        checkboxValueLabel="Delete"
                     />
-                    <Checkbox
+                    <CheckboxInput
                         name="read"
                         id="read"
-                        label="Read"
+                        label=""
                         onChange={handleCheckboxChange}
                         isChecked={newPermission.read}
-                        description="Testing Description"
+                        checkboxValueLabel="Read"
                     />
-                    <Checkbox
+                    <CheckboxInput
                         name="write"
                         id="write"
-                        label="Write"
+                        label=""
                         onChange={handleCheckboxChange}
                         isChecked={newPermission.write}
+                        checkboxValueLabel="Write"
                     />
-                    <Checkbox
+                    <CheckboxInput
                         name="execute"
                         id="execute"
-                        label="Execute"
+                        label=""
                         onChange={handleCheckboxChange}
                         isChecked={newPermission.execute}
+                        checkboxValueLabel="Execute"
                     />
                 </div>
                 <div className={classes.permissionFormActions}>
