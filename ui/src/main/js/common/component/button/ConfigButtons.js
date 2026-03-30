@@ -47,7 +47,7 @@ const SaveButton = ({ includeSave, submitId, submitLabel, isSaveDisabled }) => {
 const CancelButton = ({ includeCancel, cancelId, onCancelClick, cancelLabel }) => {
     if (includeCancel) {
         return (
-            <Button id={cancelId} onClick={onCancelClick} text={cancelLabel} buttonStyle="transparent" />
+            <Button id={cancelId} onClick={onCancelClick} text={cancelLabel} buttonStyle="actionSecondary" />
         );
     }
     return null;

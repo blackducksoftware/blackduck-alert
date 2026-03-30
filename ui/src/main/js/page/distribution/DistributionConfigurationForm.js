@@ -42,6 +42,7 @@ import { createNewConfigurationRequest } from 'common/util/configurationRequestB
 import DynamicSelectInput from 'common/component/input/DynamicSelectInput';
 import ProjectSelectModal from 'page/distribution/ProjectSelectModal';
 import PageLayout from 'common/component/PageLayout';
+import FormCard from 'common/component/FormCard';
 
 const DistributionConfigurationForm = ({
     csrfToken, errorHandler, descriptors
@@ -346,6 +347,7 @@ const DistributionConfigurationForm = ({
             description={DISTRIBUTION_CONFIGURATION_INFO.description}
             headerIcon={['fas', 'tasks']}
         >
+            <FormCard formTitle={id ? 'Edit Distribution Job' : 'Create Distribution Job'}>
             <CommonDistributionConfigurationForm
                 setErrors={setErrors}
                 formData={formData}
@@ -626,6 +628,7 @@ const DistributionConfigurationForm = ({
                 />
                 {renderChannelFields()}
             </CommonDistributionConfigurationForm>
+            </FormCard>
         </PageLayout>
     );
 };
