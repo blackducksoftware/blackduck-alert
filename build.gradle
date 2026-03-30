@@ -36,6 +36,8 @@ ext {
     postgresContainerVersionMigration = '15.8'
     postgresContainerVersionCurrent = '16.11'
 
+    cfsslImageVersion = '1.0.35'
+
     // All variables that start with 'dockerBuildParam+' will all be passed to the 'docker build' command
     dockerBuildParam_BASEIMAGE_HUB_DOCKER_COMMON = 'blackducksoftware/hub-docker-common:1.0.7'
     dockerBuildParam_BASEIMAGE_BLACKDUCK_ALERT = 'alpine:3.20'

@@ -183,7 +183,7 @@ This contains a table briefly describing each parameter in the values.yaml file.
 | `alert.affinity`                         | Alert node affinity for pod assignment                                                 | `{}`                                                                    |
 | `alert.securityContext`                  | Alert security context                                                                 | `{}`                                                                    |
 | `alert.podSecurityContext`               | Alert pod security context                                                             | `{}`                                                                    |
-| `cfssl.imageTag`                         | Image for the Cfssl container                                                          | `docker.io/blackducksoftware/blackduck-cfssl:1.0.35`                    |
+| `cfssl.imageTag`                         | Image for the Cfssl container                                                          | `docker.io/blackducksoftware/blackduck-cfssl:CFSSL_VERSION_TOKEN`                    |
 | `cffsl.registy`                          | The container registry for the Cfssl pod                                               | `""`                                                                    |
 | `cfssl.resources.limits.memory`          | Cfssl container Memory Limit                                                           | `640M`                                                                  |
 | `cfssl.resources.requests.memory`        | Cfssl container Request Limit                                                          | `640M`                                                                  |

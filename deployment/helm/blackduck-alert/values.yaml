@@ -33,7 +33,7 @@ alert:
 
 # cfssl - configurations for the cfssl Pod
 cfssl:
-  imageTag: 1.0.35
+  imageTag: CFSSL_VERSION_TOKEN
   registry: "" # override the docker registry at container level
   resources:
     limits:
