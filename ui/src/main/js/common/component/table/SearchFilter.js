@@ -94,7 +94,13 @@ const SearchFilter = ({ searchBarPlaceholder, handleSearchChange, defaultSearchV
     return (
         <div className={classes.searchFilterContainer}>
             <div className={classes.inputContainer}>
-                <button className={classes.searchIcon} onClick={() => handleSearchChange(searchValue)} role="button" disabled={isDisabled}>
+                <button 
+                    className={classes.searchIcon} 
+                    onClick={() => handleSearchChange(searchValue)} 
+                    disabled={isDisabled}
+                    type="button"
+                    aria-label="Search"
+                >
                     <FontAwesomeIcon icon="magnifying-glass" />
                 </button>
                 <input

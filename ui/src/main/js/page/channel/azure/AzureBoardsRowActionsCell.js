@@ -36,13 +36,13 @@ const AzureBoardRowActionsCell = ({ data, settings }) => {
     function handleCopyClick() {
         setStatusMessage();
         setShowCopyModal(true);
-        setSelectedData((rowData) => ({
-            ...rowData,
+        setSelectedData({
+            ...data,
             id: null,
             name: '',
             createdAt: null,
             lastUpdated: null
-        }));
+        });
     }
     
     function handleDeleteClick() {
@@ -79,7 +79,7 @@ const AzureBoardRowActionsCell = ({ data, settings }) => {
                     toggleModal={setShowCopyModal}
                     modalOptions={copyModalOptions}
                     setStatusMessage={setStatusMessage}
-                    statusMessage="Successfully edited 1 Azure Board."
+                    statusMessage="Successfully created 1 Azure Board."
                     paramsConfig={paramsConfig}
                 />
             )}
@@ -91,7 +91,7 @@ const AzureBoardRowActionsCell = ({ data, settings }) => {
                     toggleModal={setShowEditModal}
                     modalOptions={editModalOptions}
                     setStatusMessage={setStatusMessage}
-                    statusMessage="Successfully edited 1 Jira Server."
+                    statusMessage="Successfully edited 1 Azure Board."
                     paramsConfig={paramsConfig}
                 />
             )}

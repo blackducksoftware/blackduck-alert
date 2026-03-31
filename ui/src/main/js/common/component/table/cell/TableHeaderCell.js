@@ -45,16 +45,6 @@ const useStyles = createUseStyles(theme => ({
     }
 }));
 
-function getSortIcon(sortConfig, name, sortable) {
-    const classes = useStyles();
-    if (sortable) {
-        if (sortConfig?.name === name) {
-            return <FontAwesomeIcon icon={sortConfig.direction === 'ASC' ? 'sort-up' : 'sort-down'} />
-        }
-        return <FontAwesomeIcon icon="sort" className={classes.defaultSortIcon}/>
-    }
-}
-
 const TableHeaderCell = ({ label, sortable, settings, onSort, name, sortConfig }) => {
     const classes = useStyles();
     const cellStyle = classNames(classes.headerCell, {
@@ -62,6 +52,17 @@ const TableHeaderCell = ({ label, sortable, settings, onSort, name, sortConfig }
         [classes.right]: settings?.alignment === 'right',
         [classes.center]: settings?.alignment === 'center'
     });
+    
+    function getSortIcon(sortConfig, name, sortable) {
+        const classes = useStyles();
+        if (sortable) {
+            if (sortConfig?.name === name) {
+                return <FontAwesomeIcon icon={sortConfig.direction === 'ASC' ? 'sort-up' : 'sort-down'} />
+            }
+            return <FontAwesomeIcon icon="sort" className={classes.defaultSortIcon}/>
+        }
+    }
+
     return (
         <th className={cellStyle}>
             { sortable ? (

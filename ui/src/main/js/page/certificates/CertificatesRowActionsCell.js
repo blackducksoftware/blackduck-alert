@@ -14,7 +14,7 @@ const CertificatesRowActionsCell = ({ data, settings }) => {
 
     const editModalOptions = {
         type: 'EDIT',
-        title: 'Edit Jira Server',
+        title: 'Edit Certificate',
         submitText: 'Save'
     };
 
@@ -72,7 +72,7 @@ const CertificatesRowActionsCell = ({ data, settings }) => {
 CertificatesRowActionsCell.propTypes = {
     data: PropTypes.object,
     settings: PropTypes.shape({
-        readonly: PropTypes.bool
+        readOnly: PropTypes.bool
     })
 };
 

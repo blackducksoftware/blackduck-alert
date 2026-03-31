@@ -36,13 +36,13 @@ const ProviderRowActionsCell = ({ data, settings }) => {
     function handleCopyClick() {
         setStatusMessage();
         setShowCopyModal(true);
-        setSelectedData((rowData) => ({
-            ...rowData,
+        setSelectedData({
+            ...data,
             id: null,
             name: '',
             createdAt: null,
             lastUpdated: null
-        }));
+        });
     }
     
     function handleDeleteClick() {
@@ -103,7 +103,6 @@ const ProviderRowActionsCell = ({ data, settings }) => {
                     toggleModal={setShowDeleteModal}
                     selected={[data.id]}
                     setStatusMessage={setStatusMessage}
-                    setSelected={() => console.log('setting')}
                 />
             )}
         </>

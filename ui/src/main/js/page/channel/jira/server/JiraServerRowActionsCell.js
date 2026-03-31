@@ -36,13 +36,13 @@ const JiraServerRowActionsCell = ({ data, settings }) => {
     function handleCopyClick() {
         setStatusMessage();
         setShowCopyModal(true);
-        setSelectedData((rowData) => ({
-            ...rowData,
+        setSelectedData({
+            ...data,
             id: null,
             name: '',
             createdAt: null,
             lastUpdated: null
-        }));
+        });
     }
     
     function handleDeleteClick() {

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import DistributionDeleteModal from 'page/distribution/DistributionDeleteModal';
 import StatusMessage from 'common/component/StatusMessage';
 import Dropdown from 'react-bootstrap/Dropdown';
-import RowActionsCell from '../../common/component/table/cell/RowActionsCell';
+import RowActionsCell from 'common/component/table/cell/RowActionsCell';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom';
 import { DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
 

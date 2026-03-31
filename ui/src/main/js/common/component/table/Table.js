@@ -95,7 +95,7 @@ const Table = ({
                     </table>
                     
                     {showPageSize && (
-                        <TableFooter data={data} onPage={onPage} onPageSize={onPageSize} showPageSize={showPageSize} pageSize={pageSize} />
+                        <TableFooter data={data} onPage={onPage} onPageSize={onPageSize} pageSize={pageSize} />
                     )}
                 </>
             )}

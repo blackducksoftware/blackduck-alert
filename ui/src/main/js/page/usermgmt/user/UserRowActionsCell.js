@@ -45,15 +45,15 @@ const UserRowActionsCell = ({ data, settings }) => {
     function handleCopyClick() {
         setStatusMessage();
         setShowCopyModal(true);
-        setSelectedData((rowData) => ({
-            ...rowData,
+        setSelectedData({
+            ...data,
             id: null,
             username: '',
             password: '',
             passwordSet: false,
-            emailAddress: selectedData.emailAddress || '',
-            roleNames: selectedData.roleNames
-        }));
+            emailAddress: data.emailAddress || '',
+            roleNames: data.roleNames
+        });
     }
     
     function handleDeleteClick() {
@@ -98,7 +98,7 @@ const UserRowActionsCell = ({ data, settings }) => {
                     toggleModal={setShowCopyModal}
                     modalOptions={copyModalOptions}
                     setStatusMessage={setStatusMessage}
-                    successMessage="Successfully created 1 new provider."
+                    successMessage="Successfully created 1 new user."
                 />
             )}
 

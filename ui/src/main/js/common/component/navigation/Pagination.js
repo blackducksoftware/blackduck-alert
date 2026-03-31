@@ -6,7 +6,6 @@ import IconButton from '../button/IconButton';
 
 const useStyles = createUseStyles({
     pagination: {
-        // padding: ['5px', 0, '25px']
         '& > button': {
             borderRadius: '6px',
             padding: ['4px', '12px']

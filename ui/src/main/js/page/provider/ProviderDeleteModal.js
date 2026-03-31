@@ -19,7 +19,6 @@ const useStyles = createUseStyles({
 });
 
 function getStagedForDelete(data, selected) {
-    console.log(data, selected);
     const staged = data.filter((provider) => selected.includes(provider.id));
     return staged.map((provider) => ({ ...provider, staged: true }));
 }
@@ -64,7 +63,7 @@ const ProviderDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMes
                     type: 'success'
                 });
             }
-            setSelected([]);
+            setSelected?.([]);
             handleClose();
         }
 

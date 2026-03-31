@@ -42,7 +42,7 @@ const RoleRowActionsCell = ({ data, settings }) => {
     function handleCopyClick() {
         setStatusMessage();
         setShowCopyModal(true);
-        setSelectedData((roleData) => ({ ...roleData, id: null }));
+        setSelectedData({ ...data, id: null });
     }
     
     function handleDeleteClick() {

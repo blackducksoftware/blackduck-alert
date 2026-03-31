@@ -70,7 +70,11 @@ const RowActionsCell = ({ children }) => {
 
     return (
         <Dropdown drop="down">
-            <Dropdown.Toggle className={classes.toggleButton}>
+            <Dropdown.Toggle
+                className={classes.toggleButton}
+                aria-label="Table Row actions"
+                title="Table Row actions"
+            >
                 <FontAwesomeIcon size="1x" icon="ellipsis" fixedWidth />
             </Dropdown.Toggle>
             <Dropdown.Menu className={classes.rowActionsMenu}>
