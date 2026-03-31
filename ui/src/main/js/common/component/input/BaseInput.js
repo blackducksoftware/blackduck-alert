@@ -8,7 +8,7 @@ const useStyles = createUseStyles((theme) => ({
     input: {
         border: `1px solid ${theme.colors.grey.lightGrey}`,
         backgroundColor: 'white',
-        borderRadius: '8px',
+        borderRadius: '6px',
         padding: '0.375rem 0.75rem',
         fontSize: '14px',
         width: ({ width }) => width,
