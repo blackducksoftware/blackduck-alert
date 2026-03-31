@@ -69,7 +69,7 @@ const useStyles = createUseStyles((theme) => ({
 
     action: {
         color: theme.colors.white.default,
-        backgroundColor: '#1e2939',
+        backgroundColor: theme.colors.purple.darkerPurple,
         border: 'none',
         borderRadius: '4px',
         padding: ['6px', '14px'],
