@@ -20,4 +20,6 @@ public interface JobCompletionStatusModelAccessor {
     AlertPagedModel<JobCompletionStatusModel> getJobExecutionStatus(AlertPagedQueryDetails pagedQueryDetails);
 
     void saveExecutionStatus(JobCompletionStatusModel statusModel);
+
+    void saveExecutionDurations(JobCompletionStatusModel statusModel);
 }

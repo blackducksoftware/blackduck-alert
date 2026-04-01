@@ -55,7 +55,7 @@ class BlackDuckAccumulatorTest {
         BlackDuckNotificationRetrieverFactory notificationRetrieverFactory = createBlackDuckNotificationRetrieverFactory(blackDuckProperties, notificationRetriever);
 
         NotificationAccessor notificationAccessor = Mockito.mock(NotificationAccessor.class);
-        Mockito.when(notificationAccessor.saveAllNotifications(Mockito.anyList())).thenAnswer(invocation -> invocation.getArgument(0));
+        Mockito.when(notificationAccessor.saveAllNotificationsInBatch(Mockito.any(), Mockito.anyList())).thenAnswer(invocation -> invocation.getArgument(1));
 
         EventManager eventManager = Mockito.mock(EventManager.class);
         Mockito.doNothing().when(eventManager).sendEvent(Mockito.any(NotificationReceivedEvent.class));
@@ -63,7 +63,7 @@ class BlackDuckAccumulatorTest {
         BlackDuckAccumulator accumulator = new BlackDuckAccumulator(BLACK_DUCK_PROVIDER_KEY, null, notificationAccessor, taskPropertiesAccessor, blackDuckProperties, validator, eventManager, notificationRetrieverFactory);
         accumulator.run();
 
-        Mockito.verify(notificationAccessor, Mockito.times(1)).saveAllNotifications(Mockito.anyList());
+        Mockito.verify(notificationAccessor, Mockito.times(1)).saveAllNotificationsInBatch(Mockito.any(), Mockito.anyList());
         Mockito.verify(eventManager, Mockito.times(1)).sendEvent(Mockito.any(NotificationReceivedEvent.class));
     }
 

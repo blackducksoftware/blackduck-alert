@@ -18,9 +18,12 @@ public class ProviderNotificationCounts extends AlertSerializableModel {
 
     private final List<NotificationTypeCount> notificationCounts;
 
-    public ProviderNotificationCounts(long providerConfigId, List<NotificationTypeCount> notificationCounts) {
+    private final List<NotificationCountsPerHourDiagnosticModel> notificationsPerHour;
+
+    public ProviderNotificationCounts(long providerConfigId, List<NotificationTypeCount> notificationCounts, List<NotificationCountsPerHourDiagnosticModel> notificationsPerHour) {
         this.providerConfigId = providerConfigId;
         this.notificationCounts = notificationCounts;
+        this.notificationsPerHour = notificationsPerHour;
     }
 
     public long getProviderConfigId() {
@@ -29,5 +32,9 @@ public class ProviderNotificationCounts extends AlertSerializableModel {
 
     public List<NotificationTypeCount> getNotificationCounts() {
         return notificationCounts;
+    }
+
+    public List<NotificationCountsPerHourDiagnosticModel> getNotificationsPerHour() {
+        return notificationsPerHour;
     }
 }

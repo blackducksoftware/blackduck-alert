@@ -131,15 +131,19 @@ function _configure_ICU74() {
 function _create_openshift_custom_conf() {
   _logStart
   local openshiftConfFile="/var/lib/pgsql/openshift-custom-postgresql.conf"
-  local openshiftTemplateFile="${openshiftConfFile}.template"
 
   if [ ! -s "${openshiftConfFile}" ]; then
-    export POSTGRESQL_MAX_CONNECTIONS=${POSTGRESQL_MAX_CONNECTIONS:-100}
-    export POSTGRESQL_MAX_PREPARED_TRANSACTIONS=${POSTGRESQL_MAX_PREPARED_TRANSACTIONS:-0}
-    export POSTGRESQL_SHARED_BUFFERS=${POSTGRESQL_SHARED_BUFFERS:-32MB}
-    export POSTGRESQL_EFFECTIVE_CACHE_SIZE=${POSTGRESQL_EFFECTIVE_CACHE_SIZE:-128MB}
+cat > "${openshiftConfFile}" << EOL
+## This was copied from the URL below in order to facilitate migrating from Centos Postgres image to Alpine Postgres image
+## https://github.com/sclorg/postgresql-container/blob/master/src/root/usr/share/container-scripts/postgresql/openshift-custom-postgresql.conf.template
 
-    envsubst < "${openshiftTemplateFile}" > "${openshiftConfFile}"
+listen_addresses = '*'
+max_connections = ${POSTGRESQL_MAX_CONNECTIONS:-100}
+max_prepared_transactions = ${POSTGRESQL_MAX_PREPARED_TRANSACTIONS:-0}
+shared_buffers = ${POSTGRESQL_SHARED_BUFFERS:-32MB}
+effective_cache_size = ${POSTGRESQL_EFFECTIVE_CACHE_SIZE:-128MB}
+EOL
+
     _checkStatus $? "Creating openshift custom conf file"
   else
     _logIt "Custom conf file already exists"
