@@ -43,6 +43,7 @@ ext {
     dockerBuildParam_BASEIMAGE_BLACKDUCK_ALERT = 'alpine:3.23'
     dockerBuildParam_BASEIMAGE_BLACKDUCK_ALERT_DB_MIGRATION = 'postgres:' + postgresContainerVersionMigration + '-alpine'
     dockerBuildParam_BASEIMAGE_BLACKDUCK_ALERT_DB = 'postgres:' + postgresContainerVersionCurrent + '-alpine'
+    dockerBuildParam_POSTGRES_CURRENT_MAJOR_VERSION = postgresContainerVersionCurrent.split('\\.')[0]
     dockerBuildParam_POSTGRES_MIGRATION_VERSION = postgresContainerVersionMigration
     dockerBuildParam_BASEIMAGE_BLACKDUCK_ALERT_RABBITMQ = 'rabbitmq:4.2-alpine'
 
