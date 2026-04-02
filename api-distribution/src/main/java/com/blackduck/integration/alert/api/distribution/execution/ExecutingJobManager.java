@@ -139,7 +139,7 @@ public class ExecutingJobManager {
     }
 
     public void incrementExpectedNotificationsSent(UUID jobExecutionId, int notificationCount) {
-        logger.debug("Incrementing sent notification count for job execution {} by {}", jobExecutionId, notificationCount);
+        logger.debug("Incrementing expected sent notification count for job execution {} by {}", jobExecutionId, notificationCount);
         Optional<ExecutingJob> executingJob = getExecutingJob(jobExecutionId);
         executingJob.ifPresent(execution -> execution.incrementExpectedNotificationsSent(notificationCount));
     }

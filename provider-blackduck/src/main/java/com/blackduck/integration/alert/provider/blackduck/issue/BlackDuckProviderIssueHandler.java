@@ -14,6 +14,8 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.blackduck.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageLinkUtils;
 import com.blackduck.integration.blackduck.api.generated.view.ProjectVersionIssuesView;
@@ -31,6 +33,7 @@ import com.blackduck.integration.rest.body.StringBodyContent;
 import com.google.gson.Gson;
 
 public class BlackDuckProviderIssueHandler {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Gson gson;
     private final BlackDuckApiClient blackDuckApiClient;
     private final IssueService issueService;
@@ -48,6 +51,7 @@ public class BlackDuckProviderIssueHandler {
         IssueRequest issueRequestModel = createIssueRequestModel(issueModel);
 
         if (optionalExistingIssue.isPresent()) {
+            logger.debug("Updating existing issue-tracker callback request for issue key: {}", issueRequestModel.getIssueId());
             ProjectVersionIssuesView existingIssue = optionalExistingIssue.get();
             issueRequestModel.setIssueDescription(existingIssue.getIssueDescription());
             issueRequestModel.setIssueCreatedAt(existingIssue.getIssueCreatedAt());
@@ -57,6 +61,7 @@ public class BlackDuckProviderIssueHandler {
             HttpUrl requestUri = existingIssue.getHref();
             performRequest(requestUri, HttpMethod.PUT, issueRequestModel);
         } else if (null != bomComponentVersionIssuesUrl) {
+            logger.debug("Creating new issue-tracker callback request for issue key: {}", issueRequestModel.getIssueId());
             issueRequestModel.setIssueCreatedAt(currentDate);
             issueRequestModel.setIssueUpdatedAt(null);
 

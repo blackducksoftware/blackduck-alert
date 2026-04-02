@@ -12,9 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.blackduck.integration.alert.api.channel.issue.tracker.convert.IssueTrackerMessageFormatter;
 import com.blackduck.integration.alert.api.channel.issue.tracker.convert.IssueTrackerSimpleMessageConverter;
 import com.blackduck.integration.alert.api.channel.issue.tracker.convert.ProjectIssueModelConverter;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueActionModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
@@ -27,8 +31,12 @@ import com.blackduck.integration.alert.api.common.model.exception.AlertException
 import com.blackduck.integration.alert.common.enumeration.ItemOperation;
 import com.blackduck.integration.alert.api.processor.extract.model.SimpleMessage;
 import com.blackduck.integration.alert.api.processor.extract.model.project.ProjectMessage;
+import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
 public class IssueTrackerModelExtractor<T extends Serializable> {
+    private static final String ISSUE_NOT_FOUND = "Issue not found";
+    private static final String ISSUE_FOUND = "Issue already exists";
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final IssueTrackerSimpleMessageConverter issueTrackerSimpleMessageConverter;
     private final ProjectIssueModelConverter projectIssueModelConverter;
     private final IssueTrackerSearcher<T> issueTrackerSearcher;
@@ -66,6 +74,7 @@ public class IssueTrackerModelExtractor<T extends Serializable> {
             return convertExistingIssue(existingIssueDetails.get(), projectIssueModel, searchResult.getRequiredOperation());
         } else {
             IssueCreationModel issueCreationModel = projectIssueModelConverter.toIssueCreationModel(projectIssueModel, jobName, searchResult.getSearchQuery());
+            logProjectIssueDetails(ISSUE_NOT_FOUND, issueCreationModel, projectIssueModel);
             return new IssueTrackerModelHolder<>(List.of(issueCreationModel), List.of(), List.of());
         }
     }
@@ -75,12 +84,30 @@ public class IssueTrackerModelExtractor<T extends Serializable> {
         List<IssueCommentModel<T>> commentModels = new ArrayList<>(1);
         if (ItemOperation.UPDATE.equals(requiredOperation) || ItemOperation.INFO.equals(requiredOperation)) {
             IssueCommentModel<T> projectIssueCommentModel = projectIssueModelConverter.toIssueCommentModel(existingIssueDetails, projectIssueModel);
+            logProjectIssueDetails(ISSUE_FOUND, projectIssueCommentModel, projectIssueModel);
             commentModels.add(projectIssueCommentModel);
         } else {
             IssueTransitionModel<T> projectIssueTransitionModel = projectIssueModelConverter.toIssueTransitionModel(existingIssueDetails, projectIssueModel, requiredOperation);
+            logProjectIssueDetails(ISSUE_FOUND, projectIssueTransitionModel, projectIssueModel);
             transitionModels.add(projectIssueTransitionModel);
         }
         return new IssueTrackerModelHolder<>(List.of(), transitionModels, commentModels);
+    }
+
+    private void logProjectIssueDetails(String issueExistsMessage, IssueActionModel issueActionModel, ProjectIssueModel projectIssueModel) {
+        if (!logger.isDebugEnabled()) {
+            return;
+        }
+        String projectName = projectIssueModel.getProject().getValue();
+        String projectVersionLabelValue = projectIssueModel.getProjectVersion()
+            .map(LinkableItem::getValue)
+            .orElse("None");
+        String componentName = projectIssueModel.getBomComponentDetails().getComponent().getValue();
+        String componentVersionLabelValue = projectIssueModel.getBomComponentDetails().getComponentVersion()
+            .map(LinkableItem::getValue)
+            .orElse("None");
+        logger.debug("{}; Creating: {} with Alert Issue ID: {}. Project Issue Details; Black Duck Project: {}, Project Version: {}, Component: {}, Component Version: {}",
+            issueExistsMessage, issueActionModel.getClass().getSimpleName(), issueActionModel.getAlertIssueId(), projectName, projectVersionLabelValue, componentName, componentVersionLabelValue);
     }
 
 }

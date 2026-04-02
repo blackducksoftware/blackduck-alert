@@ -36,6 +36,7 @@ public abstract class IssueTrackerIssueTransitioner<T extends Serializable> {
     public final Optional<IssueTrackerIssueResponseModel<T>> transitionIssue(IssueTransitionModel<T> issueTransitionModel) throws AlertException {
         IssueOperation issueOperation = issueTransitionModel.getIssueOperation();
         ExistingIssueDetails<T> existingIssueDetails = issueTransitionModel.getExistingIssueDetails();
+        logger.debug("Attempting to transition issue with Alert Issue ID: {}", issueTransitionModel.getAlertIssueId());
 
         Optional<IssueTrackerIssueResponseModel<T>> transitionResponse = Optional.empty();
 
@@ -51,12 +52,15 @@ public abstract class IssueTrackerIssueTransitioner<T extends Serializable> {
                     existingIssueDetails,
                     issueOperation
                 );
+                logger.debug("Transitioned issue with Alert Issue ID: {}", issueTransitionModel.getAlertIssueId());
                 transitionResponse = Optional.of(transitionResponseModel);
             } else {
-                logger.debug("The issue is already in the status category that would result from this transition ({}). Issue Details: {}", transitionName, existingIssueDetails);
+                logger.debug("The issue is already in the status category that would result from this transition ({}). Alert Issue ID: {}, Issue Details: {}",
+                    transitionName, issueTransitionModel.getAlertIssueId(), existingIssueDetails);
             }
         } else {
-            logger.debug("No transition name was provided so no '{}' transition will be performed. Issue Details: {}", issueOperation.name(), existingIssueDetails);
+            logger.debug("No transition name was provided so no '{}' transition will be performed. Alert Issue ID: {}, Issue Details: {}",
+                issueOperation.name(), issueTransitionModel.getAlertIssueId(), existingIssueDetails);
         }
 
         IssueCommentModel<T> commentRequestModel = new IssueCommentModel<>(
@@ -66,6 +70,7 @@ public abstract class IssueTrackerIssueTransitioner<T extends Serializable> {
             null,
             issueTransitionModel.getAtlassianTransitionComments().orElse(null)
         );
+        logger.debug("Issue Transitioner for Alert Issue ID: {}, creating comment model with Alert Issue ID: {}", issueTransitionModel.getAlertIssueId(), commentRequestModel.getAlertIssueId());
         commenter.commentOnIssue(commentRequestModel);
 
         return transitionResponse;
@@ -97,6 +102,7 @@ public abstract class IssueTrackerIssueTransitioner<T extends Serializable> {
             issueMissingTransitionException.getMessage()
         );
         IssueCommentModel<T> failureCommentRequestModel = new IssueCommentModel<>(existingIssueDetails, List.of(failureComment), null);
+        logger.debug("Issue Transitioner: creating comment model with Alert Issue ID: {}", failureCommentRequestModel.getAlertIssueId());
         try {
             commenter.commentOnIssue(failureCommentRequestModel);
         } catch (AlertException e) {
