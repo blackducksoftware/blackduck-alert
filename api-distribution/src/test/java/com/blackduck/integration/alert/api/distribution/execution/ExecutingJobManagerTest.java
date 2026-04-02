@@ -16,12 +16,14 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.blackduck.integration.alert.api.distribution.mock.MockJobCompletionStatusDurationsRepository;
 import com.blackduck.integration.alert.api.distribution.mock.MockJobCompletionStatusRepository;
 import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
 import com.blackduck.integration.alert.common.persistence.accessor.JobCompletionStatusModelAccessor;
+import com.blackduck.integration.alert.common.persistence.model.job.executions.JobCompletionStatusModel;
 import com.blackduck.integration.alert.database.job.api.DefaultJobCompletionStatusModelAccessor;
 import com.blackduck.integration.alert.database.job.execution.JobCompletionRepository;
 
@@ -208,6 +210,34 @@ class ExecutingJobManagerTest {
 
         jobManager.incrementSentNotificationCount(executionId, 1);
         assertTrue(jobManager.hasSentExpectedNotifications(executionId));
+    }
+
+    @Test
+    void createMultipleExecutionsTest() {
+        MockJobCompletionStatusDurationsRepository durationsRepository = new MockJobCompletionStatusDurationsRepository();
+        JobCompletionRepository jobCompletionRepository = new MockJobCompletionStatusRepository(durationsRepository);
+        JobCompletionStatusModelAccessor jobCompletionStatusModelAccessor = new DefaultJobCompletionStatusModelAccessor(jobCompletionRepository, durationsRepository);
+        ExecutingJobManager jobManager = new ExecutingJobManager(jobCompletionStatusModelAccessor);
+        UUID jobConfigId = UUID.randomUUID();
+        ExecutingJob executingJob1 = jobManager.startJob(jobConfigId, 5);
+        UUID executionId1 = executingJob1.getExecutionId();
+        ExecutingJob executingJob2 = jobManager.startJob(jobConfigId, 10);
+        UUID executionId2 = executingJob2.getExecutionId();
+        jobManager.updateJobStatus(executionId1, AuditEntryStatus.SUCCESS);
+        jobManager.updateJobStatus(executionId2, AuditEntryStatus.FAILURE);
+
+        jobManager.incrementSentNotificationCount(executionId1, 5);
+        jobManager.incrementSentNotificationCount(executionId2, 10);
+        jobManager.incrementExpectedNotificationsSent(executionId1, 5);
+        jobManager.incrementExpectedNotificationsSent(executionId2, 10);
+        jobManager.endJob(executionId1, Instant.now());
+        jobManager.endJob(executionId2, Instant.now());
+
+        JobCompletionStatusModel jobCompletionStats = jobCompletionStatusModelAccessor.getJobExecutionStatus(jobConfigId).orElseThrow(() -> new AssertionError("Job completion status is missing when it should be present."));
+        Assertions.assertEquals(1, jobCompletionStats.getSuccessCount());
+        Assertions.assertEquals(1, jobCompletionStats.getFailureCount());
+        Assertions.assertEquals(10,jobCompletionStats.getLatestNotificationCount());
+        Assertions.assertEquals(15,jobCompletionStats.getTotalNotificationCount());
     }
 
 }

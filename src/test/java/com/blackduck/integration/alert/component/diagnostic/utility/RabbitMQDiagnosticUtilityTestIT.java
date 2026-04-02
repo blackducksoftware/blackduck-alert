@@ -7,6 +7,7 @@
  */
 package com.blackduck.integration.alert.component.diagnostic.utility;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -31,15 +32,15 @@ class RabbitMQDiagnosticUtilityTestIT {
     void getRabbitMQDiagnosticsTest() {
         List<String> messageListenerNames = allAlertMessageListeners.stream()
             .map(AlertMessageListener::getDestinationName)
-            .collect(Collectors.toList());
+            .toList();
 
         RabbitMQDiagnosticModel rabbitMQDiagnosticModel = rabbitMQDiagnosticUtility.getRabbitMQDiagnostics();
-        assertTrue(rabbitMQDiagnosticModel.getQueues().size() > 0);
+        assertFalse(rabbitMQDiagnosticModel.getQueues().isEmpty());
 
         List<String> queueNames = rabbitMQDiagnosticModel.getQueues()
             .stream()
             .map(AlertQueueInformation::getName)
-            .collect(Collectors.toList());
+            .toList();
         
         assertTrue(messageListenerNames.containsAll(queueNames));
     }

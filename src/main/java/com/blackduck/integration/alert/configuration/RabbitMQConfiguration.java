@@ -26,7 +26,7 @@ public class RabbitMQConfiguration {
 
     @Bean
     public TopicExchange topicExchange() {
-        return ExchangeBuilder.topicExchange(EXCHANGE_NAME).build();
+        return ExchangeBuilder.topicExchange(EXCHANGE_NAME).durable(true).build();
     }
 
     @Bean

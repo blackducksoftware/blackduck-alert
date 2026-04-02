@@ -19,6 +19,7 @@ import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.ExchangeBuilder;
+import org.springframework.amqp.core.MessageDeliveryMode;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.core.TopicExchange;
@@ -26,9 +27,12 @@ import org.springframework.amqp.rabbit.annotation.RabbitListenerConfigurer;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerEndpoint;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistrar;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
+import org.springframework.boot.autoconfigure.amqp.SimpleRabbitListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.retry.support.RetryTemplate;
 
@@ -49,6 +53,9 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
     private final AmqpAdmin amqpAdmin;
     private final TopicExchange exchange;
     private final DeadLetterListener deadLetterListener;
+    private final RabbitTemplate rabbitTemplate;
+    private final RabbitProperties rabbitProperties;
+    private final SimpleRabbitListenerContainerFactoryConfigurer rabbitListenerContainerFactoryConfigurer;
 
     @Autowired
     public EventListenerConfigurer(
@@ -59,7 +66,10 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
         RetryTemplate rabbitmqRetryTemplate,
         AmqpAdmin amqpAdmin,
         TopicExchange exchange,
-        DeadLetterListener deadLetterListener
+        DeadLetterListener deadLetterListener,
+        RabbitTemplate rabbitTemplate,
+        RabbitProperties rabbitProperties,
+        SimpleRabbitListenerContainerFactoryConfigurer rabbitListenerContainerFactoryConfigurer
     ) {
         this.allAlertMessageListeners = allAlertMessageListeners;
         this.distributionEventDestinationNames = distributionEventReceivers
@@ -74,12 +84,21 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
         this.amqpAdmin = amqpAdmin;
         this.exchange = exchange;
         this.deadLetterListener = deadLetterListener;
-
+        this.rabbitTemplate = rabbitTemplate;
+        this.rabbitProperties = rabbitProperties;
+        this.rabbitListenerContainerFactoryConfigurer = rabbitListenerContainerFactoryConfigurer;
     }
 
     @Override
     public void configureRabbitListeners(RabbitListenerEndpointRegistrar registrar) {
         logRabbitMqConfig();
+        // setup persistence for the rabbit template
+        rabbitTemplate.addBeforePublishPostProcessors(message -> {
+            message.getMessageProperties().setDeliveryMode(MessageDeliveryMode.PERSISTENT);
+            return message;
+        });
+        // declare the main exchange before binding queues to it.
+        amqpAdmin.declareExchange(exchange);
         createDeadLetterHandler(registrar);
         MessageListenerContainer alertDefaultMessageListenerContainer = createMessageListenerContainer();
         logger.debug("Registering JMS Listeners");
@@ -98,22 +117,36 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
 
     private void logRabbitMqConfig() {
         logger.info("Rabbitmq connection details:");
-        logger.info("  host:        {}", cachingConnectionFactory.getHost());
-        logger.info("  port:        {}", cachingConnectionFactory.getPort());
-        logger.info("  ssl enabled: {}", cachingConnectionFactory.getRabbitConnectionFactory().isSSL());
+        logger.info("  host:                   {}", cachingConnectionFactory.getHost());
+        logger.info("  port:                   {}", cachingConnectionFactory.getPort());
+        logger.info("  ssl enabled:            {}", cachingConnectionFactory.getRabbitConnectionFactory().isSSL());
+        logger.info("  cache mode:             {}", cachingConnectionFactory.getCacheMode());
+        logger.info("  connection cache size:  {}", cachingConnectionFactory.getConnectionCacheSize());
+        logger.info("  channel cache size:     {}", cachingConnectionFactory.getChannelCacheSize());
 
         if (StringUtils.isNotBlank(cachingConnectionFactory.getUsername())) {
-            logger.info("  username:    *******");
+            logger.info("  username:               *******");
         } else {
             logger.info("  username: ");
         }
         if (StringUtils.isNotBlank(cachingConnectionFactory.getRabbitConnectionFactory().getPassword())) {
-            logger.info("  password:    *******");
+            logger.info("  password:               *******");
         } else {
             logger.info("  password: ");
         }
 
-        logger.info("  vhost:       {}", cachingConnectionFactory.getVirtualHost());
+        logger.info("  vhost:                  {}", cachingConnectionFactory.getVirtualHost());
+        logger.info("Rabbitmq Exchange details:");
+        logger.info("  Name:    {}", exchange.getName());
+        logger.info("  Type:    {}", exchange.getType());
+        logger.info("  Durable: {}", exchange.isDurable());
+        logger.info("Rabbitmq Simple Listener Container details: ");
+        RabbitProperties.SimpleContainer simpleContainerProperties = rabbitProperties.getListener().getSimple();
+        logger.info("  Concurrency:            {}", simpleContainerProperties.getConcurrency());
+        logger.info("  Max Concurrency:        {}", simpleContainerProperties.getMaxConcurrency());
+        logger.info("  Prefetch:               {}", simpleContainerProperties.getPrefetch());
+        logger.info("  Acknowledge Mode:       {}", simpleContainerProperties.getAcknowledgeMode());
+        logger.info("  Missing Queues Fatal:   {}", simpleContainerProperties.isMissingQueuesFatal());
     }
 
     private void createDeadLetterHandler(RabbitListenerEndpointRegistrar registrar) {
@@ -125,7 +158,7 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
             .withArgument("x-expires", TimeUnit.HOURS.toMillis(8))
             // may need to add dead letter queue and dead letter queue listener
             .build();
-        TopicExchange deadLetterExchange = ExchangeBuilder.topicExchange(RabbitMQConfiguration.DEAD_LETTER_EXCHANGE_NAME).build();
+        TopicExchange deadLetterExchange = ExchangeBuilder.topicExchange(RabbitMQConfiguration.DEAD_LETTER_EXCHANGE_NAME).durable(true).build();
         Binding binding = BindingBuilder.bind(queue).to(deadLetterExchange).with(DeadLetterListener.DEAD_LETTER_QUEUE_NAME);
         amqpAdmin.declareExchange(deadLetterExchange);
         amqpAdmin.declareQueue(queue);
@@ -141,7 +174,7 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
 
     private MessageListenerContainer createMessageListenerContainer() {
         SimpleRabbitListenerContainerFactory containerFactory = new SimpleRabbitListenerContainerFactory();
-        containerFactory.setConnectionFactory(cachingConnectionFactory);
+        rabbitListenerContainerFactoryConfigurer.configure(containerFactory, cachingConnectionFactory);
         containerFactory.setRetryTemplate(rabbitmqRetryTemplate);
         containerFactory.setFailedDeclarationRetryInterval(30000L); // default is 5 seconds
         return containerFactory.createListenerContainer();

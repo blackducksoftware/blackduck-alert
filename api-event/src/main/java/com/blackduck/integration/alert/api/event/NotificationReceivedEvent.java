@@ -16,15 +16,17 @@ public class NotificationReceivedEvent extends AlertEvent {
 
     private final UUID correlationId;
     private final Long providerConfigId;
+    private final UUID batchId;
 
-    public NotificationReceivedEvent(Long providerConfigId) {
-        this(UUID.randomUUID(), providerConfigId);
+    public NotificationReceivedEvent(Long providerConfigId, UUID batchId) {
+        this(UUID.randomUUID(), providerConfigId, batchId);
     }
 
-    public NotificationReceivedEvent(UUID correlationId, Long providerConfigId) {
+    public NotificationReceivedEvent(UUID correlationId, Long providerConfigId, UUID batchId) {
         super(NOTIFICATION_RECEIVED_EVENT_TYPE);
         this.correlationId = correlationId;
         this.providerConfigId = providerConfigId;
+        this.batchId = batchId;
     }
 
     public UUID getCorrelationId() {
@@ -33,5 +35,9 @@ public class NotificationReceivedEvent extends AlertEvent {
 
     public Long getProviderConfigId() {
         return providerConfigId;
+    }
+
+    public UUID getBatchId() {
+        return batchId;
     }
 }
