@@ -60,9 +60,14 @@ const colors = {
 
 const defaultBorder = `solid 1px ${colors.borderColor}`;
 
+const modal = {
+    modalBorderRadius: '12px',
+}
+
 const theme = {
     colors,
-    defaultBorder
+    defaultBorder,
+    modal
 };
 
 export default theme;

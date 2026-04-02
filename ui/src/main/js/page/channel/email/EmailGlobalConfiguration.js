@@ -28,6 +28,7 @@ const EmailGlobalConfiguration = ({
             id={EMAIL_TEST_FIELD.key}
             name={EMAIL_TEST_FIELD.key}
             label={EMAIL_TEST_FIELD.label}
+            visibleDescription='Send a test email to verify that your email configuration is correct. Enter the email address you want to send the test email to and click the "Send Test Email" button.'
             customDescription={EMAIL_TEST_FIELD.description}
             onChange={({ target }) => setTestEmailAddress(target.value)}
             value={testEmailAddress}
@@ -61,6 +62,7 @@ const EmailGlobalConfiguration = ({
                     formDataId={emailConfig.id}
                     setErrors={(formErrors) => setErrors(formErrors)}
                     testFields={testField}
+                    testModalTitle="Send Test Email"
                     clearTestForm={() => setTestEmailAddress('')}
                     buttonIdPrefix={EMAIL_INFO.key}
                     getRequest={fetchData}

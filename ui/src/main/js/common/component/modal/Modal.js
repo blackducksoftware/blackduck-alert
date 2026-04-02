@@ -10,6 +10,10 @@ import Notification from './Notification';
 const modalRoot = document.getElementById('alert-modal');
 
 const useStyles = createUseStyles((theme) => ({
+    '@keyframes fadeIn': {
+        from: { opacity: 0 },
+        to: { opacity: 1 }
+    },
     modal: {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         display: 'block',
@@ -18,15 +22,18 @@ const useStyles = createUseStyles((theme) => ({
         zIndex: '10000',
         outline: 0,
         cursor: 'default',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        animation: '$fadeIn 0.2s ease-in-out'
     },
     modalStyle: {
         backgroundColor: theme.colors.white.default,
-        borderRadius: '5px',
-        position: 'relative',
+        borderRadius: theme.modal.modalBorderRadius,
+        position: 'absolute',
+        top: '40%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
         width: '90%',
         maxWidth: 600,
-        margin: ['100px', 'auto']
     },
     modalStyleLarge: {
         maxWidth: 900

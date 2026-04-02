@@ -12,6 +12,11 @@ const useStyles = createUseStyles((theme) => ({
         paddingTop: '20px',
         marginTop: '10px',
         borderTop: `1px solid ${theme.colors.defaultBackgroundColor}`
+    },
+    modalDescription: {
+        fontSize: '15px',
+        color: theme.colors.grey.darkerGrey,
+        margin: '10px'
     }
 }));
 
@@ -170,8 +175,9 @@ const ConfigButtons = ({
                     handleSubmit={handleDeleteConfirmed}
                     submitText="Delete"
                     style="delete"
+                    buttonStyle="actionSecondaryDelete"
                 >
-                    <div className="modal-description">
+                    <div className={classes.modalDescription}>
                         {confirmDeleteMessage}
                     </div>
                 </Modal>
