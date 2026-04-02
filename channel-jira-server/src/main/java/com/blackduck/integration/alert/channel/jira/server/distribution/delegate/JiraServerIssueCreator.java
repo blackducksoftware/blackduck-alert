@@ -121,12 +121,16 @@ public class JiraServerIssueCreator extends JiraIssueCreator<IssueCreationReques
 
     @Override
     protected IssueCreationResponseModel createIssue(IssueCreationRequestModel alertIssueCreationModel) throws IntegrationException {
-        return issueService.createIssue(alertIssueCreationModel);
+        IssueCreationResponseModel issueCreationResponseModel = issueService.createIssue(alertIssueCreationModel);
+        logger.debug("Created Jira Server issue with ID: {} and Key: {}", issueCreationResponseModel.getId(), issueCreationResponseModel.getKey());
+        return issueCreationResponseModel;
     }
 
     @Override
     protected IssueResponseModel fetchIssue(String issueIdOrKey) throws IntegrationException {
-        return issueService.getIssue(issueIdOrKey);
+        IssueResponseModel issueResponseModel = issueService.getIssue(issueIdOrKey);
+        logger.debug("Fetched Jira Server issue with ID: {}", issueResponseModel.getId());
+        return issueResponseModel;
     }
 
     @Override

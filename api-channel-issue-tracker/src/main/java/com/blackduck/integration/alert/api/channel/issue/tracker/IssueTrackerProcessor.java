@@ -10,12 +10,16 @@ package com.blackduck.integration.alert.api.channel.issue.tracker;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerModelHolder;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTrackerResponse;
+import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTransitionModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerAsyncMessageSender;
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderMessageHolder;
@@ -54,13 +58,28 @@ public class IssueTrackerProcessor<T extends Serializable> implements IssueTrack
         if (!logger.isDebugEnabled()) {
             return;
         }
-        logger.debug("{} Message Counts for Job execution id: {}, for {} notifications. Creation: {}, Transition: {}, Comment: {}",
+        List<String> creationModelAlertIds = issueTrackerModels.getIssueCreationModels().stream()
+                .map(IssueCreationModel::getAlertIssueId)
+                .map(UUID::toString)
+                .toList();
+        List<String> transitionModelAlertIds = issueTrackerModels.getIssueTransitionModels().stream()
+            .map(IssueTransitionModel::getAlertIssueId)
+            .map(UUID::toString)
+            .toList();
+        List<String> commentModelAlertIds = issueTrackerModels.getIssueCommentModels().stream()
+            .map(IssueCommentModel::getAlertIssueId)
+            .map(UUID::toString)
+            .toList();
+        logger.debug("{} Message Counts for Job execution id: {}, for {} notifications. Creation ({}): {}, Transition ({}): {}, Comment ({}): {}",
             messageHolderType,
             messageSender.getJobExecutionId(),
             messageSender.getNotificationIds().size(),
             issueTrackerModels.getIssueCreationModels().size(),
+            creationModelAlertIds.isEmpty() ? "None" : creationModelAlertIds,
             issueTrackerModels.getIssueTransitionModels().size(),
-            issueTrackerModels.getIssueCommentModels().size());
+            transitionModelAlertIds.isEmpty() ? "None" : transitionModelAlertIds,
+            issueTrackerModels.getIssueCommentModels().size(),
+            commentModelAlertIds.isEmpty() ? "None" : commentModelAlertIds);
     }
 
 }

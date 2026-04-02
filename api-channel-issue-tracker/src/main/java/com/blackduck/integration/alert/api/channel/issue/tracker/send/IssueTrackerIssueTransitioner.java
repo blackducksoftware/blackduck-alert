@@ -70,7 +70,7 @@ public abstract class IssueTrackerIssueTransitioner<T extends Serializable> {
             null,
             issueTransitionModel.getAtlassianTransitionComments().orElse(null)
         );
-        logger.debug("Issue Transitioner: creating comment model with Alert Issue ID: {}", commentRequestModel.getAlertIssueId());
+        logger.debug("Issue Transitioner for Alert Issue ID: {}, creating comment model with Alert Issue ID: {}", issueTransitionModel.getAlertIssueId(), commentRequestModel.getAlertIssueId());
         commenter.commentOnIssue(commentRequestModel);
 
         return transitionResponse;

@@ -83,12 +83,12 @@ public class JiraExactIssueFinder implements ExactIssueFinder<String> {
         );
         String projectVersionLabelValue = projectIssueModel.getProjectVersion()
             .map(LinkableItem::getValue)
-            .orElse(null);
+            .orElse("None");
         String componentVersionLabelValue = bomComponent.getComponentVersion()
             .map(LinkableItem::getValue)
-            .orElse(null);
-        logger.debug("Searching for Jira issues for Black Duck Project: {}, Project Version: {}, Component: {}, ComponentVersion: {}, with this JQL Query: {}",
-            project.getValue(), projectVersionLabelValue, bomComponent.getComponent().getValue(), componentVersionLabelValue, jqlString);
+            .orElse("None");
+        logger.debug("Searching for Jira issues for Black Duck Project: {}, Project Version: {}, Component: {}, Component Version: {}, Component Concern Type: {}, with this JQL Query: {}",
+            project.getValue(), projectVersionLabelValue, bomComponent.getComponent().getValue(), componentVersionLabelValue, concernType.name(), jqlString);
         List<ProjectIssueSearchResult<String>> searchResults;
         if(maxResults == Integer.MAX_VALUE) {
             searchResults = jqlQueryExecutor.executeQuery(jqlString)
@@ -101,8 +101,8 @@ public class JiraExactIssueFinder implements ExactIssueFinder<String> {
                     .map(jiraSearcherResponseModel -> searchResultCreator.createIssueResult(jiraSearcherResponseModel, projectIssueModel))
                     .toList();
         }
-        logger.debug("Found {} search results for Black Duck Project: {}, Project Version: {}, Component: {}, ComponentVersion: {}",
-            searchResults.size(), project.getValue(), projectVersionLabelValue, bomComponent.getComponent().getValue(), componentVersionLabelValue);
+        logger.debug("Found {} search results for Black Duck Project: {}, Project Version: {}, Component: {}, ComponentVersion: {}, Component Concern Type: {}",
+            searchResults.size(), project.getValue(), projectVersionLabelValue, bomComponent.getComponent().getValue(), componentVersionLabelValue, concernType.name());
         return new IssueTrackerSearchResult<>(jqlString, searchResults);
     }
 

@@ -47,7 +47,7 @@ public class BlackDuckIssueTrackerCallbackEventHandler implements AlertEventHand
     @Override
     public void handle(IssueTrackerCallbackEvent event) {
         String eventId = event.getEventId();
-        logger.debug("Handling issue-tracker callback event with id '{}'", eventId);
+        logger.debug("Handling issue-tracker callback event with id '{}' for issue key: {}", eventId, event.getIssueKey());
 
         IssueTrackerCallbackInfo callbackInfo = event.getCallbackInfo();
         Optional<BlackDuckServicesFactory> optionalBlackDuckServicesFactory = createBlackDuckProperties(callbackInfo.getProviderConfigId())
@@ -61,7 +61,7 @@ public class BlackDuckIssueTrackerCallbackEventHandler implements AlertEventHand
             BlackDuckProviderIssueModel issueModel = createBlackDuckIssueModel(event);
             createOrUpdateBlackDuckIssue(blackDuckProviderIssueHandler, issueModel, callbackInfo);
         }
-        logger.debug("Finished handling issue-tracker callback event with id '{}'", eventId);
+        logger.debug("Finished handling issue-tracker callback event with id '{}' for issue key: {}", eventId, event.getIssueKey());
     }
 
     private Optional<BlackDuckProperties> createBlackDuckProperties(Long providerConfigId) {
