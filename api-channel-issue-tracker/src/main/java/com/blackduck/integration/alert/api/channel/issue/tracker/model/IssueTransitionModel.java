@@ -14,11 +14,10 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.ExistingIssueDetails;
-import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 import com.blackduck.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.blackduck.integration.jira.common.cloud.model.AtlassianDocumentFormatModel;
 
-public class IssueTransitionModel<T extends Serializable> extends AlertSerializableModel {
+public class IssueTransitionModel<T extends Serializable> extends IssueActionModel {
     private final ExistingIssueDetails<T> existingIssueDetails;
     private final IssueOperation issueOperation;
     private final List<String> postTransitionComments;
