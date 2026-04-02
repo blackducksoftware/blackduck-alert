@@ -43,7 +43,6 @@ public class IssueTrackerProcessor<T extends Serializable> implements IssueTrack
         logIssueTrackerMessages("Simple", simpleMessageHolder);
 
         for (ProjectMessage projectMessage : messages.getProjectMessages()) {
-            projectMessage.getBomComponents();
             IssueTrackerModelHolder<T> projectMessageHolder = modelExtractor.extractProjectMessageIssueModels(projectMessage, jobName);
             issueTrackerModels.add(projectMessageHolder);
             logIssueTrackerMessages("Project", projectMessageHolder);
