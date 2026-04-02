@@ -68,7 +68,7 @@ version = '9.0.0-SNAPSHOT'
 
 ext.isSnapshot = project.version.endsWith('-SNAPSHOT')
 ext.isSIGQA = project.version.contains('-SIGQA')
-ext.isRelease = (!project.ext.isSnapshot && !project.ext.isSIGQA)
+ext.isRelease = (!project.ext.isSnapshot && !project.ext.isSIGQA && project.version ==~ /\d+(\.\d+)*/)
 
 if (project.ext.isSIGQA && System.env.HELM_SIGQA_REPOS != null) {
     helmArtifactoryRepos = System.env.HELM_SIGQA_REPOS.split(',').collect { it.trim() as String }
