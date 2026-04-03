@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import { createUseStyles } from 'react-jss';
 import ModalHeader from 'common/component/modal/ModalHeader';
 import ModalFooter from 'common/component/modal/ModalFooter';
-import Notification from './Notification';
+import Notification from 'common/component/modal/Notification';
 
 const modalRoot = document.getElementById('alert-modal');
 
@@ -49,12 +49,12 @@ const useStyles = createUseStyles((theme) => ({
     },
     modalBody: {
         maxHeight: 'calc(100vh - 355px)',
-        padding: ['16px', '32px'],
+        padding: ['16px', '70px'],
         overflowY: 'auto'
     },
     noOverflowModalBody: {
         maxHeight: 'calc(100vh - 355px)',
-        padding: ['16px', '32px']
+        padding: ['16px', '70px']
     }
 }));
 

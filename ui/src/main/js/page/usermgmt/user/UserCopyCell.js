@@ -13,7 +13,7 @@ const UserCopyCell = ({ data }) => {
     const modalOptions = {
         type: 'COPY',
         submitText: 'Create',
-        title: `Copy User, '${data.username}'`,
+        title: `Copy User`,
         copyDescription: `Performing this action will create a new user by using the same settings as '${data.username}'`
     };
 
