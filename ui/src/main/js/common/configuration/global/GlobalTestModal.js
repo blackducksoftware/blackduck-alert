@@ -10,7 +10,7 @@ const useStyles = createUseStyles({
 });
 
 const GlobalTestModal = ({
-    children, showTestModal, handleTest, handleCancel, buttonIdPrefix, performingAction, 
+    children, showTestModal, handleTest, handleCancel, performingAction, 
     modalSubmitText, disableTestModalSubmit, testModalButtonTitle, testModalTitle
 }) => {
     const classes = useStyles();
@@ -25,7 +25,6 @@ const GlobalTestModal = ({
             disableSubmit={disableTestModalSubmit}
             submitTitle={testModalButtonTitle}
             submitText={ modalSubmitText || 'Send Test Message'}
-            style="default"
             showLoader={performingAction}
             buttonStyle="actionSecondary"
         >
@@ -39,14 +38,13 @@ const GlobalTestModal = ({
 GlobalTestModal.propTypes = {
     children: PropTypes.node.isRequired,
     showTestModal: PropTypes.bool.isRequired,
+    testModalTitle: PropTypes.string,
     handleTest: PropTypes.func.isRequired,
     handleCancel: PropTypes.func.isRequired,
-    buttonIdPrefix: PropTypes.string,
     performingAction: PropTypes.bool
 };
 
 GlobalTestModal.defaultProps = {
-    buttonIdPrefix: 'common-test-modal',
     performingAction: false
 };
 
