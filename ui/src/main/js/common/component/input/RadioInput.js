@@ -21,7 +21,7 @@ const useStyles = createUseStyles({
 });
 
 const RadioInput = ({
-    id, description, errorName, errorValue, label, name, onChange, readOnly,
+    id, fieldDescription, errorName, errorValue, label, name, onChange, readOnly,
     required, radioOptions, checked, isInModal, tooltipDescription
 }) => {
     const classes = useStyles();
@@ -34,7 +34,7 @@ const RadioInput = ({
     return (
         <LabeledField
             id={id}
-            description={description}
+            fieldDescription={fieldDescription}
             label={label}
             errorName={errorName}
             errorValue={errorValue}
@@ -67,7 +67,7 @@ const RadioInput = ({
 RadioInput.propTypes = {
     checked: PropTypes.string,
     tooltipDescription: PropTypes.string,
-    description: PropTypes.string,
+    fieldDescription: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     id: PropTypes.string,
@@ -86,7 +86,7 @@ RadioInput.defaultProps = {
     onChange: () => true,
     readOnly: false,
     isInModal: false,
-    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT

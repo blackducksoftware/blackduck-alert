@@ -188,7 +188,7 @@ const AzureBoardsModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMe
                     id={AZURE_BOARDS_GLOBAL_FIELD_KEYS.name}
                     name={AZURE_BOARDS_GLOBAL_FIELD_KEYS.name}
                     label="Name"
-                    fieldDescription="The name of the Azure Board for your identification purposes."
+                    fieldDescription="Display name for this connection."
                     required
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleTestChange(azureModel, setAzureModel)}
@@ -200,7 +200,7 @@ const AzureBoardsModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMe
                     id={AZURE_BOARDS_GLOBAL_FIELD_KEYS.organization}
                     name={AZURE_BOARDS_GLOBAL_FIELD_KEYS.organization}
                     label="Organization Name"
-                    fieldDescription="The name of the Azure DevOps organization."
+                    fieldDescription="Azure DevOps organization name."
                     required
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleTestChange(azureModel, setAzureModel)}
@@ -212,7 +212,6 @@ const AzureBoardsModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMe
                     id={AZURE_BOARDS_GLOBAL_FIELD_KEYS.appId}
                     name={AZURE_BOARDS_GLOBAL_FIELD_KEYS.appId}
                     label="App ID"
-                    fieldDescription="The App ID created for Alert when registering your Azure DevOps Client Application."
                     required
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleTestChange(azureModel, setAzureModel)}
@@ -225,7 +224,6 @@ const AzureBoardsModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMe
                     id={AZURE_BOARDS_GLOBAL_FIELD_KEYS.clientSecret}
                     name={AZURE_BOARDS_GLOBAL_FIELD_KEYS.clientSecret}
                     label="Client Secret"
-                    fieldDescription="The Client secret created for Alert when registering your Azure DevOps Application."
                     required
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleTestChange(azureModel, setAzureModel)}

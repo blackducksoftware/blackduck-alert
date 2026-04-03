@@ -12,7 +12,8 @@ const EndpointButtonField = ({
     buttonLabel,
     csrfToken,
     currentConfig,
-    description,
+    tooltipDescription,
+    fieldDescription,
     endpoint,
     errorValue,
     fieldKey,
@@ -83,7 +84,8 @@ const EndpointButtonField = ({
         <div>
             <LabeledField
                 id={id}
-                description={description}
+                tooltipDescription={tooltipDescription}
+                fieldDescription={fieldDescription}
                 label={label}
                 required={required}
                 errorName={fieldKey}
@@ -128,7 +130,8 @@ EndpointButtonField.propTypes = {
     statusMessage: PropTypes.string,
     successBox: PropTypes.bool.isRequired,
     value: PropTypes.bool,
-    description: PropTypes.string,
+    fieldDescription: PropTypes.string,
+    tooltipDescription: PropTypes.string,
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
     required: PropTypes.bool
@@ -142,7 +145,7 @@ EndpointButtonField.defaultProps = {
     requiredRelatedFields: [],
     statusMessage: 'Success',
     value: false,
-    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 };

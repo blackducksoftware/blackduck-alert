@@ -4,13 +4,12 @@ import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input
 import BaseInput from 'common/component/input/BaseInput';
 
 const TextInput = ({
-    id, description, errorName, errorValue, label,
+    id, errorName, errorValue, label,
     name, onChange, readOnly, required, value,
     placeholder, tooltipDescription, isDisabled, fieldDescription
 }) => (
     <LabeledField
         id={id}
-        description={description}
         label={label}
         errorName={errorName}
         errorValue={errorValue}
@@ -39,7 +38,6 @@ TextInput.propTypes = {
     name: PropTypes.string,
     value: PropTypes.string,
     onChange: PropTypes.func,
-    description: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
@@ -56,7 +54,7 @@ TextInput.defaultProps = {
     onChange: () => true,
     readOnly: false,
     value: '',
-    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,

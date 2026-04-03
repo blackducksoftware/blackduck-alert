@@ -68,7 +68,7 @@ const JiraCloudGlobalConfiguration = ({
                         id={JIRA_CLOUD_GLOBAL_FIELD_KEYS.url}
                         name={JIRA_CLOUD_GLOBAL_FIELD_KEYS.url}
                         label="Server URL"
-                        description="The URL of the Jira Cloud server."
+                        fieldDescription="Base URL of the Jira Cloud server."
                         required
                         readOnly={readonly}
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
@@ -80,7 +80,7 @@ const JiraCloudGlobalConfiguration = ({
                         id={JIRA_CLOUD_GLOBAL_FIELD_KEYS.emailAddress}
                         name={JIRA_CLOUD_GLOBAL_FIELD_KEYS.emailAddress}
                         label="Email Address"
-                        description="The email address of the Jira Cloud user. Note: Unless 'Disable Plugin Check' is checked, this user must be a Jira admin."
+                        fieldDescription="Note: Unless 'Disable Plugin Check' is checked, this email address must belong to a Jira admin."
                         required
                         readOnly={readonly}
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
@@ -92,7 +92,7 @@ const JiraCloudGlobalConfiguration = ({
                         id={JIRA_CLOUD_GLOBAL_FIELD_KEYS.accessToken}
                         name={JIRA_CLOUD_GLOBAL_FIELD_KEYS.accessToken}
                         label="API Token"
-                        description="The API token of the specified Jira user."
+                        fieldDescription="The API token of the specified Jira user."
                         required
                         readOnly={readonly}
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
@@ -105,7 +105,7 @@ const JiraCloudGlobalConfiguration = ({
                         id={JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout}
                         name={JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout}
                         label="Timeout"
-                        description="The timeout in seconds for all connections to Jira Cloud."
+                        fieldDescription="The timeout in seconds for all connections to Jira Cloud."
                         required
                         readOnly={readonly}
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
@@ -116,9 +116,9 @@ const JiraCloudGlobalConfiguration = ({
                     <CheckboxInput
                         id={JIRA_CLOUD_GLOBAL_FIELD_KEYS.disablePluginCheck}
                         name={JIRA_CLOUD_GLOBAL_FIELD_KEYS.disablePluginCheck}
-                        label="Alert Issue Property Indexer Plugin"
-                        checkboxValueLabel="Disable Plugin"
-                        checkboxValueDescription="This will disable checking whether the 'Alert Issue Property Indexer' plugin is installed on the specified Jira instance. Please ensure that the plugin is manually installed before using Alert with Jira. If not, issues created by Alert will not be updated properly, and duplicate issues may be created."
+                        label="Jira Plugin Validation"
+                        checkboxValueLabel="Skip Jira plugin validation"
+                        checkboxValueDescription="This will disable checking whether the 'Alert Issue Property Indexer' plugin is installed on the specified Jira instance. If the plugin is not installed, issues may not be updated correctly and duplicates may be created."
                         readOnly={readonly}
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(formData, JIRA_CLOUD_GLOBAL_FIELD_KEYS.disablePluginCheck)}
@@ -130,7 +130,7 @@ const JiraCloudGlobalConfiguration = ({
                         name={JIRA_CLOUD_GLOBAL_FIELD_KEYS.configurePlugin}
                         buttonLabel="Install Plugin Remotely"
                         label="Configure Jira Cloud plugin"
-                        description="Installs a required plugin on the Jira Cloud server."
+                        fieldDescription="Installs a required plugin on the Jira Cloud server."
                         endpoint="/api/function"
                         fieldKey={JIRA_CLOUD_GLOBAL_FIELD_KEYS.configurePlugin}
                         requiredRelatedFields={[
