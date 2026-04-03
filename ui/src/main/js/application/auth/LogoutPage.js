@@ -3,7 +3,7 @@ import { createUseStyles } from 'react-jss';
 import { useDispatch } from 'react-redux';
 import { verifyLogin } from 'store/actions/session';
 import Button from 'common/component/button/Button';
-import AuthorizationView from '../../common/component/AuthorizationView';
+import AuthorizationView from 'common/component/AuthorizationView';
 
 const useStyles = createUseStyles({
     dialogContainer: {

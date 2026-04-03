@@ -253,7 +253,7 @@ ConcreteConfigurationForm.propTypes = {
     testModalButtonTitle: PropTypes.string,
     isSaveDisabled: PropTypes.bool,
     isDeleteDisabled: PropTypes.bool,
-    ingnoreValidation: PropTypes.bool
+    ignoreValidation: PropTypes.bool
 };
 
 ConcreteConfigurationForm.defaultProps = {

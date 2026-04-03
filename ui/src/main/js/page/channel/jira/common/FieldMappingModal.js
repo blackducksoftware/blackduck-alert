@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import Modal from 'common/component/modal/Modal';
 import TextInput from 'common/component/input/TextInput';
-import CheckboxInput from "../../../../common/component/input/CheckboxInput";
-import ReadOnlyField from "../../../../common/component/input/field/ReadOnlyField";
+import CheckboxInput from "common/component/input/CheckboxInput";
+import ReadOnlyField from "common/component/input/field/ReadOnlyField";
 
 const FieldMappingModal = ({ tableData, selectedData, selectedIndex, isOpen, toggleModal, modalOptions, updateTableData }) => {
     const [model, setModel] = useState(selectedData || { fieldName: '', fieldValue: '', treatValueAsJson: false });
