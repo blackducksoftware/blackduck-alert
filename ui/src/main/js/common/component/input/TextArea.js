@@ -31,7 +31,7 @@ const useStyles = createUseStyles((theme) => ({
 
 const TextArea = ({
     id, description, errorName, errorValue, label, name, onChange, readOnly, required,
-    value, customDescription, isDisabled, rows
+    value, tooltipDescription, isDisabled, rows, fieldDescription
 }) => {
     const classes = useStyles();
     const onChangeHandler = readOnly ? null : onChange;
@@ -43,12 +43,13 @@ const TextArea = ({
 
     return (
         <LabeledField
-            customDescription={customDescription}
+            tooltipDescription={tooltipDescription}
             description={description}
             label={label}
             errorName={errorName}
             errorValue={errorValue}
             required={required}
+            fieldDescription={fieldDescription}
         >
             <textarea className={inputClass} id={id} rows={rows} cols="60" readOnly={readOnly} name={name} value={value} onChange={onChangeHandler} disabled={isDisabled} />
         </LabeledField>
@@ -66,7 +67,8 @@ TextArea.propTypes = {
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
     required: PropTypes.bool,
-    customDescription: PropTypes.string,
+    tooltipDescription: PropTypes.string,
+    fieldDescription: PropTypes.string,
     isDisabled: PropTypes.bool,
     rows: PropTypes.number
 };

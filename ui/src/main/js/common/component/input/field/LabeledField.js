@@ -14,9 +14,6 @@ export const LabelFieldPropertyDefaults = {
 };
 
 const useStyles = createUseStyles((theme) => ({
-    customTooltip: {
-        position: 'relative'
-    },
     tooltipText: {
         position: 'absolute',
         top: '-25px',
@@ -75,11 +72,12 @@ const useStyles = createUseStyles((theme) => ({
         color: theme.colors.white.default,
         fontSize: '13px',
         borderRadius: '4px',
-        '--bs-tooltip-bg': theme.colors.purple.darkerPurple,
+        // '--bs-tooltip-bg': theme.colors.purple.darkerPurple,
         '--bs-tooltip-opacity': 'none',
         '--bs-tooltip-max-width': '600px',
         '--bs-tooltip-padding-x': '12px',
-        '--bs-tooltip-padding-y': '8px'
+        '--bs-tooltip-padding-y': '8px',
+        zIndex: 10000
     },
     fieldDescription: {
         margin: 0,
@@ -91,10 +89,10 @@ const useStyles = createUseStyles((theme) => ({
 }));
 
 const LabeledField = ({
-    id, children, description, errorName, errorValue, label, required, customDescription, fieldDescription, isDisabled
+    id, children, tooltipDescription, errorName, errorValue, label, required, fieldDescription, isDisabled
 }) => {
     const classes = useStyles();
-    const [showDescription, setShowDescription] = useState(false);
+    const [showTooltip, setShowTooltip] = useState(false);
     const target = useRef(null);
 
     const labelClasses = classNames(classes.label, {
@@ -111,7 +109,7 @@ const LabeledField = ({
         <div key={label} className={classes.field}>
             <div className={classes.fieldLabel}>
                 <label id={`${id}-label`} className={labelClasses} htmlFor={id}>{label}</label>
-                { (description || customDescription) && (
+                {tooltipDescription && (
                     <div>
                         <button
                             type="button"
@@ -119,7 +117,7 @@ const LabeledField = ({
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                setShowDescription(!showDescription)
+                                setShowTooltip(!showTooltip)
                             }}
                             ref={(icon) => {
                                 target.current = icon;
@@ -127,22 +125,15 @@ const LabeledField = ({
                         >
                             <FontAwesomeIcon icon="question-circle" />
                         </button>
-                        { (customDescription && showDescription) && (
-                            <div className={classes.customTooltip}>
-                                <span className={classes.tooltipCustom}>
-                                    {customDescription}
-                                </span>
-                            </div>
-                        )}
                         <Overlay
                             rootClose
                             placement="top"
-                            show={showDescription}
-                            onHide={() => setShowDescription(false)}
+                            show={showTooltip}
+                            onHide={() => setShowTooltip(false)}
                             target={() => target.current}
                         >
                             <Tooltip className={classes.tooltipCustom}>
-                                {description || customDescription}
+                                {tooltipDescription}
                             </Tooltip>
                         </Overlay>
                     </div>
@@ -166,7 +157,6 @@ LabeledField.propTypes = {
     label: PropTypes.string.isRequired,
     required: PropTypes.bool,
     isDisabled: PropTypes.bool,
-    customDescription: PropTypes.string,
     fieldDescription: PropTypes.string
 };
 
@@ -177,7 +167,6 @@ LabeledField.defaultProps = {
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
-    customDescription: null
 };
 
 export default LabeledField;

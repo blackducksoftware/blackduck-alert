@@ -22,7 +22,7 @@ const useStyles = createUseStyles({
 
 const RadioInput = ({
     id, description, errorName, errorValue, label, name, onChange, readOnly,
-    required, radioOptions, checked, isInModal, customDescription
+    required, radioOptions, checked, isInModal, tooltipDescription
 }) => {
     const classes = useStyles();
 
@@ -39,7 +39,7 @@ const RadioInput = ({
             errorName={errorName}
             errorValue={errorValue}
             required={required}
-            customDescription={customDescription}
+            tooltipDescription={tooltipDescription}
         >
             <div className={containerClass}>
                 {radioOptions.map((option) => (
@@ -66,7 +66,7 @@ const RadioInput = ({
 
 RadioInput.propTypes = {
     checked: PropTypes.string,
-    customDescription: PropTypes.string,
+    tooltipDescription: PropTypes.string,
     description: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,

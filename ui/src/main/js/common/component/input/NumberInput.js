@@ -5,14 +5,14 @@ import BaseInput from 'common/component/input/BaseInput';
 
 const NumberInput = ({
     readOnly, id, name, value, onChange, description, label, errorName,
-    errorValue, required, customDescription, minimumValue, maximumValue, width, fieldDescription
+    errorValue, required, tooltipDescription, minimumValue, maximumValue, width, fieldDescription
 }) => {
     const onChangeHandler = readOnly ? null : onChange;
 
     return (
         <LabeledField
             id={id}
-            customDescription={customDescription}
+            tooltipDescription={tooltipDescription}
             description={description}
             fieldDescription={fieldDescription}
             errorName={errorName}
@@ -47,7 +47,7 @@ NumberInput.propTypes = {
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
     required: PropTypes.bool,
-    customDescription: PropTypes.string,
+    tooltipDescription: PropTypes.string,
     minimumValue: PropTypes.number,
     maximumValue: PropTypes.number,
     width: PropTypes.oneOfType([PropTypes.string, PropTypes.number])

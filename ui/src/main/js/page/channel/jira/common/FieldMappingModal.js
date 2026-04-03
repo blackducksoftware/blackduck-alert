@@ -74,7 +74,7 @@ const FieldMappingModal = ({ tableData, selectedData, selectedIndex, isOpen, tog
                 id="jira-value-json"
                 name="treatValueAsJson"
                 label="Treat Value as JSON"
-                customDescription="If checked, Alert will parse the value as JSON and send the JSON as the content for the custom field. This overrides any custom field processing that Alert does by inspecting the custom field type."
+                tooltipDescription="If checked, Alert will parse the value as JSON and send the JSON as the content for the custom field. This overrides any custom field processing that Alert does by inspecting the custom field type."
                 onChange={handleCheckBoxChange}
                 isChecked={model.treatValueAsJson}
             />

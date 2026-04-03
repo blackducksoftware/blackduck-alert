@@ -135,7 +135,7 @@ const RoleModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
                 id={ROLE_NAME_KEY}
                 name={ROLE_NAME_KEY}
                 label="Role Name"
-                customDescription="The name of the role."
+                tooltipDescription="The name of the role."
                 required
                 onChange={handleOnChange(ROLE_NAME_KEY)}
                 value={role[ROLE_NAME_KEY]}

@@ -5,7 +5,7 @@ import BaseInput from 'common/component/input/BaseInput';
 
 const PasswordInput = ({
     id, description, errorName, errorValue, isSet, label, fieldDescription,
-    name, onChange, readOnly, required, value, placeholder, customDescription, isDisabled
+    name, onChange, readOnly, required, value, placeholder, tooltipDescription, isDisabled
 }) => {
     const placeholderText = (isSet) ? '***********' : null;
     const onChangeHandler = readOnly ? null : onChange;
@@ -13,7 +13,7 @@ const PasswordInput = ({
     return (
         <LabeledField
             id={id}
-            customDescription={customDescription}
+            tooltipDescription={tooltipDescription}
             description={description}
             fieldDescription={fieldDescription}
             label={label}
@@ -50,7 +50,7 @@ PasswordInput.propTypes = {
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     required: PropTypes.bool,
-    customDescription: PropTypes.string,
+    tooltipDescription: PropTypes.string,
     isDisabled: PropTypes.bool,
     placeholder: PropTypes.string
 };

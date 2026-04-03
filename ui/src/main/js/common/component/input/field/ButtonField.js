@@ -7,7 +7,7 @@ import Button from 'common/component/button/Button';
 const ButtonField = ({
     id,
     buttonLabel,
-    customDescription,
+    tooltipDescription,
     description,
     fieldError,
     fieldKey,
@@ -30,7 +30,7 @@ const ButtonField = ({
         <div>
             <LabeledField
                 id={id}
-                customDescription={customDescription}
+                tooltipDescription={tooltipDescription}
                 description={description}
                 label={label}
                 required={required}
@@ -57,7 +57,7 @@ ButtonField.propTypes = {
     required: PropTypes.bool,
     success: PropTypes.bool.isRequired,
     statusMessage: PropTypes.string,
-    customDescription: PropTypes.string
+    tooltipDescription: PropTypes.string
 };
 
 ButtonField.defaultProps = {
