@@ -32,6 +32,7 @@ const colors = {
     defaultBorderColor: '#B1B3B3',
     inputDisabled: '#f9fafb',
     inputEnabled: '#f3f3f5',
+    mutedTextColor: '#6b7280',
     statusFailure: '#E15241',
     statusPending: '#F0AD4E',
     statusSuccess: '#509D51',

@@ -7,8 +7,8 @@ import Button from 'common/component/button/Button';
 const ButtonField = ({
     id,
     buttonLabel,
-    customDescription,
-    description,
+    tooltipDescription,
+    fieldDescription,
     fieldError,
     fieldKey,
     label,
@@ -30,8 +30,8 @@ const ButtonField = ({
         <div>
             <LabeledField
                 id={id}
-                customDescription={customDescription}
-                description={description}
+                tooltipDescription={tooltipDescription}
+                fieldDescription={fieldDescription}
                 label={label}
                 required={required}
                 errorName={fieldKey}
@@ -51,19 +51,19 @@ ButtonField.propTypes = {
     buttonLabel: PropTypes.string.isRequired,
     fieldKey: PropTypes.string.isRequired,
     readOnly: PropTypes.bool,
-    description: PropTypes.string,
     fieldError: PropTypes.string,
     label: PropTypes.string.isRequired,
     required: PropTypes.bool,
     success: PropTypes.bool.isRequired,
     statusMessage: PropTypes.string,
-    customDescription: PropTypes.string
+    fieldDescription: PropTypes.string,
+    tooltipDescription: PropTypes.string,
 };
 
 ButtonField.defaultProps = {
     id: 'endpointButtonFieldId',
     readOnly: false,
-    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     fieldError: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
     statusMessage: 'Success'

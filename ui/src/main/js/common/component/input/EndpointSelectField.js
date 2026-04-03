@@ -14,10 +14,10 @@ const EndpointSelectField = ({
     createRequestBody,
     csrfToken,
     currentConfig,
-    description,
     endpoint,
     errorName,
     errorValue,
+    fieldDescription,
     fieldKey,
     label,
     multiSelect,
@@ -30,6 +30,7 @@ const EndpointSelectField = ({
     requiredRelatedFields,
     searchable,
     selectSpacingClass,
+    tooltipdescription,
     value,
     customVal
 }) => {
@@ -89,7 +90,8 @@ const EndpointSelectField = ({
                 selectSpacingClass={selectSpacingClass}
                 readOnly={readOnly}
                 clearable={clearable}
-                description={description}
+                tooltipdescription={tooltipdescription}
+                fieldDescription={fieldDescription}
                 label={label}
                 errorName={errorName}
                 errorValue={errorValue || requestErrorValue}
@@ -115,7 +117,8 @@ EndpointSelectField.propTypes = {
     searchable: PropTypes.bool,
     selectSpacingClass: PropTypes.string,
     value: PropTypes.array,
-    description: PropTypes.string,
+    fieldDescription: PropTypes.string,
+    tooltipdescription: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
@@ -141,7 +144,7 @@ EndpointSelectField.defaultProps = {
     createRequestBody: null,
     readOptionsRequest: null,
     convertDataToOptions: null,
-    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    tooltipdescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT

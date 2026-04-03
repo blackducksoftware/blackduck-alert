@@ -82,7 +82,7 @@ const MTLSCertificateLayout = ({ csrfToken, errorHandler }) => {
     }
 
     return (
-        <FormCard formTitle="Client Certific">
+        <FormCard formTitle="Client Certificate">
             <div className={classes.certificateDescription}>Filling out the fields below will enable Mutual TLS (MTLS) communication, if required by any one of the Channels. This certificate will be used to provide valid authentication between a Channel and Alert.</div>
 
             { certificateEnabled && (
@@ -111,7 +111,7 @@ const MTLSCertificateLayout = ({ csrfToken, errorHandler }) => {
                     id="keyPassword"
                     name="keyPassword"
                     label="Key Password"
-                    description="The passphrase/password used for the encryption/decryption of the client certificate private key."
+                    fieldDescription="The password used for the encryption/decryption of the client certificate private key."
                     onChange={handleOnChange('keyPassword')}
                     value={getDisplayValue('keyPassword')}
                     errorName="keyPassword"
@@ -123,7 +123,7 @@ const MTLSCertificateLayout = ({ csrfToken, errorHandler }) => {
                     id="keyContent"
                     name="keyContent"
                     label="Key Content"
-                    description="The full text content of the client certificate PKCS#8 private key in PEM format."
+                    fieldDescription="The full text content of the client certificate PKCS#8 private key in PEM format."
                     readOnly={false}
                     onChange={handleOnChange('keyContent')}
                     value={getDisplayValue('keyContent')}
@@ -138,7 +138,7 @@ const MTLSCertificateLayout = ({ csrfToken, errorHandler }) => {
                     id="clientCertificateContent"
                     name="clientCertificateContent"
                     label="Certificate Content"
-                    description="The full text content of the client certificate in PEM format."
+                    fieldDescription="The full text content of the client certificate in PEM format."
                     onChange={handleOnChange('clientCertificateContent')}
                     value={getDisplayValue('clientCertificateContent')}
                     errorName="clientCertificateContent"

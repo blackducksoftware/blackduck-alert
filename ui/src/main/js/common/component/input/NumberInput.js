@@ -4,16 +4,16 @@ import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input
 import BaseInput from 'common/component/input/BaseInput';
 
 const NumberInput = ({
-    readOnly, id, name, value, onChange, description, label, errorName,
-    errorValue, required, customDescription, minimumValue, maximumValue, width
+    readOnly, id, name, value, onChange, label, errorName,
+    errorValue, required, tooltipDescription, minimumValue, maximumValue, width, fieldDescription
 }) => {
     const onChangeHandler = readOnly ? null : onChange;
 
     return (
         <LabeledField
             id={id}
-            customDescription={customDescription}
-            description={description}
+            tooltipDescription={tooltipDescription}
+            fieldDescription={fieldDescription}
             errorName={errorName}
             errorValue={errorValue}
             label={label}
@@ -40,12 +40,12 @@ NumberInput.propTypes = {
     name: PropTypes.string,
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     onChange: PropTypes.func,
-    description: PropTypes.string,
+    fieldDescription: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
     required: PropTypes.bool,
-    customDescription: PropTypes.string,
+    tooltipDescription: PropTypes.string,
     minimumValue: PropTypes.number,
     maximumValue: PropTypes.number,
     width: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
@@ -57,7 +57,7 @@ NumberInput.defaultProps = {
     readOnly: false,
     name: 'name',
     onChange: () => true,
-    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,

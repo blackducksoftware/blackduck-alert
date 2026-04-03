@@ -30,8 +30,8 @@ const useStyles = createUseStyles((theme) => ({
 }));
 
 const TextArea = ({
-    id, description, errorName, errorValue, label, name, onChange, readOnly, required,
-    value, customDescription, isDisabled, rows
+    id, errorName, errorValue, label, name, onChange, readOnly, required,
+    value, tooltipDescription, isDisabled, rows, fieldDescription
 }) => {
     const classes = useStyles();
     const onChangeHandler = readOnly ? null : onChange;
@@ -43,12 +43,12 @@ const TextArea = ({
 
     return (
         <LabeledField
-            customDescription={customDescription}
-            description={description}
             label={label}
             errorName={errorName}
             errorValue={errorValue}
             required={required}
+            fieldDescription={fieldDescription}
+            tooltipDescription={tooltipDescription}
         >
             <textarea className={inputClass} id={id} rows={rows} cols="60" readOnly={readOnly} name={name} value={value} onChange={onChangeHandler} disabled={isDisabled} />
         </LabeledField>
@@ -61,12 +61,12 @@ TextArea.propTypes = {
     onChange: PropTypes.func,
     readOnly: PropTypes.bool,
     value: PropTypes.string,
-    description: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
     required: PropTypes.bool,
-    customDescription: PropTypes.string,
+    tooltipDescription: PropTypes.string,
+    fieldDescription: PropTypes.string,
     isDisabled: PropTypes.bool,
     rows: PropTypes.number
 };
@@ -79,7 +79,7 @@ TextArea.defaultProps = {
     value: '',
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
     isDisabled: false,
     rows: 8

@@ -33,8 +33,8 @@ const DynamicSelectInput = ({
     readOnly,
     clearable,
     onFocus,
-    customDescription,
-    description,
+    fieldDescription,
+    tooltipDescription,
     label,
     errorName,
     errorValue,
@@ -176,8 +176,8 @@ const DynamicSelectInput = ({
     return (
         <LabeledField
             id={id}
-            customDescription={customDescription}
-            description={description}
+            tooltipDescription={tooltipDescription}
+            fieldDescription={fieldDescription}
             errorName={errorName}
             errorValue={errorValue}
             label={label}
@@ -202,13 +202,13 @@ DynamicSelectInput.propTypes = {
     onChange: PropTypes.func.isRequired,
     onFocus: PropTypes.func,
     label: PropTypes.string.isRequired,
-    description: PropTypes.string,
+    fieldDescription: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     required: PropTypes.bool,
     creatable: PropTypes.bool,
     maxMenuHeight: PropTypes.number,
-    customDescription: PropTypes.string,
+    tooltipDescription: PropTypes.string,
     customVal: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
     customSelect: PropTypes.element,
     width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
@@ -226,7 +226,7 @@ DynamicSelectInput.defaultProps = {
     multiSelect: false,
     clearable: true,
     onFocus: () => null,
-    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,

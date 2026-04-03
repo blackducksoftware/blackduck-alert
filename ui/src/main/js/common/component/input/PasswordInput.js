@@ -4,8 +4,8 @@ import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input
 import BaseInput from 'common/component/input/BaseInput';
 
 const PasswordInput = ({
-    id, description, errorName, errorValue, isSet, label,
-    name, onChange, readOnly, required, value, placeholder, customDescription, isDisabled
+    id, errorName, errorValue, isSet, label, fieldDescription,
+    name, onChange, readOnly, required, value, placeholder, tooltipDescription, isDisabled
 }) => {
     const placeholderText = (isSet) ? '***********' : null;
     const onChangeHandler = readOnly ? null : onChange;
@@ -13,12 +13,13 @@ const PasswordInput = ({
     return (
         <LabeledField
             id={id}
-            customDescription={customDescription}
-            description={description}
+            tooltipDescription={tooltipDescription}
+            fieldDescription={fieldDescription}
             label={label}
             errorName={errorName}
             errorValue={errorValue}
             required={required}
+            isDisabled={isDisabled}
         >
             <BaseInput
                 id={id}
@@ -43,11 +44,11 @@ PasswordInput.propTypes = {
     value: PropTypes.string,
     onChange: PropTypes.func,
     label: PropTypes.string.isRequired,
-    description: PropTypes.string,
+    fieldDescription: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     required: PropTypes.bool,
-    customDescription: PropTypes.string,
+    tooltipDescription: PropTypes.string,
     isDisabled: PropTypes.bool,
     placeholder: PropTypes.string
 };
@@ -61,7 +62,7 @@ PasswordInput.defaultProps = {
     onChange: () => true,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
     isDisabled: false
 };

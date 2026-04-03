@@ -166,7 +166,7 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
                 id={BLACKDUCK_GLOBAL_FIELD_KEYS.enabled}
                 name={BLACKDUCK_GLOBAL_FIELD_KEYS.enabled}
                 label="Enabled"
-                customDescription="If selected, this provider configuration will be able to pull data into Alert and available to configure with distribution jobs, otherwise, it will not be available for those usages."
+                tooltipDescription="If selected, this provider configuration will be able to pull data into Alert and available to configure with distribution jobs, otherwise, it will not be available for those usages."
                 readOnly={readonly}
                 onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
                 isChecked={FieldModelUtilities.getFieldModelBooleanValue(providerModel, BLACKDUCK_GLOBAL_FIELD_KEYS.enabled)}
@@ -177,7 +177,7 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
                 id={BLACKDUCK_GLOBAL_FIELD_KEYS.name}
                 name={BLACKDUCK_GLOBAL_FIELD_KEYS.name}
                 label="Provider Configuration"
-                customDescription="The name of this provider configuration. Must be unique."
+                tooltipDescription="The name of this provider configuration. Must be unique."
                 required
                 readOnly={readonly}
                 onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
@@ -189,7 +189,7 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
                 id={BLACKDUCK_GLOBAL_FIELD_KEYS.url}
                 name={BLACKDUCK_GLOBAL_FIELD_KEYS.url}
                 label="URL"
-                customDescription="The URL of the Black Duck server."
+                tooltipDescription="The URL of the Black Duck server."
                 required
                 readOnly={readonly}
                 onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
@@ -201,7 +201,7 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
                 id={BLACKDUCK_GLOBAL_FIELD_KEYS.apiKey}
                 name={BLACKDUCK_GLOBAL_FIELD_KEYS.apiKey}
                 label="API Token"
-                customDescription="The API token used to retrieve data from the Black Duck server. The API token should be for a super user."
+                tooltipDescription="The API token used to retrieve data from the Black Duck server. The API token should be for a super user."
                 required
                 readOnly={readonly}
                 onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
@@ -214,7 +214,7 @@ const ProviderModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessa
                 id={BLACKDUCK_GLOBAL_FIELD_KEYS.timeout}
                 name={BLACKDUCK_GLOBAL_FIELD_KEYS.timeout}
                 label="Timeout"
-                customDescription="The timeout in seconds for all connections to the Black Duck server."
+                tooltipDescription="The timeout in seconds for all connections to the Black Duck server."
                 required
                 readOnly={readonly}
                 onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}

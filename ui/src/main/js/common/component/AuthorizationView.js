@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import Header from 'common/component/Header';
 
@@ -46,6 +47,10 @@ const AuthorizationView = ({ children }) => {
             </div>
         </div>
     );
+};
+
+AuthorizationView.propTypes = {
+    children: PropTypes.node.isRequired
 };
 
 export default AuthorizationView;

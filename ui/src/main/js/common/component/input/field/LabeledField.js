@@ -4,6 +4,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import Overlay from 'react-bootstrap/Overlay';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { createUseStyles } from 'react-jss';
+import classNames from 'classnames';
 
 export const LabelFieldPropertyDefaults = {
     ERROR_NAME_DEFAULT: null,
@@ -13,9 +14,6 @@ export const LabelFieldPropertyDefaults = {
 };
 
 const useStyles = createUseStyles((theme) => ({
-    customTooltip: {
-        position: 'relative'
-    },
     tooltipText: {
         position: 'absolute',
         top: '-25px',
@@ -38,16 +36,14 @@ const useStyles = createUseStyles((theme) => ({
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
-        columnGap: '4px',
-        paddingBottom: '4px'
+        columnGap: '4px'
     },
     label: {
         fontWeight: 'unset',
         textAlign: 'left',
         fontSize: '15px',
-        // fontWeight: 'bold',
         padding: 0,
-        color: theme.colors.grey.darkerGrey
+        color: theme.colors.grey.blackout
     },
     requiredLabel: {
         extend: 'label',
@@ -55,6 +51,10 @@ const useStyles = createUseStyles((theme) => ({
             content: '" *"',
             color: theme.colors.red.default
         }
+    },
+    disabledLabel: {
+        extend: 'label',
+        color: theme.colors.mutedTextColor
     },
     descriptionIcon: {
         background: 'none',
@@ -72,26 +72,34 @@ const useStyles = createUseStyles((theme) => ({
         color: theme.colors.white.default,
         fontSize: '13px',
         borderRadius: '4px',
-        '--bs-tooltip-bg': theme.colors.purple.darkerPurple,
+        // '--bs-tooltip-bg': theme.colors.purple.darkerPurple,
         '--bs-tooltip-opacity': 'none',
         '--bs-tooltip-max-width': '600px',
         '--bs-tooltip-padding-x': '12px',
-        '--bs-tooltip-padding-y': '8px'
+        '--bs-tooltip-padding-y': '8px',
+        zIndex: 10000
     },
-    description: {
-        paddingBottom: '8px',
-        margin: 0
+    fieldDescription: {
+        margin: 0,
+        color: theme.colors.mutedTextColor,
+        fontSize: '12px',
+        lineHeight: '0.8',
+        paddingBottom: '8px'
     }
 }));
 
 const LabeledField = ({
-    id, children, description, errorName, errorValue, label, required, customDescription, visibleDescription
+    id, children, tooltipDescription, errorName, errorValue, label, required, fieldDescription, isDisabled
 }) => {
     const classes = useStyles();
-    const [showDescription, setShowDescription] = useState(false);
+    const [showTooltip, setShowTooltip] = useState(false);
     const target = useRef(null);
 
-    const labelClassName = required ? classes.requiredLabel : classes.label;
+    const labelClasses = classNames(classes.label, {
+        [classes.requiredLabel]: required,
+        [classes.disabledLabel]: isDisabled
+    });
+
     const severity = errorValue ? errorValue.severity : 'ERROR';
     const fieldMessage = errorValue ? errorValue.fieldMessage : '';
     const fieldErrorClass = severity === 'ERROR' ? 'fieldError' : 'fieldWarning';
@@ -100,8 +108,8 @@ const LabeledField = ({
     return (
         <div key={label} className={classes.field}>
             <div className={classes.fieldLabel}>
-                <label id={`${id}-label`} className={labelClassName} htmlFor={id}>{label}</label>
-                { (description || customDescription) && (
+                <label id={`${id}-label`} className={labelClasses} htmlFor={id}>{label}</label>
+                {tooltipDescription && (
                     <div>
                         <button
                             type="button"
@@ -109,7 +117,7 @@ const LabeledField = ({
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                setShowDescription(!showDescription)
+                                setShowTooltip(!showTooltip)
                             }}
                             ref={(icon) => {
                                 target.current = icon;
@@ -117,28 +125,21 @@ const LabeledField = ({
                         >
                             <FontAwesomeIcon icon="question-circle" />
                         </button>
-                        { (customDescription && showDescription) && (
-                            <div className={classes.customTooltip}>
-                                <span className={classes.tooltipCustom}>
-                                    {customDescription}
-                                </span>
-                            </div>
-                        )}
                         <Overlay
                             rootClose
                             placement="top"
-                            show={showDescription}
-                            onHide={() => setShowDescription(false)}
+                            show={showTooltip}
+                            onHide={() => setShowTooltip(false)}
                             target={() => target.current}
                         >
                             <Tooltip className={classes.tooltipCustom}>
-                                {description || customDescription}
+                                {tooltipDescription}
                             </Tooltip>
                         </Overlay>
                     </div>
                 )}
             </div>
-            {visibleDescription && <p className={classes.description}>{visibleDescription}</p>}
+            {fieldDescription && <p className={classes.fieldDescription}>{fieldDescription}</p>}
             {children}
             {(errorName && errorValue) && (
                 <p id={`${id}-fieldError`} className={fieldErrorClass} name={errorName}>{errorMessage}</p>
@@ -155,7 +156,8 @@ LabeledField.propTypes = {
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
     required: PropTypes.bool,
-    customDescription: PropTypes.string
+    isDisabled: PropTypes.bool,
+    fieldDescription: PropTypes.string
 };
 
 LabeledField.defaultProps = {
@@ -165,7 +167,6 @@ LabeledField.defaultProps = {
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
-    customDescription: null
 };
 
 export default LabeledField;

@@ -22,12 +22,13 @@ const useStyles = createUseStyles((theme) => ({
     },
     checkboxValueDescription: {
         padding: ['6px', 0, 0, '22px'],
-        fontSize: '13px'
+        fontSize: '13px',
+        color: theme.colors.mutedTextColor
     }
 }));
 
 const CheckboxInput = ({
-    id, description, errorName, errorValue, isChecked, label, name, onChange, readOnly, required, customDescription, checkboxValueLabel, checkboxValueDescription
+    id, fieldDescription, errorName, errorValue, isChecked, label, name, onChange, readOnly, required, tooltipDescription, checkboxValueLabel, checkboxValueDescription
 }) => {
     const classes = useStyles();
     const inputClass = classNames(classes.input, {
@@ -37,8 +38,8 @@ const CheckboxInput = ({
     return (
         <LabeledField
             id={id}
-            customDescription={customDescription}
-            description={description}
+            tooltipDescription={tooltipDescription}
+            fieldDescription={fieldDescription}
             label={label}
             errorName={errorName}
             errorValue={errorValue}
@@ -67,7 +68,7 @@ const CheckboxInput = ({
 };
 
 CheckboxInput.propTypes = {
-    description: PropTypes.string,
+    fieldDescription: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     id: PropTypes.string,
@@ -77,7 +78,7 @@ CheckboxInput.propTypes = {
     onChange: PropTypes.func,
     readOnly: PropTypes.bool,
     required: PropTypes.bool,
-    customDescription: PropTypes.string,
+    tooltipDescription: PropTypes.string,
     checkboxValueLabel: PropTypes.string,
     checkboxValueDescription: PropTypes.string
 };
@@ -88,7 +89,7 @@ CheckboxInput.defaultProps = {
     name: 'name',
     onChange: () => true,
     readOnly: false,
-    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
