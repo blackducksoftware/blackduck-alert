@@ -5,7 +5,7 @@ import BaseInput from 'common/component/input/BaseInput';
 
 const NumberInput = ({
     readOnly, id, name, value, onChange, description, label, errorName,
-    errorValue, required, customDescription, minimumValue, maximumValue, width
+    errorValue, required, customDescription, minimumValue, maximumValue, width, fieldDescription
 }) => {
     const onChangeHandler = readOnly ? null : onChange;
 
@@ -14,6 +14,7 @@ const NumberInput = ({
             id={id}
             customDescription={customDescription}
             description={description}
+            fieldDescription={fieldDescription}
             errorName={errorName}
             errorValue={errorValue}
             label={label}
@@ -41,6 +42,7 @@ NumberInput.propTypes = {
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     onChange: PropTypes.func,
     description: PropTypes.string,
+    fieldDescription: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,

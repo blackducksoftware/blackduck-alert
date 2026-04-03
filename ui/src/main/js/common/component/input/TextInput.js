@@ -6,7 +6,7 @@ import BaseInput from 'common/component/input/BaseInput';
 const TextInput = ({
     id, description, errorName, errorValue, label,
     name, onChange, readOnly, required, value,
-    placeholder, customDescription, isDisabled
+    placeholder, customDescription, isDisabled, fieldDescription
 }) => (
     <LabeledField
         id={id}
@@ -16,6 +16,8 @@ const TextInput = ({
         errorValue={errorValue}
         required={required}
         customDescription={customDescription}
+        fieldDescription={fieldDescription}
+        isDisabled={isDisabled}
     >
         <BaseInput
             id={id}
@@ -44,6 +46,7 @@ TextInput.propTypes = {
     required: PropTypes.bool,
     placeholder: PropTypes.string,
     customDescription: PropTypes.string,
+    fieldDescription: PropTypes.string,
     isDisabled: PropTypes.bool
 };
 

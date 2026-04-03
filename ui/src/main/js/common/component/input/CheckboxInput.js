@@ -22,7 +22,8 @@ const useStyles = createUseStyles((theme) => ({
     },
     checkboxValueDescription: {
         padding: ['6px', 0, 0, '22px'],
-        fontSize: '13px'
+        fontSize: '13px',
+        color: theme.colors.mutedTextColor
     }
 }));
 

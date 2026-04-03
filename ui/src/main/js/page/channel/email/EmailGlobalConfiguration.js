@@ -28,7 +28,7 @@ const EmailGlobalConfiguration = ({
             id={EMAIL_TEST_FIELD.key}
             name={EMAIL_TEST_FIELD.key}
             label={EMAIL_TEST_FIELD.label}
-            customDescription={EMAIL_TEST_FIELD.description}
+            fieldDescription={EMAIL_TEST_FIELD.description}
             onChange={({ target }) => setTestEmailAddress(target.value)}
             value={testEmailAddress}
         />
@@ -79,8 +79,8 @@ const EmailGlobalConfiguration = ({
                     <TextInput
                         id={EMAIL_GLOBAL_FIELD_KEYS.host}
                         name="smtpHost"
-                        label="Host"
-                        description="The host name of the SMTP email server."
+                        label="Hostname"
+                        fieldDescription="Hostname of the SMTP email server (e.g. smtp.gmail.com)"
                         required
                         readOnly={readonly}
                         onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
@@ -92,7 +92,7 @@ const EmailGlobalConfiguration = ({
                         id={EMAIL_GLOBAL_FIELD_KEYS.from}
                         name="smtpFrom"
                         label="From"
-                        description="The email address to use as the return address."
+                        fieldDescription="The email address to use as the return address."
                         required
                         readOnly={readonly}
                         onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
@@ -104,7 +104,7 @@ const EmailGlobalConfiguration = ({
                         id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.port}
                         name="smtpPort"
                         label="Port"
-                        description="The SMTP server port to connect to."
+                        fieldDescription="The SMTP server port to connect to."
                         readOnly={readonly}
                         onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
                         value={emailConfig.smtpPort || undefined}
@@ -128,7 +128,7 @@ const EmailGlobalConfiguration = ({
                         id={EMAIL_GLOBAL_FIELD_KEYS.user}
                         name="smtpUsername"
                         label="User"
-                        description="The username to authenticate with the SMTP server."
+                        fieldDescription="The username to authenticate with the SMTP server."
                         readOnly={readonly}
                         onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
                         value={emailConfig.smtpUsername || undefined}
@@ -140,7 +140,7 @@ const EmailGlobalConfiguration = ({
                         id={EMAIL_GLOBAL_FIELD_KEYS.password}
                         name="smtpPassword"
                         label="Password"
-                        description="The password to authenticate with the SMTP server."
+                        fieldDescription="The password to authenticate with the SMTP server."
                         readOnly={readonly}
                         onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
                         value={emailConfig.smtpPassword || undefined}
