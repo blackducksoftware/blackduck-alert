@@ -1,26 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { createUseStyles } from 'react-jss';
 import { useDispatch, useSelector } from 'react-redux';
-import Modal from 'common/component/modal/Modal';
 import { deleteDistribution, fetchDistribution } from 'store/actions/distribution';
-import Card from 'common/component/Card';
-import { channelTranslation } from 'page/distribution/DistributionModel';
-
-const useStyles = createUseStyles({
-    deleteConfirmMessage: {
-        margin: [0, '20px', '20px', '30px'],
-        fontSize: '16px',
-        fontWeight: 'bold'
-    },
-    cardContainer: {
-        display: 'flex',
-        marginLeft: '50px'
-    },
-    deleteOptions: {
-        overflowY: 'auto'
-    }
-});
+import DeleteModal from 'common/component/modal/DeleteModal';
 
 function getStagedForDelete(data, selected) {
     const staged = data.models.filter((distribution) => selected.includes(distribution.jobId));
@@ -28,7 +10,6 @@ function getStagedForDelete(data, selected) {
 }
 
 const DistributionDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, setStatusMessage, paramsConfig, setParamsConfig }) => {
-    const classes = useStyles();
     const dispatch = useDispatch();
     const { deleteStatus, error } = useSelector((state) => state.distribution);
     const [selectedJobs, setSelectedJobs] = useState(getStagedForDelete(data, selected));
@@ -92,43 +73,15 @@ const DistributionDeleteModal = ({ isOpen, toggleModal, data, selected, setSelec
         }
     }, [deleteStatus]);
 
-    function toggleSelect(selection) {
-        const toggledDistributions = selectedJobs.map((distribution) => {
-            if (distribution.jobId === selection.jobId) {
-                return { ...distribution, staged: !distribution.staged };
-            }
-            return distribution;
-        });
-
-        setSelectedJobs(toggledDistributions);
-    }
-
     return (
-        <>
-            <Modal
-                isOpen={isOpen}
-                size="sm"
-                title={isMultiDelete ? 'Delete Distributions' : 'Delete Distribution'}
-                closeModal={handleClose}
-                handleCancel={handleClose}
-                handleSubmit={handleDelete}
-                submitText="Delete"
-                showLoader={showLoader}
-            >
-                <div className={classes.deleteConfirmMessage}>
-                    {isMultiDelete ? 'Are you sure you want to delete these distributions?' : 'Are you sure you want to delete this distribution?'}
-                </div>
-                <div>
-                    {selectedJobs?.map((distribution) => (
-                        <div className={classes.cardContainer} key={distribution.jobId}>
-                            <input type="checkbox" checked={distribution.staged} onChange={() => toggleSelect(distribution)} />
-                            <Card icon={['fas', 'tasks']} label={distribution.jobName} description={channelTranslation.label(distribution.channelName)} />
-                        </div>
-                    ))}
-                </div>
-            </Modal>
-        </>
-
+        <DeleteModal
+            isOpen={isOpen}
+            title={isMultiDelete ? 'Delete Distributions' : 'Delete Distribution'}
+            confirmationMessage={isMultiDelete ? 'Are you sure you want to delete these distributions?' : 'Are you sure you want to delete this distribution?'}
+            onClose={handleClose}
+            onDelete={handleDelete}
+            isLoading={showLoader}
+        />
     );
 };
 

@@ -1,22 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { createUseStyles } from 'react-jss';
 import { useDispatch, useSelector } from 'react-redux';
-import Modal from 'common/component/modal/Modal';
 import { deleteJiraServer, fetchJiraServer } from 'store/actions/jira-server';
-import Card from 'common/component/Card';
-
-const useStyles = createUseStyles({
-    deleteConfirmMessage: {
-        margin: [0, '20px', '20px', '30px'],
-        fontSize: '16px',
-        fontWeight: 'bold'
-    },
-    cardContainer: {
-        display: 'flex',
-        marginLeft: '50px'
-    }
-});
+import DeleteModal from 'common/component/modal/DeleteModal';
 
 function getStagedForDelete(data, selected) {
     const staged = data.models.filter((server) => selected.includes(server.id));
@@ -24,7 +10,6 @@ function getStagedForDelete(data, selected) {
 }
 
 const JiraServerDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, setStatusMessage, paramsConfig, setParamsConfig }) => {
-    const classes = useStyles();
     const dispatch = useDispatch();
     const { deleteStatus, error } = useSelector((state) => state.jiraServer);
     const [selectedJiraServers, setSelectedJiraServers] = useState(getStagedForDelete(data, selected));
@@ -88,43 +73,15 @@ const JiraServerDeleteModal = ({ isOpen, toggleModal, data, selected, setSelecte
         }
     }, [deleteStatus]);
 
-    function toggleSelect(selection) {
-        const toggledServers = selectedJiraServers.map((server) => {
-            if (server.id === selection.id) {
-                return { ...server, staged: !server.staged };
-            }
-            return server;
-        });
-
-        setSelectedJiraServers(toggledServers);
-    }
-
     return (
-        <>
-            <Modal
-                isOpen={isOpen}
-                size="sm"
-                title={isMultiDelete ? 'Delete Jira Servers' : 'Delete Jira Server'}
-                closeModal={handleClose}
-                handleCancel={handleClose}
-                handleSubmit={handleDelete}
-                submitText="Delete"
-                showLoader={showLoader}
-            >
-                <div className={classes.deleteConfirmMessage}>
-                    { isMultiDelete ? 'Are you sure you want to delete these Jira Servers?' : 'Are you sure you want to delete this Jira Server?' }
-                </div>
-                <div>
-                    { selectedJiraServers?.map((server) => (
-                        <div className={classes.cardContainer} key={server.id}>
-                            <input type="checkbox" checked={server.staged} onChange={() => toggleSelect(server)} />
-                            <Card icon="server" label={server.name} />
-                        </div>
-                    ))}
-                </div>
-            </Modal>
-        </>
-
+        <DeleteModal
+            isOpen={isOpen}
+            title={isMultiDelete ? 'Delete Jira Servers' : 'Delete Jira Server'}
+            confirmationMessage={isMultiDelete ? 'Are you sure you want to delete these Jira Servers?' : 'Are you sure you want to delete this Jira Server?'}
+            onClose={handleClose}
+            onDelete={handleDelete}
+            isLoading={showLoader}
+        />
     );
 };
 

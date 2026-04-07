@@ -3,20 +3,7 @@ import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { useDispatch, useSelector } from 'react-redux';
 import { bulkDeleteProviders, fetchProviders } from 'store/actions/provider';
-import Modal from 'common/component/modal/Modal';
-import Card from 'common/component/Card';
-
-const useStyles = createUseStyles({
-    deleteConfirmMessage: {
-        margin: [0, '20px', '20px', '30px'],
-        fontSize: '16px',
-        fontWeight: 'bold'
-    },
-    cardContainer: {
-        display: 'flex',
-        marginLeft: '50px'
-    }
-});
+import DeleteModal from 'common/component/modal/DeleteModal';
 
 function getStagedForDelete(data, selected) {
     const staged = data.filter((provider) => selected.includes(provider.id));
@@ -24,7 +11,6 @@ function getStagedForDelete(data, selected) {
 }
 
 const ProviderDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMessage, setSelected }) => {
-    const classes = useStyles();
     const dispatch = useDispatch();
     const { deleteStatus, error } = useSelector((state) => state.provider);
     const [selectedProviders, setSelectedProviders] = useState(getStagedForDelete(data, selected));
@@ -77,44 +63,15 @@ const ProviderDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMes
         }
     }, [deleteStatus]);
 
-    function toggleSelect(selection) {
-        const toggledProviders = selectedProviders.map((provider) => {
-            if (provider.id === selection.id) {
-                return { ...provider, staged: !provider.staged };
-            }
-            return provider;
-        });
-
-        setSelectedProviders(toggledProviders);
-    }
-
     return (
-        <>
-            <Modal
-                isOpen={isOpen}
-                size="sm"
-                title={isMultiProviderDelete ? 'Delete Providers' : 'Delete Provider'}
-                closeModal={handleClose}
-                handleCancel={handleClose}
-                handleSubmit={handleDelete}
-                submitText="Delete"
-                buttonStyle="delete"
-                showLoader={showLoader}
-            >
-                <div className={classes.deleteConfirmMessage}>
-                    { isMultiProviderDelete ? 'Are you sure you want to delete these providers?' : 'Are you sure you want to delete this provider?' }
-                </div>
-                <div>
-                    { selectedProviders?.map((provider) => (
-                        <div className={classes.cardContainer} key={provider.id}>
-                            <input type="checkbox" checked={provider.staged} onChange={() => toggleSelect(provider)} />
-                            <Card icon="handshake" label={provider.name} />
-                        </div>
-                    ))}
-                </div>
-            </Modal>
-        </>
-
+        <DeleteModal
+            isOpen={isOpen}
+            title={isMultiProviderDelete ? 'Delete Providers' : 'Delete Provider'}
+            confirmationMessage={isMultiProviderDelete ? 'Are you sure you want to delete these providers?' : 'Are you sure you want to delete this provider?'}
+            onClose={handleClose}
+            onDelete={handleDelete}
+            isLoading={showLoader}
+        />
     );
 };
 
