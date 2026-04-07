@@ -48,13 +48,19 @@ const useStyles = createUseStyles((theme) => ({
         position: 'relative'
     },
     modalBody: {
-        maxHeight: 'calc(100vh - 355px)',
-        padding: ['16px', '70px'],
-        overflowY: 'auto'
+        maxHeight: 'calc(100vh - 355px)'
     },
-    noOverflowModalBody: {
-        maxHeight: 'calc(100vh - 355px)',
+    modalBodyLarge: {
         padding: ['16px', '70px']
+    },
+    modalBodyMedium: {
+        padding: ['16px', '50px']
+    },
+    modalBodySmall: {
+        padding: ['16px', '30px']
+    },
+    overFlowContent: {
+        overflowY: 'auto'
     }
 }));
 
@@ -64,28 +70,13 @@ const Modal = ({
     disableSubmit, submitTitle, noOverflow
 }) => {
     const classes = useStyles();
-    const [style, setStyle] = useState(noOverflow ? classes.noOverflowModalBody : classes.modalBody);
 
-    function handleWindowResize() {
-        if (window.innerHeight < 755) {
-            setStyle(classes.modalBody);
-        } else {
-            setStyle(classes.noOverflowModalBody);
-        }
-    }
-
-    useEffect(() => {
-        if (noOverflow) {
-            handleWindowResize();
-            window.addEventListener('resize', handleWindowResize);
-
-            return () => {
-                window.removeEventListener('resize', handleWindowResize);
-            };
-        }
-        return () => {
-        };
-    }, []);
+    const modalBodyClass = classNames(classes.modalBody, {
+        [classes.modalBodyLarge]: size === 'lg',
+        [classes.modalBodyMedium]: size === 'md',
+        [classes.modalBodySmall]: size === 'sm',
+        [classes.overFlowContent]: !noOverflow
+    });
 
     const modalStyleClass = classNames(classes.modalStyle, {
         [classes.modalStyleLarge]: size === 'lg',
@@ -105,7 +96,7 @@ const Modal = ({
                         title={title}
                         closeModal={closeModal}
                     />
-                    <div className={style}>
+                    <div className={modalBodyClass}>
                         {showNotification && (
                             <Notification notification={notification} />
                         )}
