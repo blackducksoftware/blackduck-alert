@@ -65,10 +65,8 @@ const FooterSystemMessages = () => {
     }, []);
 
     useEffect(() => {
-        if (!showOverlay) {
-            setShowOverlay(hasErrorMessage);
-        }
-    }, [latestMessages, showOverlay]);
+        setShowOverlay(hasErrorMessage);
+    }, [hasErrorMessage]);
 
     const iconClass = classNames(classes.statusIcon, {
         [classes.errorStatus]: hasErrorMessage,
