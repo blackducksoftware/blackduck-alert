@@ -8,6 +8,7 @@ FROM ${BASEIMAGE_BLACKDUCK_ALERT}
 
 ARG VERSION
 ARG COMMITHASH
+ARG POSTGRES_CURRENT_MAJOR_VERSION
 
 LABEL com.blackducksoftware.integration.alert.vendor="Black Duck Software, Inc." \
       com.blackducksoftware.integration.alert.version="$VERSION" \
@@ -37,7 +38,7 @@ RUN set -ex \
            jq \
            openssl \
            bash \
-           postgresql-client
+           postgresql${POSTGRES_CURRENT_MAJOR_VERSION}-client
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY --from=docker-common healthcheck.sh /usr/local/bin/docker-healthcheck.sh
