@@ -291,3 +291,17 @@ tasks.getByName(ext.dockerBuildAllImagesStageName).mustRunAfter(buildAll)
 tasks.getByName(ext.dockerBuildAllImagesStageName).mustRunAfter(tasks.getByName(ext.dockerSetupStagingAreaDirectoryStageName))
 tasks.getByName(ext.dockerSetupStagingAreaDirectoryStageName).mustRunAfter(buildAll)
 tasks.getByName(ext.dockerPublishAllImages_DHStageName).mustRunAfter(buildAll)
+
+gradle.taskGraph.whenReady {
+    ["${project.rootDir}/src/test/resources/spring-test.properties.template",
+     "${project.rootDir}/src/test/resources/database/helm-test-postgres/templates/postgres.yaml.template"
+    ].each { templatePath ->
+        def templateFile = file(templatePath)
+        def outputFile = file(templatePath.replaceFirst(/\.template$/, ''))
+
+        logger.lifecycle('Updating' + templateFile + ' for search token, and creating ' + outputFile)
+        def content = templateFile.text.replace('POSTGRES_VERSION_TOKEN', project.ext.postgresContainerVersionCurrent)
+
+        outputFile.text = content
+    }
+}
