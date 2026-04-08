@@ -30,29 +30,38 @@ function _checkStatus() {
   fi
 }
 
+function _verify_variable_is_set() {
+  variableName="${1}"
+  message="${2}"
+  if [ -z "${!variableName+x}" ]; then
+    checkStatus 1 "${message}"
+  else
+    checkStatus 0 "${message}"
+  fi
+}
+
+function _verify_exec_exists() {
+  command -v "${1}" 1>/dev/null 2>&1
+  checkStatus $? "Checking for exec '${1}'"
+}
+
 function _validate_environment() {
   _logStart
-  if [ -z "${osUser}" ]; then
-    _checkStatus 1 "Script requires one argument of OS user to run commands as (usually 'postgres')"
-  fi
-  if [ -z "${postgresUser}" ]; then
-    _checkStatus 1 "Verifying able to set postgresUser"
-  fi
-  if [ -z "${postgresPassword}" ]; then
-    _checkStatus 1 "Verifying able to set postgresPassword"
-  fi
-  if [ -z "${PGDATA}" ]; then
-    _checkStatus 1 "Verifying environment variable: PGDATA"
-  fi
-  if [ -z "${PGBINOLD}" ]; then
-    _checkStatus 1 "Verifying environment variable: PGBINOLD"
-  fi
-  if [ -z "${PGBINNEW}" ]; then
-    _checkStatus 1 "Verifying environment variable: PGBINNEW"
-  fi
-  if [ -z "${POSTGRES_MIGRATION_VERSION}" ]; then
-    _checkStatus 1 "Verifying environment variable: POSTGRES_MIGRATION_VERSION"
-  fi
+
+  _verify_variable_is_set osUser "Script requires one argument of OS user to run commands as (usually 'postgres')"
+  _verify_variable_is_set postgresUser "Verifying able to set postgresUser"
+  _verify_variable_is_set postgresPassword "Verifying able to set postgresPassword"
+  _verify_variable_is_set PGDATA "Verifying environment variable: PGDATA"
+  _verify_variable_is_set PGBINOLD "Verifying environment variable: PGBINOLD"
+  _verify_variable_is_set PGBINNEW "Verifying environment variable: PGBINNEW"
+  _verify_variable_is_set POSTGRES_MIGRATION_VERSION "Verifying environment variable: POSTGRES_MIGRATION_VERSION"
+
+  _verify_exec_exists postgres
+  _verify_exec_exists pg_upgrade
+  _verify_exec_exists pg_ctl
+  _verify_exec_exists vacuumdb
+  _verify_exec_exists gosu
+
   _logEnd
 }
 
@@ -163,7 +172,7 @@ function _update_existing_data_ownership() {
 
 function _move_existing_data_backup_directory() {
   _logStart
-  su-exec "${osUser}" mkdir -m "${existingModePGDATA}" -p "${backupPostgresDataDirectory}"
+  gosu "${osUser}" mkdir -m "${existingModePGDATA}" -p "${backupPostgresDataDirectory}"
   _checkStatus $? "Creating backup directory : ${backupPostgresDataDirectory}"
 
   mv "${inputPostgresDataDirectory}"/* "${backupPostgresDataDirectory}"/.
@@ -201,7 +210,7 @@ function _pg_upgrade() {
   ## pg_upgrade uses the following environment variables:
   ##  PGBINOLD, PGBINNEW, PGDATAOLD, PGDATANEW
   _logStart
-  local upgradeCmd="su-exec ${osUser} pg_upgrade -U ${postgresUser} ${1}"
+  local upgradeCmd="gosu ${osUser} pg_upgrade -U ${postgresUser} ${1}"
   _logIt "Launching: ${upgradeCmd}"
   ${upgradeCmd}
   _checkStatus $? "${upgradeCmd}"
@@ -210,7 +219,7 @@ function _pg_upgrade() {
 
 function _start_postgres() {
   _logStart
-  su-exec "${osUser}" pg_ctl -D "${PGDATA}" -m fast -w start
+  gosu "${osUser}" pg_ctl -D "${PGDATA}" -m fast -w start
   _checkStatus $? "Start running postgres"
   _logEnd
 }
@@ -224,7 +233,7 @@ function _analyze_db() {
 
 function _stop_postgres() {
   _logStart
-  su-exec "${osUser}" pg_ctl -D "${PGDATA}" -m fast -w stop
+  gosu "${osUser}" pg_ctl -D "${PGDATA}" -m fast -w stop
   _checkStatus $? "Stop running postgres"
   _logEnd
 }
