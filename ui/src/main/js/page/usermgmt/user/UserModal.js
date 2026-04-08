@@ -187,7 +187,7 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
                 required={!external}
                 onChange={handleOnChange(USER_INPUT_FIELD_KEYS.PASSWORD_KEY)}
                 value={userModel[USER_INPUT_FIELD_KEYS.PASSWORD_KEY] || undefined}
-                isSet={userModel[USER_INPUT_FIELD_KEYS.IS_PASSWORD_SET] || !type === 'COPY'}
+                isSet={userModel[USER_INPUT_FIELD_KEYS.IS_PASSWORD_SET] || type === 'EDIT'}
                 errorName={USER_INPUT_FIELD_KEYS.PASSWORD_KEY}
                 errorValue={fieldErrors[USER_INPUT_FIELD_KEYS.PASSWORD_KEY]}
             />

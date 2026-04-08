@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { createUseStyles } from 'react-jss';
 import { useDispatch, useSelector } from 'react-redux';
 import { bulkDeleteProviders, fetchProviders } from 'store/actions/provider';
 import DeleteModal from 'common/component/modal/DeleteModal';

@@ -14,9 +14,9 @@ const LogoutConfirmation = ({ cancelLogout, logout, showLogoutConfirm }) => {
             handleCancel={cancelLogout}
             handleSubmit={logout}
             submitText="Logout"
-            style="delete"
+            buttonStyle="action"
         >
-            <div className="modal-description">
+            <div>
                 Are you sure you would like to logout?
             </div>
         </Modal>

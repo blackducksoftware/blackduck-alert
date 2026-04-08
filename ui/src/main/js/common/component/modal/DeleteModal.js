@@ -5,15 +5,6 @@ import Modal from 'common/component/modal/Modal';
 import InfoMessage from 'common/component/notification/InfoMessage';
 
 const useStyles = createUseStyles({
-    deleteConfirmMessage: {
-        margin: [0, '20px', '20px', '30px'],
-        fontSize: '16px',
-        fontWeight: 'bold'
-    },
-    cardContainer: {
-        display: 'flex',
-        marginLeft: '50px'
-    },
     warningMessage: {
         paddingTop: '10px'
     }
