@@ -1,10 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input/field/LabeledField';
+import { createUseStyles } from 'react-jss';
+
+const useStyles = createUseStyles({
+    readOnlyField: {
+        margin: '4px',
+        paddingLeft: '8px',
+        fontSize: '14px',
+        fontWeight: 'bold'
+    }
+});
 
 const ReadOnlyField = ({
     id, alt, description, errorName, errorValue, label, required, url, value
 }) => {
+    const classes = useStyles();
     const altValue = alt || url;
     const content = url ? <a alt={altValue} href={url}>{value}</a> : value;
     return (
@@ -16,11 +27,9 @@ const ReadOnlyField = ({
             label={label}
             required={required}
         >
-            <div className="d-inline-flex p-2 col-sm-8">
-                <p className="form-control-static">
-                    {content}
-                </p>
-            </div>
+            <p className={classes.readOnlyField}>
+                {content}
+            </p>
         </LabeledField>
     );
 };
