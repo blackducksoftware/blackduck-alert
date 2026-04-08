@@ -230,19 +230,6 @@ importDockerHubServerCertificate() {
     fi
 }
 
-liquibaseChangelockReset() {
-  logIt "Begin releasing liquibase changeloglock."
-  "${JAVA_HOME}/bin/java" -cp "${ALERT_TAR_HOME}/lib/liquibase/*" \
-      liquibase.integration.commandline.Main \
-      --url="jdbc:h2:file:${alertDatabaseDir}" \
-      --username="sa" \
-      --password="" \
-      --driver="org.h2.Driver" \
-      --changeLogFile="${upgradeResourcesDir}/release-locks-changelog.xml" \
-      releaseLocks
-  logIt "End releasing liquibase changeloglock."
-}
-
 liquibaseChangelockResetPostgres() {
   logIt "Begin releasing Postgres liquibase changeloglock."
 
@@ -354,60 +341,6 @@ validatePostgresDatabase() {
     validateAlertDBExists
     psql "${alertDatabaseConfig}" -c '\dt ALERT.*' | grep -q 'field_values'
     checkStatus $? "Creating Alert postgres database tables"
-}
-
-postgresPrepare600Upgrade() {
-    logIt "Determining if preparation for 6.0.0 upgrade is necessary..."
-    if psql "${alertDatabaseConfig}" -c 'SELECT COUNT(CONTEXT) FROM Alert.Config_Contexts;' | grep -q '2';
-    then
-        logIt "Alert postgres database is initialized."
-    else
-        logIt "Preparing the old Alert database to be upgraded to 6.0.0..."
-        if [ -f "${ALERT_DATA_DIR}/alertdb.mv.db" ];
-        then
-            logIt "A previous database existed."
-            liquibaseChangelockReset
-            logIt "Clearing old checksums for offline upgrade..."
-            "${JAVA_HOME}/bin/java" -cp "${ALERT_TAR_HOME}/lib/liquibase/*" \
-            liquibase.integration.commandline.Main \
-            --url="jdbc:h2:file:${alertDatabaseDir}" \
-            --username="sa" \
-            --password="" \
-            --driver="org.h2.Driver" \
-            --changeLogFile="${upgradeResourcesDir}/changelog-master.xml" \
-            clearCheckSums
-
-            logIt "Upgrading old database to 5.3.0 so that it can be properly exported..."
-            "${JAVA_HOME}/bin/java" -cp "${ALERT_TAR_HOME}/lib/liquibase/*" \
-            liquibase.integration.commandline.Main \
-            --url="jdbc:h2:file:${alertDatabaseDir}" \
-            --username="sa" \
-            --password="" \
-            --driver="org.h2.Driver" \
-            --changeLogFile="${upgradeResourcesDir}/changelog-master.xml" \
-            update
-
-            logIt "Creating temp directory for data migration..."
-            mkdir -m 766 ${ALERT_DATA_DIR}/temp
-
-            logIt "Exporting data from old database..."
-            "${JAVA_HOME}/bin/java" -cp "${ALERT_TAR_HOME}/lib/liquibase/*" \
-            org.h2.tools.RunScript \
-            -url "jdbc:h2:${alertDatabaseDir}" \
-            -user "sa" \
-            -password "" \
-            -driver "org.h2.Driver" \
-            -script ${upgradeResourcesDir}/export_h2_tables.sql
-
-            chmod 766 ${ALERT_DATA_DIR}/temp/*
-
-            logIt "Importing data from old database into new database..."
-            psql "${alertDatabaseConfig}" -f ${upgradeResourcesDir}/import_postgres_tables.sql
-            checkStatus $? "Running ${upgradeResourcesDir}/import_postgres_tables.sql"
-        else
-            logIt "No previous database existed."
-        fi
-    fi
 }
 
 createPostgresExtensions() {
@@ -547,9 +480,7 @@ importBlackDuckSystemCertificateIntoKeystore
 importDockerHubServerCertificate
 createPostgresDatabase
 validatePostgresDatabase
-postgresPrepare600Upgrade
 createPostgresExtensions
-liquibaseChangelockReset
 liquibaseChangelockResetPostgres
 
 if [ -f "$truststoreFile" ];
