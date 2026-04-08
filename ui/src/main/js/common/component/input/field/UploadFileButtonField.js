@@ -35,7 +35,7 @@ const UploadFileButtonField = ({
     capture,
     buttonLabel,
     csrfToken,
-    description,
+    tooltipDescription,
     endpoint,
     errorValue,
     fieldKey,
@@ -141,7 +141,7 @@ const UploadFileButtonField = ({
         <div>
             <LabeledField
                 id={id}
-                description={description}
+                tooltipDescription={tooltipDescription}
                 errorName={fieldKey}
                 errorValue={fieldError}
                 label={label}
@@ -200,7 +200,7 @@ UploadFileButtonField.propTypes = {
     name: PropTypes.string,
     readOnly: PropTypes.bool,
     statusMessage: PropTypes.string,
-    description: PropTypes.string,
+    tooltipDescription: PropTypes.string,
     errorValue: PropTypes.string,
     label: PropTypes.string.isRequired,
     required: PropTypes.bool,
@@ -222,7 +222,7 @@ UploadFileButtonField.defaultProps = {
     name: '',
     readOnly: false,
     statusMessage: 'Upload Metadata File Success',
-    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
     permissions: {

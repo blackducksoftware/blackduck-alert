@@ -8,7 +8,7 @@ import { createUseStyles } from 'react-jss';
 const useStyles = createUseStyles((theme) => ({
     configButtonContainer: {
         display: 'flex',
-        justifyContent: 'end',
+        justifyContent: 'flex-end',
         paddingTop: '20px',
         marginTop: '10px',
         borderTop: `1px solid ${theme.colors.defaultBackgroundColor}`

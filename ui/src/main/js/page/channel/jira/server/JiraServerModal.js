@@ -255,7 +255,7 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                             id={JIRA_SERVER_GLOBAL_FIELD_KEYS.username}
                             name={JIRA_SERVER_GLOBAL_FIELD_KEYS.username}
                             label="User Name"
-                            fieldDescription="Jira user name. Note: Unless 'Jira Plugin Validation' is checked, this user must be a Jira admin."
+                            fieldDescription="Jira user name. Note: Unless 'Jira Plugin Validation' is enabled, this user must be a Jira admin."
                             required
                             readOnly={readonly}
                             onChange={FieldModelUtilities.handleTestChange(jiraServerModel, setJiraServerModel)}

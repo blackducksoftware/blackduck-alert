@@ -42,6 +42,9 @@ const FieldMappingRow = ({
     const classes = useStyles();
     const [currentLeftSide, setCurrentLeftSide] = useState(leftSide);
     const [currentRightSide, setCurrentRightSide] = useState(rightSide);
+    const leftSideId = `left-side-${index}`;
+    const rightSideId = `right-side-${index}`;
+    const deleteMappingId = `delete-mapping-${index}`;
 
     useEffect(() => {
         setMapping(index, currentLeftSide, currentRightSide);
@@ -57,7 +60,7 @@ const FieldMappingRow = ({
             <div className={classes.fieldMappingContent}>
                 <div className="col-sm">
                     <BaseInput
-                        id="left-side"
+                        id={leftSideId}
                         type="text"
                         readOnly={readonly}
                         name="left-side"
@@ -69,7 +72,7 @@ const FieldMappingRow = ({
                 {mappingSymbol}
                 <div className="col-sm">
                     <BaseInput
-                        id="right-side"
+                        id={rightSideId}
                         type="text"
                         readOnly={readonly}
                         name="right-side"
@@ -79,7 +82,7 @@ const FieldMappingRow = ({
                     />
                 </div>
             </div>
-            <Button id="delete-mapping" onClick={() => deleteRow(index)} icon="x" text="Remove Property" buttonStyle="actionSecondaryDelete" />
+            <Button id={deleteMappingId} onClick={() => deleteRow(index)} icon="x" text="Remove Property" buttonStyle="actionSecondaryDelete" />
         </div>
     );
 };

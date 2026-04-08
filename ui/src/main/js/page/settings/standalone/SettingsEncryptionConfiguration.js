@@ -61,7 +61,7 @@ const SettingsEncryptionConfiguration = ({
                     id={SETTINGS_FIELD_KEYS.encryptionPassword}
                     name="encryptionPassword"
                     label="Encryption Password"
-                    description="The password used when encrypting sensitive fields. Must be at least 8 characters long."
+                    fieldDescription="The password used when encrypting sensitive fields. Must be at least 8 characters long."
                     required
                     readOnly={encryptionReadOnly}
                     onChange={fieldModelUtilities.handleTestChange(settingsEncryptionConfig, setSettingsEncryptionConfig)}
@@ -74,7 +74,7 @@ const SettingsEncryptionConfiguration = ({
                     id={SETTINGS_FIELD_KEYS.encryptionGlobalSalt}
                     name="encryptionGlobalSalt"
                     label="Encryption Global Salt"
-                    description="The salt used when encrypting sensitive fields. Must be at least 8 characters long."
+                    fieldDescription="The salt used when encrypting sensitive fields. Must be at least 8 characters long."
                     required
                     readOnly={encryptionReadOnly}
                     onChange={fieldModelUtilities.handleTestChange(settingsEncryptionConfig, setSettingsEncryptionConfig)}

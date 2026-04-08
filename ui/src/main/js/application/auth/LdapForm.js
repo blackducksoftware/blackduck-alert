@@ -165,8 +165,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                 <TextInput
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.serverName}
                     name={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.serverName}
-                    label="Server URL"
-                    description="The URL of the LDAP Server."
+                    label="LDAP Server URL"
                     readOnly={readonly}
                     required
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
@@ -178,7 +177,6 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.managerDn}
                     name={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.managerDn}
                     label="Distinguished Manager Name"
-                    description="The distinguished manager name of the LDAP server."
                     readOnly={readonly}
                     required
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
@@ -190,7 +188,6 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.managerPassword}
                     name={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.managerPassword}
                     label="Manager Password"
-                    description="The password of the LDAP manager."
                     readOnly={readonly}
                     required
                     onChange={FieldModelUtilities.handleTestChange(formData, setFormData)}
@@ -203,7 +200,6 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.authenticationType}
                     name={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.authenticationType}
                     label="Authentication Type"
-                    description="The type of authentication required to connect to the LDAP server."
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     options={AUTH_TYPES}
@@ -214,8 +210,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                 <DynamicSelectInput
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.referral}
                     name={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.referral}
-                    label="Referral"
-                    description="Set the method to handle referrals."
+                    label="Referral Method"
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     options={REFERRAL_TYPES}
@@ -227,7 +222,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.userSearchBase}
                     name={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.userSearchBase}
                     label="User Search Base"
-                    description="The part of the LDAP directory in which user searches should be done."
+                    fieldDescription="The part of the LDAP directory in which user searches should be done."
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     value={formData[AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.userSearchBase] || undefined}
@@ -239,7 +234,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.userSearchFilter}
                     name={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.userSearchFilter}
                     label="User Search Filter"
-                    description="The filter used to search for user membership."
+                    fieldDescription="The filter used to search for user membership."
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     value={formData[AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.userSearchFilter] || undefined}
@@ -250,7 +245,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.userDnPatterns}
                     name={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.userDnPatterns}
                     label="User DN Patterns"
-                    description="The pattern used used to supply a DN for the user. The pattern should be the name relative to the root DN."
+                    fieldDescription="The pattern used used to supply a DN for the user. The pattern should be the name relative to the root DN."
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     value={formData[AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.userDnPatterns] || undefined}
@@ -261,7 +256,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.userAttributes}
                     name={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.userAttributes}
                     label="User Attributes"
-                    description="User attributes to retrieve for users."
+                    fieldDescription="User attributes to retrieve for users."
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     value={formData[AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.userAttributes] || undefined}
@@ -272,7 +267,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.groupSearchBase}
                     name={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.groupSearchBase}
                     label="Group Search Base"
-                    description="The part of the LDAP directory in which group searches should be done."
+                    fieldDescription="The part of the LDAP directory in which group searches should be done."
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     value={formData[AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.groupSearchBase] || undefined}
@@ -283,7 +278,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.groupSearchFilter}
                     name={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.groupSearchFilter}
                     label="Group Search Filter"
-                    description="The filter used to search for group membership."
+                    fieldDescription="The filter used to search for group membership."
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     value={formData[AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.groupSearchFilter]}
@@ -294,7 +289,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.groupRoleAttribute}
                     name={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.groupRoleAttribute}
                     label="Group Role Attribute"
-                    description="The ID of the attribute which contains the role name for a group."
+                    fieldDescription="The ID of the attribute which contains the role name for a group."
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     value={formData[AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.groupRoleAttribute] || undefined}

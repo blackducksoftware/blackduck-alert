@@ -10,7 +10,7 @@ const useStyles = createUseStyles((theme) => ({
         height: '800px',
         width: '100%',
         fontFamily: ['Roboto', 'Arial', 'sans-serif'],
-        display: 'inlineBlock',
+        display: 'inline-block',
         position: 'absolute'
     },
     authContainer: {

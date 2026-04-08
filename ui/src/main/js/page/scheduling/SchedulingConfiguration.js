@@ -53,7 +53,7 @@ const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly, displaySav
                         id={SCHEDULING_FIELD_KEYS.dailyProcessorHourOfDay}
                         name={SCHEDULING_FIELD_KEYS.dailyProcessorHourOfDay}
                         label="Daily Digest Hour Of Day"
-                        description="Select the hour of the day to run the daily digest distribution jobs."
+                        fieldDescription="Select the hour of the day to run the daily digest distribution jobs."
                         required
                         readOnly={readonly}
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
@@ -66,8 +66,8 @@ const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly, displaySav
                     <ReadOnlyField
                         id={SCHEDULING_FIELD_KEYS.dailyProcessorNextRun}
                         name={SCHEDULING_FIELD_KEYS.dailyProcessorNextRun}
-                        label="Daily Digest Cron Next Run"
-                        description="This is the next time daily digest distribution jobs will run."
+                        label="Daily Digest Cron Next Run Time"
+                        fieldDescription="This is the next time daily digest distribution jobs will run."
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, SCHEDULING_FIELD_KEYS.dailyProcessorNextRun)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(SCHEDULING_FIELD_KEYS.dailyProcessorNextRun)}
@@ -77,7 +77,7 @@ const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly, displaySav
                         id={SCHEDULING_FIELD_KEYS.purgeDataFrequencyDays}
                         name={SCHEDULING_FIELD_KEYS.purgeDataFrequencyDays}
                         label="Purge Notification Data"
-                        description="Choose a frequency for cleaning up provider notification data; the default value is three days. When the purge runs, it deletes all notification data that is older than the selected value. EX: data older than 3 days will be deleted."
+                        tooltipDescription="Choose a frequency for cleaning up provider notification data; the default value is three days. When the purge runs, it deletes all notification data that is older than the selected value. EX: data older than 3 days will be deleted."
                         required
                         readOnly={readonly}
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
@@ -90,8 +90,8 @@ const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly, displaySav
                     <ReadOnlyField
                         id={SCHEDULING_FIELD_KEYS.purgeDataNextRun}
                         name={SCHEDULING_FIELD_KEYS.purgeDataNextRun}
-                        label="Purge Notification Data Cron Next Run"
-                        description="This is the next time Alert will purge provider notification data."
+                        label="Purge Notification Data Cron Next Run Time"
+                        fieldDescription="This is the next time Alert will purge provider notification data."
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, SCHEDULING_FIELD_KEYS.purgeDataNextRun)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(SCHEDULING_FIELD_KEYS.purgeDataNextRun)}
@@ -101,7 +101,7 @@ const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly, displaySav
                         id={SCHEDULING_FIELD_KEYS.purgeDataAuditFailedFrequencyDays}
                         name={SCHEDULING_FIELD_KEYS.purgeDataAuditFailedFrequencyDays}
                         label="Purge Audit Failed Data"
-                        description="Choose a frequency for cleaning up failed audit data; the default value is ten days. When the purge runs, it deletes all data that is older than the selected value. EX: data older than 10 days will be deleted."
+                        tooltipDescription="Choose a frequency for cleaning up failed audit data; the default value is ten days. When the purge runs, it deletes all data that is older than the selected value. EX: data older than 10 days will be deleted."
                         required
                         readOnly={readonly}
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
@@ -114,8 +114,8 @@ const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly, displaySav
                     <ReadOnlyField
                         id={SCHEDULING_FIELD_KEYS.purgeDataAuditFailedNextRun}
                         name={SCHEDULING_FIELD_KEYS.purgeDataAuditFailedNextRun}
-                        label="Purge Audit Failed Data Cron Next Run"
-                        description="This is the next time Alert will purge failed audit data."
+                        label="Purge Audit Failed Data Cron Next Run Time"
+                        fieldDescription="This is the next time Alert will purge failed audit data."
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, SCHEDULING_FIELD_KEYS.purgeDataAuditFailedNextRun)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(SCHEDULING_FIELD_KEYS.purgeDataAuditFailedNextRun)}
