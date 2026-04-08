@@ -46,10 +46,8 @@ const DistributionStatusCell = ({ data }) => {
             return 'Failure';
         } else if (status === 'SUCCESS') {
             return 'Success';
-        } else if (status === 'PENDING') {
-            return 'Pending';
         } else {
-            return '\u2014';
+            return 'Pending';
         }
     }
 
