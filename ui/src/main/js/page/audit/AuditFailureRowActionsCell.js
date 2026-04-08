@@ -1,15 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import { sendJob, sendNotification } from '../../store/actions/audit';
+import { sendJob, sendNotification } from 'store/actions/audit';
 import Dropdown from 'react-bootstrap/Dropdown';
+import AuditFailureModal from 'page/audit/AuditFailureModal';
 import StatusMessage from 'common/component/StatusMessage';
 import RowActionsCell from 'common/component/table/cell/RowActionsCell';
 
-const RefreshFailureCell = ({ data, settings }) => {
+const AuditFailureRowActionsCell = ({ data, settings }) => {
     const dispatch = useDispatch();
+    const [showViewAuditFailureModal, setShowViewAuditFailureModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
     const { error, hasError, refreshNotificationSuccess, refreshJobSuccess } = useSelector((state) => state.audit);
+
+
+    function handleShowModal() {
+        setShowViewAuditFailureModal(true);
+    }
+
     useEffect(() => {
         if (hasError) {
             setStatusMessage({
@@ -33,7 +41,7 @@ const RefreshFailureCell = ({ data, settings }) => {
         }
     }, [hasError, error, refreshNotificationSuccess, refreshJobSuccess]);
 
-    const handleRefresh = () => {
+    const handleRefreshJob = () => {
         setStatusMessage();
         if (settings.type === 'notification') {
             dispatch(sendNotification(data.id, settings.params));
@@ -54,17 +62,28 @@ const RefreshFailureCell = ({ data, settings }) => {
             )}
 
             <RowActionsCell>
-                <Dropdown.Item as="button" onClick={handleRefresh}>
+                <Dropdown.Item as="button" onClick={handleRefreshJob}>
                     Refresh Job
                 </Dropdown.Item>
+                <Dropdown.Item as="button" onClick={handleShowModal}>
+                    View Details
+                </Dropdown.Item>
             </RowActionsCell>
+
+            { showViewAuditFailureModal && (
+                <AuditFailureModal
+                    data={data}
+                    isOpen={showViewAuditFailureModal}
+                    toggleModal={setShowViewAuditFailureModal}
+                />
+            )}
         </>
     );
 };
 
-RefreshFailureCell.propTypes = {
+AuditFailureRowActionsCell.propTypes = {
     data: PropTypes.object,
     settings: PropTypes.object
 };
 
-export default RefreshFailureCell;
+export default AuditFailureRowActionsCell;

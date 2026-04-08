@@ -45,7 +45,7 @@ const TableBody = ({ columns, multiSelect, tableData, selected, onSelected, disa
 
                             return (
                                 <WrapperCell key={columnKey} settings={col.settings}>
-                                    <CustomCell data={rowData} settings={col.settings} customCallback={col.customCallback} />
+                                    <CustomCell id={col.key} data={rowData} settings={col.settings} customCallback={col.customCallback} />
                                 </WrapperCell>
                             );
                         }

@@ -5,6 +5,7 @@ import { fetchCertificates } from 'store/actions/certificates';
 import Table from 'common/component/table/Table';
 import CertificatesRowActionsCell from 'page/certificates/CertificatesRowActionsCell';
 import CertificatesTableActions from 'page/certificates/CertificatesTableActions';
+import TimestampCell from 'common/component/table/cell/TimestampCell';
 
 const emptyTableConfig = {
     message: 'There are no records to display for this table.  Please create a Certificate to use this table.'
@@ -27,7 +28,8 @@ const CertificatesTable = ({ readOnly }) => {
     }, {
         key: 'lastUpdated',
         label: 'Last Updated',
-        sortable: true
+        sortable: true,
+        customCell: TimestampCell
     }, {
         key: 'certificatesRowActions',
         label: '',

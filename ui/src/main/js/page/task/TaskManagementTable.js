@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Table from 'common/component/table/Table';
-import ViewTaskCell from 'page/task/ViewTaskCell';
 import { fetchTasks } from 'store/actions/tasks';
 import Button from 'common/component/button/Button';
+import TaskManagementRowActionsCell from 'page/task/TaskManagementRowActionsCell';
 
 const COLUMNS = [{
     key: 'type',
@@ -14,10 +14,11 @@ const COLUMNS = [{
     label: 'Next Run Time',
     sortable: true
 }, {
-    key: 'viewTask',
-    label: 'View Task',
-    customCell: ViewTaskCell,
-    settings: { alignment: 'right' }
+    key: 'taskManagementRowActions',
+    label: '',
+    sortable: false,
+    customCell: TaskManagementRowActionsCell,
+    settings: { alignment: 'center' }
 }];
 
 const emptyTableConfig = {

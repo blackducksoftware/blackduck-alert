@@ -6,6 +6,7 @@ import AuthenticationTypeCell from 'page/channel/jira/server/AuthenticationTypeC
 import JiraServerRowActionsCell from 'page/channel/jira/server/JiraServerRowActionsCell';
 import JiraServerTableActions from 'page/channel/jira/server/JiraServerTableActions';
 import { fetchJiraServer } from 'store/actions/jira-server';
+import TimestampCell from 'common/component/table/cell/TimestampCell';
 
 const emptyTableConfig = {
     message: 'There are no records to display for this table.  Please create a Jira Server connection to use this table.'
@@ -44,11 +45,13 @@ const JiraServerTable = ({ readOnly, allowDelete }) => {
     }, {
         key: 'createdAt',
         label: 'Created At',
-        sortable: true
+        sortable: true,
+        customCell: TimestampCell
     }, {
         key: 'lastUpdated',
         label: 'Last Updated',
-        sortable: true
+        sortable: true,
+        customCell: TimestampCell
     }, {
         key: 'jiraServerRowActions',
         label: '',

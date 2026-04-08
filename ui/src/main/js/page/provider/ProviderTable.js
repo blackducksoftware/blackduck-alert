@@ -8,6 +8,7 @@ import ProviderTableActions from 'page/provider/ProviderTableActions';
 import { fetchProviders } from 'store/actions/provider';
 import { BLACKDUCK_GLOBAL_FIELD_KEYS } from 'page/provider/blackduck/BlackDuckModel';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
+import TimestampCell from 'common/component/table/cell/TimestampCell';
 
 const emptyTableConfig = {
     message: 'There are no records to display for this table.  Please create a Provider connection to use this table.'
@@ -30,11 +31,13 @@ function ProviderTable({ readonly }) {
     }, {
         key: 'createdAt',
         label: 'Created At',
-        sortable: true
+        sortable: true,
+        customCell: TimestampCell
     }, {
         key: 'lastUpdated',
         label: 'Last Updated',
-        sortable: true
+        sortable: true,
+        customCell: TimestampCell
     }, {
         key: 'enabled',
         label: 'Enabled',

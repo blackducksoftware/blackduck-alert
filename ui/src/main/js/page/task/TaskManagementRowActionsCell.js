@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import Dropdown from 'react-bootstrap/Dropdown';
 import TaskModal from 'page/task/TaskModal';
-import IconButton from 'common/component/button/IconButton';
+import RowActionsCell from 'common/component/table/cell/RowActionsCell';
 
-const ViewTaskCell = ({ data }) => {
+const TaskManagementRowActionsCell = ({ data }) => {
     const [showModal, setShowModal] = useState(false);
 
     function handleClick() {
@@ -12,20 +13,24 @@ const ViewTaskCell = ({ data }) => {
 
     return (
         <>
-            <IconButton icon="eye" onClick={() => handleClick()} />
-            { showModal ? (
+            <RowActionsCell>
+                <Dropdown.Item as="button" onClick={handleClick}>
+                    View Details
+                </Dropdown.Item>
+            </RowActionsCell>
+
+            { showModal && (
                 <TaskModal
                     data={data}
                     isOpen={showModal}
                     toggleModal={setShowModal}
                 />
-            ) : null }
+            )}
         </>
-
     );
 };
 
-ViewTaskCell.propTypes = {
+TaskManagementRowActionsCell.propTypes = {
     data: PropTypes.shape({
         fullyQualifiedType: PropTypes.string,
         nextRunTime: PropTypes.string,
@@ -34,4 +39,4 @@ ViewTaskCell.propTypes = {
     })
 };
 
-export default ViewTaskCell;
+export default TaskManagementRowActionsCell;
