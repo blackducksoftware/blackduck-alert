@@ -33,7 +33,7 @@ const useStyles = createUseStyles((theme) => ({
         left: '50%',
         transform: 'translate(-50%, -50%)',
         width: '90%',
-        maxWidth: 600,
+        maxWidth: 600
     },
     modalStyleLarge: {
         maxWidth: 900

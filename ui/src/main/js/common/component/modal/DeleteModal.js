@@ -10,7 +10,7 @@ const useStyles = createUseStyles({
     }
 });
 
-const DeleteModal = ({ isOpen, title, confirmationMessage, onClose, onDelete, isLoading }) => {
+const DeleteModal = ({ isOpen, title, confirmationMessage, onClose, onDelete, isLoading, buttonStyle = 'action' }) => {
     const classes = useStyles();
 
     return (
@@ -24,7 +24,7 @@ const DeleteModal = ({ isOpen, title, confirmationMessage, onClose, onDelete, is
             submitText="Delete"
             showLoader={isLoading}
             disableSubmit={isLoading}
-            buttonStyle="action"
+            buttonStyle={buttonStyle}
         >
             <h5>
                 {confirmationMessage}
@@ -40,9 +40,10 @@ DeleteModal.propTypes = {
     isOpen: PropTypes.bool.isRequired,
     title: PropTypes.string,
     confirmationMessage: PropTypes.string.isRequired,
-    onClose: PropTypes.func,
+    onClose: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
-    isLoading: PropTypes.bool
+    isLoading: PropTypes.bool,
+    buttonStyle: PropTypes.string
 };
 
 export default DeleteModal;

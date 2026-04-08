@@ -144,7 +144,7 @@ const RoleModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
             <div className={classes.permissionTable}>
                 <PermissionTable
                     role={role}
-                    handleFilterPermission={handleFilterPermission} 
+                    handleFilterPermission={handleFilterPermission}
                     sendPermissionArray={getPermissionArray}
                 />
             </div>

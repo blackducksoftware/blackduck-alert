@@ -56,14 +56,14 @@ const useStyles = createUseStyles({
         color: theme.colors.grey.darkGrey,
         margin: [0, '12px', 0, 'auto'],
         padding: 0,
-        textWrap: 'nowrap'
+        whiteSpace: 'nowrap'
     }
 });
 
 const InfoMessage = ({ id, type, message, timestamp }) => {
     const classes = useStyles();
 
-    function getIconConfig(type) {
+    function getIconConfig() {
         if (type === 'error') {
             return { icon: 'exclamation-triangle', color: theme.colors.status.error.text };
         } else if (type === 'warning') {
@@ -73,7 +73,7 @@ const InfoMessage = ({ id, type, message, timestamp }) => {
         }
     }
 
-    function getIconClassName(type) {
+    function getIconClassName() {
         return classNames(classes.statusIconContainer, {
             [classes.errorIconStatus]: (type === 'error'),
             [classes.warningIconStatus]: (type === 'warning'),
@@ -81,7 +81,7 @@ const InfoMessage = ({ id, type, message, timestamp }) => {
         });
     }
 
-    function getMessageClassName(type) {
+    function getMessageClassName() {
         return classNames(classes.messageItem, {
             [classes.errorMessageItem]: (type === 'error'),
             [classes.warningMessageItem]: (type === 'warning'),
@@ -89,11 +89,11 @@ const InfoMessage = ({ id, type, message, timestamp }) => {
         });
     }
 
-    const { icon, color } = getIconConfig(type);
+    const { icon, color } = getIconConfig();
 
     return (
-        <div key={id} className={getMessageClassName(type)}>
-            <div className={getIconClassName(type)}>
+        <div key={id} className={getMessageClassName()}>
+            <div className={getIconClassName()}>
                 <FontAwesomeIcon icon={icon} color={color} size="lg" />
             </div>
             <p className={classes.messageContent}>
