@@ -62,7 +62,7 @@ const RoleTableActions = ({ canCreate, canDelete, data, selected, setSelected })
                 />
             )}
 
-            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching}  buttonStyle="actionSecondary" icon="arrows-rotate" />
+            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} buttonStyle="actionSecondary" icon="arrows-rotate" />
 
             {showCreateModal && (
                 <RoleModal

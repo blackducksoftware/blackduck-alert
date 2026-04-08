@@ -44,7 +44,7 @@ const AzureBoardRowActionsCell = ({ data, settings }) => {
             lastUpdated: null
         });
     }
-    
+
     function handleDeleteClick() {
         setStatusMessage();
         setShowDeleteModal(true);
@@ -118,7 +118,7 @@ AzureBoardRowActionsCell.propTypes = {
         readonly: PropTypes.bool,
         allowDelete: PropTypes.bool,
         paramsConfig: PropTypes.object,
-        setParamsConfig: PropTypes.func,
+        setParamsConfig: PropTypes.func
     })
 };
 

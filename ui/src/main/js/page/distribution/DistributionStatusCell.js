@@ -38,26 +38,26 @@ const DistributionStatusCell = ({ data }) => {
     const statusClass = classNames(classes.badge, {
         [classes.fail]: auditStatus === 'FAILURE',
         [classes.pending]: auditStatus !== 'SUCCESS' && auditStatus !== 'FAILURE',
-        [classes.success]: auditStatus === 'SUCCESS',
+        [classes.success]: auditStatus === 'SUCCESS'
     });
-    
+
     function getStatus(status) {
         if (status === 'FAILURE') {
-            return 'Failure'
+            return 'Failure';
         } else if (status === 'SUCCESS') {
-            return 'Success'
+            return 'Success';
         } else if (status === 'PENDING') {
-            return 'Pending'
+            return 'Pending';
         } else {
-            return '\u2014'
+            return '\u2014';
         }
     }
-    
+
     return (
         <div className={statusClass}>
             {getStatus(auditStatus)}
         </div>
-    )
+    );
 };
 
 DistributionStatusCell.propTypes = {

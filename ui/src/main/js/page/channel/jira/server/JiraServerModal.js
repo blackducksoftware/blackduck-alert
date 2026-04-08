@@ -5,7 +5,7 @@ import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Modal from 'common/component/modal/Modal';
 import CheckboxInput from 'common/component/input/CheckboxInput';
-import NumberInput from "common/component/input/NumberInput";
+import NumberInput from 'common/component/input/NumberInput';
 import PasswordInput from 'common/component/input/PasswordInput';
 import TextInput from 'common/component/input/TextInput';
 import ButtonField from 'common/component/input/field/ButtonField';
@@ -38,7 +38,7 @@ const radioOptions = [{
 
 function getInitialData(type, data) {
     if (type === 'CREATE') {
-        return { authorizationMethod: 'BASIC', timeout: 300 }
+        return { authorizationMethod: 'BASIC', timeout: 300 };
     }
     if (type === 'EDIT') {
         return data;

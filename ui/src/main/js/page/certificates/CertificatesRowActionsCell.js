@@ -22,7 +22,7 @@ const CertificatesRowActionsCell = ({ data, settings }) => {
         setStatusMessage();
         setShowEditModal(true);
     }
-    
+
     function handleDeleteClick() {
         setStatusMessage();
         setShowDeleteModal(true);

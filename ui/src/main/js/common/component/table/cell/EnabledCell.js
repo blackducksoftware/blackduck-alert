@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
 
-const useStyles = createUseStyles(theme => ({
+const useStyles = createUseStyles((theme) => ({
     container: {
         display: 'flex',
         alignItems: 'center',
@@ -42,8 +42,8 @@ const EnabledCell = ({ data }) => {
         [classes.disabledIndicator]: !enabled
     });
 
-    const textClass = classNames(classes.textClass, { 
-        [classes.disabledText]: !enabled 
+    const textClass = classNames(classes.textClass, {
+        [classes.disabledText]: !enabled
     });
 
     return (

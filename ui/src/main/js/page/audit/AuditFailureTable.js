@@ -6,7 +6,6 @@ import CreatedAtCell from 'page/audit/CreatedAtCell';
 import JobsCountCell from 'page/audit/JobsCountCell';
 import NotificationCell from 'page/audit/NotificationCell';
 import ProviderCell from 'page/audit/ProviderCell';
-import RefreshFailureCell from 'page/audit/RefreshFailureCell';
 import { fetchAuditData } from 'store/actions/audit';
 import Button from 'common/component/button/Button';
 
@@ -163,9 +162,9 @@ const AuditFailureTable = () => {
             showPageSize
             data={data}
             emptyTableConfig={emptyTableConfig}
-            tableActions={() => 
-                <Button 
-                    onClick={handleRefresh} 
+            tableActions={() => (
+                <Button
+                    onClick={handleRefresh}
                     type="button"
                     text="Refresh"
                     isDisabled={fetching}
@@ -173,7 +172,7 @@ const AuditFailureTable = () => {
                     buttonStyle="action"
                     icon="arrows-rotate"
                 />
-            }
+            )}
         />
     );
 };

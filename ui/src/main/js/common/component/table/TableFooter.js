@@ -4,7 +4,7 @@ import { createUseStyles } from 'react-jss';
 import Pagination from 'common/component/navigation/Pagination';
 import DropdownField from 'common/component/input/DropdownField';
 
-const useStyles = createUseStyles(theme => ({
+const useStyles = createUseStyles((theme) => ({
     tableFooter: {
         position: 'relative',
         display: 'flex',

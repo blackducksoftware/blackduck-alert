@@ -5,15 +5,15 @@ import { createUseStyles } from 'react-jss';
 import MultiSelectHeaderCell from 'common/component/table/cell/MultiSelectHeaderCell';
 import TableHeaderCell from 'common/component/table/cell/TableHeaderCell';
 
-const useStyles = createUseStyles(theme => ({
+const useStyles = createUseStyles((theme) => ({
     tableHead: {
-        backgroundColor: '#F8F8F9',
+        backgroundColor: theme.colors.white.darkWhite,
         borderBottom: `solid 1px ${theme.colors.grey.lighterGrey}`,
         borderTop: `solid 1px ${theme.colors.grey.lighterGrey}`,
         height: '40px',
 
         '&:hover': {
-            backgroundColor: '#F8F8F9'
+            backgroundColor: theme.colors.white.darkWhite
         }
     },
     nonMultiSelect: {

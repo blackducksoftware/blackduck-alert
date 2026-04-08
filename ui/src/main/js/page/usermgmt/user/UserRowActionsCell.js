@@ -55,7 +55,7 @@ const UserRowActionsCell = ({ data, settings }) => {
             roleNames: data.roleNames
         });
     }
-    
+
     function handleDeleteClick() {
         setStatusMessage();
         setShowDeleteModal(true);
@@ -79,7 +79,7 @@ const UserRowActionsCell = ({ data, settings }) => {
                         Copy
                     </Dropdown.Item>
                 )}
-                
+
                 {!isAdministrativeUser && (
                     <>
                         <Dropdown.Divider />
@@ -88,7 +88,7 @@ const UserRowActionsCell = ({ data, settings }) => {
                         </Dropdown.Item>
                     </>
                 )}
-                
+
             </RowActionsCell>
 
             { showCopyModal && (

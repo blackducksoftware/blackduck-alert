@@ -60,14 +60,13 @@ const PermissionTableActions = ({ data, handleValidatePermission }) => {
 
     function createContextOptions(descriptorOptions, selectedPermission, existingPermissions) {
         // Find all descriptorOptions items matching the selected permissions' descriptorName
-        const matching = descriptorOptions.filter(item => item.name === selectedPermission.descriptorName);
+        const matching = descriptorOptions.filter((item) => item.name === selectedPermission.descriptorName);
 
         // Filter out any of the above matching objects whose (name, context) exists in exisitingPermissions
-        const available = matching.filter(item =>
-            !existingPermissions.some(
-                permission =>
-                    permission.descriptorName === item.name &&
-                    permission.context === item.context
+        const available = matching.filter((item) => !existingPermissions.some(
+            permission =>
+                permission.descriptorName === item.name &&
+                permission.context === item.context
             )
         );
 
@@ -92,7 +91,7 @@ const PermissionTableActions = ({ data, handleValidatePermission }) => {
         const selectedValue = descriptors.find((descriptor) => descriptor.label === value[0]);
         setNewPermission((permission) => ({ ...permission, [name]: selectedValue.name, label: value[0] }));
     }
-    
+
     function handleSave(permission) {
         if (!permission[DESCRIPTOR] && !permission[CONTEXT]) {
             setFieldErrors({
@@ -199,7 +198,7 @@ const PermissionTableActions = ({ data, handleValidatePermission }) => {
                         type="submit"
                         icon="plus"
                         text="Add Permission"
-                        style="default"
+                        buttonStyle="action"
                         isDisabled={isDisabled}
                         title={isDisabled ? 'Configure input above to add permission' : 'Add permission'}
                     />
@@ -215,7 +214,7 @@ PermissionTableActions.propTypes = {
             descriptorName: PropTypes.string
         }))
     }),
-    handleValidatePermission: PropTypes.func,
+    handleValidatePermission: PropTypes.func
 };
 
 export default PermissionTableActions;

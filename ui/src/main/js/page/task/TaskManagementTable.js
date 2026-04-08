@@ -111,7 +111,7 @@ const TaskManagementTable = () => {
             onSort={onSort}
             sortConfig={sortConfig}
             emptyTableConfig={emptyTableConfig}
-            tableActions={() => 
+            tableActions={() => (
                 <Button
                     onClick={handleRefresh}
                     type="button"
@@ -121,7 +121,7 @@ const TaskManagementTable = () => {
                     buttonStyle="action"
                     icon="arrows-rotate"
                 />
-            }
+            )}
         />
     );
 };

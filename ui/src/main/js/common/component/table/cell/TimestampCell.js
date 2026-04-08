@@ -10,13 +10,12 @@ const TimestampCell = ({ id, data }) => {
         <>
             {timestamp}
         </>
-    )
-}
+    );
+};
 
 TimestampCell.propTypes = {
-    data: PropTypes.shape({
-        authorizationMethod: PropTypes.string
-    })
+    id: PropTypes.string,
+    data: PropTypes.object
 };
 
 export default TimestampCell;

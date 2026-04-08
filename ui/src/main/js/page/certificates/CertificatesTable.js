@@ -118,13 +118,13 @@ const CertificatesTable = ({ readOnly }) => {
             onSort={onSort}
             sortConfig={sortConfig}
             emptyTableConfig={emptyTableConfig}
-            tableActions={() => <CertificatesTableActions data={tableData} selected={selected} setSelected={setSelected} />}
+            tableActions={() => <CertificatesTableActions data={tableData} selected={selected} setSelected={setSelected} readOnly={readOnly} />}
         />
     );
 };
 
 CertificatesTable.propTypes = {
     readOnly: PropTypes.bool.isRequired
-}
+};
 
 export default CertificatesTable;

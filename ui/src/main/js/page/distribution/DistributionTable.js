@@ -61,7 +61,7 @@ const DistributionTable = ({ readonly }) => {
         key: 'auditTimeLastSent',
         label: 'Last Run',
         sortable: false
-    },{
+    }, {
         key: 'auditStatus',
         label: 'Status',
         sortable: false,

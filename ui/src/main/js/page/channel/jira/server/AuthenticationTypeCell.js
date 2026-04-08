@@ -18,8 +18,8 @@ const AuthenticationTypeCell = ({ data }) => {
         <>
             {getAuthType(authorizationMethod)}
         </>
-    )
-}
+    );
+};
 
 AuthenticationTypeCell.propTypes = {
     data: PropTypes.shape({

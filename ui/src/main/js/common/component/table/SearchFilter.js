@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const useStyles = createUseStyles(theme => ({
+const useStyles = createUseStyles((theme) => ({
     searchFilterContainer: {
         marginLeft: 'auto',
         marginRight: 0,
@@ -37,8 +37,8 @@ const useStyles = createUseStyles(theme => ({
         margin: ['auto', 0],
 
         '&:hover': {
-            color: 'oklch(37.3% 0.034 259.733)',
-        },
+            color: theme.colors.grey.darkerGrey
+        }
     },
     clearInputIcon: {
         border: 'none',
@@ -53,17 +53,6 @@ const useStyles = createUseStyles(theme => ({
     clearInputIconHidden: {
         visibility: 'hidden',
         pointerEvents: 'none'
-    },
-    searchIconContainer: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#e7e7f0',
-        border: ['solid', '1px', '#ddd'],
-        cursor: 'pointer',
-        borderRadius: '50%',
-        width: '30px',
-        height: '30px'
     }
 }));
 
@@ -76,7 +65,7 @@ const SearchFilter = ({ searchBarPlaceholder, handleSearchChange, defaultSearchV
     }, [defaultSearchValue]);
 
     function handleChange(evt) {
-        setSearchValue(evt.target.value)
+        setSearchValue(evt.target.value);
     }
 
     // Search when user presses enter (ASCII value for Enter/Return is 13)
@@ -94,9 +83,9 @@ const SearchFilter = ({ searchBarPlaceholder, handleSearchChange, defaultSearchV
     return (
         <div className={classes.searchFilterContainer}>
             <div className={classes.inputContainer}>
-                <button 
-                    className={classes.searchIcon} 
-                    onClick={() => handleSearchChange(searchValue)} 
+                <button
+                    className={classes.searchIcon}
+                    onClick={() => handleSearchChange(searchValue)}
                     disabled={isDisabled}
                     type="button"
                     aria-label="Search"
@@ -114,7 +103,6 @@ const SearchFilter = ({ searchBarPlaceholder, handleSearchChange, defaultSearchV
                 <button
                     className={`${classes.clearInputIcon} ${!searchValue ? classes.clearInputIconHidden : ''}`}
                     onClick={handleClearSearchField}
-                    role="button"
                     disabled={isDisabled || !searchValue}
                     type="button"
                     aria-label="Clear search"

@@ -44,7 +44,7 @@ const JiraServerRowActionsCell = ({ data, settings }) => {
             lastUpdated: null
         });
     }
-    
+
     function handleDeleteClick() {
         setStatusMessage();
         setShowDeleteModal(true);
@@ -115,9 +115,9 @@ const JiraServerRowActionsCell = ({ data, settings }) => {
 JiraServerRowActionsCell.propTypes = {
     data: PropTypes.object,
     settings: PropTypes.shape({
-        readonly: PropTypes.bool,
+        readOnly: PropTypes.bool,
         paramsConfig: PropTypes.object,
-        setParamsConfig: PropTypes.func,
+        setParamsConfig: PropTypes.func
     })
 };
 

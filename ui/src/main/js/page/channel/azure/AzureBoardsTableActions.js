@@ -43,7 +43,7 @@ const AzureBoardsTableActions = ({ data, readonly, allowDelete, selected, setSel
                 />
             )}
 
-            <Button onClick={handleCreateAzureBoardClick} type="button" icon="plus" text="Create Azure Board" buttonStyle="action"/>
+            <Button onClick={handleCreateAzureBoardClick} type="button" icon="plus" text="Create Azure Board" buttonStyle="action" />
 
             {allowDelete && (
                 <Button
@@ -101,7 +101,8 @@ AzureBoardsTableActions.propTypes = {
     readonly: PropTypes.bool,
     allowDelete: PropTypes.bool,
     setSelected: PropTypes.func,
-    paramsConfig: PropTypes.object
+    paramsConfig: PropTypes.object,
+    setParamsConfig: PropTypes.func
 };
 
 export default AzureBoardsTableActions;

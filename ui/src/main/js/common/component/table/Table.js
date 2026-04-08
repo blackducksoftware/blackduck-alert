@@ -9,18 +9,18 @@ import EmptyTableView from 'common/component/table/EmptyTableView';
 import TableFooter from 'common/component/table/TableFooter';
 import TableSkeleton from 'common/component/table/TableSkeleton';
 
-const useStyles = createUseStyles(theme => ({
+const useStyles = createUseStyles((theme) => ({
     tableContainer: {
-        border: 'solid 1px #ddd',
+        border: `solid 1px ${theme.colors.grey.lightGrey}`,
         borderRadius: '8px',
         backgroundColor: theme.colors.white.default,
-        boxShadow: `0 1px 3px 0 ${theme.colors.borderColor}, 0 1px 2px -1px ${theme.colors.borderColor}`
+        boxShadow: `0 1px 3px 0 ${theme.colors.grey.lightGrey}, 0 1px 2px -1px ${theme.colors.grey.lightGrey}`
     },
     table: {
         width: '100%',
         border: 0,
         '& tr:hover': {
-            backgroundColor: '#F8F8F9'
+            backgroundColor: theme.colors.white.darkWhite
         }
     },
     tableActions: {
@@ -65,11 +65,11 @@ const Table = ({
                 <TableSkeleton />
             )}
 
-            { (!isLoading && !tableData || tableData?.length === 0) && (
+            { (!tableData || tableData?.length === 0) && (
                 <EmptyTableView emptyTableConfig={emptyTableConfig} />
             )}
 
-            { (!isLoading && tableData && tableData.length !== 0) && (
+            { (tableData && tableData.length !== 0) && (
                 <>
                     <table className={classes.table}>
                         <TableHeader
@@ -93,7 +93,7 @@ const Table = ({
                             cellId={cellId}
                         />
                     </table>
-                    
+
                     {showPageSize && (
                         <TableFooter data={data} onPage={onPage} onPageSize={onPageSize} pageSize={pageSize} />
                     )}

@@ -13,7 +13,6 @@ const AuditFailureRowActionsCell = ({ data, settings }) => {
     const [statusMessage, setStatusMessage] = useState();
     const { error, hasError, refreshNotificationSuccess, refreshJobSuccess } = useSelector((state) => state.audit);
 
-
     function handleShowModal() {
         setShowViewAuditFailureModal(true);
     }

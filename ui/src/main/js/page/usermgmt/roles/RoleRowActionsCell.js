@@ -44,7 +44,7 @@ const RoleRowActionsCell = ({ data, settings }) => {
         setShowCopyModal(true);
         setSelectedData({ ...data, id: null });
     }
-    
+
     function handleDeleteClick() {
         setStatusMessage();
         setShowDeleteModal(true);
@@ -66,7 +66,7 @@ const RoleRowActionsCell = ({ data, settings }) => {
                 <Dropdown.Item as="button" onClick={handleCopyClick} disabled={!canCreate}>
                     Copy
                 </Dropdown.Item>
-                
+
                 {!isAdministrativeRole && (
                     <>
                         <Dropdown.Divider />
@@ -75,7 +75,7 @@ const RoleRowActionsCell = ({ data, settings }) => {
                         </Dropdown.Item>
                     </>
                 )}
-                
+
             </RowActionsCell>
 
             { showCopyModal && (

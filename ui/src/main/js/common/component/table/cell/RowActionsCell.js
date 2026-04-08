@@ -4,38 +4,36 @@ import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Dropdown from 'react-bootstrap/Dropdown';
 
-const useStyles = createUseStyles(theme => ({
+const useStyles = createUseStyles((theme) => ({
     toggleButton: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#F8F8F9  !important',
-        border: `1px solid ${theme.colors.borderColor}` + ' !important',
-        color: theme.colors.grey.default + ' !important',
+        backgroundColor: `${theme.colors.white.darkWhite} !important`,
+        border: `1px solid ${theme.colors.borderColor} !important`,
+        color: `${theme.colors.grey.default} !important`,
         height: '30px',
         width: '30px',
         borderRadius: '50%',
         padding: 0,
         margin: [0, '12px', 0, 'auto'],
-
         '&::after': {
             display: 'none !important'
         },
-
         '&:hover': {
-            backgroundColor: theme.colors.grey.lightGrey + ' !important',
-            color: theme.colors.grey.default + ' !important',
-            border: `1px solid ${theme.colors.borderColor}` + ' !important'
+            backgroundColor: `${theme.colors.grey.lightGrey} !important`,
+            color: `${theme.colors.grey.default} !important`,
+            border: `1px solid ${theme.colors.borderColor} !important`
         },
         '&:focus': {
-            backgroundColor: theme.colors.grey.lightGrey + ' !important',
-            color: theme.colors.grey.default + ' !important',
-            border: `1px solid ${theme.colors.borderColor}` + ' !important'
+            backgroundColor: `${theme.colors.grey.lightGrey} !important`,
+            color: `${theme.colors.grey.default} !important`,
+            border: `1px solid ${theme.colors.borderColor} !important`
         },
         '&:active': {
-            backgroundColor: theme.colors.grey.lightGrey + ' !important',
-            color: theme.colors.grey.default + ' !important',
-            border: `1px solid ${theme.colors.grey.default}` + ' !important'
+            backgroundColor: `${theme.colors.grey.lightGrey} !important`,
+            color: `${theme.colors.grey.default} !important`,
+            border: `1px solid ${theme.colors.grey.default}  !important`
         }
     },
     rowActionsMenu: {
@@ -44,15 +42,13 @@ const useStyles = createUseStyles(theme => ({
         padding: ['6px', 0],
         boxShadow: '0 8px 16px rgba(0, 0, 0, 0.175)',
         animation: '$menuExpand 150ms ease-in-out',
-
         '& > .dropdown-item': {
             fontSize: '13px',
             padding: ['6px', '16px'],
             margin: 0,
-
             '&:hover': {
-            backgroundColor: theme.colors.grey.lighterGrey
-        },
+                backgroundColor: theme.colors.grey.lighterGrey
+            }
         }
     },
     '@keyframes menuExpand': {
@@ -62,7 +58,7 @@ const useStyles = createUseStyles(theme => ({
         to: {
             opacity: 1
         }
-    },
+    }
 }));
 
 const RowActionsCell = ({ children }) => {

@@ -44,7 +44,7 @@ const ProviderRowActionsCell = ({ data, settings }) => {
             lastUpdated: null
         });
     }
-    
+
     function handleDeleteClick() {
         setStatusMessage();
         setShowDeleteModal(true);

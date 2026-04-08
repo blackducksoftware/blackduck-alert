@@ -21,12 +21,11 @@ const DistributionRowActionsCell = ({ data, settings }) => {
     function handleEditClick() {
         history.push(`${DISTRIBUTION_URLS.distributionConfigUrl}/${data.jobId}`);
     }
-    
+
     function handleDeleteClick() {
         setStatusMessage();
         setShowDeleteModal(true);
     }
-
 
     return (
         <>
@@ -71,7 +70,7 @@ DistributionRowActionsCell.propTypes = {
     settings: PropTypes.shape({
         readonly: PropTypes.bool,
         paramsConfig: PropTypes.object,
-        setParamsConfig: PropTypes.func,
+        setParamsConfig: PropTypes.func
     })
 };
 

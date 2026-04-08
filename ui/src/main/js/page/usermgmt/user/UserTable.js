@@ -115,7 +115,7 @@ const UserTable = ({ canCreate, canDelete }) => {
         setTableData(!search ? data : data.filter((user) => user.username.toLowerCase().includes(search.toLowerCase())
             || user.emailAddress?.toLowerCase().includes(search.toLowerCase())
             || user.authenticationType?.toLowerCase().includes(search.toLowerCase())
-            || user.roleNames?.some(role => role.toLowerCase().includes(search.toLowerCase()))));
+            || user.roleNames?.some((role) => role.toLowerCase().includes(search.toLowerCase()))));
     }, [users, search, sortConfig]);
 
     return (

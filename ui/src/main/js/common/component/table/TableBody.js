@@ -5,10 +5,10 @@ import MultiSelectCell from 'common/component/table/cell/MultiSelectCell';
 import WrapperCell from 'common/component/table/cell/WrapperCell';
 import { createUseStyles } from 'react-jss';
 
-const useStyles = createUseStyles(theme => ({
+const useStyles = createUseStyles((theme) => ({
     tableRow: {
         height: '52px',
-        borderBottom: `1px solid ${theme.colors.grey.lighterGrey}`,
+        borderBottom: `1px solid ${theme.colors.grey.lighterGrey}`
     },
     nonMultiSelect: {
         '& > :first-child': {

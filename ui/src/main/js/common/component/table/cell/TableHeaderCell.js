@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const useStyles = createUseStyles(theme => ({
+const useStyles = createUseStyles((theme) => ({
     headerCell: {
         fontSize: '14px',
         '& > button': {
@@ -28,7 +28,7 @@ const useStyles = createUseStyles(theme => ({
     },
     sortableCell: {
         '&:hover': {
-            borderBottom: [1, 'solid', '#787884']
+            borderBottom: [1, 'solid', theme.colors.grey.default]
         }
     },
     buttonContainer: {
@@ -52,15 +52,12 @@ const TableHeaderCell = ({ label, sortable, settings, onSort, name, sortConfig }
         [classes.right]: settings?.alignment === 'right',
         [classes.center]: settings?.alignment === 'center'
     });
-    
-    function getSortIcon(sortConfig, name, sortable) {
-        const classes = useStyles();
-        if (sortable) {
-            if (sortConfig?.name === name) {
-                return <FontAwesomeIcon icon={sortConfig.direction === 'ASC' ? 'sort-up' : 'sort-down'} />
-            }
-            return <FontAwesomeIcon icon="sort" className={classes.defaultSortIcon}/>
+
+    function getSortIcon() {
+        if (sortConfig?.name === name) {
+            return (<FontAwesomeIcon icon={sortConfig.direction === 'ASC' ? 'sort-up' : 'sort-down'} />);
         }
+        return (<FontAwesomeIcon icon="sort" className={classes.defaultSortIcon}/>);
     }
 
     return (
@@ -68,7 +65,7 @@ const TableHeaderCell = ({ label, sortable, settings, onSort, name, sortConfig }
             { sortable ? (
                 <button type="button" onClick={() => onSort(name)} className={classes.buttonContainer}>
                     {label}
-                    {getSortIcon(sortConfig, name, sortable)}
+                    {getSortIcon()}
                 </button>
             ) : <div className={classes.cell}>{label}</div> }
         </th>

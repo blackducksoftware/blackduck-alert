@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import { sendJob, sendNotification } from '../../store/actions/audit';
+import { sendJob, sendNotification } from 'store/actions/audit';
 import Dropdown from 'react-bootstrap/Dropdown';
 import StatusMessage from 'common/component/StatusMessage';
 import RowActionsCell from 'common/component/table/cell/RowActionsCell';
