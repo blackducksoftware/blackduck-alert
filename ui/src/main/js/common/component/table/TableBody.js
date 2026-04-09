@@ -52,7 +52,7 @@ const TableBody = ({ columns, multiSelect, tableData, selected, onSelected, disa
 
                         return (
                             <WrapperCell key={columnKey} datakey={col.key}>
-                                {rowData[col.key] ? rowData[col.key] : '\u2014'}
+                                {rowData[col.key] ?? '\u2014'}
                             </WrapperCell>
                         );
                     })}

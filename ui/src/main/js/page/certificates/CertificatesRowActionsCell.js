@@ -53,6 +53,7 @@ const CertificatesRowActionsCell = ({ data, settings }) => {
                     isOpen={showEditModal}
                     toggleModal={setShowEditModal}
                     modalOptions={editModalOptions}
+                    setStatusMessage={setStatusMessage}
                 />
             )}
 

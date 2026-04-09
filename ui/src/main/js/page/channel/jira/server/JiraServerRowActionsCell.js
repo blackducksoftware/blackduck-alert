@@ -12,7 +12,7 @@ const JiraServerRowActionsCell = ({ data, settings }) => {
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedData, setSelectedData] = useState(data);
     const [statusMessage, setStatusMessage] = useState();
-    const { readOnly, paramsConfig, setParamsConfig } = settings;
+    const { readOnly, paramsConfig, setParamsConfig, allowDelete } = settings;
     const dataStagedForDelete = { models: [data] };
 
     const copyModalOptions = {
@@ -67,7 +67,7 @@ const JiraServerRowActionsCell = ({ data, settings }) => {
                     Copy
                 </Dropdown.Item>
                 <Dropdown.Divider />
-                <Dropdown.Item as="button" onClick={handleDeleteClick} disabled={readOnly}>
+                <Dropdown.Item as="button" onClick={handleDeleteClick} disabled={readOnly || !allowDelete}>
                     Delete
                 </Dropdown.Item>
             </RowActionsCell>
@@ -79,7 +79,7 @@ const JiraServerRowActionsCell = ({ data, settings }) => {
                     toggleModal={setShowCopyModal}
                     modalOptions={copyModalOptions}
                     setStatusMessage={setStatusMessage}
-                    statusMessage="Successfully created 1 Jira Server Board."
+                    successMessage="Successfully created 1 Jira Server Board."
                     paramsConfig={paramsConfig}
                 />
             )}
@@ -91,7 +91,7 @@ const JiraServerRowActionsCell = ({ data, settings }) => {
                     toggleModal={setShowEditModal}
                     modalOptions={editModalOptions}
                     setStatusMessage={setStatusMessage}
-                    statusMessage="Successfully edited 1 Jira Server."
+                    successMessage="Successfully edited 1 Jira Server."
                     paramsConfig={paramsConfig}
                 />
             )}
@@ -115,6 +115,7 @@ const JiraServerRowActionsCell = ({ data, settings }) => {
 JiraServerRowActionsCell.propTypes = {
     data: PropTypes.object,
     settings: PropTypes.shape({
+        allowDelete: PropTypes.bool,
         readOnly: PropTypes.bool,
         paramsConfig: PropTypes.object,
         setParamsConfig: PropTypes.func
