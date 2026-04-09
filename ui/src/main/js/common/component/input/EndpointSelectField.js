@@ -30,7 +30,7 @@ const EndpointSelectField = ({
     requiredRelatedFields,
     searchable,
     selectSpacingClass,
-    tooltipdescription,
+    tooltipDescription,
     value,
     customVal
 }) => {
@@ -90,7 +90,7 @@ const EndpointSelectField = ({
                 selectSpacingClass={selectSpacingClass}
                 readOnly={readOnly}
                 clearable={clearable}
-                tooltipdescription={tooltipdescription}
+                tooltipDescription={tooltipDescription}
                 fieldDescription={fieldDescription}
                 label={label}
                 errorName={errorName}
@@ -118,7 +118,7 @@ EndpointSelectField.propTypes = {
     selectSpacingClass: PropTypes.string,
     value: PropTypes.array,
     fieldDescription: PropTypes.string,
-    tooltipdescription: PropTypes.string,
+    tooltipDescription: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
@@ -144,7 +144,7 @@ EndpointSelectField.defaultProps = {
     createRequestBody: null,
     readOptionsRequest: null,
     convertDataToOptions: null,
-    tooltipdescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT

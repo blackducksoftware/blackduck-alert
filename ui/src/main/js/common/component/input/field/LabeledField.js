@@ -72,8 +72,7 @@ const useStyles = createUseStyles((theme) => ({
         color: theme.colors.white.default,
         fontSize: '13px',
         borderRadius: '4px',
-        // '--bs-tooltip-bg': theme.colors.purple.darkerPurple,
-        '--bs-tooltip-opacity': 'none',
+        '--bs-tooltip-opacity': '1',
         '--bs-tooltip-max-width': '600px',
         '--bs-tooltip-padding-x': '12px',
         '--bs-tooltip-padding-y': '8px',
@@ -117,7 +116,7 @@ const LabeledField = ({
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                setShowTooltip(!showTooltip)
+                                setShowTooltip(!showTooltip);
                             }}
                             ref={(icon) => {
                                 target.current = icon;
@@ -151,7 +150,7 @@ const LabeledField = ({
 LabeledField.propTypes = {
     id: PropTypes.string,
     children: PropTypes.oneOfType([PropTypes.element, PropTypes.array]),
-    description: PropTypes.string,
+    tooltipDescription: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
@@ -163,10 +162,10 @@ LabeledField.propTypes = {
 LabeledField.defaultProps = {
     id: 'labeledFieldId',
     children: null,
-    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 };
 
 export default LabeledField;

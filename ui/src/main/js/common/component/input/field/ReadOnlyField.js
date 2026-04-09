@@ -13,7 +13,7 @@ const useStyles = createUseStyles({
 });
 
 const ReadOnlyField = ({
-    id, alt, description, errorName, errorValue, label, required, url, value
+    id, alt, tooltipDescription, errorName, errorValue, label, required, url, value, fieldDescription
 }) => {
     const classes = useStyles();
     const altValue = alt || url;
@@ -21,7 +21,8 @@ const ReadOnlyField = ({
     return (
         <LabeledField
             id={id}
-            description={description}
+            tooltipDescription={tooltipDescription}
+            fieldDescription={fieldDescription}
             errorName={errorName}
             errorValue={errorValue}
             label={label}
@@ -39,7 +40,8 @@ ReadOnlyField.propTypes = {
     value: PropTypes.string,
     url: PropTypes.string,
     alt: PropTypes.string,
-    description: PropTypes.string,
+    tooltipDescription: PropTypes.string,
+    fieldDescription: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
@@ -51,7 +53,7 @@ ReadOnlyField.defaultProps = {
     value: '',
     url: '',
     alt: '',
-    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT

@@ -25,7 +25,7 @@ const EmailDistributionConfiguration = ({
                 key={EMAIL_DISTRIBUTION_FIELD_KEYS.subject}
                 name={EMAIL_DISTRIBUTION_FIELD_KEYS.subject}
                 label="Subject Line"
-                description="The subject line to use in the emails sent for this distribution job."
+                fieldDescription="The subject line to use in the emails sent for this distribution job."
                 readOnly={readonly}
                 onChange={FieldModelUtilities.handleChange(data, setData)}
                 value={FieldModelUtilities.getFieldModelSingleValue(data, EMAIL_DISTRIBUTION_FIELD_KEYS.subject)}
@@ -35,7 +35,7 @@ const EmailDistributionConfiguration = ({
             <DynamicSelectInput
                 id={EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses}
                 label="Additional Email Addresses"
-                description="Any additional email addresses (for valid users of the provider) that notifications from this job should be sent to."
+                fieldDescription="Any additional email addresses (for valid users of the provider) that notifications from this job should be sent to."
                 customSelect={(
                     /* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */
                     <div className="typeAheadField" onClick={() => setShowAdditionalEmailAddressesModal(true)}>
@@ -66,7 +66,8 @@ const EmailDistributionConfiguration = ({
                 id={EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddressesOnly}
                 name={EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddressesOnly}
                 label="Additional Email Addresses Only"
-                description="Rather than sending emails to users assigned to the configured projects, send emails to only the users selected in 'Additional Email Addresses'."
+                checkboxValueLabel="Enable"
+                checkboxValueDescription="If enabled, Alert will send emails to only the users selected in 'Additional Email Addresses'."
                 readOnly={readonly}
                 onChange={FieldModelUtilities.handleChange(data, setData)}
                 isChecked={FieldModelUtilities.getFieldModelBooleanValue(data, EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddressesOnly)}
@@ -77,7 +78,8 @@ const EmailDistributionConfiguration = ({
                 id={EMAIL_DISTRIBUTION_FIELD_KEYS.projectOwnerOnly}
                 name={EMAIL_DISTRIBUTION_FIELD_KEYS.projectOwnerOnly}
                 label="Project Owner Only"
-                description="If true, emails will only be sent to the administrator(s) of the project. Otherwise, all users assigned to the project will get an email."
+                checkboxValueLabel="Enable"
+                checkboxValueDescription="If enabled, emails will only be sent to the administrator(s) of the project. Otherwise, all users assigned to the project will get an email."
                 readOnly={readonly}
                 onChange={FieldModelUtilities.handleChange(data, setData)}
                 isChecked={FieldModelUtilities.getFieldModelBooleanValue(data, EMAIL_DISTRIBUTION_FIELD_KEYS.projectOwnerOnly)}
@@ -88,7 +90,7 @@ const EmailDistributionConfiguration = ({
                 id={EMAIL_DISTRIBUTION_FIELD_KEYS.attachmentFormat}
                 name={EMAIL_DISTRIBUTION_FIELD_KEYS.attachmentFormat}
                 label="Attachment File Type"
-                description="If a file type is selected, a file of that type, representing the message content, will be attached to the email."
+                tooltipDescription="If a file type is selected, a file of that type, representing the message content, will be attached to the email."
                 options={EMAIL_DISTRIBUTION_ATTACHMENT_OPTIONS}
                 readOnly={readonly}
                 clearable
