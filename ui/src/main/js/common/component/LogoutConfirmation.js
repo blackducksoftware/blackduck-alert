@@ -4,24 +4,23 @@ import { connect } from 'react-redux';
 import { cancelLogout, logout } from 'store/actions/session';
 import Modal from 'common/component/modal/Modal';
 
-const LogoutConfirmation = ({ cancelLogout, logout, showLogoutConfirm }) => {
-    return (
-        <Modal
-            isOpen={showLogoutConfirm}
-            size="sm"
-            title="Confirm Logout"
-            closeModal={cancelLogout}
-            handleCancel={cancelLogout}
-            handleSubmit={logout}
-            submitText="Logout"
-            buttonStyle="action"
-        >
-            <div>
-                Are you sure you would like to logout?
-            </div>
-        </Modal>
-    );
-}
+const LogoutConfirmation = ({ cancelLogout, logout, showLogoutConfirm }) => (
+    <Modal
+        isOpen={showLogoutConfirm}
+        size="sm"
+        title="Confirm Logout"
+        closeModal={cancelLogout}
+        handleCancel={cancelLogout}
+        handleSubmit={logout}
+        submitText="Logout"
+        buttonStyle="action"
+    >
+        <div>
+            Are you sure you would like to logout?
+        </div>
+    </Modal>
+);
+
 
 LogoutConfirmation.propTypes = {
     showLogoutConfirm: PropTypes.bool.isRequired,
