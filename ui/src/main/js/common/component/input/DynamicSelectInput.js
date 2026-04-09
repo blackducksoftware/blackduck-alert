@@ -211,7 +211,7 @@ DynamicSelectInput.propTypes = {
     tooltipDescription: PropTypes.string,
     customVal: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
     customSelect: PropTypes.element,
-    width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    width: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
 };
 
 DynamicSelectInput.defaultProps = {

@@ -169,7 +169,6 @@ const ConfigButtons = ({
                     handleCancel={handleDeleteCancelled}
                     handleSubmit={handleDeleteConfirmed}
                     submitText="Delete"
-                    style="delete"
                 >
                     <div className="modal-description">
                         {confirmDeleteMessage}

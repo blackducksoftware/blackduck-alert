@@ -55,7 +55,7 @@ const CheckboxInput = ({
                     checked={isChecked}
                     onChange={onChange}
                     className={inputClass}
-                    ariaLabel={label || checkboxValueLabel}
+                    aria-label={label || checkboxValueLabel}
                 />
                 {checkboxValueLabel && (
                     <div className={classes.checkboxValueLabel}>{checkboxValueLabel}</div>

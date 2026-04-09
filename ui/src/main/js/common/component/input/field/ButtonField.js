@@ -57,7 +57,7 @@ ButtonField.propTypes = {
     success: PropTypes.bool.isRequired,
     statusMessage: PropTypes.string,
     fieldDescription: PropTypes.string,
-    tooltipDescription: PropTypes.string,
+    tooltipDescription: PropTypes.string
 };
 
 ButtonField.defaultProps = {

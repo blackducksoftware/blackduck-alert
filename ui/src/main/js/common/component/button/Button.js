@@ -118,7 +118,7 @@ const useStyles = createUseStyles((theme) => ({
     }
 }));
 
-const Button = ({ id, icon, type, isDisabled, onClick, role, buttonStyle = 'default', title, text, showLoader }) => {
+const Button = ({ id, icon, type = 'button', isDisabled, onClick, role, buttonStyle = 'default', title, text, showLoader }) => {
     const classes = useStyles();
     const btnClass = classNames(classes.button, {
         [classes.delete]: buttonStyle === 'delete',
@@ -166,7 +166,7 @@ Button.propTypes = {
     role: PropTypes.string,
     buttonStyle: PropTypes.oneOf(['default', 'transparent', 'delete', 'action', 'actionSecondary', 'actionSecondaryDelete']),
     title: PropTypes.string,
-    type: PropTypes.string,
+    type: PropTypes.oneOf(['button', 'submit', 'reset']),
     text: PropTypes.string.isRequired,
     showLoader: PropTypes.bool,
     icon: PropTypes.oneOfType([PropTypes.string, PropTypes.array])

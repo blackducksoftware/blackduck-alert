@@ -116,7 +116,7 @@ const LabeledField = ({
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                setShowTooltip(!showTooltip)
+                                setShowTooltip(!showTooltip);
                             }}
                             ref={(icon) => {
                                 target.current = icon;
@@ -165,7 +165,7 @@ LabeledField.defaultProps = {
     tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 };
 
 export default LabeledField;
