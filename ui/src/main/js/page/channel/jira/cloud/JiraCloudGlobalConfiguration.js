@@ -80,7 +80,7 @@ const JiraCloudGlobalConfiguration = ({
                         id={JIRA_CLOUD_GLOBAL_FIELD_KEYS.emailAddress}
                         name={JIRA_CLOUD_GLOBAL_FIELD_KEYS.emailAddress}
                         label="Email Address"
-                        fieldDescription="Note: Unless 'Disable Plugin Check' is checked, this email address must belong to a Jira admin."
+                        fieldDescription="Note: Unless 'Jira Plugin Validation' is checked, this email address must belong to a Jira admin."
                         required
                         readOnly={readonly}
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}

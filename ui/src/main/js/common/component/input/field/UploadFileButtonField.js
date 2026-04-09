@@ -167,7 +167,7 @@ const UploadFileButtonField = ({
                                     onClick={onUploadClick}
                                     text={buttonLabel}
                                     buttonStyle="actionSecondary"
-                                    disabled={readOnly || !permissions.read || !permissions.write}
+                                    isDisabled={readOnly || !permissions.read || !permissions.write}
                                 />
                                 {fileUploaded && (
                                     <Button
@@ -175,7 +175,7 @@ const UploadFileButtonField = ({
                                         onClick={onDeleteClick}
                                         text={removeFileUploadedText}
                                         buttonStyle="actionSecondaryDelete"
-                                        disabled={readOnly || !permissions.read || !permissions.delete}
+                                        isDisabled={readOnly || !permissions.read || !permissions.delete}
                                     />
                                 )}
                             </div>

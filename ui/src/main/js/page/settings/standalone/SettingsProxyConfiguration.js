@@ -70,7 +70,6 @@ const SettingsProxyConfiguration = ({
                 displayDelete={displayDelete}
                 errorHandler={errorHandler}
             >
-                <h2 key="settings-header">Proxy Configuration</h2>
                 <TextInput
                     id={SETTINGS_FIELD_KEYS.proxyHost}
                     name="proxyHost"
@@ -90,7 +89,7 @@ const SettingsProxyConfiguration = ({
                     readOnly={readOnly}
                     onChange={fieldModelUtilities.handleTestChange(settingsProxyConfig, setSettingsProxyConfig)}
                     value={settingsProxyConfig.proxyPort || undefined}
-                    errorName="smtpPort"
+                    errorName="proxyPort"
                     errorValue={errors.fieldErrors.proxyPort}
                 />
                 <TextInput
