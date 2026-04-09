@@ -34,15 +34,15 @@ function _verify_variable_is_set() {
   variableName="${1}"
   message="${2}"
   if [ -z "${!variableName+x}" ]; then
-    checkStatus 1 "${message}"
+    _checkStatus 1 "${message}"
   else
-    checkStatus 0 "${message}"
+    _checkStatus 0 "${message}"
   fi
 }
 
 function _verify_exec_exists() {
   command -v "${1}" 1>/dev/null 2>&1
-  checkStatus $? "Checking for exec '${1}'"
+  _checkStatus $? "Checking for exec '${1}'"
 }
 
 function _validate_environment() {
