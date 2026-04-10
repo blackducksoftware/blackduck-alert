@@ -19,9 +19,6 @@ dependencies {
     runtimeOnly 'org.postgresql:postgresql'
     runtimeOnly 'org.liquibase:liquibase-core'
 
-    // Deprecated for removal in 8.0.0. We still need the h2 jar bundled for use in the docker-entrypoint to upgrade a pre 6.0.0 database.
-    runtimeOnly 'com.h2database:h2'
-
     testImplementation project(':test-common')
     testImplementation 'com.blackduck.integration:blackduck-common'
 }
