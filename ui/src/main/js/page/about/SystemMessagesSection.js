@@ -1,17 +1,23 @@
 import React from 'react';
 import { createUseStyles } from 'react-jss';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
+import { getLatestMessages } from 'store/actions/system';
 
 import SectionCard from 'common/component/SectionCard';
 import theme from '_theme';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const useStyles = createUseStyles({
+    messageListContainer: {
+        marginTop: '20px',
+        maxHeight: 'calc(100% - 50px)',
+        overflowY: 'auto',
+        overflowX: 'hidden'
+    },
     systemMessageList: {
         listStyleType: 'none',
         padding: 0,
-        margin: 0
     },
     messageItem: {
         display: 'flex',
@@ -65,13 +71,67 @@ const useStyles = createUseStyles({
         margin: [0, '12px', 0, 'auto'],
         padding: 0,
         textWrap: 'nowrap'
+    },
+    // refreshMessages: {
+    //     display: 'flex',
+    //     alignItems: 'center',
+    //     justifyContent: 'center',
+    //     position: 'absolute',
+    //     top: '14px',
+    //     right: '8px',
+    //     padding: '4px',
+    //     '& > button': {
+    //         color: theme.colors.grey.lightGrey,
+    //         '&:hover': {
+    //             color: theme.colors.grey.darkGrey,
+    //             transition: 'opacity 0.15s ease'
+    //         }
+    //     },
+    //     '& > div': {
+    //         opacity: 0,
+    //         fontSize: '12px',
+    //         color: theme.colors.grey.darkGrey,
+    //         padding: 0,
+    //         margin: 0,
+    //         transition: 'opacity 0.15s ease'
+    //     },
+    //     '&:hover > div': {
+    //         opacity: 1
+    //     }
+    // }
+    refreshMessages: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        columnGap: '4px',
+        fontSize: '14px',
+        position: 'absolute',
+        top: '22px',
+        right: '20px',
+        padding: 0,
+        border: 'none',
+        background: 'transparent',
+        color: theme.colors.grey.lightGrey,
+        transition: 'opacity 0.15s ease',
+        '&:hover': {
+            color: theme.colors.grey.darkGrey,
+        },
+        '& > div': {
+            fontSize: '12px',
+            transition: 'opacity 0.15s ease'
+        }
     }
 });
 
 // TODO: Dispatch this action in parent and pass it to this component and footer component
 const SystemMessagesSection = () => {
     const classes = useStyles();
+    const dispatch = useDispatch();
     const { fetching, latestMessages } = useSelector((state) => state.system);
+
+    function fetchMessages() {
+        dispatch(getLatestMessages());
+    }
 
     function getIconConfig(severity) {
         if (severity === 'ERROR') {
@@ -104,24 +164,32 @@ const SystemMessagesSection = () => {
             {fetching && <p className={classes.messageContent}>Loading system messages...</p>}
 
             {!fetching && latestMessages && latestMessages.length > 0 ? (
-                <ul className={classes.systemMessageList}>
-                    {latestMessages.map((message) => {
-                        const { icon, color } = getIconConfig(message.severity);
-                        return (
-                            <li key={message.createdAt} className={getMessageClassName(message.severity)}>
-                                <div className={getIconClassName(message.severity)}>
-                                    <FontAwesomeIcon icon={icon} color={color} size="lg" />
-                                </div>
-                                <p className={classes.messageContent}>
-                                    {message.content}
-                                </p>
-                                <p className={classes.messageTimestamp}>
-                                    {message.createdAt}
-                                </p>
-                            </li>
-                        );
-                    })}
-                </ul>
+                <>
+                    <button onClick={fetchMessages} className={classes.refreshMessages} type="button" aria-label="Refresh system messages">
+                        <div>Refresh messages</div>
+                        <FontAwesomeIcon icon="repeat" />
+                    </button>
+                    <div className={classes.messageListContainer}>
+                        <ul className={classes.systemMessageList}>
+                        {latestMessages.map((message) => {
+                            const { icon, color } = getIconConfig(message.severity);
+                            return (
+                                <li key={message.createdAt} className={getMessageClassName(message.severity)}>
+                                    <div className={getIconClassName(message.severity)}>
+                                        <FontAwesomeIcon icon={icon} color={color} size="lg" />
+                                    </div>
+                                    <p className={classes.messageContent}>
+                                        {message.content}
+                                    </p>
+                                    <p className={classes.messageTimestamp}>
+                                        {message.createdAt}
+                                    </p>
+                                </li>
+                            );
+                        })}
+                        </ul>
+                    </div>
+                </>
             ) : (
                 <p className={classes.messageContent}>No system messages to display.</p>
             )}
