@@ -43,6 +43,7 @@ const TextArea = ({
 
     return (
         <LabeledField
+            id={id}
             label={label}
             errorName={errorName}
             errorValue={errorValue}

@@ -452,7 +452,7 @@ const DistributionConfigurationForm = ({
                                     id={DISTRIBUTION_COMMON_FIELD_KEYS.processingType}
                                     name={DISTRIBUTION_COMMON_FIELD_KEYS.processingType}
                                     label="Processing"
-                                    checkboxValueLabel={processingFieldDescription}
+                                    tooltipDescription={processingFieldDescription}
                                     options={processingTypes}
                                     readOnly={readonly}
                                     required

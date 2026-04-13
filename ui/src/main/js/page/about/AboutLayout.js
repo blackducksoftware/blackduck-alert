@@ -7,13 +7,14 @@ import SystemMessagesSection from 'page/about/SystemMessagesSection';
 
 const useStyles = createUseStyles((theme) => ({
     aboutPageLayout: {
-        margin: '20px'
+        margin: '32px'
     },
     aboutPageHeader: {
         fontSize: '32px',
         fontWeight: 'bold',
         paddingBottom: '10px',
-        marginBottom: 0
+        marginBottom: 0,
+        borderBottom: 'none'
     },
     aboutPageDescription: {
         fontSize: '16px',
@@ -24,6 +25,19 @@ const useStyles = createUseStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         rowGap: '20px'
+    },
+    systemContent: {
+        display: 'flex',
+        flexDirection: 'row',
+        columnGap: '20px',
+        maxHeight: '240px',
+        '& > section': {
+            flex: 1,
+            overflow: 'hidden',
+            minWidth: '500px',
+            minHeight: '240px',
+            position: 'relative'
+        }
     }
 }));
 
@@ -47,9 +61,11 @@ const AboutLayout = ({ globalDescriptorMap, distributionDescriptorMap }) => {
             <h1 className={classes.aboutPageHeader}>Home</h1>
             <p className={classes.aboutPageDescription}>This application provides the ability to send notifications from a provider to various distribution channels.</p>
             <section className={classes.aboutPageContent}>
-                <SystemInformationSection />
+                <div className={classes.systemContent}>
+                    <SystemInformationSection />
+                    <SystemMessagesSection />
+                </div>
                 <DistributionChannelsSection channelDescriptorData={channelDescriptorData} />
-                <SystemMessagesSection />
             </section>
         </div>
     );

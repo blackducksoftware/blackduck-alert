@@ -37,7 +37,7 @@ const ButtonField = ({
                 errorName={fieldKey}
                 errorValue={fieldError}
             >
-                <Button id={fieldKey} onClick={callOnSendClick} text={buttonLabel} disabled={readOnly} buttonStyle="action" />
+                <Button id={fieldKey} onClick={callOnSendClick} text={buttonLabel} isDisabled={readOnly} buttonStyle="action" />
                 {success && <StatusMessage id={`${fieldKey}-status-message`} actionMessage={statusMessage} />}
             </LabeledField>
         </div>
