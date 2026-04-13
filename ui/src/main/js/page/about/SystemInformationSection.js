@@ -8,9 +8,15 @@ import TitleContentPair from 'common/component/TitleContentPair';
 const useStyles = createUseStyles((theme) => ({
     systemInformationContainer: {
         display: 'grid',
-        gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+        gridTemplateColumns: 'repeat(3, 1fr)',
         gap: '30px',
-        marginTop: '28px'
+        marginTop: '28px',
+        '& > *': {
+            minWidth: 0
+        }
+    },
+    projectUrl: {
+        gridColumn: '1 / -1'
     },
     versionBadge: {
         border: theme.defaultBorder,
@@ -23,10 +29,12 @@ const useStyles = createUseStyles((theme) => ({
         flexDirection: 'row',
         alignItems: 'center',
         columnGap: '4px',
-        width: 'fit-content',
+        maxWidth: '100%',
         fontSize: '14px',
         textDecoration: 'none',
-        whiteSpace: 'nowrap',
+        whiteSpace: 'normal',
+        overflowWrap: 'anywhere',
+        wordBreak: 'break-word',
         '&:hover': {
             textDecoration: 'underline'
         }
@@ -85,13 +93,15 @@ const SystemInformationSection = () => {
                     <InfoLink url={commitHashUrl} text={commitHash} />
                 </TitleContentPair>
 
-                <TitleContentPair title="Project URL">
-                    <InfoLink url={projectUrl} text={projectUrl} />
-                </TitleContentPair>
-
                 <TitleContentPair title="API Guide">
                     <InfoLink url={documentationUrl} text="Swagger UI" />
                 </TitleContentPair>
+
+                <div className={classes.projectUrl}>
+                    <TitleContentPair title="Project URL">
+                        <InfoLink url={projectUrl} text={projectUrl} />
+                    </TitleContentPair>
+                </div>
             </div>
         </SectionCard>
     );
