@@ -17,12 +17,12 @@ const useStyles = createUseStyles((theme) => ({
         lineHeight: '24px',
         padding: [0, '15px'],
         fontSize: '11px',
-        color: theme.colors.defaultBorderColor,
+        color: theme.colors.grey.lightGrey,
         transition: 'opacity .3s ease-in-out 0s',
         zIndex: 9999,
 
         '& a': {
-            color: theme.colors.defaultBorderColor
+            color: theme.colors.grey.lightGrey
         }
     },
     logoContainer: {
@@ -39,17 +39,17 @@ const useStyles = createUseStyles((theme) => ({
         height: '16px'
     },
     footerAlertText: {
-        color: theme.colors.defaultBorderColor,
+        color: theme.colors.grey.lightGrey,
         lineHeight: '2em'
     },
     productVersion: {
-        color: theme.colors.defaultBorderColor,
+        color: theme.colors.grey.lightGrey,
         textAlign: 'left',
         marginLeft: '.4em',
         marginRight: 'auto'
     },
     copyright: {
-        color: theme.colors.defaultBorderColor,
+        color: theme.colors.grey.lightGrey,
         marginLeft: 'auto',
         textAlign: 'left',
         float: 'right'

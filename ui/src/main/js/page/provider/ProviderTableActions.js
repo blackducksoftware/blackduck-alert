@@ -55,7 +55,7 @@ const ProviderTableActions = ({ data, selected, readonly, setSelected }) => {
                 />
             )}
 
-            <Button onClick={handleCreateProviderClick} type="button" icon="plus" text="Create Provider" />
+            <Button onClick={handleCreateProviderClick} type="button" icon="plus" text="Create Provider" buttonStyle="action" />
 
             <Button
                 onClick={handleDeleteProviderClick}
@@ -64,10 +64,18 @@ const ProviderTableActions = ({ data, selected, readonly, setSelected }) => {
                 isDisabled={selected.length === 0 || readonly}
                 title={getDeleteButtonTitle()}
                 text="Delete"
-                buttonStyle="delete"
+                buttonStyle="actionSecondary"
             />
 
-            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} />
+            <Button
+                onClick={handleRefresh}
+                type="button"
+                icon="arrows-rotate"
+                text="Refresh"
+                isDisabled={fetching}
+                showLoader={fetching}
+                buttonStyle="actionSecondary"
+            />
 
             {showCreateModal && (
                 <ProviderModal

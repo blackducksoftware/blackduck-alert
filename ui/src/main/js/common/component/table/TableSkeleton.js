@@ -2,7 +2,7 @@ import React from 'react';
 import { createUseStyles } from 'react-jss';
 import classNames from 'classnames';
 
-const useStyles = createUseStyles(theme => ({
+const useStyles = createUseStyles({
     '@keyframes loading': {
         from: {
             backgroundPosition: '-200px 0'
@@ -68,7 +68,7 @@ const useStyles = createUseStyles(theme => ({
     col2: {
         width: '200px'
     }
-}));
+});
 
 export default function TableSkeleton() {
     const classes = useStyles();
@@ -92,4 +92,4 @@ export default function TableSkeleton() {
             <div className={classes.rowItem} />
         </div>
     );
-};
+}

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Table from 'common/component/table/Table';
 import JiraFieldMapEditCell from 'page/channel/jira/common/JiraFieldMapEditCell';
 import JiraFieldMapTableActions from 'page/channel/jira/common/JiraFieldMapTableActions';
-import JiraFieldAlwaysCreateJsonCell from "./JiraFieldAlwaysCreateJsonCell";
+import JiraFieldAlwaysCreateJsonCell from './JiraFieldAlwaysCreateJsonCell';
 
 const emptyTableConfig = {
     message: 'There are no records to display for this table.  Please add a Jira field mapping to use this table.'
@@ -18,7 +18,7 @@ const JiraFieldMapDistributionTable = ({ initialData, onFieldMappingUpdate }) =>
     }, [tableData]);
 
     function handleEditData(editedData) {
-        onFieldMappingUpdate(editedData)
+        onFieldMappingUpdate(editedData);
     }
 
     const COLUMNS = [{

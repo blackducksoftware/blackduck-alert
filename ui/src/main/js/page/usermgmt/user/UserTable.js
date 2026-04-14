@@ -2,42 +2,10 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUsers } from 'store/actions/users';
-import UserCopyCell from 'page/usermgmt/user/UserCopyCell';
-import UserEditCell from 'page/usermgmt/user/UserEditCell';
+import UserRowActionsCell from 'page/usermgmt/user/UserRowActionsCell';
 import UserRoleCell from 'page/usermgmt/user/UserRoleCell';
 import Table from 'common/component/table/Table';
 import UserTableActions from 'page/usermgmt/user/UserTableActions';
-
-const COLUMNS = [{
-    key: 'username',
-    label: 'Username',
-    sortable: true
-}, {
-    key: 'emailAddress',
-    label: 'Email',
-    sortable: true
-}, {
-    key: 'authenticationType',
-    label: 'Authentication Type',
-    sortable: true
-}, {
-    key: 'roleNames',
-    label: 'Roles',
-    sortable: false,
-    customCell: UserRoleCell
-}, {
-    key: 'editUser',
-    label: 'Edit',
-    sortable: false,
-    customCell: UserEditCell,
-    settings: { alignment: 'center' }
-}, {
-    key: 'copyUser',
-    label: 'Copy',
-    sortable: false,
-    customCell: UserCopyCell,
-    settings: { alignment: 'center' }
-}];
 
 const emptyTableConfig = {
     message: 'There are no records to display for this table. Please create a User to use this table.'
@@ -58,6 +26,31 @@ const UserTable = ({ canCreate, canDelete }) => {
         disabledItems: ['sysadmin', 'jobmanager', 'alertuser'],
         title: 'System created user, unable to select for deletion.'
     };
+
+    const columns = [{
+        key: 'username',
+        label: 'Username',
+        sortable: true
+    }, {
+        key: 'emailAddress',
+        label: 'Email',
+        sortable: true
+    }, {
+        key: 'authenticationType',
+        label: 'Authentication Type',
+        sortable: true
+    }, {
+        key: 'roleNames',
+        label: 'Roles',
+        sortable: false,
+        customCell: UserRoleCell
+    }, {
+        key: 'userManagementRowActions',
+        label: '',
+        sortable: false,
+        customCell: UserRowActionsCell,
+        settings: { alignment: 'center', canCreate, canDelete }
+    }];
 
     useEffect(() => {
         dispatch(fetchUsers());
@@ -122,13 +115,13 @@ const UserTable = ({ canCreate, canDelete }) => {
         setTableData(!search ? data : data.filter((user) => user.username.toLowerCase().includes(search.toLowerCase())
             || user.emailAddress?.toLowerCase().includes(search.toLowerCase())
             || user.authenticationType?.toLowerCase().includes(search.toLowerCase())
-            || user.roleNames?.some(role => role.toLowerCase().includes(search.toLowerCase()))));
+            || user.roleNames?.some((role) => role.toLowerCase().includes(search.toLowerCase()))));
     }, [users, search, sortConfig]);
 
     return (
         <Table
             tableData={tableData}
-            columns={COLUMNS}
+            columns={columns}
             multiSelect
             selected={selected}
             disableSelectOptions={disableSelectOptions}
