@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const useStyles = createUseStyles({
+const useStyles = createUseStyles((theme) => ({
     searchFilterContainer: {
         marginLeft: 'auto',
         marginRight: 0,
@@ -11,42 +11,50 @@ const useStyles = createUseStyles({
         columnGap: '5px'
     },
     inputContainer: {
-        position: 'relative'
+        position: 'relative',
+        border: `solid 1px ${theme.colors.grey.lightGrey}`,
+        padding: ['6px', '14px'],
+        borderRadius: '4px',
+        display: 'flex',
+        alignItems: 'center'
     },
     inputStyle: {
-        border: 'solid .5px',
-        padding: ['4px', '20px', '4px', '10px'],
+        border: 'none',
         font: 'inherit',
         cursor: 'text',
         textOverflow: 'ellipsis',
         overflow: 'hidden',
+        width: '125px',
         '&:focus': {
             outline: 0
         }
     },
-    clearInputIcon: {
-        display: 'inline-block',
+    searchIcon: {
+        color: theme.colors.grey.default,
+        backgroundColor: 'transparent',
         border: 'none',
-        background: 'none',
-        position: 'absolute',
-        right: '5px',
-        top: '5px',
+        paddingRight: '8px',
+        margin: ['auto', 0],
+
         '&:hover': {
-            cursor: 'default'
+            color: theme.colors.grey.darkerGrey
         }
     },
-    searchIconContainer: {
-        display: 'flex',
+    clearInputIcon: {
+        border: 'none',
+        background: 'none',
+        width: '16px',
+        height: '16px',
+        padding: 0,
+        display: 'inline-flex',
         alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#e7e7f0',
-        border: ['solid', '1px', '#ddd'],
-        cursor: 'pointer',
-        borderRadius: '50%',
-        width: '30px',
-        height: '30px'
+        justifyContent: 'center'
+    },
+    clearInputIconHidden: {
+        visibility: 'hidden',
+        pointerEvents: 'none'
     }
-});
+}));
 
 const SearchFilter = ({ searchBarPlaceholder, handleSearchChange, defaultSearchValue, isDisabled }) => {
     const classes = useStyles();
@@ -57,7 +65,7 @@ const SearchFilter = ({ searchBarPlaceholder, handleSearchChange, defaultSearchV
     }, [defaultSearchValue]);
 
     function handleChange(evt) {
-        setSearchValue(evt.target.value)
+        setSearchValue(evt.target.value);
     }
 
     // Search when user presses enter (ASCII value for Enter/Return is 13)
@@ -75,6 +83,15 @@ const SearchFilter = ({ searchBarPlaceholder, handleSearchChange, defaultSearchV
     return (
         <div className={classes.searchFilterContainer}>
             <div className={classes.inputContainer}>
+                <button
+                    className={classes.searchIcon}
+                    onClick={() => handleSearchChange(searchValue)}
+                    disabled={isDisabled}
+                    type="button"
+                    aria-label="Search"
+                >
+                    <FontAwesomeIcon icon="magnifying-glass" />
+                </button>
                 <input
                     className={classes.inputStyle}
                     placeholder={searchBarPlaceholder}
@@ -83,16 +100,16 @@ const SearchFilter = ({ searchBarPlaceholder, handleSearchChange, defaultSearchV
                     onKeyDown={handleKeyDown}
                     disabled={isDisabled}
                 />
-                { searchValue && (
-                    <button className={classes.clearInputIcon} onClick={handleClearSearchField} role="button" disabled={isDisabled} >
-                        <FontAwesomeIcon icon="times" size='sm' />
-                    </button>
-                ) }
+                <button
+                    className={`${classes.clearInputIcon} ${!searchValue ? classes.clearInputIconHidden : ''}`}
+                    onClick={handleClearSearchField}
+                    disabled={isDisabled || !searchValue}
+                    type="button"
+                    aria-label="Clear search"
+                >
+                    <FontAwesomeIcon icon="times" />
+                </button>
             </div>
-                       
-            <button className={classes.searchIconContainer} onClick={() => handleSearchChange(searchValue)} role="button" >
-                <FontAwesomeIcon icon="search" />
-            </button>
         </div>
     );
 };

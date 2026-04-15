@@ -48,7 +48,7 @@ const UserDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, set
                     type: 'success'
                 });
             }
-            setSelected([]);
+            setSelected?.([]);
             handleClose();
         }
 

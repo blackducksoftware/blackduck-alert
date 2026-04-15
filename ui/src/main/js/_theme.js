@@ -1,5 +1,6 @@
 const colors = {
     green: {
+        lightGreen: '#89c12d',
         darkGreen: '#3B7D3C'
     },
     grey: {
@@ -23,7 +24,8 @@ const colors = {
         default: '#D72C20'
     },
     white: {
-        default: '#FFFFFF'
+        default: '#FFFFFF',
+        darkWhite: '#F8F8F9'
     },
     borderColor: '#0000001a',
     darkGreyAlertColor: '#646E81',

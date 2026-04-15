@@ -226,10 +226,11 @@ const MainPage = ({
                 uriPrefix={componentUri}
                 urlName={CERTIFICATE_INFO.url}
                 descriptor={globalDescriptorMap[CERTIFICATE_INFO.key]}
-                render={() => (
+                render={(readOnly) => (
                     <CertificatesPageLayout
                         csrfToken={csrfToken}
                         errorHandler={errorHandler}
+                        readOnly={readOnly}
                     />
                 )}
             />

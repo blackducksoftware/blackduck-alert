@@ -140,7 +140,7 @@ const Button = ({ id, icon, type = 'button', isDisabled, onClick, role, buttonSt
             disabled={isDisabled}
         >
             {icon && (
-                <FontAwesomeIcon icon={icon} size="sm" />
+                <FontAwesomeIcon icon={icon} />
             )}
             <div>
                 {text}

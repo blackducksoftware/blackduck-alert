@@ -59,7 +59,7 @@ const AzureBoardsDeleteModal = ({ isOpen, toggleModal, data, selected, setSelect
                     type: 'success'
                 });
             }
-            setSelected([]);
+            setSelected?.([]);
             handleClose();
         }
 

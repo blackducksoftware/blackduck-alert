@@ -48,7 +48,7 @@ const ProviderDeleteModal = ({ isOpen, toggleModal, data, selected, setStatusMes
                     type: 'success'
                 });
             }
-            setSelected([]);
+            setSelected?.([]);
             handleClose();
         }
 

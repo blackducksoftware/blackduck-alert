@@ -44,14 +44,14 @@ const UserTableActions = ({ canCreate, canDelete, data, selected, setSelected })
             )}
 
             {canCreate && (
-                <Button onClick={handleCreateUserClick} type="button" icon="plus" text="Create User" />
+                <Button onClick={handleCreateUserClick} type="button" icon="plus" text="Create User" buttonStyle="action" />
             )}
 
             {canDelete && (
-                <Button onClick={handleDeleteUserClick} isDisabled={selected.length === 0} type="button" icon="trash" text="Delete" buttonStyle="delete" />
+                <Button onClick={handleDeleteUserClick} isDisabled={selected.length === 0} type="button" icon="trash" text="Delete" buttonStyle="actionSecondary" />
             )}
 
-            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} />
+            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} buttonStyle="actionSecondary" icon="arrows-rotate" />
 
             {showCreateModal && (
                 <UserModal

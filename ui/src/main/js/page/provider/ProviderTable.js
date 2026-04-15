@@ -2,9 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Table from 'common/component/table/Table';
-import ProviderEditCell from 'page/provider/ProviderEditCell';
-import ProviderCopyCell from 'page/provider/ProviderCopyCell';
-import ProviderEnabledCell from 'page/provider/ProviderEnabledCell';
+import EnabledCell from 'common/component/table/cell/EnabledCell';
+import ProviderRowActionsCell from 'page/provider/ProviderRowActionsCell';
 import ProviderTableActions from 'page/provider/ProviderTableActions';
 import { fetchProviders } from 'store/actions/provider';
 import { BLACKDUCK_GLOBAL_FIELD_KEYS } from 'page/provider/blackduck/BlackDuckModel';
@@ -40,19 +39,13 @@ function ProviderTable({ readonly }) {
         key: 'enabled',
         label: 'Enabled',
         sortable: false,
-        customCell: ProviderEnabledCell,
+        customCell: EnabledCell,
         settings: { alignment: 'center' }
     }, {
-        key: 'editProvider',
-        label: 'Edit',
+        key: 'providerRowActions',
+        label: '',
         sortable: false,
-        customCell: ProviderEditCell,
-        settings: { alignment: 'center', readonly }
-    }, {
-        key: 'copyProvider',
-        label: 'Copy',
-        sortable: false,
-        customCell: ProviderCopyCell,
+        customCell: ProviderRowActionsCell,
         settings: { alignment: 'center', readonly }
     }];
 

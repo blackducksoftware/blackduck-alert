@@ -59,7 +59,7 @@ const DistributionDeleteModal = ({ isOpen, toggleModal, data, selected, setSelec
                     type: 'success'
                 });
             }
-            setSelected([]);
+            setSelected?.([]);
             handleClose();
         }
 
