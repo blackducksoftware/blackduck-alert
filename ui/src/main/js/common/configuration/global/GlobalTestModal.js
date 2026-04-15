@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Modal from 'common/component/modal/Modal';
 
 const GlobalTestModal = ({
-    children, showTestModal, handleTest, handleCancel, buttonIdPrefix, performingAction,
+    children, showTestModal, handleTest, handleCancel, performingAction,
     modalSubmitText, disableTestModalSubmit, testModalButtonTitle, testModalTitle
 }) => (
     <Modal
@@ -28,7 +28,6 @@ GlobalTestModal.propTypes = {
     testModalTitle: PropTypes.string,
     handleTest: PropTypes.func.isRequired,
     handleCancel: PropTypes.func.isRequired,
-    buttonIdPrefix: PropTypes.string,
     modalSubmitText: PropTypes.string,
     testModalButtonTitle: PropTypes.string,
     disableTestModalSubmit: PropTypes.bool,
@@ -36,7 +35,6 @@ GlobalTestModal.propTypes = {
 };
 
 GlobalTestModal.defaultProps = {
-    buttonIdPrefix: 'common-test-modal',
     performingAction: false
 };
 
