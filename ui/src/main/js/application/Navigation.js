@@ -109,8 +109,7 @@ const Navigation = ({ confirmLogoutPressed, cancelLogout, globalDescriptorMap })
         label: 'User Management',
         href: '/alert/components/users',
         showOption: doesDescriptorExist(globalDescriptorMap, USER_MANAGEMENT_INFO.key)
-    }]
-
+    }];
 
     return (
         <div className={classes.sideNavContent}>
@@ -121,13 +120,13 @@ const Navigation = ({ confirmLogoutPressed, cancelLogout, globalDescriptorMap })
                     <SideNavItem href="/alert/providers/blackduck" icon="truck" id="providers" label="Provider" type="link" />
                 ) : null }
                 
-                { (hasType(DESCRIPTOR_TYPE.CHANNEL) && channelGroup.every(channel => channel.showOption)) ? (
+                { hasType(DESCRIPTOR_TYPE.CHANNEL) ? (
                     <SideNavItem hasSubMenu subMenuItems={channelGroup} label="Channels" id="channels" icon="stream" />
                 ) : null }
                 
                 <SideNavItem href="/alert/jobs/distribution" icon="archive" id="archive" label="Jobs" type="link" />
 
-                { manageGroup.every(option => option.showOption) ? (
+                { hasType(DESCRIPTOR_TYPE.COMPONENT) ? (
                     <SideNavItem hasSubMenu subMenuItems={manageGroup} label="Manage" id="manage" icon="toolbox" />
                 ) : null }
                 
