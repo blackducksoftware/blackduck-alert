@@ -82,7 +82,7 @@ const FieldMappingRow = ({
                     />
                 </div>
             </div>
-            <Button id={deleteMappingId} onClick={() => deleteRow(index)} icon="x" text="Remove Property" buttonStyle="actionSecondaryDelete" />
+            <Button id={deleteMappingId} onClick={() => deleteRow(index)} icon="times" text="Remove Property" buttonStyle="actionSecondaryDelete" />
         </div>
     );
 };
