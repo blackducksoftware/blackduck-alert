@@ -74,7 +74,7 @@ const JiraServerDeleteModal = ({ isOpen, toggleModal, data, selected, setSelecte
                     type: 'success'
                 });
             }
-            setSelected([]);
+            setSelected?.([]);
             handleClose();
         }
 

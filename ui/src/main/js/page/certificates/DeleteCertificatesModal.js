@@ -45,7 +45,7 @@ const DeleteCertificatesModal = ({ isOpen, toggleModal, data, selected, setSelec
                 dispatch(deleteCertificate(certificate.id));
             }
         });
-        setSelected([]);
+        setSelected?.([]);
         handleClose();
     }
 

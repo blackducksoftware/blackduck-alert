@@ -8,7 +8,7 @@ import CertificatesTable from 'page/certificates/CertificatesTable';
 import MTLSCertificateLayout from 'page/certificates/MTLSCertificateLayout';
 import { CERTIFICATE_INFO } from 'page/certificates/CertificateModel';
 
-const CertificatesPageLayout = ({ csrfToken, errorHandler }) => (
+const CertificatesPageLayout = ({ csrfToken, errorHandler, readOnly }) => (
     <PageLayout
         title={CERTIFICATE_INFO.label}
         description="This page allows you to configure certificates for Alert to establish secure communication."
@@ -16,7 +16,7 @@ const CertificatesPageLayout = ({ csrfToken, errorHandler }) => (
     >
         <ViewTabs defaultActiveKey={1} id="certificate-tabs">
             <Tab eventKey={1} title="Server">
-                <CertificatesTable />
+                <CertificatesTable readOnly={readOnly} />
             </Tab>
             <Tab eventKey={2} title="Client">
                 <MTLSCertificateLayout
@@ -30,7 +30,8 @@ const CertificatesPageLayout = ({ csrfToken, errorHandler }) => (
 
 CertificatesPageLayout.propTypes = {
     csrfToken: PropTypes.string.isRequired,
-    errorHandler: PropTypes.object.isRequired
+    errorHandler: PropTypes.object.isRequired,
+    readOnly: PropTypes.bool.isRequired
 };
 
 export default CertificatesPageLayout;

@@ -3,61 +3,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Table from 'common/component/table/Table';
 import DistributionTableActions from 'page/distribution/DistributionTableActions';
-import DistributionActionCell from 'page/distribution/DistributionActionCell';
+import DistributionRowActionsCell from 'page/distribution/DistributionRowActionsCell';
 import DistributionStatusCell from 'page/distribution/DistributionStatusCell';
 import ChannelCell from 'page/distribution/ChannelCell';
 import ProviderCell from 'page/distribution/ProviderCell';
 import FrequencyCell from 'page/distribution/FrequencyCell';
-import ProviderEnabledCell from 'page/provider/ProviderEnabledCell';
+import EnabledCell from 'common/component/table/cell/EnabledCell';
 import { fetchDistribution } from 'store/actions/distribution';
-
-const COLUMNS = [{
-    key: 'jobName',
-    label: 'Name',
-    sortable: true
-}, {
-    key: 'channel',
-    label: 'Channel',
-    sortable: true,
-    customCell: ChannelCell
-}, {
-    key: 'provider',
-    label: 'Provider',
-    sortable: false,
-    customCell: ProviderCell
-}, {
-    key: 'frequency',
-    label: 'Frequency',
-    sortable: true,
-    customCell: FrequencyCell
-}, {
-    key: 'auditTimeLastSent',
-    label: 'Last Run',
-    sortable: false
-}, {
-    key: 'auditStatus',
-    label: 'Status',
-    sortable: false,
-    customCell: DistributionStatusCell
-}, {
-    key: 'enabled',
-    label: 'Enabled',
-    sortable: false,
-    customCell: ProviderEnabledCell,
-    settings: { alignment: 'center' }
-}, {
-    key: 'edit',
-    label: 'Edit',
-    sortable: false,
-    customCell: DistributionActionCell,
-    settings: { alignment: 'center', type: 'edit' }
-}, {
-    key: 'copy',
-    label: 'Copy',
-    sortable: false,
-    customCell: DistributionActionCell,
-    settings: { alignment: 'center', type: 'copy' }
-}];
 
 const emptyTableConfig = {
     message: 'There are no records to display for this table.  Please create a Distribution Job to use this table.'
@@ -79,6 +31,49 @@ const DistributionTable = ({ readonly }) => {
             sortOrder: data?.mutatorData?.direction
         }
     });
+
+    const columns = [{
+        key: 'jobName',
+        label: 'Name',
+        sortable: true
+    }, {
+        key: 'channel',
+        label: 'Channel',
+        sortable: true,
+        customCell: ChannelCell
+    }, {
+        key: 'provider',
+        label: 'Provider',
+        sortable: false,
+        customCell: ProviderCell
+    }, {
+        key: 'enabled',
+        label: 'Enabled',
+        sortable: false,
+        customCell: EnabledCell,
+        settings: { alignment: 'center' }
+    }, {
+        key: 'frequency',
+        label: 'Frequency',
+        sortable: true,
+        customCell: FrequencyCell
+    }, {
+        key: 'auditTimeLastSent',
+        label: 'Last Run',
+        sortable: false
+    }, {
+        key: 'auditStatus',
+        label: 'Status',
+        sortable: false,
+        customCell: DistributionStatusCell,
+        settings: { alignment: 'center' }
+    }, {
+        key: 'distributionRowActions',
+        label: '',
+        sortable: false,
+        customCell: DistributionRowActionsCell,
+        settings: { alignment: 'center', paramsConfig, setParamsConfig, readonly }
+    }];
 
     useEffect(() => {
         dispatch(fetchDistribution(paramsConfig));
@@ -164,7 +159,7 @@ const DistributionTable = ({ readonly }) => {
     return (
         <Table
             tableData={data?.models}
-            columns={COLUMNS}
+            columns={columns}
             multiSelect
             searchBarPlaceholder="Search Distributions..."
             handleSearchChange={handleSearchChange}

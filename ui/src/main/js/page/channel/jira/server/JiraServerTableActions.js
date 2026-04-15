@@ -43,7 +43,7 @@ const JiraServerTableActions = ({ data, readonly, allowDelete, selected, setSele
                 />
             )}
 
-            <Button onClick={handleCreateJiraServerClick} type="button" icon="plus" text="Create Jira Server" />
+            <Button onClick={handleCreateJiraServerClick} type="button" icon="plus" text="Create Jira Server" buttonStyle="action" />
 
             {allowDelete && (
                 <Button
@@ -52,11 +52,19 @@ const JiraServerTableActions = ({ data, readonly, allowDelete, selected, setSele
                     type="button"
                     icon="trash"
                     text="Delete"
-                    buttonStyle="delete"
+                    buttonStyle="actionSecondary"
                 />
             )}
 
-            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} />
+            <Button
+                onClick={handleRefresh}
+                type="button"
+                text="Refresh"
+                isDisabled={fetching}
+                showLoader={fetching}
+                buttonStyle="actionSecondary"
+                icon="arrows-rotate"
+            />
 
             {showCreateModal && (
                 <JiraServerModal

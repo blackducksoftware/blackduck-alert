@@ -7,6 +7,7 @@ const useStyles = createUseStyles({
     wrapperCell: {
         padding: '8px',
         textAlign: 'left',
+        fontSize: '15px',
         '&:empty::after': {
             content: '"\\00a0"'
         }
