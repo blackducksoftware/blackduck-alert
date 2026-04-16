@@ -338,6 +338,7 @@ class ProcessingJobEventHandlerTestIT {
         return new ProcessingAuditAccessor() {
             @Override
             public void createOrUpdatePendingAuditEntryForJob(UUID jobId, Set<Long> notificationIds) {
+                // Intentionally left blank for testing
             }
 
             @Override
