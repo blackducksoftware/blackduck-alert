@@ -13,7 +13,7 @@ task cleanBundles(type: Delete) {
     }
 }
 
-task updateNpmVersion(type: Task) {
+task updatePnpmVersion(type: Task) {
     def packageJsonFile = file('package.json')
     def rootBuildDotGradle = file('../build.gradle')
 
@@ -35,53 +35,52 @@ task updateNpmVersion(type: Task) {
     }
 }
 
-task npmInstallFromCache(type: Exec) {
-    inputs.files('package.json', 'package-lock.json')
+task pnpmInstallFromLockfile(type: Exec) {
+    inputs.files('package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml')
     outputs.dir('node_modules')
     outputs.cacheIf { true }
     ignoreExitValue = true
 
-    commandLine 'npm', 'install', '--cache', "${project.buildDir}/npm_cache"
+    commandLine 'pnpm', 'install', '--frozen-lockfile'
 }
 
-task npmCacheClean(type: Exec, dependsOn: [npmInstallFromCache]) {
+task pnpmPruneStore(type: Exec, dependsOn: [pnpmInstallFromLockfile]) {
     inputs.file('package.json')
-    inputs.file('package-lock.json')
+    inputs.file('pnpm-lock.yaml')
     outputs.dir('node_modules')
     outputs.cacheIf { true }
     onlyIf {
-        // don't run this if the npmInstallFromCache succeeded
-        npmInstallFromCache.getExecutionResult().get()?.getExitValue() ?: 0 != 0
+        pnpmInstallFromLockfile.getExecutionResult().get()?.getExitValue() ?: 0 != 0
     }
 
-    commandLine 'npm', 'cache', 'clean', '--force', '--cache', "${project.buildDir}/npm_cache"
+    commandLine 'pnpm', 'store', 'prune'
 }
 
-task npmInstallFromCacheRetry(type: Exec, dependsOn: [npmCacheClean]) {
+task pnpmInstallFromLockfileRetry(type: Exec, dependsOn: [pnpmPruneStore]) {
     inputs.file('package.json')
-    inputs.file('package-lock.json')
+    inputs.file('pnpm-lock.yaml')
     outputs.dir('node_modules')
     outputs.cacheIf { true }
     onlyIf {
-        // don't run this if the npmInstall succeeded
-        npmInstallFromCache.getExecutionResult().get()?.getExitValue() ?: 0 != 0
+        pnpmInstallFromLockfile.getExecutionResult().get()?.getExitValue() ?: 0 != 0
     }
     doFirst {
-        logger.error('The initial npm install failed. Trying to run the npm install again.')
+        logger.error('The initial pnpm install failed. Trying to run the pnpm install again.')
+        logger.error('pnpm is required. See README.md')
     }
 
-    commandLine 'npm', 'install', '--cache', "${project.buildDir}/npm_cache"
+    commandLine 'pnpm', 'install', '--frozen-lockfile'
 }
 
-task npmBuild(type: Exec, dependsOn: [npmInstallFromCacheRetry]) {
-    inputs.file('package-lock.json')
+task pnpmBuild(type: Exec, dependsOn: [pnpmInstallFromLockfileRetry]) {
+    inputs.file('pnpm-lock.yaml')
     inputs.dir('src/main/js')
     inputs.dir('src/main/css')
     inputs.dir('src/main/img')
     outputs.dir("${project.buildDir}/resources/main/static")
     outputs.cacheIf { true }
 
-    commandLine 'npm', 'run', 'build', '--cache', "${project.buildDir}/npm_cache"
+    commandLine 'pnpm', 'run', 'build'
 }
 
 task copyStaticWebContent(type: Copy) {
@@ -96,8 +95,8 @@ task copyStaticWebContent(type: Copy) {
     into "${project.buildDir}/resources/main/static"
 }
 
-tasks.copyStaticWebContent.finalizedBy(updateNpmVersion)
-tasks.copyStaticWebContent.finalizedBy(npmBuild)
-tasks.npmBuild.mustRunAfter(updateNpmVersion)
-tasks.npmBuild.mustRunAfter(copyStaticWebContent)
+tasks.copyStaticWebContent.finalizedBy(updatePnpmVersion)
+tasks.copyStaticWebContent.finalizedBy(pnpmBuild)
+tasks.pnpmBuild.mustRunAfter(updatePnpmVersion)
+tasks.pnpmBuild.mustRunAfter(copyStaticWebContent)
 tasks.clean.finalizedBy(cleanBundles)
