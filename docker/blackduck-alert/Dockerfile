@@ -1,5 +1,5 @@
 FROM blackducksoftware/hub-docker-common:1.0.7 AS docker-common
-FROM alpine:3.20
+FROM alpine:3.23
 
 ARG VERSION
 ARG COMMITHASH
