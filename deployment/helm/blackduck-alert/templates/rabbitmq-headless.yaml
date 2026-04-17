@@ -1,0 +1,21 @@
+{{- if not .Values.rabbitmq.isExternal }}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: alert
+    component: rabbitmq
+    name: {{ .Release.Name }}
+  name: {{ .Release.Name }}-rabbitmq-headless
+  namespace: {{ .Release.Namespace }}
+spec:
+  clusterIP: None
+  selector:
+    app: alert
+    component: rabbitmq
+    name: {{ .Release.Name }}
+  ports:
+  - name: amqp
+    port: {{ .Values.rabbitmq.port }}
+    targetPort: {{ .Values.rabbitmq.port }}
+{{- end }}
