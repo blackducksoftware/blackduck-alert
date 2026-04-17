@@ -96,9 +96,9 @@ spec:
         {{- if .Values.rabbitmq.cluster.erlangCookie.secretName }}
         - name: RABBITMQ_ERLANG_COOKIE
           valueFrom:
-          secretKeyRef:
-            key: {{ required ".Values.rabbitmq.cluster.erlangCookie.cookieKey is missing." .Values.rabbitmq.cluster.erlangCookie.cookieKey }}
-            name: {{ .Values.rabbitmq.cluster.erlangCookie.secretName }}
+            secretKeyRef:
+              key: {{ required ".Values.rabbitmq.cluster.erlangCookie.cookieKey is missing." .Values.rabbitmq.cluster.erlangCookie.cookieKey }}
+              name: {{ .Values.rabbitmq.cluster.erlangCookie.secretName }}
         {{- end }}
         - name: RABBITMQ_USE_LONGNAME
           value: "true"
