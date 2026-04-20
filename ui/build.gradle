@@ -2,6 +2,7 @@ import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
 ext.moduleName = 'com.blackduck.integration.alert.ui'
+def pnpmStoreDir = "${project.projectDir}/.pnpm-store"
 
 task cleanBundles(type: Delete) {
     doLast {
@@ -41,19 +42,23 @@ task pnpmInstallFromLockfile(type: Exec) {
     outputs.cacheIf { true }
     ignoreExitValue = true
 
-    commandLine 'pnpm', 'install', '--frozen-lockfile'
+    // --config.confirmModulesPurge=false tells PNPM to ignore the confirmation prompt needed when purging node_modules.
+    // If PNPM determines that the lockfile is out of sync with package.json, it will automatically purge the node_modules.
+    // Without this flag, the build would fail as there is no way to provide that necessary confirmation in an automated build process.
+    commandLine 'pnpm', 'install', '--frozen-lockfile', '--store-dir', pnpmStoreDir, '--config.confirmModulesPurge=false'
 }
 
 task pnpmPruneStore(type: Exec, dependsOn: [pnpmInstallFromLockfile]) {
-    inputs.file('package.json')
-    inputs.file('pnpm-lock.yaml')
-    outputs.dir('node_modules')
-    outputs.cacheIf { true }
+    // This task has no inputs or outputs, therfore we need to let Gradle know to run it with `upToDateWhen { false }`
+    // We also need to only run this if the pnpm install failed, which we can determine by checking the execution
+    // result of the pnpmInstallFromLockfile task.
+    outputs.upToDateWhen { false }
     onlyIf {
-        pnpmInstallFromLockfile.getExecutionResult().get()?.getExitValue() ?: 0 != 0
+        pnpmInstallFromLockfile.getExecutionResult().isPresent() &&
+                pnpmInstallFromLockfile.getExecutionResult().get().getExitValue() != 0
     }
 
-    commandLine 'pnpm', 'store', 'prune'
+    commandLine 'pnpm', 'store', 'prune', '--store-dir', pnpmStoreDir
 }
 
 task pnpmInstallFromLockfileRetry(type: Exec, dependsOn: [pnpmPruneStore]) {
@@ -62,14 +67,15 @@ task pnpmInstallFromLockfileRetry(type: Exec, dependsOn: [pnpmPruneStore]) {
     outputs.dir('node_modules')
     outputs.cacheIf { true }
     onlyIf {
-        pnpmInstallFromLockfile.getExecutionResult().get()?.getExitValue() ?: 0 != 0
+        pnpmInstallFromLockfile.getExecutionResult().isPresent() &&
+                pnpmInstallFromLockfile.getExecutionResult().get().getExitValue() != 0
     }
     doFirst {
         logger.error('The initial pnpm install failed. Trying to run the pnpm install again.')
         logger.error('pnpm is required. See README.md')
     }
 
-    commandLine 'pnpm', 'install', '--frozen-lockfile'
+    commandLine 'pnpm', 'install', '--frozen-lockfile', '--store-dir', pnpmStoreDir, '--config.confirmModulesPurge=false'
 }
 
 task pnpmBuild(type: Exec, dependsOn: [pnpmInstallFromLockfileRetry]) {

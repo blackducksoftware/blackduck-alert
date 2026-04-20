@@ -43,7 +43,7 @@
         "lint": "eslint src/main/js"
     },
     "engines": {
-        "node": "16.15.1"
+        "node": "24.11.1"
     },
     "packageManager": "pnpm@10.33.0",
     "devDependencies": {
