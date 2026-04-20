@@ -1,19 +1,13 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { fetchSystemDiagnostics } from '../../store/actions/system-diagnostics';
 import Button from 'common/component/button/Button';
+import SectionCard from 'common/component/SectionCard';
 
 const useStyles = createUseStyles({
-    systemDiagnosticsSection: {
-        padding: [0, '50px', '50px']
-    },
-    sectionHeader: {
-        fontSize: '16px'
-    },
     sectionDescription: {
-        padding: ['6px', 0]
+        padding: ['20px', '20px', '6px', 0]
     },
     sectionActions: {
         display: 'flex',
@@ -27,11 +21,12 @@ const useStyles = createUseStyles({
     }
 });
 
-const SystemDiagnosticsSection = ({ alertVersion }) => {
+const SystemDiagnosticsSection = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+    const { version } = useSelector((state) => state.about);
 
     const handleDownload = async () => {
         setIsLoading(true);
@@ -51,7 +46,7 @@ const SystemDiagnosticsSection = ({ alertVersion }) => {
 
             // Create Filename
             const dateStamp = new Date();
-            const filename = `system-diagnostics-${alertVersion}-${dateStamp.toISOString()}.json`;
+            const filename = `system-diagnostics-${version}-${dateStamp.toISOString()}.json`;
             
             // Create a temporary link and append it to the document
             const link = document.createElement('a');
@@ -71,8 +66,7 @@ const SystemDiagnosticsSection = ({ alertVersion }) => {
     };
 
     return (
-        <section className={classes.systemDiagnosticsSection}>
-            <h4 className={classes.sectionHeader}>System Diagnostics</h4>
+        <SectionCard title="System Diagnostics" icon="chart-column">
             <div className={classes.sectionDescription}>
                 Gain insight into your Alert instance by downloading on demand run-time data. This data can be used to help debug and diagnose issues within the system. When a support issue is going to be opened, it is advisable to gather this data to include in the support ticket.
             </div>
@@ -82,6 +76,7 @@ const SystemDiagnosticsSection = ({ alertVersion }) => {
                     onClick={handleDownload}
                     text="Download System Diagnostics"
                     icon="download"
+                    buttonStyle="action"
                     showLoader={isLoading}
                     isDisabled={isLoading}
                 />
@@ -91,12 +86,8 @@ const SystemDiagnosticsSection = ({ alertVersion }) => {
                     </div>
                 )}
             </div>
-        </section>
+        </SectionCard>
     );
-};
-
-SystemDiagnosticsSection.propTypes = {
-    alertVersion: PropTypes.string
 };
 
 export default SystemDiagnosticsSection;

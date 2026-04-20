@@ -1,9 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
+import { doesDescriptorExist } from 'common/util/descriptorUtilities';
+import { SETTINGS_INFO } from 'page/settings/SettingsModel';
 import SystemInformationSection from 'page/about/SystemInformationSection';
 import DistributionChannelsSection from 'page/about/DistributionChannelsSection';
 import SystemMessagesSection from 'page/about/SystemMessagesSection';
+import SystemDiagnosticsSection from 'page/about/SystemDiagnosticsSection';
 
 const useStyles = createUseStyles((theme) => ({
     aboutPageLayout: {
@@ -55,6 +58,7 @@ const AboutLayout = ({ globalDescriptorMap, distributionDescriptorMap }) => {
         });
 
     const channelDescriptorData = addGlobalConfigurationCheck(globalDescriptorMap, distributionDescriptorMap);
+    const hasAdminLevelAccess = doesDescriptorExist(globalDescriptorMap, SETTINGS_INFO.key);
 
     return (
         <div className={classes.aboutPageLayout}>
@@ -66,6 +70,7 @@ const AboutLayout = ({ globalDescriptorMap, distributionDescriptorMap }) => {
                     <SystemMessagesSection />
                 </div>
                 <DistributionChannelsSection channelDescriptorData={channelDescriptorData} />
+                { hasAdminLevelAccess && <SystemDiagnosticsSection  />}
             </section>
         </div>
     );
