@@ -17,7 +17,7 @@ const ReadOnlyField = ({
 }) => {
     const classes = useStyles();
     const altValue = alt || url;
-    const content = url ? <a alt={altValue} href={url}>{value}</a> : value;
+    const content = url ? <a aria-label={altValue} href={url}>{value}</a> : value;
     return (
         <LabeledField
             id={id}

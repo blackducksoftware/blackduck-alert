@@ -131,7 +131,7 @@ const LabeledField = ({
                             onHide={() => setShowTooltip(false)}
                             target={() => target.current}
                         >
-                            <Tooltip className={classes.tooltipCustom}>
+                            <Tooltip id={id} className={classes.tooltipCustom}>
                                 {tooltipDescription}
                             </Tooltip>
                         </Overlay>

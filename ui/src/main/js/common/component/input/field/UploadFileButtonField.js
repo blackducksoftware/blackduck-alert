@@ -201,7 +201,7 @@ UploadFileButtonField.propTypes = {
     readOnly: PropTypes.bool,
     statusMessage: PropTypes.string,
     tooltipDescription: PropTypes.string,
-    errorValue: PropTypes.string,
+    errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
     required: PropTypes.bool,
     permissions: PropTypes.shape({
