@@ -70,11 +70,14 @@ public class JiraPropertyUpdateTask extends JiraPropertyTask {
                     unScheduleTask();
                 }
             }
+            resetConsecutiveFailures();
         } catch (IntegrationException e) {
             logger.error("Error getting Jira Server Configuration.", e);
+            checkThresholdAndIncrementFailures();
         } catch (InterruptedException e) {
             logger.error("Error updating Jira Server issues with new property.", e);
             Thread.currentThread().interrupt();
+            checkThresholdAndIncrementFailures();
         }
 
         logger.info("Jira Server property migrator task ended.");

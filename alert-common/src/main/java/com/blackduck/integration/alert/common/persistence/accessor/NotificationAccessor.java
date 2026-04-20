@@ -12,12 +12,17 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
+
+import org.springframework.data.domain.PageRequest;
 
 import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 
 public interface NotificationAccessor {
     List<AlertNotificationModel> saveAllNotifications(Collection<AlertNotificationModel> notifications);
+
+    List<AlertNotificationModel> saveAllNotificationsInBatch(UUID batchId, Collection<AlertNotificationModel> notifications);
 
     List<AlertNotificationModel> findByIds(List<Long> notificationIds);
 
@@ -49,14 +54,16 @@ public interface NotificationAccessor {
 
     long countNotificationsByProviderAndType(long providerConfigId, String notificationType);
 
-    AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotMapped(long providerConfigId, int pageSize);
+    AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotMapped(long providerConfigId, UUID batchId, int pageSize);
 
     void setNotificationsMapping(List<AlertNotificationModel> notifications);
 
     void setNotificationsMappingById(Set<Long> notificationIds);
 
-    boolean hasMoreNotificationsToMap(long providerConfigId);
+    boolean hasMoreNotificationsToMap(long providerConfigId, UUID batchId);
 
     void setNotificationsMappingFalseWhenProcessedFalse(long providerConfigId);
+
+    AlertPagedModel<UUID> findUniqueBatchesForProviderWithNotificationsNotProcessed(PageRequest pageRequest, Long providerId);
 
 }

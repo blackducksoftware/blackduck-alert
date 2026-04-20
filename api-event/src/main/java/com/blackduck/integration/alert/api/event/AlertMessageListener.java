@@ -7,6 +7,10 @@
  */
 package com.blackduck.integration.alert.api.event;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
@@ -22,6 +26,8 @@ public abstract class AlertMessageListener<T extends AlertEvent> implements Mess
     private final String destinationName;
     private final Class<T> eventClass;
     private final AlertEventHandler<T> eventHandler;
+    private final AtomicLong totalBytesCounter;
+    private final AtomicLong messageCounter;
 
     protected AlertMessageListener(Gson gson, TaskExecutor taskExecutor, String destinationName, Class<T> eventClass, AlertEventHandler<T> eventHandler) {
         this.gson = gson;
@@ -29,6 +35,8 @@ public abstract class AlertMessageListener<T extends AlertEvent> implements Mess
         this.eventClass = eventClass;
         this.eventHandler = eventHandler;
         this.taskExecutor = taskExecutor;
+        this.totalBytesCounter = new AtomicLong();
+        this.messageCounter= new AtomicLong();
     }
 
     public final String getDestinationName() {
@@ -38,7 +46,10 @@ public abstract class AlertMessageListener<T extends AlertEvent> implements Mess
     @Override
     public final void onMessage(Message message) {
         try {
-            String messageContent = new String(message.getBody());
+            byte[] body = message.getBody();
+            totalBytesCounter.addAndGet(body.length);
+            messageCounter.incrementAndGet();
+            String messageContent = new String(body);
             String receiverClassName = getClass().getName();
             logger.info("Receiver {}, sending message.", receiverClassName);
             logger.debug("Event message: {}", message);
@@ -59,6 +70,23 @@ public abstract class AlertMessageListener<T extends AlertEvent> implements Mess
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
+    }
+
+    public Long getHandedMessageCount() {
+        return messageCounter.get();
+    }
+
+    public final Double calculateAverageMessageSize() {
+        long totalBytes = totalBytesCounter.get();
+        long messageCount = messageCounter.get();
+        double averageMessageSize = 0.0;
+
+        if (messageCount > 0 ) {
+            double averageBytes = (double) totalBytes / messageCount;
+            averageMessageSize = BigDecimal.valueOf(averageBytes).setScale(4, RoundingMode.HALF_UP).doubleValue();
+        }
+
+        return averageMessageSize;
     }
 
 }

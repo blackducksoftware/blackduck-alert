@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="psantos" id="insert-default-batch-data" >
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <!-- raw notification batch table should be empty and the raw_notification_content_table isn't empty -->
+                <sqlCheck expectedResult="0">select count(*) from alert.raw_notification_batch</sqlCheck>
+                <not>
+                    <sqlCheck expectedResult="0">select count(*) from alert.raw_notification_content</sqlCheck>
+                </not>
+            </and>
+        </preConditions>
+        <!-- Set default batch id to all 0's to identify notifications inserted before this alert version -->
+        <sql stripComments="true">
+            INSERT INTO alert.raw_notification_batch (provider_id, batch_id, notification_id)
+            SELECT provider_config_id, '00000000-0000-0000-0000-000000000000', id
+            FROM alert.raw_notification_content;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

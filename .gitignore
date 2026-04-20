@@ -25,6 +25,8 @@ classes/
 /src/test/resources/application.properties
 /src/test/resources/test.properties
 /test-common/src/main/resources/test.properties
+/src/test/resources/database/helm-test-postgres/templates/postgres.yaml
+/src/test/resources/spring-test.properties
 **/test.properties
 /activemq-data/
 *-lastrun.txt

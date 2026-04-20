@@ -29,6 +29,7 @@ import com.blackduck.integration.alert.common.AlertProperties;
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.rest.AlertWebServerUrlManager;
 import com.blackduck.integration.alert.common.rest.proxy.ProxyManager;
+import com.blackduck.integration.alert.common.system.SystemInfoReader;
 import com.blackduck.integration.alert.common.util.DateUtils;
 import com.blackduck.integration.alert.database.job.api.DefaultSystemStatusAccessor;
 import com.blackduck.integration.alert.test.common.TestTags;
@@ -40,14 +41,14 @@ import com.blackduck.integration.blackduck.service.BlackDuckServicesFactory;
 import com.blackduck.integration.rest.proxy.ProxyInfo;
 import com.google.gson.Gson;
 
-public class UpdateCheckerTest {
+class UpdateCheckerTest {
     private static final String SUFFIX_SNAPSHOT = "SNAPSHOT";
     private static final String SUFFIX_SIGQA_1 = "SIGQA1";
     private static final String SUFFIX_OTHER_TEXT = "TEXT-UNKNOWN-TAG";
     private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
 
     @Test
-    public void testAlertIsNewer() {
+    void testAlertIsNewer() {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
         UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", null, "0.1.0", null, null);
 
@@ -55,7 +56,7 @@ public class UpdateCheckerTest {
     }
 
     @Test
-    public void testAlertIsNewerPatch() {
+    void testAlertIsNewerPatch() {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
         UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0.1", null, "1.0.0", null, null);
 
@@ -63,7 +64,7 @@ public class UpdateCheckerTest {
     }
 
     @Test
-    public void testAlertIsOlder() {
+    void testAlertIsOlder() {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
         UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", null, "1.0.1", null, null);
 
@@ -71,7 +72,7 @@ public class UpdateCheckerTest {
     }
 
     @Test
-    public void testAlertIsSame() {
+    void testAlertIsSame() {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
         UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", null, "1.0.0", null, null);
 
@@ -79,7 +80,7 @@ public class UpdateCheckerTest {
     }
 
     @Test
-    public void testAlertIsOlderDockerPatch() {
+    void testAlertIsOlderDockerPatch() {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
         UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0", null, "1.0.0.1", null, null);
 
@@ -88,7 +89,7 @@ public class UpdateCheckerTest {
 
     @ParameterizedTest
     @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1, SUFFIX_OTHER_TEXT })
-    public void testAlertIsNewerSnapshot(String versionSuffix) {
+    void testAlertIsNewerSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
         UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-" + versionSuffix, null, "0.1.0", null, null);
 
@@ -97,7 +98,7 @@ public class UpdateCheckerTest {
 
     @ParameterizedTest
     @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1, SUFFIX_OTHER_TEXT })
-    public void testAlertIsNewerSnapshotPatch(String versionSuffix) {
+    void testAlertIsNewerSnapshotPatch(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
         UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0.1-" + versionSuffix, null, "1.0.0", null, null);
 
@@ -106,7 +107,7 @@ public class UpdateCheckerTest {
 
     @ParameterizedTest
     @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1, SUFFIX_OTHER_TEXT })
-    public void testAlertIsNewerButCloseSnapshot(String versionSuffix) {
+    void testAlertIsNewerButCloseSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
         OffsetDateTime alertTime = DateUtils.createCurrentDateTimestamp();
@@ -119,7 +120,7 @@ public class UpdateCheckerTest {
 
     @ParameterizedTest
     @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1, SUFFIX_OTHER_TEXT })
-    public void testAlertIsOlderButCloseSnapshot(String versionSuffix) {
+    void testAlertIsOlderButCloseSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
         OffsetDateTime alertTime = DateUtils.createCurrentDateTimestamp();
@@ -132,7 +133,7 @@ public class UpdateCheckerTest {
 
     @ParameterizedTest
     @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1, SUFFIX_OTHER_TEXT })
-    public void testAlertIsOlderSnapshot(String versionSuffix) {
+    void testAlertIsOlderSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
         OffsetDateTime alertTime = DateUtils.createCurrentDateTimestamp();
@@ -145,7 +146,7 @@ public class UpdateCheckerTest {
 
     @ParameterizedTest
     @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1, SUFFIX_OTHER_TEXT })
-    public void testAlertIsOlderSnapshotDockerPatch(String versionSuffix) {
+    void testAlertIsOlderSnapshotDockerPatch(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
         OffsetDateTime alertTime = DateUtils.createCurrentDateTimestamp();
@@ -158,7 +159,7 @@ public class UpdateCheckerTest {
 
     @ParameterizedTest
     @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1, SUFFIX_OTHER_TEXT })
-    public void testAlertIsNewerBothSnapshot(String versionSuffix) {
+    void testAlertIsNewerBothSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
         UpdateModel updateModel = updateChecker.getUpdateModel("1.0.0-" + versionSuffix, null, "0.1.0-" + versionSuffix, null, null);
@@ -168,7 +169,7 @@ public class UpdateCheckerTest {
 
     @ParameterizedTest
     @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1, SUFFIX_OTHER_TEXT })
-    public void testAlertIsNewerDateBothSnapshot(String versionSuffix) {
+    void testAlertIsNewerDateBothSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
         OffsetDateTime alertTime = DateUtils.createCurrentDateTimestamp();
@@ -181,7 +182,7 @@ public class UpdateCheckerTest {
 
     @ParameterizedTest
     @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1, SUFFIX_OTHER_TEXT })
-    public void testAlertIsNewerButCloseBothSnapshot(String versionSuffix) {
+    void testAlertIsNewerButCloseBothSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
         OffsetDateTime alertTime = DateUtils.createCurrentDateTimestamp();
@@ -194,7 +195,7 @@ public class UpdateCheckerTest {
 
     @ParameterizedTest
     @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1, SUFFIX_OTHER_TEXT })
-    public void testAlertIsOlderButCloseBothSnapshot(String versionSuffix) {
+    void testAlertIsOlderButCloseBothSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
         OffsetDateTime alertTime = DateUtils.createCurrentDateTimestamp();
@@ -207,7 +208,7 @@ public class UpdateCheckerTest {
 
     @ParameterizedTest
     @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1, SUFFIX_OTHER_TEXT })
-    public void testAlertIsOlderBothSnapshot(String versionSuffix) {
+    void testAlertIsOlderBothSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
         OffsetDateTime alertTime = DateUtils.createCurrentDateTimestamp();
@@ -220,7 +221,7 @@ public class UpdateCheckerTest {
 
     @ParameterizedTest
     @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1, SUFFIX_OTHER_TEXT })
-    public void testAlertIsOlderButCloseDockerSnapshot(String versionSuffix) {
+    void testAlertIsOlderButCloseDockerSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
         OffsetDateTime alertTime = DateUtils.createCurrentDateTimestamp();
@@ -233,7 +234,7 @@ public class UpdateCheckerTest {
 
     @ParameterizedTest
     @ValueSource(strings = { SUFFIX_SNAPSHOT, SUFFIX_SIGQA_1, SUFFIX_OTHER_TEXT })
-    public void testAlertIsOlderDockerSnapshot(String versionSuffix) {
+    void testAlertIsOlderDockerSnapshot(String versionSuffix) {
         UpdateChecker updateChecker = getEmptyUpdateChecker();
 
         OffsetDateTime alertTime = DateUtils.createCurrentDateTimestamp();
@@ -249,7 +250,7 @@ public class UpdateCheckerTest {
         @Tag(TestTags.DEFAULT_INTEGRATION),
         @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     })
-    public void getUpdateModelTest() {
+    void getUpdateModelTest() {
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfoForHost(Mockito.anyString())).thenReturn(ProxyInfo.NO_PROXY_INFO);
 
@@ -265,8 +266,8 @@ public class UpdateCheckerTest {
 
         AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
         Mockito.when(alertProperties.getAlertTrustCertificate()).thenReturn(Optional.of(Boolean.TRUE));
-
-        AboutReader reader = new AboutReader(gson, defaultSystemStatusUtility, descriptorMetadataActions);
+        SystemInfoReader systemInfoReader = new SystemInfoReader(gson);
+        AboutReader reader = new AboutReader(systemInfoReader, defaultSystemStatusUtility, descriptorMetadataActions);
         UpdateChecker updateChecker = new UpdateChecker(gson, reader, proxyManager, alertProperties);
 
         UpdateModel updateModel = updateChecker.getUpdateModel();

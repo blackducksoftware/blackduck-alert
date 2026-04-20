@@ -1,7 +1,7 @@
 version: '3.6'
 services:
   cfssl:
-    image: blackducksoftware/blackduck-cfssl:1.0.1
+    image: blackducksoftware/blackduck-cfssl:CFSSL_VERSION_TOKEN
     volumes: ['cert-volume:/etc/cfssl']
     healthcheck:
       test: [CMD, /usr/local/bin/docker-healthcheck.sh, 'http://localhost:8888/api/v1/cfssl/scaninfo']
@@ -24,7 +24,7 @@ services:
       timeout: 60s
       retries: 15
       start_period: 7200s
-    volumes: [ 'alert-rabbitmq-volume:/opt/blackduck/rabbitmq/logs' ]
+    volumes: [ 'alert-rabbitmq-volume:/opt/blackduck/rabbitmq/logs', 'alert-rabbitmq-data:/var/lib/rabbitmq/mnesia' ]
     deploy:
       mode: replicated
       restart_policy: { condition: on-failure, delay: 15s, window: 60s }
@@ -50,4 +50,4 @@ services:
       resources:
         limits: {memory: 2560M}
         reservations: {memory: 2560M}
-volumes: { cert-volume: null, alert-db-volume: null, alert-rabbitmq-volume: null }
+volumes: { cert-volume: null, alert-db-volume: null, alert-rabbitmq-volume: null, alert-rabbitmq-data: null }

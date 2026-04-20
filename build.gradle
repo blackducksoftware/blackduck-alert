@@ -33,16 +33,19 @@ ext {
     moduleName = 'com.blackduck.integration.alert.main'
 
     // This version is also in src/test/resources/spring-test.properties for the test jdbc connection
-    postgresContainerVersionMigration = '15.8'
-    postgresContainerVersionCurrent = '16.11'
+    postgresContainerVersionMigration = '16.13'
+    postgresContainerVersionCurrent = '17.9'
+
+    cfsslImageVersion = '1.0.35'
 
     // All variables that start with 'dockerBuildParam+' will all be passed to the 'docker build' command
     dockerBuildParam_BASEIMAGE_HUB_DOCKER_COMMON = 'blackducksoftware/hub-docker-common:1.0.7'
-    dockerBuildParam_BASEIMAGE_BLACKDUCK_ALERT = 'alpine:3.20'
+    dockerBuildParam_BASEIMAGE_BLACKDUCK_ALERT = 'alpine:3.23'
     dockerBuildParam_BASEIMAGE_BLACKDUCK_ALERT_DB_MIGRATION = 'postgres:' + postgresContainerVersionMigration + '-alpine'
     dockerBuildParam_BASEIMAGE_BLACKDUCK_ALERT_DB = 'postgres:' + postgresContainerVersionCurrent + '-alpine'
+    dockerBuildParam_POSTGRES_CURRENT_MAJOR_VERSION = postgresContainerVersionCurrent.split('\\.')[0]
     dockerBuildParam_POSTGRES_MIGRATION_VERSION = postgresContainerVersionMigration
-    dockerBuildParam_BASEIMAGE_BLACKDUCK_ALERT_RABBITMQ = 'rabbitmq:3.13-alpine'
+    dockerBuildParam_BASEIMAGE_BLACKDUCK_ALERT_RABBITMQ = 'rabbitmq:4.2-alpine'
 
     // General Docker Variables
     dockerStagingDirectory = project.buildDir.toString() + '/docker-staging'
@@ -66,7 +69,7 @@ version = '9.0.0-SNAPSHOT'
 
 ext.isSnapshot = project.version.endsWith('-SNAPSHOT')
 ext.isSIGQA = project.version.contains('-SIGQA')
-ext.isRelease = (!project.ext.isSnapshot && !project.ext.isSIGQA)
+ext.isRelease = (!project.ext.isSnapshot && !project.ext.isSIGQA && project.version ==~ /\d+(\.\d+)*/)
 
 if (project.ext.isSIGQA && System.env.HELM_SIGQA_REPOS != null) {
     helmArtifactoryRepos = System.env.HELM_SIGQA_REPOS.split(',').collect { it.trim() as String }
@@ -239,7 +242,6 @@ distributions {
     boot {
         contents {
             from("$project.buildDir/libs/liquibase") {
-                include 'h2*.jar'
                 include 'liquibase-core*.jar'
                 include 'logback-*.jar'
                 include 'slf4j-api*.jar'
@@ -289,3 +291,17 @@ tasks.getByName(ext.dockerBuildAllImagesStageName).mustRunAfter(buildAll)
 tasks.getByName(ext.dockerBuildAllImagesStageName).mustRunAfter(tasks.getByName(ext.dockerSetupStagingAreaDirectoryStageName))
 tasks.getByName(ext.dockerSetupStagingAreaDirectoryStageName).mustRunAfter(buildAll)
 tasks.getByName(ext.dockerPublishAllImages_DHStageName).mustRunAfter(buildAll)
+
+gradle.taskGraph.whenReady {
+    ["${project.rootDir}/src/test/resources/spring-test.properties.template",
+     "${project.rootDir}/src/test/resources/database/helm-test-postgres/templates/postgres.yaml.template"
+    ].each { templatePath ->
+        def templateFile = file(templatePath)
+        def outputFile = file(templatePath.replaceFirst(/\.template$/, ''))
+
+        logger.lifecycle('Updating' + templateFile + ' for search token, and creating ' + outputFile)
+        def content = templateFile.text.replace('POSTGRES_VERSION_TOKEN', project.ext.postgresContainerVersionCurrent)
+
+        outputFile.text = content
+    }
+}
