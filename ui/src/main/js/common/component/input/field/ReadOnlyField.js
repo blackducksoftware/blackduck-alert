@@ -1,28 +1,36 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input/field/LabeledField';
+import { createUseStyles } from 'react-jss';
+
+const useStyles = createUseStyles({
+    readOnlyField: {
+        margin: '4px',
+        paddingLeft: '8px',
+        fontSize: '14px',
+        fontWeight: 'bold'
+    }
+});
 
 const ReadOnlyField = ({
-    id, alt, description, errorName, errorValue, label, labelClass, required, showDescriptionPlaceHolder, url, value
+    id, alt, tooltipDescription, errorName, errorValue, label, required, url, value, fieldDescription
 }) => {
+    const classes = useStyles();
     const altValue = alt || url;
-    const content = url ? <a alt={altValue} href={url}>{value}</a> : value;
+    const content = url ? <a aria-label={altValue} href={url}>{value}</a> : value;
     return (
         <LabeledField
             id={id}
-            description={description}
+            tooltipDescription={tooltipDescription}
+            fieldDescription={fieldDescription}
             errorName={errorName}
             errorValue={errorValue}
             label={label}
-            labelClass={labelClass}
             required={required}
-            showDescriptionPlaceHolder={showDescriptionPlaceHolder}
         >
-            <div className="d-inline-flex p-2 col-sm-8">
-                <p className="form-control-static">
-                    {content}
-                </p>
-            </div>
+            <p className={classes.readOnlyField}>
+                {content}
+            </p>
         </LabeledField>
     );
 };
@@ -32,13 +40,12 @@ ReadOnlyField.propTypes = {
     value: PropTypes.string,
     url: PropTypes.string,
     alt: PropTypes.string,
-    description: PropTypes.string,
+    tooltipDescription: PropTypes.string,
+    fieldDescription: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
-    labelClass: PropTypes.string,
-    required: PropTypes.bool,
-    showDescriptionPlaceHolder: PropTypes.bool
+    required: PropTypes.bool
 };
 
 ReadOnlyField.defaultProps = {
@@ -46,12 +53,10 @@ ReadOnlyField.defaultProps = {
     value: '',
     url: '',
     alt: '',
-    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
-    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 };
 
 export default ReadOnlyField;

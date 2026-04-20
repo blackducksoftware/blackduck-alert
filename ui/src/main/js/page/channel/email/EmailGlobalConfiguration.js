@@ -11,6 +11,7 @@ import * as fieldModelUtilities from 'common/util/fieldModelUtilities';
 import FluidFieldMappingField from 'common/component/input/mapping/FluidFieldMappingField';
 import NumberInput from 'common/component/input/NumberInput';
 import PageLayout from 'common/component/PageLayout';
+import FormCard from 'common/component/FormCard';
 
 const EmailGlobalConfiguration = ({
     csrfToken, errorHandler, readonly, displayTest, displaySave, displayDelete
@@ -27,7 +28,7 @@ const EmailGlobalConfiguration = ({
             id={EMAIL_TEST_FIELD.key}
             name={EMAIL_TEST_FIELD.key}
             label={EMAIL_TEST_FIELD.label}
-            customDescription={EMAIL_TEST_FIELD.description}
+            fieldDescription={EMAIL_TEST_FIELD.description}
             onChange={({ target }) => setTestEmailAddress(target.value)}
             value={testEmailAddress}
         />
@@ -54,107 +55,115 @@ const EmailGlobalConfiguration = ({
             headerIcon="envelope"
             lastUpdated={emailConfig.lastUpdated}
         >
-            <ConcreteConfigurationForm
-                csrfToken={csrfToken}
-                formDataId={emailConfig.id}
-                setErrors={(formErrors) => setErrors(formErrors)}
-                testFields={testField}
-                clearTestForm={() => setTestEmailAddress('')}
-                buttonIdPrefix={EMAIL_INFO.key}
-                getRequest={fetchData}
-                deleteRequest={() => ConfigurationRequestBuilder.createDeleteRequest(emailRequestUrl, csrfToken)}
-                updateRequest={() => ConfigurationRequestBuilder.createUpdateWithoutIdRequest(emailRequestUrl, csrfToken, emailConfig)}
-                createRequest={() => ConfigurationRequestBuilder.createNewConfigurationRequest(emailRequestUrl, csrfToken, emailConfig)}
-                validateRequest={() => ConfigurationRequestBuilder.createValidateRequest(emailRequestUrl, csrfToken, emailConfig)}
-                testRequest={() => ConfigurationRequestBuilder.createTestRequest(emailRequestUrl, csrfToken, emailConfig, 'sendTo', testEmailAddress)}
-                readonly={readonly}
-                displayTest={displayTest}
-                displaySave={displaySave}
-                displayDelete={displayDelete}
-                errorHandler={errorHandler}
-            >
-                <TextInput
-                    id={EMAIL_GLOBAL_FIELD_KEYS.host}
-                    name="smtpHost"
-                    label="SMTP Host"
-                    description="The host name of the SMTP email server."
-                    required
-                    readOnly={readonly}
-                    onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
-                    value={emailConfig.smtpHost || undefined}
-                    errorName="smtpHost"
-                    errorValue={errors.fieldErrors.host}
-                />
-                <TextInput
-                    id={EMAIL_GLOBAL_FIELD_KEYS.from}
-                    name="smtpFrom"
-                    label="SMTP From"
-                    description="The email address to use as the return address."
-                    required
-                    readOnly={readonly}
-                    onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
-                    value={emailConfig.smtpFrom || undefined}
-                    errorName="smtpFrom"
-                    errorValue={errors.fieldErrors.from}
-                />
-                <NumberInput
-                    id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.port}
-                    name="smtpPort"
-                    label="SMTP Port"
-                    description="The SMTP server port to connect to."
-                    readOnly={readonly}
-                    onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
-                    value={emailConfig.smtpPort || undefined}
-                    errorName="smtpPort"
-                    errorValue={errors.fieldErrors.smtpPort}
-                />
-                <CheckboxInput
-                    id={EMAIL_GLOBAL_FIELD_KEYS.auth}
-                    name="smtpAuth"
-                    label="SMTP Auth"
-                    description="Select this if your SMTP server requires authentication, then fill in the SMTP User and SMTP Password."
-                    readOnly={readonly}
-                    onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
-                    isChecked={(emailConfig.smtpAuth || 'false').toString().toLowerCase() === 'true'}
-                    errorName="smtpAuth"
-                    errorValue={errors.fieldErrors.smtpAuth}
-                />
-                <TextInput
-                    id={EMAIL_GLOBAL_FIELD_KEYS.user}
-                    name="smtpUsername"
-                    label="SMTP User"
-                    description="The username to authenticate with the SMTP server."
-                    readOnly={readonly}
-                    onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
-                    value={emailConfig.smtpUsername || undefined}
-                    errorName="smtpUsername"
-                    errorValue={errors.fieldErrors.user}
-                />
-                <PasswordInput
-                    id={EMAIL_GLOBAL_FIELD_KEYS.password}
-                    name="smtpPassword"
-                    label="SMTP Password"
-                    description="The password to authenticate with the SMTP server."
-                    readOnly={readonly}
-                    onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
-                    value={emailConfig.smtpPassword || undefined}
-                    isSet={emailConfig.isSmtpPasswordSet}
-                    errorName="smtpPassword"
-                    errorValue={errors.fieldErrors.password}
-                />
-                <FluidFieldMappingField
-                    id="additional.email.properties"
-                    name={additionalPropertiesName}
-                    label="Additional Email Properties"
-                    buttonLabel="Add Property"
-                    description="Mapping of additional properties that can be used to appropriately configure your email connection."
+            <FormCard formTitle="Email Configuration">
+                <ConcreteConfigurationForm
+                    csrfToken={csrfToken}
+                    formDataId={emailConfig.id}
+                    setErrors={(formErrors) => setErrors(formErrors)}
+                    testFields={testField}
+                    testModalTitle="Send Test Email"
+                    clearTestForm={() => setTestEmailAddress('')}
+                    buttonIdPrefix={EMAIL_INFO.key}
+                    getRequest={fetchData}
+                    deleteRequest={() => ConfigurationRequestBuilder.createDeleteRequest(emailRequestUrl, csrfToken)}
+                    updateRequest={() => ConfigurationRequestBuilder.createUpdateWithoutIdRequest(emailRequestUrl, csrfToken, emailConfig)}
+                    createRequest={() => ConfigurationRequestBuilder.createNewConfigurationRequest(emailRequestUrl, csrfToken, emailConfig)}
+                    validateRequest={() => ConfigurationRequestBuilder.createValidateRequest(emailRequestUrl, csrfToken, emailConfig)}
+                    testRequest={() => ConfigurationRequestBuilder.createTestRequest(emailRequestUrl, csrfToken, emailConfig, 'sendTo', testEmailAddress)}
+                    deleteLabel="Reset"
                     readonly={readonly}
-                    value={emailConfig[additionalPropertiesName] || {}}
-                    setValue={updateAdditionalProperties}
-                    errorName="additionalJavaMailProperties"
-                    errorValue={errors.fieldErrors[additionalPropertiesName]}
-                />
-            </ConcreteConfigurationForm>
+                    displayTest={displayTest}
+                    displaySave={displaySave}
+                    displayDelete={displayDelete}
+                    errorHandler={errorHandler}
+                >
+                    <TextInput
+                        id={EMAIL_GLOBAL_FIELD_KEYS.host}
+                        name="smtpHost"
+                        label="Hostname"
+                        fieldDescription="Hostname of the SMTP email server (e.g. smtp.gmail.com)"
+                        required
+                        readOnly={readonly}
+                        onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
+                        value={emailConfig.smtpHost || undefined}
+                        errorName="smtpHost"
+                        errorValue={errors.fieldErrors.host}
+                    />
+                    <TextInput
+                        id={EMAIL_GLOBAL_FIELD_KEYS.from}
+                        name="smtpFrom"
+                        label="From"
+                        fieldDescription="The email address to use as the return address."
+                        required
+                        readOnly={readonly}
+                        onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
+                        value={emailConfig.smtpFrom || undefined}
+                        errorName="smtpFrom"
+                        errorValue={errors.fieldErrors.from}
+                    />
+                    <NumberInput
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.port}
+                        name="smtpPort"
+                        label="Port"
+                        fieldDescription="The SMTP server port to connect to."
+                        readOnly={readonly}
+                        onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
+                        value={emailConfig.smtpPort || undefined}
+                        errorName="smtpPort"
+                        errorValue={errors.fieldErrors.smtpPort}
+                        width="25%"
+                    />
+                    <CheckboxInput
+                        id={EMAIL_GLOBAL_FIELD_KEYS.auth}
+                        name="smtpAuth"
+                        label="Authentication"
+                        checkboxValueDescription="Select this if your SMTP server requires authentication, then fill in the SMTP User and SMTP Password below."
+                        readOnly={readonly}
+                        onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
+                        isChecked={(emailConfig.smtpAuth || 'false').toString().toLowerCase() === 'true'}
+                        checkboxValueLabel="Enable Server Authentication"
+                        errorName="smtpAuth"
+                        errorValue={errors.fieldErrors.smtpAuth}
+                    />
+                    <TextInput
+                        id={EMAIL_GLOBAL_FIELD_KEYS.user}
+                        name="smtpUsername"
+                        label="User"
+                        fieldDescription="The username to authenticate with the SMTP server."
+                        readOnly={readonly}
+                        onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
+                        value={emailConfig.smtpUsername || undefined}
+                        errorName="smtpUsername"
+                        errorValue={errors.fieldErrors.user}
+                        isDisabled={emailConfig.smtpAuth === 'false' || !emailConfig.smtpAuth}
+                    />
+                    <PasswordInput
+                        id={EMAIL_GLOBAL_FIELD_KEYS.password}
+                        name="smtpPassword"
+                        label="Password"
+                        fieldDescription="The password to authenticate with the SMTP server."
+                        readOnly={readonly}
+                        onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
+                        value={emailConfig.smtpPassword || undefined}
+                        isSet={emailConfig.isSmtpPasswordSet}
+                        errorName="smtpPassword"
+                        errorValue={errors.fieldErrors.password}
+                        isDisabled={emailConfig.smtpAuth === 'false' || !emailConfig.smtpAuth}
+                    />
+                    <FluidFieldMappingField
+                        id="additional.email.properties"
+                        name={additionalPropertiesName}
+                        label="Additional Email Properties"
+                        buttonLabel="Add Property"
+                        description="Mapping of additional properties that can be used to appropriately configure your email connection."
+                        readonly={readonly}
+                        value={emailConfig[additionalPropertiesName] || {}}
+                        setValue={updateAdditionalProperties}
+                        errorName="additionalJavaMailProperties"
+                        errorValue={errors.fieldErrors[additionalPropertiesName]}
+                    />
+                </ConcreteConfigurationForm>
+            </FormCard>
         </PageLayout>
     );
 };

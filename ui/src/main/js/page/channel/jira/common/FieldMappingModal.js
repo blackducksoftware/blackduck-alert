@@ -2,14 +2,13 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import Modal from 'common/component/modal/Modal';
 import TextInput from 'common/component/input/TextInput';
-import CheckboxInput from "../../../../common/component/input/CheckboxInput";
-import ReadOnlyField from "../../../../common/component/input/field/ReadOnlyField";
+import CheckboxInput from 'common/component/input/CheckboxInput';
+import ReadOnlyField from 'common/component/input/field/ReadOnlyField';
 
 const FieldMappingModal = ({ tableData, selectedData, selectedIndex, isOpen, toggleModal, modalOptions, updateTableData }) => {
     const [model, setModel] = useState(selectedData || { fieldName: '', fieldValue: '', treatValueAsJson: false });
     const { title, type } = modalOptions;
     const submitText = type === 'EDIT' ? 'Update' : 'Add';
-
 
     function handleClose() {
         toggleModal(false);
@@ -33,8 +32,8 @@ const FieldMappingModal = ({ tableData, selectedData, selectedIndex, isOpen, tog
     };
 
     const handleCheckBoxChange = (e) => {
-        setModel({...model, [e.target.name]:e.target.checked});
-    }
+        setModel({ ...model, [e.target.name]: e.target.checked });
+    };
 
     return (
         <Modal
@@ -74,7 +73,7 @@ const FieldMappingModal = ({ tableData, selectedData, selectedIndex, isOpen, tog
                 id="jira-value-json"
                 name="treatValueAsJson"
                 label="Treat Value as JSON"
-                customDescription="If checked, Alert will parse the value as JSON and send the JSON as the content for the custom field. This overrides any custom field processing that Alert does by inspecting the custom field type."
+                tooltipDescription="If checked, Alert will parse the value as JSON and send the JSON as the content for the custom field. This overrides any custom field processing that Alert does by inspecting the custom field type."
                 onChange={handleCheckBoxChange}
                 isChecked={model.treatValueAsJson}
             />

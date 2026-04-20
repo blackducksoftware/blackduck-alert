@@ -3,17 +3,21 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createUseStyles } from 'react-jss';
 import PasswordInput from 'common/component/input/PasswordInput';
 import TextInput from 'common/component/input/TextInput';
-import Header from 'common/component/Header';
 import Button from 'common/component/button/Button';
 import { login } from 'store/actions/session';
 import SamlLogin from 'application/auth/SamlLogin';
+import AuthorizationView from 'common/component/AuthorizationView';
 
 const useStyles = createUseStyles({
+    loginForm: {
+        display: 'flex',
+        flexDirection: 'column',
+        padding: ['20px', '40px']
+    },
     loginButton: {
         display: 'flex',
         justifyContent: 'flex-end',
-        padding: '6.5px',
-        marginRight: '2.25em'
+        paddingTop: '10px'
     }
 });
 
@@ -37,44 +41,38 @@ const LoginPage = () => {
     }
 
     return (
-        <div className="wrapper">
-            <div className="loginContainer">
-                <div className="loginBox">
-                    <Header />
-                    <form method="POST" className="form-horizontal loginForm" onSubmit={handleSubmit}>
-                        { errorMessage && (
-                            <div className="alert alert-danger">
-                                <p name="configurationMessage">{errorMessage}</p>
-                            </div>
-                        )}
+        <AuthorizationView>
+            <form method="POST" className={classes.loginForm} onSubmit={handleSubmit}>
+                { errorMessage && (
+                    <div className="alert alert-danger">
+                        <p name="configurationMessage">{errorMessage}</p>
+                    </div>
+                )}
 
-                        <TextInput
-                            id="loginUsername"
-                            label="Username"
-                            name="username"
-                            onChange={handleChange}
-                            autoFocus
-                            value={loginForm.username}
-                            readOnly={false}
-                        />
+                <TextInput
+                    id="loginUsername"
+                    label="Username"
+                    name="username"
+                    onChange={handleChange}
+                    value={loginForm.username}
+                    readOnly={false}
+                />
 
-                        <PasswordInput
-                            id="loginPassword"
-                            label="Password"
-                            name="password"
-                            onChange={handleChange}
-                            value={loginForm.password}
-                        />
-                        <div className={classes.loginButton}>
-                            <Button id="loginSubmit" text="Login" type="submit" showLoader={fetching} />
-                        </div>
-                    </form>
-                    {samlEnabled && (
-                        <SamlLogin />
-                    )}
+                <PasswordInput
+                    id="loginPassword"
+                    label="Password"
+                    name="password"
+                    onChange={handleChange}
+                    value={loginForm.password}
+                />
+                <div className={classes.loginButton}>
+                    <Button id="loginSubmit" text="Login" type="submit" showLoader={fetching} buttonStyle="action" />
                 </div>
-            </div>
-        </div>
+            </form>
+            {samlEnabled && (
+                <SamlLogin />
+            )}
+        </AuthorizationView>
     );
 };
 

@@ -163,7 +163,7 @@ const CommonDistributionConfigurationForm = ({
                 actionMessage={actionMessage}
                 errorIsDetailed={errorIsDetailed}
             />
-            <form className="form-horizontal" onSubmit={performSaveRequest} noValidate>
+            <form onSubmit={performSaveRequest} noValidate>
                 <div>
                     {children}
                 </div>
@@ -214,7 +214,6 @@ CommonDistributionConfigurationForm.propTypes = {
     isSaveDisabled: PropTypes.bool,
     isTestDisabled: PropTypes.bool,
     testFields: PropTypes.node,
-    testFormData: PropTypes.object,
     setTestFormData: PropTypes.func,
     buttonIdPrefix: PropTypes.string,
     afterSuccessfulSave: PropTypes.func,
@@ -228,7 +227,6 @@ CommonDistributionConfigurationForm.defaultProps = {
     displayTest: true,
     displayDelete: false,
     testFields: null,
-    testFormData: {},
     setTestFormData: () => null,
     buttonIdPrefix: 'common-form',
     afterSuccessfulSave: () => null,

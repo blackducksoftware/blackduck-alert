@@ -216,7 +216,7 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                     id={JIRA_SERVER_GLOBAL_FIELD_KEYS.name}
                     name={JIRA_SERVER_GLOBAL_FIELD_KEYS.name}
                     label="Name"
-                    customDescription="The unique name for the Jira server."
+                    fieldDescription="Display name for this Jira server."
                     required
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleTestChange(jiraServerModel, setJiraServerModel)}
@@ -228,7 +228,7 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                     id={JIRA_SERVER_GLOBAL_FIELD_KEYS.url}
                     name={JIRA_SERVER_GLOBAL_FIELD_KEYS.url}
                     label="URL"
-                    customDescription="The URL of the Jira server."
+                    fieldDescription="Base URL of the Jira server."
                     required
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleTestChange(jiraServerModel, setJiraServerModel)}
@@ -240,7 +240,6 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                     id={JIRA_SERVER_GLOBAL_FIELD_KEYS.authorizationMethod}
                     name={JIRA_SERVER_GLOBAL_FIELD_KEYS.authorizationMethod}
                     label="Authentication Method"
-                    customDescription="Select the type of authentication that you would like to use for connecting to the intended Jira Server."
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleTestChange(jiraServerModel, setJiraServerModel)}
                     radioOptions={radioOptions}
@@ -256,7 +255,7 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                             id={JIRA_SERVER_GLOBAL_FIELD_KEYS.username}
                             name={JIRA_SERVER_GLOBAL_FIELD_KEYS.username}
                             label="User Name"
-                            customDescription="The username of the Jira Server user. Note: Unless 'Disable Plugin Check' is checked, this user must be a Jira admin."
+                            fieldDescription="Jira user name. Note: Unless 'Jira Plugin Validation' is enabled, this user must be a Jira admin."
                             required
                             readOnly={readonly}
                             onChange={FieldModelUtilities.handleTestChange(jiraServerModel, setJiraServerModel)}
@@ -268,7 +267,7 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                             id={JIRA_SERVER_GLOBAL_FIELD_KEYS.password}
                             name={JIRA_SERVER_GLOBAL_FIELD_KEYS.password}
                             label="Password"
-                            customDescription="The password of the specified Jira Server user."
+                            fieldDescription="Password for the Jira user."
                             required
                             readOnly={readonly}
                             onChange={FieldModelUtilities.handleTestChange(jiraServerModel, setJiraServerModel)}
@@ -283,7 +282,6 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                         id={JIRA_SERVER_GLOBAL_FIELD_KEYS.accessToken}
                         name={JIRA_SERVER_GLOBAL_FIELD_KEYS.accessToken}
                         label="Access Token"
-                        customDescription="The Jira Server's access token used for authentication."
                         required
                         readOnly={readonly}
                         onChange={FieldModelUtilities.handleTestChange(jiraServerModel, setJiraServerModel)}
@@ -298,7 +296,7 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                     id={JIRA_SERVER_GLOBAL_FIELD_KEYS.timeout}
                     name={JIRA_SERVER_GLOBAL_FIELD_KEYS.timeout}
                     label="Timeout"
-                    customDescription="The timeout in seconds for connections to the Jira server instance."
+                    fieldDescription="Connection timeout, in seconds."
                     required
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleTestChange(jiraServerModel, setJiraServerModel)}
@@ -309,8 +307,9 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                 <CheckboxInput
                     id={JIRA_SERVER_GLOBAL_FIELD_KEYS.disablePluginCheck}
                     name={JIRA_SERVER_GLOBAL_FIELD_KEYS.disablePluginCheck}
-                    label="Disable Plugin Check"
-                    customDescription="This will disable checking whether the 'Alert Issue Property Indexer' plugin is installed on the specified Jira instance. Please ensure that the plugin is manually installed before using Alert with Jira. If not, issues created by Alert will not be updated properly, and duplicate issues may be created."
+                    label="Jira Plugin Validation"
+                    checkboxValueLabel="Skip Jira plugin validation"
+                    checkboxValueDescription="This will disable checking whether the 'Alert Issue Property Indexer' plugin is installed on the specified Jira instance. If the plugin is not installed, issues may not be updated correctly and duplicates may be created."
                     readOnly={readonly}
                     onChange={FieldModelUtilities.createBooleanInputChangeHandler(jiraServerModel, setJiraServerModel)}
                     isChecked={jiraServerModel.disablePluginCheck}
@@ -320,9 +319,9 @@ const JiraServerModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMes
                 <ButtonField
                     id={JIRA_SERVER_GLOBAL_FIELD_KEYS.configurePlugin}
                     name={JIRA_SERVER_GLOBAL_FIELD_KEYS.configurePlugin}
-                    label="Configure Jira server plugin"
+                    label="Configure Jira Server Plugin"
                     buttonLabel="Install Plugin Remotely"
-                    customDescription="Installs a required plugin on the Jira server."
+                    fieldDescription="Installs a required plugin on the Jira server."
                     onSendClick={installPlugin}
                     fieldKey={JIRA_SERVER_GLOBAL_FIELD_KEYS.configurePlugin}
                     fieldError={error.fieldErrors[JIRA_SERVER_GLOBAL_FIELD_KEYS.configurePlugin]}

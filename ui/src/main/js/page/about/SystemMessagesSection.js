@@ -72,33 +72,6 @@ const useStyles = createUseStyles({
         padding: 0,
         textWrap: 'nowrap'
     },
-    // refreshMessages: {
-    //     display: 'flex',
-    //     alignItems: 'center',
-    //     justifyContent: 'center',
-    //     position: 'absolute',
-    //     top: '14px',
-    //     right: '8px',
-    //     padding: '4px',
-    //     '& > button': {
-    //         color: theme.colors.grey.lightGrey,
-    //         '&:hover': {
-    //             color: theme.colors.grey.darkGrey,
-    //             transition: 'opacity 0.15s ease'
-    //         }
-    //     },
-    //     '& > div': {
-    //         opacity: 0,
-    //         fontSize: '12px',
-    //         color: theme.colors.grey.darkGrey,
-    //         padding: 0,
-    //         margin: 0,
-    //         transition: 'opacity 0.15s ease'
-    //     },
-    //     '&:hover > div': {
-    //         opacity: 1
-    //     }
-    // }
     refreshMessages: {
         display: 'flex',
         alignItems: 'center',

@@ -22,12 +22,12 @@ const useStyles = createUseStyles((theme) => ({
         margin: 'auto',
         borderBottom: 'none',
         '& .nav-item': {
-            flex: '0 0 10rem'
+            flex: '0 0 11rem'
         },
         '& .nav-link': {
             width: '100%',
             textAlign: 'center',
-            borderRadius: '8px',
+            borderRadius: '12px',
             color: 'black',
             backgroundColor: theme.colors.grey.lightGrey,
             border: `1px solid ${theme.colors.grey.lightGrey}`

@@ -1,49 +1,87 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input/field/LabeledField';
+import classNames from 'classnames';
+import { createUseStyles } from 'react-jss';
+
+const useStyles = createUseStyles((theme) => ({
+    checkbox: {
+        display: 'flex',
+        alignItems: 'stretch',
+        columnGap: '10px'
+    },
+    input: {
+        border: `1px solid ${theme.colors.grey.lightGrey}`
+    },
+    errorInput: {
+        outline: `1px solid ${theme.colors.red.default}`
+    },
+    checkboxValueLabel: {
+        fontSize: '13px',
+        fontWeight: 'bold'
+    },
+    checkboxValueDescription: {
+        padding: ['6px', 0, 0, '22px'],
+        fontSize: '13px',
+        color: theme.colors.mutedTextColor
+    }
+}));
 
 const CheckboxInput = ({
-    id, description, errorName, errorValue, isChecked, label, labelClass, name, onChange, readOnly, required, showDescriptionPlaceHolder, customDescription
-}) => (
-    <LabeledField
-        id={id}
-        labelClass={labelClass}
-        customDescription={customDescription}
-        description={description}
-        showDescriptionPlaceHolder={showDescriptionPlaceHolder}
-        label={label}
-        errorName={errorName}
-        errorValue={errorValue}
-        required={required}
-    >
-        <div className="d-inline-flex p-2 checkbox">
-            <input
-                id={id}
-                type="checkbox"
-                readOnly={readOnly}
-                disabled={readOnly}
-                name={name}
-                checked={isChecked}
-                onChange={onChange}
-            />
-        </div>
-    </LabeledField>
-);
+    id, fieldDescription, errorName, errorValue, isChecked, label, name, onChange, readOnly, required, tooltipDescription, checkboxValueLabel, checkboxValueDescription
+}) => {
+    const classes = useStyles();
+    const inputClass = classNames(classes.input, {
+        [classes.errorInput]: errorValue?.severity === 'ERROR'
+    });
+
+    return (
+        <LabeledField
+            id={id}
+            tooltipDescription={tooltipDescription}
+            fieldDescription={fieldDescription}
+            label={label}
+            errorName={errorName}
+            errorValue={errorValue}
+            required={required}
+        >
+            <div className={classes.checkbox}>
+                <input
+                    id={id}
+                    type="checkbox"
+                    readOnly={readOnly}
+                    disabled={readOnly}
+                    name={name}
+                    checked={isChecked}
+                    onChange={onChange}
+                    className={inputClass}
+                    aria-label={label || checkboxValueLabel}
+                />
+                {checkboxValueLabel && (
+                    <div className={classes.checkboxValueLabel}>{checkboxValueLabel}</div>
+                )}
+            </div>
+            {checkboxValueDescription && (
+                <div className={classes.checkboxValueDescription}>{checkboxValueDescription}</div>
+            )}
+        </LabeledField>
+    );
+};
 
 CheckboxInput.propTypes = {
-    description: PropTypes.string,
+    fieldDescription: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     id: PropTypes.string,
     isChecked: PropTypes.bool,
     label: PropTypes.string.isRequired,
-    labelClass: PropTypes.string,
     name: PropTypes.string,
     onChange: PropTypes.func,
     readOnly: PropTypes.bool,
     required: PropTypes.bool,
-    showDescriptionPlaceHolder: PropTypes.bool,
-    customDescription: PropTypes.string
+    tooltipDescription: PropTypes.string,
+    checkboxValueLabel: PropTypes.string,
+    checkboxValueDescription: PropTypes.string
 };
 
 CheckboxInput.defaultProps = {
@@ -52,13 +90,10 @@ CheckboxInput.defaultProps = {
     name: 'name',
     onChange: () => true,
     readOnly: false,
-    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
-    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
-
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 };
 
 export default CheckboxInput;

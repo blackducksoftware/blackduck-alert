@@ -56,8 +56,6 @@ const PaginationButton = ({ id, type, onClick, role, title, pageNumber, isActive
 };
 
 PaginationButton.defaultProps = {
-    autoFocus: false,
-    style: 'default',
     type: 'button'
 };
 
@@ -67,6 +65,7 @@ PaginationButton.propTypes = {
     role: PropTypes.string,
     title: PropTypes.string,
     type: PropTypes.string,
+    isActive: PropTypes.bool.isRequired,
     pageNumber: PropTypes.number.isRequired
 };
 

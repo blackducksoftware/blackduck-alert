@@ -3,9 +3,31 @@ import PropTypes from 'prop-types';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input/field/LabeledField';
 import { createDeleteRequest, createFileUploadRequest, createReadRequest } from 'common/util/configurationRequestBuilder';
 import StatusMessage from 'common/component/StatusMessage';
-import GeneralButton from 'common/component/button/GeneralButton';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import Button from 'common/component/button/Button';
+import { createUseStyles } from 'react-jss';
+
+const useStyles = createUseStyles((theme) => ({
+    uploadActionsContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '10px'
+    },
+    fileInput: {
+        '&::file-selector-button': {
+            color: theme.colors.white.default,
+            backgroundColor: theme.colors.purple.darkerPurple,
+            border: `solid 1px ${theme.colors.purple.darkerPurple}`,
+            borderRadius: '8px',
+            padding: ['6px', '14px'],
+            marginRight: '8px',
+            cursor: 'pointer',
+            '&:hover': {
+                backgroundColor: theme.colors.purple.darkPurple
+            }
+        }
+    }
+}));
 
 const UploadFileButtonField = ({
     id,
@@ -13,16 +35,14 @@ const UploadFileButtonField = ({
     capture,
     buttonLabel,
     csrfToken,
-    description,
+    tooltipDescription,
     endpoint,
     errorValue,
     fieldKey,
     label,
-    labelClass,
     name,
     readOnly,
     required,
-    showDescriptionPlaceHolder,
     statusMessage,
     permissions,
     onChange,
@@ -30,6 +50,7 @@ const UploadFileButtonField = ({
     value,
     valueToCheckFileExistsOnChange
 }) => {
+    const classes = useStyles();
     const [fieldError, setFieldError] = useState(errorValue);
     const [uploadedValue, setUploadedValue] = useState(value);
     const [success, setSuccess] = useState(false);
@@ -120,17 +141,16 @@ const UploadFileButtonField = ({
         <div>
             <LabeledField
                 id={id}
-                description={description}
+                tooltipDescription={tooltipDescription}
                 errorName={fieldKey}
                 errorValue={fieldError}
                 label={label}
-                labelClass={labelClass}
                 required={required}
-                showDescriptionPlaceHolder={showDescriptionPlaceHolder}
             >
                 <div className="d-inline-flex p-2 col-sm-8">
-                    <div>
+                    <div className={classes.uploadActionsContainer}>
                         <input
+                            className={classes.fileInput}
                             ref={fileInputField}
                             type="file"
                             id={`${fieldKey}-file`}
@@ -146,16 +166,16 @@ const UploadFileButtonField = ({
                                     id={`${fieldKey}-upload`}
                                     onClick={onUploadClick}
                                     text={buttonLabel}
-                                    style="default"
-                                    disabled={readOnly || !permissions.read || !permissions.write}
+                                    buttonStyle="actionSecondary"
+                                    isDisabled={readOnly || !permissions.read || !permissions.write}
                                 />
                                 {fileUploaded && (
                                     <Button
                                         id={`${fieldKey}-delete`}
                                         onClick={onDeleteClick}
                                         text={removeFileUploadedText}
-                                        style="default"
-                                        disabled={readOnly || !permissions.read || !permissions.delete}
+                                        buttonStyle="actionSecondaryDelete"
+                                        isDisabled={readOnly || !permissions.read || !permissions.delete}
                                     />
                                 )}
                             </div>
@@ -180,12 +200,10 @@ UploadFileButtonField.propTypes = {
     name: PropTypes.string,
     readOnly: PropTypes.bool,
     statusMessage: PropTypes.string,
-    description: PropTypes.string,
-    errorValue: PropTypes.string,
+    tooltipDescription: PropTypes.string,
+    errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
-    labelClass: PropTypes.string,
     required: PropTypes.bool,
-    showDescriptionPlaceHolder: PropTypes.bool,
     permissions: PropTypes.shape({
         read: PropTypes.bool,
         write: PropTypes.bool,
@@ -204,11 +222,9 @@ UploadFileButtonField.defaultProps = {
     name: '',
     readOnly: false,
     statusMessage: 'Upload Metadata File Success',
-    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
-    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT,
     permissions: {
         read: true,
         write: true,

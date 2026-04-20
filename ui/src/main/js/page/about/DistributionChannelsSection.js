@@ -18,7 +18,8 @@ const useStyles = createUseStyles((theme) => ({
         borderRadius: '12px',
         display: 'grid',
         gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-        gap: '16px'
+        gap: '16px',
+        marginTop: '28px'
     },
     channelItem: {
         display: 'flex',

@@ -12,6 +12,7 @@ import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 import * as GlobalRequestHelper from 'common/configuration/global/GlobalRequestHelper';
 import NumberInput from 'common/component/input/NumberInput';
 import PageLayout from 'common/component/PageLayout';
+import FormCard from 'common/component/FormCard';
 
 const JiraCloudGlobalConfiguration = ({
     csrfToken, errorHandler, readonly, displayTest, displaySave, displayDelete
@@ -48,102 +49,106 @@ const JiraCloudGlobalConfiguration = ({
             headerIcon={['fab', 'jira']}
             lastUpdated={formData.lastUpdated}
         >
-            <CommonGlobalConfigurationForm
-                setErrors={(data) => setErrors(data)}
-                formData={formData}
-                setFormData={(data) => setFormData(data)}
-                csrfToken={csrfToken}
-                buttonIdPrefix={JIRA_CLOUD_INFO.key}
-                retrieveData={retrieveData}
-                readonly={readonly}
-                displayTest={displayTest}
-                displaySave={displaySave}
-                displayDelete={displayDelete}
-                errorHandler={errorHandler}
-            >
-                <TextInput
-                    id={JIRA_CLOUD_GLOBAL_FIELD_KEYS.url}
-                    name={JIRA_CLOUD_GLOBAL_FIELD_KEYS.url}
-                    label="URL"
-                    description="The URL of the Jira Cloud server."
-                    required
-                    readOnly={readonly}
-                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
-                    value={FieldModelUtilities.getFieldModelSingleValue(formData, JIRA_CLOUD_GLOBAL_FIELD_KEYS.url)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_GLOBAL_FIELD_KEYS.url)}
-                    errorValue={errors.fieldErrors[JIRA_CLOUD_GLOBAL_FIELD_KEYS.url]}
-                />
-                <TextInput
-                    id={JIRA_CLOUD_GLOBAL_FIELD_KEYS.emailAddress}
-                    name={JIRA_CLOUD_GLOBAL_FIELD_KEYS.emailAddress}
-                    label="Email Address"
-                    description="The email address of the Jira Cloud user. Note: Unless 'Disable Plugin Check' is checked, this user must be a Jira admin."
-                    required
-                    readOnly={readonly}
-                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
-                    value={FieldModelUtilities.getFieldModelSingleValue(formData, JIRA_CLOUD_GLOBAL_FIELD_KEYS.emailAddress)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_GLOBAL_FIELD_KEYS.emailAddress)}
-                    errorValue={errors.fieldErrors[JIRA_CLOUD_GLOBAL_FIELD_KEYS.emailAddress]}
-                />
-                <PasswordInput
-                    id={JIRA_CLOUD_GLOBAL_FIELD_KEYS.accessToken}
-                    name={JIRA_CLOUD_GLOBAL_FIELD_KEYS.accessToken}
-                    label="API Token"
-                    description="The API token of the specified Jira user."
-                    required
-                    readOnly={readonly}
-                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
-                    value={FieldModelUtilities.getFieldModelSingleValue(formData, JIRA_CLOUD_GLOBAL_FIELD_KEYS.accessToken)}
-                    isSet={FieldModelUtilities.isFieldModelValueSet(formData, JIRA_CLOUD_GLOBAL_FIELD_KEYS.accessToken)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_GLOBAL_FIELD_KEYS.accessToken)}
-                    errorValue={errors.fieldErrors[JIRA_CLOUD_GLOBAL_FIELD_KEYS.accessToken]}
-                />
-                <NumberInput
-                    id={JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout}
-                    name={JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout}
-                    label="Timeout"
-                    description="The timeout in seconds for all connections to Jira Cloud."
-                    required
-                    readOnly={readonly}
-                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
-                    value={FieldModelUtilities.getFieldModelNumberValue(formData, JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout)}
-                    errorValue={errors.fieldErrors[JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout]}
-                />
-                <CheckboxInput
-                    id={JIRA_CLOUD_GLOBAL_FIELD_KEYS.disablePluginCheck}
-                    name={JIRA_CLOUD_GLOBAL_FIELD_KEYS.disablePluginCheck}
-                    label="Disable Plugin Check"
-                    description="This will disable checking whether the 'Alert Issue Property Indexer' plugin is installed on the specified Jira instance. Please ensure that the plugin is manually installed before using Alert with Jira. If not, issues created by Alert will not be updated properly, and duplicate issues may be created."
-                    readOnly={readonly}
-                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
-                    isChecked={FieldModelUtilities.getFieldModelBooleanValue(formData, JIRA_CLOUD_GLOBAL_FIELD_KEYS.disablePluginCheck)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_GLOBAL_FIELD_KEYS.disablePluginCheck)}
-                    errorValue={errors.fieldErrors[JIRA_CLOUD_GLOBAL_FIELD_KEYS.disablePluginCheck]}
-                />
-                <EndpointButtonField
-                    id={JIRA_CLOUD_GLOBAL_FIELD_KEYS.configurePlugin}
-                    name={JIRA_CLOUD_GLOBAL_FIELD_KEYS.configurePlugin}
-                    buttonLabel="Install Plugin Remotely"
-                    label="Configure Jira Cloud plugin"
-                    description="Installs a required plugin on the Jira Cloud server."
-                    endpoint="/api/function"
-                    fieldKey={JIRA_CLOUD_GLOBAL_FIELD_KEYS.configurePlugin}
-                    requiredRelatedFields={[
-                        JIRA_CLOUD_GLOBAL_FIELD_KEYS.url,
-                        JIRA_CLOUD_GLOBAL_FIELD_KEYS.emailAddress,
-                        JIRA_CLOUD_GLOBAL_FIELD_KEYS.accessToken,
-                        JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout
-                    ]}
+            <FormCard formTitle="Jira Cloud Configuration">
+                <CommonGlobalConfigurationForm
+                    setErrors={(data) => setErrors(data)}
+                    formData={formData}
+                    setFormData={(data) => setFormData(data)}
                     csrfToken={csrfToken}
-                    currentConfig={formData}
-                    successBox={false}
-                    readOnly={readonly || !displayTest}
-                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_GLOBAL_FIELD_KEYS.configurePlugin)}
-                    errorValue={errors.fieldErrors[JIRA_CLOUD_GLOBAL_FIELD_KEYS.configurePlugin]}
-                />
-            </CommonGlobalConfigurationForm>
+                    buttonIdPrefix={JIRA_CLOUD_INFO.key}
+                    retrieveData={retrieveData}
+                    readonly={readonly}
+                    displayTest={displayTest}
+                    displaySave={displaySave}
+                    displayDelete={displayDelete}
+                    errorHandler={errorHandler}
+                    deleteLabel="Reset"
+                >
+                    <TextInput
+                        id={JIRA_CLOUD_GLOBAL_FIELD_KEYS.url}
+                        name={JIRA_CLOUD_GLOBAL_FIELD_KEYS.url}
+                        label="Server URL"
+                        fieldDescription="Base URL of the Jira Cloud server."
+                        required
+                        readOnly={readonly}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
+                        value={FieldModelUtilities.getFieldModelSingleValue(formData, JIRA_CLOUD_GLOBAL_FIELD_KEYS.url)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_GLOBAL_FIELD_KEYS.url)}
+                        errorValue={errors.fieldErrors[JIRA_CLOUD_GLOBAL_FIELD_KEYS.url]}
+                    />
+                    <TextInput
+                        id={JIRA_CLOUD_GLOBAL_FIELD_KEYS.emailAddress}
+                        name={JIRA_CLOUD_GLOBAL_FIELD_KEYS.emailAddress}
+                        label="Email Address"
+                        fieldDescription="Note: Unless 'Jira Plugin Validation' is checked, this email address must belong to a Jira admin."
+                        required
+                        readOnly={readonly}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
+                        value={FieldModelUtilities.getFieldModelSingleValue(formData, JIRA_CLOUD_GLOBAL_FIELD_KEYS.emailAddress)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_GLOBAL_FIELD_KEYS.emailAddress)}
+                        errorValue={errors.fieldErrors[JIRA_CLOUD_GLOBAL_FIELD_KEYS.emailAddress]}
+                    />
+                    <PasswordInput
+                        id={JIRA_CLOUD_GLOBAL_FIELD_KEYS.accessToken}
+                        name={JIRA_CLOUD_GLOBAL_FIELD_KEYS.accessToken}
+                        label="API Token"
+                        fieldDescription="The API token of the specified Jira user."
+                        required
+                        readOnly={readonly}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
+                        value={FieldModelUtilities.getFieldModelSingleValue(formData, JIRA_CLOUD_GLOBAL_FIELD_KEYS.accessToken)}
+                        isSet={FieldModelUtilities.isFieldModelValueSet(formData, JIRA_CLOUD_GLOBAL_FIELD_KEYS.accessToken)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_GLOBAL_FIELD_KEYS.accessToken)}
+                        errorValue={errors.fieldErrors[JIRA_CLOUD_GLOBAL_FIELD_KEYS.accessToken]}
+                    />
+                    <NumberInput
+                        id={JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout}
+                        name={JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout}
+                        label="Timeout"
+                        fieldDescription="The timeout in seconds for all connections to Jira Cloud."
+                        required
+                        readOnly={readonly}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
+                        value={FieldModelUtilities.getFieldModelNumberValue(formData, JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout)}
+                        errorValue={errors.fieldErrors[JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout]}
+                    />
+                    <CheckboxInput
+                        id={JIRA_CLOUD_GLOBAL_FIELD_KEYS.disablePluginCheck}
+                        name={JIRA_CLOUD_GLOBAL_FIELD_KEYS.disablePluginCheck}
+                        label="Jira Plugin Validation"
+                        checkboxValueLabel="Skip Jira plugin validation"
+                        checkboxValueDescription="This will disable checking whether the 'Alert Issue Property Indexer' plugin is installed on the specified Jira instance. If the plugin is not installed, issues may not be updated correctly and duplicates may be created."
+                        readOnly={readonly}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
+                        isChecked={FieldModelUtilities.getFieldModelBooleanValue(formData, JIRA_CLOUD_GLOBAL_FIELD_KEYS.disablePluginCheck)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_GLOBAL_FIELD_KEYS.disablePluginCheck)}
+                        errorValue={errors.fieldErrors[JIRA_CLOUD_GLOBAL_FIELD_KEYS.disablePluginCheck]}
+                    />
+                    <EndpointButtonField
+                        id={JIRA_CLOUD_GLOBAL_FIELD_KEYS.configurePlugin}
+                        name={JIRA_CLOUD_GLOBAL_FIELD_KEYS.configurePlugin}
+                        buttonLabel="Install Plugin Remotely"
+                        label="Configure Jira Cloud plugin"
+                        fieldDescription="Installs a required plugin on the Jira Cloud server."
+                        endpoint="/api/function"
+                        fieldKey={JIRA_CLOUD_GLOBAL_FIELD_KEYS.configurePlugin}
+                        requiredRelatedFields={[
+                            JIRA_CLOUD_GLOBAL_FIELD_KEYS.url,
+                            JIRA_CLOUD_GLOBAL_FIELD_KEYS.emailAddress,
+                            JIRA_CLOUD_GLOBAL_FIELD_KEYS.accessToken,
+                            JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout
+                        ]}
+                        csrfToken={csrfToken}
+                        currentConfig={formData}
+                        successBox={false}
+                        readOnly={readonly || !displayTest}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_GLOBAL_FIELD_KEYS.configurePlugin)}
+                        errorValue={errors.fieldErrors[JIRA_CLOUD_GLOBAL_FIELD_KEYS.configurePlugin]}
+                    />
+                </CommonGlobalConfigurationForm>
+            </FormCard>
         </PageLayout>
     );
 };

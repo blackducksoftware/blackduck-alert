@@ -25,9 +25,6 @@ const useStyles = createUseStyles((theme) => ({
     descriptor: {
         fontSize: '14px',
         paddingLeft: '8px'
-    },
-    userModalContent: {
-        margin: ['30px', 0, '60px']
     }
 }));
 
@@ -153,93 +150,87 @@ const UserModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, 
             showLoader={showLoader}
             noOverflow
         >
-            <div className={classes.userModalContent}>
-                {type === 'COPY' && (
-                    <div className={messageContainerClass}>
-                        <FontAwesomeIcon icon="exclamation-circle" size="2x" />
-                        <span className={classes.descriptor}>
-                            {copyDescription}
-                        </span>
-                    </div>
-                )}
-                {type === 'EDIT' && external && (
-                    <div className={messageContainerClass}>
-                        <FontAwesomeIcon icon="exclamation-circle" size="2x" />
-                        <span className={classes.descriptor}>
-                            This user is managed by a system external to Alert. Only roles can be assigned.
-                        </span>
-                    </div>
-                )}
-                <TextInput
-                    id={USER_INPUT_FIELD_KEYS.USERNAME_KEY}
-                    name={USER_INPUT_FIELD_KEYS.USERNAME_KEY}
-                    label="Username"
-                    customDescription="The user's username."
-                    placeholder="Enter username..."
-                    readOnly={external}
-                    required={!external}
-                    onChange={handleOnChange(USER_INPUT_FIELD_KEYS.USERNAME_KEY)}
-                    value={userModel[USER_INPUT_FIELD_KEYS.USERNAME_KEY] || undefined}
-                    errorName={USER_INPUT_FIELD_KEYS.USERNAME_KEY}
-                    errorValue={fieldErrors[USER_INPUT_FIELD_KEYS.USERNAME_KEY]}
-                />
+            {type === 'COPY' && (
+                <div className={messageContainerClass}>
+                    <FontAwesomeIcon icon="exclamation-circle" size="2x" />
+                    <span className={classes.descriptor}>
+                        {copyDescription}
+                    </span>
+                </div>
+            )}
+            {type === 'EDIT' && external && (
+                <div className={messageContainerClass}>
+                    <FontAwesomeIcon icon="exclamation-circle" size="2x" />
+                    <span className={classes.descriptor}>
+                        This user is managed by a system external to Alert. Only roles can be assigned.
+                    </span>
+                </div>
+            )}
+            <TextInput
+                id={USER_INPUT_FIELD_KEYS.USERNAME_KEY}
+                name={USER_INPUT_FIELD_KEYS.USERNAME_KEY}
+                label="Username"
+                placeholder="Enter username..."
+                readOnly={external}
+                required={!external}
+                onChange={handleOnChange(USER_INPUT_FIELD_KEYS.USERNAME_KEY)}
+                value={userModel[USER_INPUT_FIELD_KEYS.USERNAME_KEY] || undefined}
+                errorName={USER_INPUT_FIELD_KEYS.USERNAME_KEY}
+                errorValue={fieldErrors[USER_INPUT_FIELD_KEYS.USERNAME_KEY]}
+            />
+            <PasswordInput
+                id={USER_INPUT_FIELD_KEYS.PASSWORD_KEY}
+                name={USER_INPUT_FIELD_KEYS.PASSWORD_KEY}
+                label="Password"
+                placeholder="Enter password..."
+                readOnly={external}
+                required={!external}
+                onChange={handleOnChange(USER_INPUT_FIELD_KEYS.PASSWORD_KEY)}
+                value={userModel[USER_INPUT_FIELD_KEYS.PASSWORD_KEY] || undefined}
+                isSet={userModel[USER_INPUT_FIELD_KEYS.IS_PASSWORD_SET] || type === 'EDIT'}
+                errorName={USER_INPUT_FIELD_KEYS.PASSWORD_KEY}
+                errorValue={fieldErrors[USER_INPUT_FIELD_KEYS.PASSWORD_KEY]}
+            />
+            {!external && (
                 <PasswordInput
-                    id={USER_INPUT_FIELD_KEYS.PASSWORD_KEY}
-                    name={USER_INPUT_FIELD_KEYS.PASSWORD_KEY}
-                    label="Password"
-                    customDescription="The user's password."
-                    placeholder="Enter password..."
-                    readOnly={external}
-                    required={!external}
-                    onChange={handleOnChange(USER_INPUT_FIELD_KEYS.PASSWORD_KEY)}
-                    value={userModel[USER_INPUT_FIELD_KEYS.PASSWORD_KEY] || undefined}
-                    isSet={userModel[USER_INPUT_FIELD_KEYS.IS_PASSWORD_SET] || !type === 'COPY'}
-                    errorName={USER_INPUT_FIELD_KEYS.PASSWORD_KEY}
-                    errorValue={fieldErrors[USER_INPUT_FIELD_KEYS.PASSWORD_KEY]}
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    label="Confirm Password"
+                    placeholder="Confirm password..."
+                    readOnly={false}
+                    required
+                    isSet={userModel[USER_INPUT_FIELD_KEYS.IS_PASSWORD_SET]}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    value={confirmPassword || undefined}
+                    errorName="confirmPasswordError"
+                    errorValue={confirmPasswordError}
                 />
-                {!external && (
-                    <PasswordInput
-                        id="confirmPassword"
-                        name="confirmPassword"
-                        label="Confirm Password"
-                        customDescription="The user's password."
-                        placeholder="Confirm password..."
-                        readOnly={false}
-                        required
-                        isSet={userModel[USER_INPUT_FIELD_KEYS.IS_PASSWORD_SET]}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        value={confirmPassword || undefined}
-                        errorName="confirmPasswordError"
-                        errorValue={confirmPasswordError}
-                    />
-                )}
-                <TextInput
-                    id={USER_INPUT_FIELD_KEYS.EMAIL_KEY}
-                    name={USER_INPUT_FIELD_KEYS.EMAIL_KEY}
-                    label="Email"
-                    customDescription="The user's email."
-                    placeholder="Enter email..."
-                    readOnly={external}
-                    required={!external}
-                    onChange={handleOnChange(USER_INPUT_FIELD_KEYS.EMAIL_KEY)}
-                    value={userModel[USER_INPUT_FIELD_KEYS.EMAIL_KEY] || undefined}
-                    errorName={USER_INPUT_FIELD_KEYS.EMAIL_KEY}
-                    errorValue={fieldErrors[USER_INPUT_FIELD_KEYS.EMAIL_KEY]}
-                />
-                <DynamicSelectInput
-                    name={USER_INPUT_FIELD_KEYS.ROLENAMES_KEY}
-                    id={USER_INPUT_FIELD_KEYS.ROLENAMES_KEY}
-                    label="Roles"
-                    customDescription="Select the roles you want associated with the user."
-                    onChange={handleOnChange(USER_INPUT_FIELD_KEYS.ROLENAMES_KEY)}
-                    multiSelect
-                    options={getRoles()}
-                    value={userModel[USER_INPUT_FIELD_KEYS.ROLENAMES_KEY] || undefined}
-                    errorName={USER_INPUT_FIELD_KEYS.ROLENAMES_KEY}
-                    errorValue={fieldErrors[USER_INPUT_FIELD_KEYS.ROLENAMES_KEY]}
-                    maxMenuHeight={215}
-                />
-            </div>
+            )}
+            <TextInput
+                id={USER_INPUT_FIELD_KEYS.EMAIL_KEY}
+                name={USER_INPUT_FIELD_KEYS.EMAIL_KEY}
+                label="Email"
+                placeholder="Enter email..."
+                readOnly={external}
+                required={!external}
+                onChange={handleOnChange(USER_INPUT_FIELD_KEYS.EMAIL_KEY)}
+                value={userModel[USER_INPUT_FIELD_KEYS.EMAIL_KEY] || undefined}
+                errorName={USER_INPUT_FIELD_KEYS.EMAIL_KEY}
+                errorValue={fieldErrors[USER_INPUT_FIELD_KEYS.EMAIL_KEY]}
+            />
+            <DynamicSelectInput
+                name={USER_INPUT_FIELD_KEYS.ROLENAMES_KEY}
+                id={USER_INPUT_FIELD_KEYS.ROLENAMES_KEY}
+                label="Roles"
+                fieldDescription="Select the roles you want associated with the user."
+                onChange={handleOnChange(USER_INPUT_FIELD_KEYS.ROLENAMES_KEY)}
+                multiSelect
+                options={getRoles()}
+                value={userModel[USER_INPUT_FIELD_KEYS.ROLENAMES_KEY] || undefined}
+                errorName={USER_INPUT_FIELD_KEYS.ROLENAMES_KEY}
+                errorValue={fieldErrors[USER_INPUT_FIELD_KEYS.ROLENAMES_KEY]}
+                maxMenuHeight={215}
+            />
         </Modal>
     );
 };

@@ -22,7 +22,7 @@ const useStyles = createUseStyles((theme) => ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#1e2939',
+        backgroundColor: theme.colors.purple.darkerPurple,
         boxShadow: '0 6px 12px rgba(0, 0, 0, 0.175)'
     },
     logoGlyph: {

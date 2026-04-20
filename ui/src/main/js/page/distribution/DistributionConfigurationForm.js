@@ -3,7 +3,6 @@ import Select, { components } from 'react-select';
 import * as PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CheckboxInput from 'common/component/input/CheckboxInput';
-import SelectInput from 'common/component/input/DynamicSelectInput';
 import {
     DISTRIBUTION_CHANNEL_OPTIONS,
     DISTRIBUTION_COMMON_FIELD_KEYS,
@@ -42,6 +41,7 @@ import { createNewConfigurationRequest } from 'common/util/configurationRequestB
 import DynamicSelectInput from 'common/component/input/DynamicSelectInput';
 import ProjectSelectModal from 'page/distribution/ProjectSelectModal';
 import PageLayout from 'common/component/PageLayout';
+import FormCard from 'common/component/FormCard';
 
 const DistributionConfigurationForm = ({
     csrfToken, errorHandler, descriptors
@@ -67,11 +67,11 @@ const DistributionConfigurationForm = ({
         let configuredProviderProjects = [];
 
         const fieldConfiguredProjects = FieldModelUtilities.getFieldModelValues(providerConfig, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects);
-        
+
         // Determine if fieldConfiguredProjects has shape { label: projectName, href: projectHREF }
         //      If true change shape to { name: projectName, href: projectHREF, missing: false }
         //      If false, data shape is OK
-        if (fieldConfiguredProjects.some(project => project.hasOwnProperty('label'))) {
+        if (fieldConfiguredProjects.some((project) => project.hasOwnProperty('label'))) {
             configuredProviderProjects = fieldConfiguredProjects.map((selectedValue) => ({
                 name: selectedValue.label,
                 href: selectedValue.value,
@@ -319,24 +319,22 @@ const DistributionConfigurationForm = ({
     const removeSelectedProject = (option) => {
         const options = FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects);
         const parsedArray = options.filter((project) => project.value !== option.value);
-        return FieldModelUtilities.handleChange(providerModel, setProviderModel)(
-            {
-                target: {
-                    name: DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects,
-                    value: parsedArray
-                }
+        return FieldModelUtilities.handleChange(providerModel, setProviderModel)({
+            target: {
+                name: DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects,
+                value: parsedArray
             }
-        );
+        });
     };
 
     function getProjectValues(data) {
-        if (data.some(project => project.hasOwnProperty('label'))) {
+        if (data.some((project) => project.hasOwnProperty('label'))) {
             return data;
         }
 
         return data.map((project) => (
-            {label: project.name, value: project.href}
-        ))
+            { label: project.name, value: project.href }
+        ));
     }
 
     // TODO need to provide finer grain control with permissions.
@@ -346,286 +344,287 @@ const DistributionConfigurationForm = ({
             description={DISTRIBUTION_CONFIGURATION_INFO.description}
             headerIcon={['fas', 'tasks']}
         >
-            <CommonDistributionConfigurationForm
-                setErrors={setErrors}
-                formData={formData}
-                setFormData={setFormData}
-                testFields={testFields}
-                testFormData={testFieldModel}
-                setTestFormData={setTestFieldModel}
-                csrfToken={csrfToken}
-                displaySave={!readonly}
-                isSaveDisabled={!isOneOperationAssigned(descriptors[selectedChannel], [OPERATIONS.WRITE, OPERATIONS.CREATE])}
-                displayTest={!readonly}
-                isTestDisabled={!isOperationAssigned(descriptors[selectedChannel], OPERATIONS.EXECUTE)}
-                displayDelete={false}
-                afterSuccessfulSave={() => history.push(DISTRIBUTION_URLS.distributionTableUrl)}
-                retrieveData={retrieveData}
-                createDataToSend={updateJobData}
-                createDataToTest={createTestData}
-                errorHandler={errorHandler}
-            >
-                <CheckboxInput
-                    id={DISTRIBUTION_COMMON_FIELD_KEYS.enabled}
-                    name={DISTRIBUTION_COMMON_FIELD_KEYS.enabled}
-                    label="Enabled"
-                    description="If selected, this job will be used for processing provider notifications, otherwise, this job will not be used."
-                    readOnly={readonly}
-                    onChange={FieldModelUtilities.handleChange(channelModel, setChannelModel)}
-                    isChecked={FieldModelUtilities.getFieldModelBooleanValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.enabled)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.enabled)}
-                    errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.enabled]}
-                />
-                <TextInput
-                    id={DISTRIBUTION_COMMON_FIELD_KEYS.name}
-                    name={DISTRIBUTION_COMMON_FIELD_KEYS.name}
-                    label="Name"
-                    description="The name of the distribution job. Must be unique"
-                    readOnly={readonly}
-                    required
-                    onChange={FieldModelUtilities.handleChange(channelModel, setChannelModel)}
-                    value={FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.name)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.name)}
-                    errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.name]}
-                />
-                <SelectInput
-                    id={DISTRIBUTION_COMMON_FIELD_KEYS.frequency}
-                    name={DISTRIBUTION_COMMON_FIELD_KEYS.frequency}
-                    label="Frequency"
-                    description="Select how frequently this job should check for notifications to send."
-                    options={DISTRIBUTION_FREQUENCY_OPTIONS}
-                    readOnly={readonly}
-                    required
-                    onChange={FieldModelUtilities.handleChange(channelModel, setChannelModel)}
-                    value={FieldModelUtilities.getFieldModelValues(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.frequency)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.frequency)}
-                    errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.frequency]}
-                />
-                <SelectInput
-                    id={DISTRIBUTION_COMMON_FIELD_KEYS.providerName}
-                    name={DISTRIBUTION_COMMON_FIELD_KEYS.providerName}
-                    label="Provider"
-                    description="Select the provider. Only notifications for that provider will be processed in this distribution job."
-                    options={[{ label: BLACKDUCK_INFO.label, value: BLACKDUCK_INFO.key }]}
-                    clearable={false}
-                    readOnly={readonly}
-                    required
-                    onChange={FieldModelUtilities.handleChange(channelModel, setChannelModel)}
-                    value={FieldModelUtilities.getFieldModelValues(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.providerName)}
-                    errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.providerName]}
-                />
-                <EndpointSelectField
-                    id={DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId}
+            <FormCard formTitle={id ? 'Edit Distribution Job' : 'Create Distribution Job'}>
+                <CommonDistributionConfigurationForm
+                    setErrors={setErrors}
+                    formData={formData}
+                    setFormData={setFormData}
+                    testFields={testFields}
+                    testFormData={testFieldModel}
+                    setTestFormData={setTestFieldModel}
                     csrfToken={csrfToken}
-                    endpoint={DISTRIBUTION_URLS.endpointSelectPath}
-                    fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId}
-                    label="Provider Configuration"
-                    description="The provider configuration to use with this distribution job."
-                    clearable={false}
-                    readOnly={readonly}
-                    required
-                    createRequestBody={createProviderRequestBody}
-                    onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
-                    value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)}
-                    errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId]}
-                />
+                    displaySave={!readonly}
+                    isSaveDisabled={!isOneOperationAssigned(descriptors[selectedChannel], [OPERATIONS.WRITE, OPERATIONS.CREATE])}
+                    displayTest={!readonly}
+                    isTestDisabled={!isOperationAssigned(descriptors[selectedChannel], OPERATIONS.EXECUTE)}
+                    displayDelete={false}
+                    afterSuccessfulSave={() => history.push(DISTRIBUTION_URLS.distributionTableUrl)}
+                    retrieveData={retrieveData}
+                    createDataToSend={updateJobData}
+                    createDataToTest={createTestData}
+                    errorHandler={errorHandler}
+                >
+                    <CheckboxInput
+                        id={DISTRIBUTION_COMMON_FIELD_KEYS.enabled}
+                        name={DISTRIBUTION_COMMON_FIELD_KEYS.enabled}
+                        label=""
+                        checkboxValueLabel="Enable Distribution Job"
+                        checkboxValueDescription="If enabled, this job will be used for processing provider notifications. Otherwise this job will not be used."
+                        readOnly={readonly}
+                        onChange={FieldModelUtilities.handleChange(channelModel, setChannelModel)}
+                        isChecked={FieldModelUtilities.getFieldModelBooleanValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.enabled)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.enabled)}
+                        errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.enabled]}
+                    />
+                    <TextInput
+                        id={DISTRIBUTION_COMMON_FIELD_KEYS.name}
+                        name={DISTRIBUTION_COMMON_FIELD_KEYS.name}
+                        label="Job Name"
+                        readOnly={readonly}
+                        required
+                        onChange={FieldModelUtilities.handleChange(channelModel, setChannelModel)}
+                        value={FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.name)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.name)}
+                        errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.name]}
+                    />
+                    <DynamicSelectInput
+                        id={DISTRIBUTION_COMMON_FIELD_KEYS.frequency}
+                        name={DISTRIBUTION_COMMON_FIELD_KEYS.frequency}
+                        label="Job Frequency"
+                        fieldDescription="Select how frequently this job should run."
+                        options={DISTRIBUTION_FREQUENCY_OPTIONS}
+                        readOnly={readonly}
+                        required
+                        onChange={FieldModelUtilities.handleChange(channelModel, setChannelModel)}
+                        value={FieldModelUtilities.getFieldModelValues(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.frequency)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.frequency)}
+                        errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.frequency]}
+                    />
+                    <DynamicSelectInput
+                        id={DISTRIBUTION_COMMON_FIELD_KEYS.providerName}
+                        name={DISTRIBUTION_COMMON_FIELD_KEYS.providerName}
+                        label="Provider"
+                        options={[{ label: BLACKDUCK_INFO.label, value: BLACKDUCK_INFO.key }]}
+                        clearable={false}
+                        readOnly={readonly}
+                        required
+                        onChange={FieldModelUtilities.handleChange(channelModel, setChannelModel)}
+                        value={FieldModelUtilities.getFieldModelValues(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.providerName)}
+                        errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.providerName]}
+                    />
+                    <EndpointSelectField
+                        id={DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId}
+                        csrfToken={csrfToken}
+                        endpoint={DISTRIBUTION_URLS.endpointSelectPath}
+                        fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId}
+                        label="Provider Configuration"
+                        clearable={false}
+                        readOnly={readonly}
+                        required
+                        createRequestBody={createProviderRequestBody}
+                        onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                        value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)}
+                        errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId]}
+                    />
 
-                {FieldModelUtilities.hasValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName)
-                    && FieldModelUtilities.hasValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)
-                    && (
+                    {FieldModelUtilities.hasValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName)
+                        && FieldModelUtilities.hasValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)
+                        && (
+                            <div>
+                                <DynamicSelectInput
+                                    id={DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes}
+                                    name={DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes}
+                                    label="Notification Types"
+                                    fieldDescription="Only these selected notification types will be included for this job."
+                                    options={DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS}
+                                    multiSelect
+                                    readOnly={readonly}
+                                    removeSelected
+                                    required
+                                    onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                                    value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes)}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes)}
+                                    errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes]}
+                                />
+                                <DynamicSelectInput
+                                    id={DISTRIBUTION_COMMON_FIELD_KEYS.processingType}
+                                    name={DISTRIBUTION_COMMON_FIELD_KEYS.processingType}
+                                    label="Processing"
+                                    tooltipDescription={processingFieldDescription}
+                                    options={processingTypes}
+                                    readOnly={readonly}
+                                    required
+                                    onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                                    value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.processingType)}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.processingType)}
+                                    errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.processingType]}
+                                />
+                                <CheckboxInput
+                                    id={DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject}
+                                    name={DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject}
+                                    label="Filter By Project"
+                                    checkboxValueLabel="Enable"
+                                    checkboxValueDescription="If enabled, only notifications from the selected Projects table will be processed. Otherwise notifications from all Projects are processed."
+                                    readOnly={readonly}
+                                    onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                                    isChecked={FieldModelUtilities.getFieldModelBooleanValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject)}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject)}
+                                    errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject]}
+                                />
+                            </div>
+                        )}
+                    {FieldModelUtilities.getFieldModelBooleanValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject) && (
                         <div>
-                            <SelectInput
-                                id={DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes}
-                                name={DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes}
-                                label="Notification Types"
-                                description="Select one or more of the notification types. Only these notification types will be included for this distribution job."
-                                options={DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS}
-                                multiSelect
-                                readOnly={readonly}
-                                removeSelected
-                                required
-                                onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
-                                value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes)}
-                                errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes)}
-                                errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes]}
-                            />
-                            <SelectInput
-                                id={DISTRIBUTION_COMMON_FIELD_KEYS.processingType}
-                                name={DISTRIBUTION_COMMON_FIELD_KEYS.processingType}
-                                label="Processing"
-                                description={processingFieldDescription}
-                                options={processingTypes}
-                                readOnly={readonly}
-                                required
-                                onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
-                                value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.processingType)}
-                                errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.processingType)}
-                                errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.processingType]}
-                            />
-                            <CheckboxInput
-                                id={DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject}
-                                name={DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject}
-                                label="Filter By Project"
-                                description="If selected, only notifications from the selected Projects table will be processed. Otherwise notifications from all Projects are processed."
+                            <TextInput
+                                id={DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern}
+                                key={DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern}
+                                name={DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern}
+                                label="Project Name Pattern"
+                                fieldDescription="The regular expression to use to determine what Projects to include. These are in addition to the Projects selected in the table."
                                 readOnly={readonly}
                                 onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
-                                isChecked={FieldModelUtilities.getFieldModelBooleanValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject)}
-                                errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject)}
-                                errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject]}
+                                value={FieldModelUtilities.getFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern)}
+                                errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern)}
+                                errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern]}
                             />
+                            <TextInput
+                                id={DISTRIBUTION_COMMON_FIELD_KEYS.projectVersionNamePattern}
+                                key={DISTRIBUTION_COMMON_FIELD_KEYS.projectVersionNamePattern}
+                                name={DISTRIBUTION_COMMON_FIELD_KEYS.projectVersionNamePattern}
+                                label="Project Version Name Pattern"
+                                fieldDescription="The regular expression to use to determine what Project Versions to include."
+                                readOnly={readonly}
+                                onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                                value={FieldModelUtilities.getFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.projectVersionNamePattern)}
+                                errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.projectVersionNamePattern)}
+                                errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.projectVersionNamePattern]}
+                            />
+                            <DynamicSelectInput
+                                id={DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects}
+                                label="Projects"
+                                tooltipDescription="Select a project or projects that will be used to retrieve notifications from your provider."
+                                csrfToken={csrfToken}
+                                readOnly={readonly}
+                                onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                                errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects)}
+                                errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects]}
+                                customSelect={(
+                                    <>
+                                        <div className="typeAheadField">
+                                            <Select
+                                                noOptionsMessage={() => null}
+                                                openMenuOnClick={false}
+                                                isSearchable={false}
+                                                placeholder="Select Projects..."
+                                                value={getProjectValues(FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects))}
+                                                isMulti
+                                                isClearable
+                                                styles={{
+                                                    dropdownIndicator: (base) => ({
+                                                        ...base,
+                                                        padding: '12px'
+                                                    }),
+                                                    multiValueRemove: (base) => ({
+                                                        ...base,
+                                                        padding: '7px'
+                                                    })
+                                                }}
+                                                components={{
+                                                    DropdownIndicator: ({ ...props }) => (
+                                                        <components.DropdownIndicator
+                                                            {...props}
+                                                            onClick={() => setShowProjectSelectModal(true)}
+                                                        >
+                                                            <FontAwesomeIcon icon="plus" onClick={() => setShowProjectSelectModal(true)} />
+                                                        </components.DropdownIndicator>
+                                                    ),
+                                                    MultiValueRemove: ({ ...props }) => (
+                                                        <components.MultiValueRemove
+                                                            {...props}
+                                                        >
+                                                            <FontAwesomeIcon
+                                                                icon="times"
+                                                                onClick={() => removeSelectedProject(props.data)}
+                                                                size="xs"
+                                                            />
+                                                        </components.MultiValueRemove>
+                                                    )
+                                                }}
+                                            />
+                                        </div>
+                                    </>
+                                )}
+                            />
+                            {showProjectSelectModal && (
+                                <ProjectSelectModal
+                                    isOpen={showProjectSelectModal}
+                                    handleClose={() => setShowProjectSelectModal(false)}
+                                    csrfToken={csrfToken}
+                                    projectRequestBody={createCommonRequestBody}
+                                    handleSubmit={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                                    formData={getProjectValues(FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects))}
+                                />
+                            )}
                         </div>
                     )}
-                {FieldModelUtilities.getFieldModelBooleanValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject) && (
-                    <div>
-                        <TextInput
-                            id={DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern}
-                            key={DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern}
-                            name={DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern}
-                            label="Project Name Pattern"
-                            description="The regular expression to use to determine what Projects to include. These are in addition to the Projects selected in the table."
-                            readOnly={readonly}
-                            onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
-                            value={FieldModelUtilities.getFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern)}
-                            errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern)}
-                            errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern]}
-                        />
-                        <TextInput
-                            id={DISTRIBUTION_COMMON_FIELD_KEYS.projectVersionNamePattern}
-                            key={DISTRIBUTION_COMMON_FIELD_KEYS.projectVersionNamePattern}
-                            name={DISTRIBUTION_COMMON_FIELD_KEYS.projectVersionNamePattern}
-                            label="Project Version Name Pattern"
-                            description="The regular expression to use to determine what Project Versions to include."
-                            readOnly={readonly}
-                            onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
-                            value={FieldModelUtilities.getFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.projectVersionNamePattern)}
-                            errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.projectVersionNamePattern)}
-                            errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.projectVersionNamePattern]}
-                        />
-                        <DynamicSelectInput
-                            id={DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects}
-                            label="Projects"
-                            description="Select a project or projects that will be used to retrieve notifications from your provider."
-                            csrfToken={csrfToken}
-                            readOnly={readonly}
-                            onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
-                            errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects)}
-                            errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects]}
-                            customSelect={(
-                                <>
-                                    <div className="typeAheadField">
-                                        <Select
-                                            noOptionsMessage={() => null}
-                                            openMenuOnClick={false}
-                                            isSearchable={false}
-                                            placeholder="Select Projects..."
-                                            value={getProjectValues(FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects))}
-                                            isMulti
-                                            isClearable
-                                            styles={{
-                                                dropdownIndicator: (base) => ({
-                                                    ...base,
-                                                    padding: '12px'
-                                                }),
-                                                multiValueRemove: (base) => ({
-                                                    ...base,
-                                                    padding: '7px'
-                                                }),
-                                            }}
-                                            components={{
-                                                DropdownIndicator: ({ ...props }) => (
-                                                    <components.DropdownIndicator
-                                                        {...props}
-                                                        onClick={() => setShowProjectSelectModal(true)}
-                                                    >
-                                                        <FontAwesomeIcon icon="plus" onClick={() => setShowProjectSelectModal(true)}/>
-                                                    </components.DropdownIndicator>
-                                                ),
-                                                MultiValueRemove: ({ ...props }) => (
-                                                    <components.MultiValueRemove
-                                                        {...props}
-                                                    >
-                                                        <FontAwesomeIcon
-                                                            icon="times"
-                                                            onClick={() => removeSelectedProject(props.data)}
-                                                            size="xs"
-                                                        />
-                                                    </components.MultiValueRemove>
-                                                )
-                                            }}
-                                        />
-                                    </div>
-                                </>
-                            )}
-                        />
-                        {showProjectSelectModal && (
-                            <ProjectSelectModal
-                                isOpen={showProjectSelectModal}
-                                handleClose={() => setShowProjectSelectModal(false)}
-                                csrfToken={csrfToken}
-                                projectRequestBody={createCommonRequestBody}
-                                handleSubmit={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
-                                formData={getProjectValues(FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects))}
-                            />
+                    {FieldModelUtilities.hasValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes)
+                        && (
+                            <CollapsiblePane
+                                id="distribution-notification-filtering"
+                                title="Black Duck Notification Filtering"
+                                expanded={false}
+                            >
+                                <EndpointSelectField
+                                    id={DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter}
+                                    csrfToken={csrfToken}
+                                    endpoint={DISTRIBUTION_URLS.endpointSelectPath}
+                                    fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter}
+                                    label="Policy Notification Type Filter"
+                                    tooltipDescription="Filter which notifications you want sent via this job (You must have the policy notification type selected for this filter to apply)."
+                                    searchable
+                                    multiSelect
+                                    readOnly={readonly}
+                                    readOptionsRequest={getPolicyFiltersRequest}
+                                    convertDataToOptions={convertPolicyDataToOptions}
+                                    onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                                    value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter)}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter)}
+                                    errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter]}
+                                />
+                                <DynamicSelectInput
+                                    id={DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter}
+                                    name={DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter}
+                                    label="Vulnerability Notification Contains Severities"
+                                    tooltipDescription="Filters out the notifications that do not contain any of the relevant severities (You must have the vulnerability notification type selected for this filter to apply)."
+                                    options={DISTRIBUTION_VULNERABILITY_SEVERITY_OPTIONS}
+                                    multiSelect
+                                    readOnly={readonly}
+                                    onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                                    value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter)}
+                                    errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter)}
+                                    errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter]}
+                                />
+                            </CollapsiblePane>
                         )}
-                    </div>
-                )}
-                {FieldModelUtilities.hasValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes)
-                    && (
-                        <CollapsiblePane
-                            id="distribution-notification-filtering"
-                            title="Black Duck Notification Filtering"
-                            expanded={false}
-                        >
-                            <EndpointSelectField
-                                id={DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter}
-                                csrfToken={csrfToken}
-                                endpoint={DISTRIBUTION_URLS.endpointSelectPath}
-                                fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter}
-                                label="Policy Notification Type Filter"
-                                description="Filter which notifications you want sent via this job (You must have the policy notification type selected for this filter to apply)."
-                                searchable
-                                multiSelect
-                                readOnly={readonly}
-                                readOptionsRequest={getPolicyFiltersRequest}
-                                convertDataToOptions={convertPolicyDataToOptions}
-                                onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
-                                value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter)}
-                                errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter)}
-                                errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter]}
-                            />
-                            <SelectInput
-                                id={DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter}
-                                name={DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter}
-                                label="Vulnerability Notification Contains Severities"
-                                description="Filters out the notifications that do not contain any of the relevant severities (You must have the vulnerability notification type selected for this filter to apply)."
-                                options={DISTRIBUTION_VULNERABILITY_SEVERITY_OPTIONS}
-                                multiSelect
-                                readOnly={readonly}
-                                onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
-                                value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter)}
-                                errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter)}
-                                errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter]}
-                            />
-                        </CollapsiblePane>
-                    )}
-                <SelectInput
-                    id={DISTRIBUTION_COMMON_FIELD_KEYS.channelName}
-                    name={DISTRIBUTION_COMMON_FIELD_KEYS.channelName}
-                    label="Channel"
-                    description="Select the channel. Notifications generated through Alert will be sent through this channel."
-                    options={DISTRIBUTION_CHANNEL_OPTIONS}
-                    clearable={false}
-                    readOnly={readonly}
-                    required
-                    onChange={onChannelSelectChange}
-                    value={FieldModelUtilities.getFieldModelValues(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
-                    errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.channelName]}
-                />
-                {renderChannelFields()}
-            </CommonDistributionConfigurationForm>
+                    <DynamicSelectInput
+                        id={DISTRIBUTION_COMMON_FIELD_KEYS.channelName}
+                        name={DISTRIBUTION_COMMON_FIELD_KEYS.channelName}
+                        label="Channel"
+                        tooltipDescription="Select the channel. Notifications generated through Alert will be sent through this channel."
+                        options={DISTRIBUTION_CHANNEL_OPTIONS}
+                        clearable={false}
+                        readOnly={readonly}
+                        required
+                        onChange={onChannelSelectChange}
+                        value={FieldModelUtilities.getFieldModelValues(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
+                        errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.channelName]}
+                    />
+                    {renderChannelFields()}
+                </CommonDistributionConfigurationForm>
+            </FormCard>
         </PageLayout>
     );
 };

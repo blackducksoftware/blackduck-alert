@@ -24,7 +24,8 @@ const CommonGlobalConfigurationForm = ({
     afterSuccessfulSave,
     retrieveData,
     readonly,
-    errorHandler
+    errorHandler,
+    deleteLabel
 }) => {
     const [showTest, setShowTest] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -165,7 +166,7 @@ const CommonGlobalConfigurationForm = ({
                 actionMessage={actionMessage}
                 errorIsDetailed={errorIsDetailed}
             />
-            <form className="form-horizontal" onSubmit={performSaveRequest} noValidate>
+            <form onSubmit={performSaveRequest} noValidate>
                 <div>
                     {children}
                 </div>
@@ -184,13 +185,13 @@ const CommonGlobalConfigurationForm = ({
                     onDeleteClick={performDeleteRequest}
                     confirmDeleteMessage="Are you sure you want to delete the configuration?"
                     performingAction={inProgress}
+                    deleteLabel={deleteLabel}
                 />
             </form>
             <GlobalTestModal
                 showTestModal={showTest}
                 handleTest={performTestRequest}
                 handleCancel={handleTestCancel}
-                buttonIdPrefix={buttonIdPrefix}
                 performingAction={testing}
             >
                 <div>
@@ -218,7 +219,8 @@ CommonGlobalConfigurationForm.propTypes = {
     buttonIdPrefix: PropTypes.string,
     afterSuccessfulSave: PropTypes.func,
     readonly: PropTypes.bool,
-    errorHandler: PropTypes.object.isRequired
+    errorHandler: PropTypes.object.isRequired,
+    deleteLabel: PropTypes.string
 };
 
 CommonGlobalConfigurationForm.defaultProps = {

@@ -12,19 +12,18 @@ const EndpointButtonField = ({
     buttonLabel,
     csrfToken,
     currentConfig,
-    description,
+    tooltipDescription,
+    fieldDescription,
     endpoint,
     errorValue,
     fieldKey,
     fields,
     label,
-    labelClass,
     name,
     onChange,
     readOnly,
     required,
     requiredRelatedFields,
-    showDescriptionPlaceHolder,
     statusMessage,
     successBox,
     value
@@ -33,7 +32,6 @@ const EndpointButtonField = ({
     const [fieldError, setFieldError] = useState(errorValue);
     const [success, setSuccess] = useState(false);
     const [progress, setProgress] = useState(false);
-    const [modalConfig, setModalConfig] = useState({});
 
     useEffect(() => {
         if (fieldError !== errorValue) {
@@ -86,21 +84,19 @@ const EndpointButtonField = ({
         <div>
             <LabeledField
                 id={id}
-                labelClass={labelClass}
-                description={description}
-                showDescriptionPlaceHolder={showDescriptionPlaceHolder}
+                tooltipDescription={tooltipDescription}
+                fieldDescription={fieldDescription}
                 label={label}
                 required={required}
                 errorName={fieldKey}
                 errorValue={fieldError}
             >
                 <div className="d-inline-flex p-2 col-sm-8">
-                    <Button id={fieldKey} onClick={flipShowModal} text={buttonLabel} disabled={readOnly} />
+                    <Button id={fieldKey} onClick={flipShowModal} text={buttonLabel} isDisabled={readOnly} buttonStyle="action" />
                     {successBox
                     && (
                         <div className="d-inline-flex p-2 checkbox">
                             <input
-                                className="form-control"
                                 id={`${fieldKey}-confirmation`}
                                 type="checkbox"
                                 name={name}
@@ -134,12 +130,11 @@ EndpointButtonField.propTypes = {
     statusMessage: PropTypes.string,
     successBox: PropTypes.bool.isRequired,
     value: PropTypes.bool,
-    description: PropTypes.string,
+    fieldDescription: PropTypes.string,
+    tooltipDescription: PropTypes.string,
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
-    labelClass: PropTypes.string,
-    required: PropTypes.bool,
-    showDescriptionPlaceHolder: PropTypes.bool
+    required: PropTypes.bool
 };
 
 EndpointButtonField.defaultProps = {
@@ -150,11 +145,9 @@ EndpointButtonField.defaultProps = {
     requiredRelatedFields: [],
     statusMessage: 'Success',
     value: false,
-    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
-    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 };
 
 export default EndpointButtonField;

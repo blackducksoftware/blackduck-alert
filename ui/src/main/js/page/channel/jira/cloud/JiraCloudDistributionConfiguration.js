@@ -25,8 +25,8 @@ const JiraCloudDistributionConfiguration = ({
         <>
             <TextInput
                 id={JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueCreator}
-                label="Issue Creator"
-                description="The email of the Jira Cloud user to assign as the issue creator field of the Jira issue."
+                label="Issue Creator Email"
+                fieldDescription="The email of the Jira Cloud user to assign as the issue creator field of the Jira issue."
                 name={JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueCreator}
                 readOnly={readonly}
                 onChange={FieldModelUtilities.handleChange(data, setData)}
@@ -37,7 +37,7 @@ const JiraCloudDistributionConfiguration = ({
             <TextInput
                 id={JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.project}
                 label="Jira Project"
-                description="The name or key of the Jira Project for which this job creates and/or updates Jira tickets."
+                fieldDescription="The name or key of the Jira Project for which this job creates and/or updates Jira tickets."
                 name={JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.project}
                 readOnly={readonly}
                 required
@@ -48,8 +48,7 @@ const JiraCloudDistributionConfiguration = ({
             />
             <TextInput
                 id={JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueType}
-                label="Issue Type"
-                description="The issue type to open when creating an issue in Jira Cloud."
+                label="Jira Issue Type"
                 name={JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueType}
                 readOnly={readonly}
                 required
@@ -61,7 +60,7 @@ const JiraCloudDistributionConfiguration = ({
             <TextInput
                 id={JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.resolveWorkflow}
                 label="Resolve Transition"
-                description="If a transition is listed (case sensitive), it will be used when resolving an issue. This will happen when Alert receives a DELETE operation from a provider. Note: This must be in the 'Done' status category."
+                tooltipDescription="If a transition is listed (case sensitive), it will be used when resolving an issue. This will happen when Alert receives a DELETE operation from a provider. Note: This must be in the 'Done' status category."
                 name={JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.resolveWorkflow}
                 readOnly={readonly}
                 onChange={FieldModelUtilities.handleChange(data, setData)}
@@ -72,7 +71,7 @@ const JiraCloudDistributionConfiguration = ({
             <TextInput
                 id={JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.reopenWorkflow}
                 label="Re-open Transition"
-                description="If a transition is listed (case sensitive), it will be used when re-opening an issue. This will happen when Alert receives an ADD/UPDATE operation from a provider. Note: This must be in the 'To Do' status category."
+                tooltipDescription="If a transition is listed (case sensitive), it will be used when re-opening an issue. This will happen when Alert receives an ADD/UPDATE operation from a provider. Note: This must be in the 'To Do' status category."
                 name={JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.reopenWorkflow}
                 readOnly={readonly}
                 onChange={FieldModelUtilities.handleChange(data, setData)}
@@ -83,7 +82,7 @@ const JiraCloudDistributionConfiguration = ({
             <TextInput
                 id={JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueSummary}
                 label="Issue Summary"
-                description="The summary to use for each issue created. Placeholder values can be used to populate data from the message content. See Alert documentation 'Configuring Distribution Job in Alert' for a list of supported placeholder values"
+                tooltipDescription="The summary to use for each issue created. Placeholder values can be used to populate data from the message content. See Alert documentation 'Configuring Distribution Job in Alert' for a list of supported placeholder values"
                 name={JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueSummary}
                 readOnly={readonly}
                 onChange={FieldModelUtilities.handleChange(data, setData)}

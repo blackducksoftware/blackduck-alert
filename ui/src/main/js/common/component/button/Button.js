@@ -66,33 +66,51 @@ const useStyles = createUseStyles((theme) => ({
     loader: {
         marginLeft: '5px'
     },
-
     action: {
         color: theme.colors.white.default,
         backgroundColor: theme.colors.purple.darkerPurple,
-        border: 'none',
-        borderRadius: '4px',
+        border: `solid 1px ${theme.colors.purple.darkerPurple}`,
+        borderRadius: '6px',
         padding: ['6px', '14px'],
         display: 'flex',
         alignItems: 'center',
         columnGap: '8px',
         '&:hover': {
-            backgroundColor: '#343E4C'
+            backgroundColor: theme.colors.purple.darkPurple
         }
     },
     actionSecondary: {
-        color: 'oklch(37.3% 0.034 259.733)',
+        color: theme.colors.grey.darkerGrey,
         backgroundColor: theme.colors.white.default,
         border: `solid 1px ${theme.colors.grey.lightGrey}`,
-        borderRadius: '4px',
+        borderRadius: '6px',
         padding: ['6px', '14px'],
         display: 'flex',
         alignItems: 'center',
         columnGap: '8px',
         '&:not(:disabled):hover': {
-            color: 'oklch(37.3% 0.034 259.733)',
+            color: theme.colors.grey.darkerGrey,
             backgroundColor: theme.colors.grey.lighterGrey,
             border: `solid 1px ${theme.colors.grey.default}`
+        },
+        '&:disabled': {
+            color: theme.colors.grey.default
+        }
+    },
+    actionSecondaryDelete: {
+        color: theme.colors.grey.darkerGrey,
+        backgroundColor: theme.colors.white.default,
+        border: `solid 1px ${theme.colors.grey.lightGrey}`,
+        borderRadius: '6px',
+        padding: ['6px', '14px'],
+        display: 'flex',
+        alignItems: 'center',
+        columnGap: '8px',
+        fontSize: '14px',
+        '&:not(:disabled):hover': {
+            color: theme.colors.status.error.text,
+            backgroundColor: theme.colors.status.error.background,
+            border: `solid 1px ${theme.colors.status.error.border}`
         },
         '&:disabled': {
             color: theme.colors.grey.default
@@ -100,14 +118,15 @@ const useStyles = createUseStyles((theme) => ({
     }
 }));
 
-const Button = ({ id, icon, type, isDisabled, onClick, role, buttonStyle = 'default', title, text, showLoader }) => {
+const Button = ({ id, icon, type = 'button', isDisabled, onClick, role, buttonStyle = 'default', title, text, showLoader }) => {
     const classes = useStyles();
     const btnClass = classNames(classes.button, {
         [classes.delete]: buttonStyle === 'delete',
         [classes.default]: buttonStyle === 'default',
         [classes.transparent]: buttonStyle === 'transparent',
         [classes.action]: buttonStyle === 'action',
-        [classes.actionSecondary]: buttonStyle === 'actionSecondary'
+        [classes.actionSecondary]: buttonStyle === 'actionSecondary',
+        [classes.actionSecondaryDelete]: buttonStyle === 'actionSecondaryDelete'
     });
 
     return (
@@ -145,9 +164,9 @@ Button.propTypes = {
     onClick: PropTypes.func,
     isDisabled: PropTypes.bool,
     role: PropTypes.string,
-    buttonStyle: PropTypes.oneOf(['default', 'transparent', 'delete', 'action', 'actionSecondary']),
+    buttonStyle: PropTypes.oneOf(['default', 'transparent', 'delete', 'action', 'actionSecondary', 'actionSecondaryDelete']),
     title: PropTypes.string,
-    type: PropTypes.string,
+    type: PropTypes.oneOf(['button', 'submit', 'reset']),
     text: PropTypes.string.isRequired,
     showLoader: PropTypes.bool,
     icon: PropTypes.oneOfType([PropTypes.string, PropTypes.array])
