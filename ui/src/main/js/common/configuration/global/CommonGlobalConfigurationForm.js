@@ -192,7 +192,6 @@ const CommonGlobalConfigurationForm = ({
                 showTestModal={showTest}
                 handleTest={performTestRequest}
                 handleCancel={handleTestCancel}
-                buttonIdPrefix={buttonIdPrefix}
                 performingAction={testing}
             >
                 <div>

@@ -1,11 +1,11 @@
+import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import { DISTRIBUTION_COMMON_FIELD_KEYS, DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
+import { createNewConfigurationRequest } from 'common/util/configurationRequestBuilder';
 import Modal from 'common/component/modal/Modal';
 import Table from 'common/component/table/Table';
-import { createNewConfigurationRequest } from 'common/util/configurationRequestBuilder';
-import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
-import { DISTRIBUTION_COMMON_FIELD_KEYS, DISTRIBUTION_URLS } from './DistributionModel';
 
-const KEY_CELL = "name"
+const KEY_CELL = 'name';
 
 const COLUMNS = [{
     key: KEY_CELL,

@@ -22,7 +22,7 @@ const useStyles = createUseStyles((theme) => ({
         margin: 'auto',
         borderBottom: 'none',
         '& .nav-item': {
-            flex: '0 0 10rem'
+            flex: '0 0 11rem'
         },
         '& .nav-link': {
             width: '100%',

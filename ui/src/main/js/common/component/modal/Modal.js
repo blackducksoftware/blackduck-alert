@@ -1,15 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import ReactDOM from 'react-dom';
 import { createUseStyles } from 'react-jss';
 import ModalHeader from 'common/component/modal/ModalHeader';
 import ModalFooter from 'common/component/modal/ModalFooter';
-import Notification from './Notification';
+import Notification from 'common/component/modal/Notification';
 
 const modalRoot = document.getElementById('alert-modal');
 
 const useStyles = createUseStyles((theme) => ({
+    '@keyframes fadeIn': {
+        from: { opacity: 0 },
+        to: { opacity: 1 }
+    },
     modal: {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         display: 'block',
@@ -18,15 +22,18 @@ const useStyles = createUseStyles((theme) => ({
         zIndex: '10000',
         outline: 0,
         cursor: 'default',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        animation: '$fadeIn 0.2s ease-in-out'
     },
     modalStyle: {
         backgroundColor: theme.colors.white.default,
-        borderRadius: '5px',
-        position: 'relative',
+        borderRadius: theme.modal.modalBorderRadius,
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
         width: '90%',
-        maxWidth: 600,
-        margin: ['100px', 'auto']
+        maxWidth: 600
     },
     modalStyleLarge: {
         maxWidth: 900
@@ -41,13 +48,19 @@ const useStyles = createUseStyles((theme) => ({
         position: 'relative'
     },
     modalBody: {
-        maxHeight: 'calc(100vh - 355px)',
-        padding: ['16px', '32px'],
-        overflowY: 'auto'
+        maxHeight: 'calc(100vh - 355px)'
     },
-    noOverflowModalBody: {
-        maxHeight: 'calc(100vh - 355px)',
-        padding: ['16px', '32px']
+    modalBodyLarge: {
+        padding: ['16px', '70px']
+    },
+    modalBodyMedium: {
+        padding: ['16px', '50px']
+    },
+    modalBodySmall: {
+        padding: ['16px', '30px']
+    },
+    overFlowContent: {
+        overflowY: 'auto'
     }
 }));
 
@@ -57,28 +70,13 @@ const Modal = ({
     disableSubmit, submitTitle, noOverflow
 }) => {
     const classes = useStyles();
-    const [style, setStyle] = useState(noOverflow ? classes.noOverflowModalBody : classes.modalBody);
 
-    function handleWindowResize() {
-        if (window.innerHeight < 755) {
-            setStyle(classes.modalBody);
-        } else {
-            setStyle(classes.noOverflowModalBody);
-        }
-    }
-
-    useEffect(() => {
-        if (noOverflow) {
-            handleWindowResize();
-            window.addEventListener('resize', handleWindowResize);
-
-            return () => {
-                window.removeEventListener('resize', handleWindowResize);
-            };
-        }
-        return () => {
-        };
-    }, []);
+    const modalBodyClass = classNames(classes.modalBody, {
+        [classes.modalBodyLarge]: size === 'lg',
+        [classes.modalBodyMedium]: size === 'md',
+        [classes.modalBodySmall]: size === 'sm',
+        [classes.overFlowContent]: !noOverflow
+    });
 
     const modalStyleClass = classNames(classes.modalStyle, {
         [classes.modalStyleLarge]: size === 'lg',
@@ -98,7 +96,7 @@ const Modal = ({
                         title={title}
                         closeModal={closeModal}
                     />
-                    <div className={style}>
+                    <div className={modalBodyClass}>
                         {showNotification && (
                             <Notification notification={notification} />
                         )}

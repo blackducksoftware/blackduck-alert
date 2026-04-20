@@ -66,7 +66,7 @@ const CertificateModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMe
     return (
         <Modal
             isOpen={isOpen}
-            size="lg"
+            size="md"
             title={title}
             submitText={submitText}
             closeModal={handleClose}

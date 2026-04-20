@@ -21,6 +21,7 @@ const ConcreteConfigurationForm = ({
     displayCancel,
     children,
     testFields,
+    testModalTitle,
     buttonIdPrefix,
     afterSuccessfulSave,
     readonly,
@@ -213,6 +214,7 @@ const ConcreteConfigurationForm = ({
                 disableTestModalSubmit={disableTestModalSubmit}
                 modalSubmitText={modalSubmitText}
                 testModalButtonTitle={testModalButtonTitle}
+                testModalTitle={testModalTitle}
             >
                 <div>
                     {testFields}
@@ -238,6 +240,7 @@ ConcreteConfigurationForm.propTypes = {
     displayCancel: PropTypes.bool,
     formDataId: PropTypes.string,
     testFields: PropTypes.node,
+    testModalTitle: PropTypes.string,
     buttonIdPrefix: PropTypes.string,
     afterSuccessfulSave: PropTypes.func,
     readonly: PropTypes.bool,

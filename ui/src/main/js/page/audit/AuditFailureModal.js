@@ -107,6 +107,7 @@ AuditFailureModal.propTypes = {
         properties: PropTypes.array,
         type: PropTypes.string,
         notification: PropTypes.shape({
+            provider: PropTypes.string,
             providerCreationTime: PropTypes.string,
             providerConfigName: PropTypes.string,
             notificationType: PropTypes.string

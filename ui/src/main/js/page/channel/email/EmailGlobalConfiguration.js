@@ -61,6 +61,7 @@ const EmailGlobalConfiguration = ({
                     formDataId={emailConfig.id}
                     setErrors={(formErrors) => setErrors(formErrors)}
                     testFields={testField}
+                    testModalTitle="Send Test Email"
                     clearTestForm={() => setTestEmailAddress('')}
                     buttonIdPrefix={EMAIL_INFO.key}
                     getRequest={fetchData}
