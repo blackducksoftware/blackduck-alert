@@ -18,14 +18,6 @@ notifications:
       - gkillough@synopsys.com
       - bmandel@synopsys.com
 
-before_install:
-  - nvm install 24.11.1
-  - nvm use 24.11.1
-  - node --version
-  - corepack enable
-  - cd ui && corepack prepare --activate && cd ..
-  - pnpm --version
-
 script:
   - "./gradlew clean build jacocoTestReport sonarqube"
 
