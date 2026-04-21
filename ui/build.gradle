@@ -49,7 +49,7 @@ task pnpmInstallFromLockfile(type: Exec) {
 }
 
 task pnpmPruneStore(type: Exec, dependsOn: [pnpmInstallFromLockfile]) {
-    // This task has no inputs or outputs, therfore we need to let Gradle know to run it with `upToDateWhen { false }`
+    // This task has no inputs or outputs, therefore we need to let Gradle know to run it with `upToDateWhen { false }`
     // We also need to only run this if the pnpm install failed, which we can determine by checking the execution
     // result of the pnpmInstallFromLockfile task.
     outputs.upToDateWhen { false }

@@ -59,7 +59,7 @@ Note: The server will be running locally over: https://localhost:8443/alert
 ```bash
 pnpm run start
 ```
-Note: The webpack dev server will be running locally over: https://localhost:9000/alert 
+Note: The webpack dev server will be running locally over: https://localhost:2187/alert 
 
 ## Where can I get the latest release? ##
 <!-- The comments following wrap around the project url string for parsing during the build. Do Not Remove -->
