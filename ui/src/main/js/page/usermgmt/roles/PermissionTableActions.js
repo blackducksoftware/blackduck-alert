@@ -62,12 +62,7 @@ const PermissionTableActions = ({ data, handleValidatePermission }) => {
         const matching = descriptorOptions.filter((item) => item.name === selectedPermission.descriptorName);
 
         // Filter out any of the above matching objects whose (name, context) exists in exisitingPermissions
-        const available = matching.filter((item) => !existingPermissions.some(
-            permission =>
-                permission.descriptorName === item.name &&
-                permission.context === item.context
-            )
-        );
+        const available = matching.filter((item) => !existingPermissions.some((permission) => permission.descriptorName === item.name && permission.context === item.context));
 
         return available.map((permission) => ({
             label: permission.context,

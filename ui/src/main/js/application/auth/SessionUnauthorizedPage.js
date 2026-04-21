@@ -32,6 +32,6 @@ const SessionUnauthorizedPage = () => {
             </div>
         </AuthorizationView>
     );
-}
+};
 
-export default SessionUnauthorizedPage
+export default SessionUnauthorizedPage;

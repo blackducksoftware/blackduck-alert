@@ -70,7 +70,7 @@ const AboutLayout = ({ globalDescriptorMap, distributionDescriptorMap }) => {
                     <SystemMessagesSection />
                 </div>
                 <DistributionChannelsSection channelDescriptorData={channelDescriptorData} />
-                { hasAdminLevelAccess && <SystemDiagnosticsSection  />}
+                { hasAdminLevelAccess && <SystemDiagnosticsSection />}
             </section>
         </div>
     );

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchSystemDiagnostics } from '../../store/actions/system-diagnostics';
+import { fetchSystemDiagnostics } from 'store/actions/system-diagnostics';
 import Button from 'common/component/button/Button';
 import SectionCard from 'common/component/SectionCard';
 
@@ -25,20 +25,20 @@ const SystemDiagnosticsSection = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [sectionError, setSectionError] = useState(null);
     const { version } = useSelector((state) => state.about);
 
     const handleDownload = async () => {
         setIsLoading(true);
-        setError(null);
-        
+        setSectionError(null);
+
         try {
             const diagnosticsData = await dispatch(fetchSystemDiagnostics());
 
             const dataToWrite = (diagnosticsData && Object.keys(diagnosticsData).length > 0)
                 ? diagnosticsData
                 : {};
-            
+
             // Create a Blob from the diagnostics data
             const jsonString = JSON.stringify(dataToWrite, null, 2);
             const blob = new Blob([jsonString], { type: 'application/json' });
@@ -47,7 +47,7 @@ const SystemDiagnosticsSection = () => {
             // Create Filename
             const dateStamp = new Date();
             const filename = `system-diagnostics-${version}-${dateStamp.toISOString()}.json`;
-            
+
             // Create a temporary link and append it to the document
             const link = document.createElement('a');
             link.href = url;
@@ -59,7 +59,7 @@ const SystemDiagnosticsSection = () => {
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
         } catch (error) {
-            setError(error);
+            setSectionError(error);
         } finally {
             setIsLoading(false);
         }
@@ -80,9 +80,9 @@ const SystemDiagnosticsSection = () => {
                     showLoader={isLoading}
                     isDisabled={isLoading}
                 />
-                {error && (
+                {sectionError && (
                     <div className={classes.errorMessage}>
-                        Error: {error.message || 'An error occurred while fetching system diagnostics.'}
+                        Error: {sectionError.message || 'An error occurred while fetching system diagnostics.'}
                     </div>
                 )}
             </div>

@@ -57,7 +57,7 @@ const TableHeaderCell = ({ label, sortable, settings, onSort, name, sortConfig }
         if (sortConfig?.name === name) {
             return (<FontAwesomeIcon icon={sortConfig.direction === 'ASC' ? 'sort-up' : 'sort-down'} />);
         }
-        return (<FontAwesomeIcon icon="sort" className={classes.defaultSortIcon}/>);
+        return (<FontAwesomeIcon icon="sort" className={classes.defaultSortIcon} />);
     }
 
     return (

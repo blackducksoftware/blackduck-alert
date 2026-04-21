@@ -17,7 +17,7 @@ const useStyles = createUseStyles({
     },
     systemMessageList: {
         listStyleType: 'none',
-        padding: 0,
+        padding: 0
     },
     messageItem: {
         display: 'flex',
@@ -87,7 +87,7 @@ const useStyles = createUseStyles({
         color: theme.colors.grey.lightGrey,
         transition: 'opacity 0.15s ease',
         '&:hover': {
-            color: theme.colors.grey.darkGrey,
+            color: theme.colors.grey.darkGrey
         },
         '& > div': {
             fontSize: '12px',
@@ -144,22 +144,22 @@ const SystemMessagesSection = () => {
                     </button>
                     <div className={classes.messageListContainer}>
                         <ul className={classes.systemMessageList}>
-                        {latestMessages.map((message) => {
-                            const { icon, color } = getIconConfig(message.severity);
-                            return (
-                                <li key={message.createdAt} className={getMessageClassName(message.severity)}>
-                                    <div className={getIconClassName(message.severity)}>
-                                        <FontAwesomeIcon icon={icon} color={color} size="lg" />
-                                    </div>
-                                    <p className={classes.messageContent}>
-                                        {message.content}
-                                    </p>
-                                    <p className={classes.messageTimestamp}>
-                                        {message.createdAt}
-                                    </p>
-                                </li>
-                            );
-                        })}
+                            {latestMessages.map((message) => {
+                                const { icon, color } = getIconConfig(message.severity);
+                                return (
+                                    <li key={message.createdAt} className={getMessageClassName(message.severity)}>
+                                        <div className={getIconClassName(message.severity)}>
+                                            <FontAwesomeIcon icon={icon} color={color} size="lg" />
+                                        </div>
+                                        <p className={classes.messageContent}>
+                                            {message.content}
+                                        </p>
+                                        <p className={classes.messageTimestamp}>
+                                            {message.createdAt}
+                                        </p>
+                                    </li>
+                                );
+                            })}
                         </ul>
                     </div>
                 </>

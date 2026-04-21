@@ -25,7 +25,7 @@ const LogoutPage = () => {
     return (
         <AuthorizationView>
             <div className={classes.dialogContainer}>
-                <div>You've successfully logged out of Alert!</div>
+                <div>You have successfully logged out of Alert!</div>
                 <div>To complete logout please close your browser or click below.</div>
                 <Button id="logout-redirect-login" onClick={handleLoginRedirect} text="Return to Login" buttonStyle="action" />
             </div>
