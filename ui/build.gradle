@@ -4,6 +4,15 @@ import groovy.json.JsonSlurper
 ext.moduleName = 'com.blackduck.integration.alert.ui'
 def pnpmStoreDir = "${project.projectDir}/.pnpm-store"
 
+task corepackEnable(type: Exec) {
+    commandLine 'corepack', 'enable', 'pnpm'
+}
+
+task corepackPrepare(type: Exec, dependsOn: [corepackEnable]) {
+    workingDir project.projectDir
+    commandLine 'corepack', 'prepare', '--activate'
+}
+
 task cleanBundles(type: Delete) {
     doLast {
         File staticResourcesDirectory = new File('src/main/static')
@@ -36,7 +45,7 @@ task updatePnpmVersion(type: Task) {
     }
 }
 
-task pnpmInstallFromLockfile(type: Exec) {
+task pnpmInstallFromLockfile(type: Exec, dependsOn: [corepackPrepare]) {
     inputs.files('package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml')
     outputs.dir('node_modules')
     outputs.cacheIf { true }
