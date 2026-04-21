@@ -60,7 +60,6 @@ const InfoLink = ({ url, text }) => {
         <a
             href={url}
             className={classes.contentLink}
-            disabled={!url}
             target="_blank"
             rel="noopener noreferrer"
         >
@@ -70,7 +69,7 @@ const InfoLink = ({ url, text }) => {
 };
 
 InfoLink.propTypes = {
-    url: PropTypes.string.isRequired,
+    url: PropTypes.string,
     text: PropTypes.string.isRequired
 };
 

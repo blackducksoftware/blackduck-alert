@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import BlackDuckLogoAllBlack from '/src/main/img/BlackDuckLogo.png';
 import FooterSystemMessages from 'application/FooterSystemMessages';
