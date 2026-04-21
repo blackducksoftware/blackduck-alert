@@ -72,7 +72,7 @@ public class LDAPManagerTest {
         LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_USER_DN_PATTERNS, expectedLDAPConfigModel::getUserDnPatterns);
         LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_USER_ATTRIBUTES, expectedLDAPConfigModel::getUserAttributes);
         LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_GROUP_SEARCH_BASE, expectedLDAPConfigModel::getGroupSearchBase);
-        LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_GROUp_SEARCH_FILTER, expectedLDAPConfigModel::getGroupSearchFilter);
+        LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_GROUP_SEARCH_FILTER, expectedLDAPConfigModel::getGroupSearchFilter);
         LDAPTestHelper.assertOptionalField(LDAPTestHelper.DEFAULT_GROUP_ROLE_ATTRIBUTES, expectedLDAPConfigModel::getGroupRoleAttribute);
     }
 

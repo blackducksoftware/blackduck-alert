@@ -41,7 +41,7 @@ class TaskActionTest {
         ScheduledTask task = new ScheduledTask(scheduler) {
             @Override
             public void runTask() {
-
+                // Intentionally left blank for testing
             }
 
             @Override

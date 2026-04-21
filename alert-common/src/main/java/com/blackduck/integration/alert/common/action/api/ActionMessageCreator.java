@@ -12,7 +12,7 @@ public class ActionMessageCreator {
     public static final String CREATE_SUCCESS_MESSAGE = "%s %s created successfully.";
     public static final String CREATE_ERROR_MESSAGE = "An error occurred while creating %s: %s";
 
-    public static final String UPDATE_START_MESSAGE_ = "Updating %s: %s";
+    public static final String UPDATE_START_MESSAGE = "Updating %s: %s";
     public static final String UPDATE_SUCCESS_MESSAGE = "%s %s updated successfully.";
     public static final String UPDATE_ERROR_MESSAGE = "An error occurred while updating %s: %s";
     public static final String UPDATE_NOT_FOUND_MESSAGE = "%s with id %s not found";
@@ -35,7 +35,7 @@ public class ActionMessageCreator {
     }
 
     public String updateStartMessage(String objectType, String objectName) {
-        return String.format(UPDATE_START_MESSAGE_, objectType, objectName);
+        return String.format(UPDATE_START_MESSAGE, objectType, objectName);
     }
 
     public String updateSuccessMessage(String objectType, String objectName) {
