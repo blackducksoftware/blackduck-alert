@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Table from 'common/component/table/Table';
+import AuditFailureRowActionsCell from 'page/audit/AuditFailureRowActionsCell';
 import CreatedAtCell from 'page/audit/CreatedAtCell';
 import JobsCountCell from 'page/audit/JobsCountCell';
 import NotificationCell from 'page/audit/NotificationCell';
 import ProviderCell from 'page/audit/ProviderCell';
-import RefreshFailureCell from 'page/audit/RefreshFailureCell';
-import ViewFailureCell from 'page/audit/ViewFailureCell';
 import { fetchAuditData } from 'store/actions/audit';
 import Button from 'common/component/button/Button';
 
@@ -136,16 +135,10 @@ const AuditFailureTable = () => {
         customCell: JobsCountCell,
         settings: { alignment: 'center' }
     }, {
-        key: 'viewFailure',
-        label: 'View',
+        key: 'auditFailureRowActions',
+        label: '',
         sortable: false,
-        customCell: ViewFailureCell,
-        settings: { alignment: 'center' }
-    }, {
-        key: 'refreshNotification',
-        label: 'Refresh',
-        sortable: false,
-        customCell: RefreshFailureCell,
+        customCell: AuditFailureRowActionsCell,
         settings: {
             alignment: 'center',
             params: paramsConfig,
@@ -169,7 +162,17 @@ const AuditFailureTable = () => {
             showPageSize
             data={data}
             emptyTableConfig={emptyTableConfig}
-            tableActions={() => <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} />}
+            tableActions={() => (
+                <Button
+                    onClick={handleRefresh}
+                    type="button"
+                    text="Refresh"
+                    isDisabled={fetching}
+                    showLoader={fetching}
+                    buttonStyle="action"
+                    icon="arrows-rotate"
+                />
+            )}
         />
     );
 };

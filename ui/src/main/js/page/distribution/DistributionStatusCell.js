@@ -5,58 +5,65 @@ import classNames from 'classnames';
 
 const useStyles = createUseStyles((theme) => ({
     badge: {
-        padding: ['1px', '4px'],
-        fontSize: '0.9em',
-        textAlign: 'center',
-        borderRadius: '2px'
-    },
-    fail: {
-        backgroundColor: theme.colors.statusFailure,
-        color: theme.colors.white.default
-    },
-    pending: {
-        backgroundColor: theme.colors.statusPending,
-        border: '1px solid #F2B560'
+        display: 'flex',
+        alignItems: 'center',
+        columnGap: '6px',
+        borderRadius: '8px',
+        width: 'fit-content',
+        padding: '0 10px',
+        margin: 'auto',
+        fontSize: '13px'
     },
     success: {
-        backgroundColor: theme.colors.statusSuccess,
-        color: theme.colors.white.default
+        color: theme.colors.status.success.default,
+        border: `1px solid ${theme.colors.status.success.border}`,
+        backgroundColor: theme.colors.status.success.background
+    },
+    fail: {
+        color: theme.colors.status.error.default,
+        border: `1px solid ${theme.colors.status.error.border}`,
+        backgroundColor: theme.colors.status.error.background
+    },
+    pending: {
+        color: theme.colors.status.warning.default,
+        border: `1px solid ${theme.colors.status.warning.border}`,
+        backgroundColor: theme.colors.status.warning.background
     }
 }));
 
-const DistributionEditCell = ({ data }) => {
+const DistributionStatusCell = ({ data }) => {
     const classes = useStyles();
     const { auditStatus } = data;
 
     const statusClass = classNames(classes.badge, {
         [classes.fail]: auditStatus === 'FAILURE',
-        [classes.pending]: auditStatus === 'PENDING',
-        [classes.success]: auditStatus === 'SUCCESS',
+        [classes.pending]: auditStatus !== 'SUCCESS' && auditStatus !== 'FAILURE',
+        [classes.success]: auditStatus === 'SUCCESS'
     });
-    
+
     function getStatus(status) {
         if (status === 'FAILURE') {
-            return 'Failure'
+            return 'Failure';
         } else if (status === 'SUCCESS') {
-            return 'Success'
+            return 'Success';
         } else if (status === 'PENDING') {
-            return 'Pending'
+            return 'Pending';
         } else {
-            return '\u2014'
+            return '\u2014';
         }
     }
-    
+
     return (
         <div className={statusClass}>
             {getStatus(auditStatus)}
         </div>
-    )
+    );
 };
 
-DistributionEditCell.propTypes = {
+DistributionStatusCell.propTypes = {
     data: PropTypes.shape({
         auditStatus: PropTypes.string
     })
 };
 
-export default DistributionEditCell;
+export default DistributionStatusCell;

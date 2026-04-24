@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import { Redirect, Route, withRouter } from 'react-router-dom';
 import Navigation from 'application/Navigation';
 import TopNavBar from 'application/TopNavBar';
-import AboutInfo from 'page/about/AboutInfo';
 import LogoutConfirmation from 'common/component/LogoutConfirmation';
 import { getDescriptors } from 'store/actions/descriptors';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -44,6 +43,7 @@ import { unauthorized } from 'store/actions/session';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import DescriptorRoute from 'common/component/descriptor/DescriptorRoute';
 import EmailGlobalConfiguration from 'page/channel/email/EmailGlobalConfiguration';
+import AboutLayout from 'page/about/AboutLayout';
 
 const useStyles = createUseStyles({
     blackDuckAlertApp: {
@@ -226,10 +226,11 @@ const MainPage = ({
                 uriPrefix={componentUri}
                 urlName={CERTIFICATE_INFO.url}
                 descriptor={globalDescriptorMap[CERTIFICATE_INFO.key]}
-                render={() => (
+                render={(readOnly) => (
                     <CertificatesPageLayout
                         csrfToken={csrfToken}
                         errorHandler={errorHandler}
+                        readOnly={readOnly}
                     />
                 )}
             />
@@ -278,7 +279,7 @@ const MainPage = ({
                 )}
             />
             <Route exact path="/alert/general/about">
-                <AboutInfo globalDescriptorMap={globalDescriptorMap} distributionDescriptorMap={distributionDescriptorMap} />
+                <AboutLayout globalDescriptorMap={globalDescriptorMap} distributionDescriptorMap={distributionDescriptorMap} />
             </Route>
         </div>
     );

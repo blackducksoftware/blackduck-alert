@@ -1,22 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { createUseStyles } from 'react-jss';
 import { useDispatch, useSelector } from 'react-redux';
 import { bulkDeleteUsers, fetchUsers } from 'store/actions/users';
-import Modal from 'common/component/modal/Modal';
-import Card from 'common/component/Card';
-
-const useStyles = createUseStyles({
-    deleteConfirmMessage: {
-        margin: [0, '20px', '20px', '30px'],
-        fontSize: '16px',
-        fontWeight: 'bold'
-    },
-    cardContainer: {
-        display: 'flex',
-        marginLeft: '50px'
-    }
-});
+import DeleteModal from 'common/component/modal/DeleteModal';
 
 function getStagedForDelete(data, selected) {
     const staged = data.filter((user) => selected.includes(user.id));
@@ -24,7 +10,6 @@ function getStagedForDelete(data, selected) {
 }
 
 const UserDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, setStatusMessage }) => {
-    const classes = useStyles();
     const dispatch = useDispatch();
     const { deleteStatus, error } = useSelector((state) => state.users);
     const [selectedUsers, setSelectedUsers] = useState(getStagedForDelete(data, selected));
@@ -63,7 +48,7 @@ const UserDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, set
                     type: 'success'
                 });
             }
-            setSelected([]);
+            setSelected?.([]);
             handleClose();
         }
 
@@ -77,43 +62,15 @@ const UserDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, set
         }
     }, [deleteStatus]);
 
-    function toggleSelect(selection) {
-        const toggledUsers = selectedUsers.map((user) => {
-            if (user.id === selection.id) {
-                return { ...user, staged: !user.staged };
-            }
-            return user;
-        });
-
-        setSelectedUsers(toggledUsers);
-    }
-
     return (
-        <>
-            <Modal
-                isOpen={isOpen}
-                size="sm"
-                title={isMultiUserDelete ? 'Delete Users' : 'Delete User'}
-                closeModal={handleClose}
-                handleCancel={handleClose}
-                handleSubmit={handleDelete}
-                submitText="Delete"
-                showLoader={showLoader}
-            >
-                <div className={classes.deleteConfirmMessage}>
-                    { isMultiUserDelete ? 'Are you sure you want to delete these users?' : 'Are you sure you want to delete this user?' }
-                </div>
-                <div>
-                    { selectedUsers?.map((user) => (
-                        <div className={classes.cardContainer} key={user.id}>
-                            <input type="checkbox" checked={user.staged} onChange={() => toggleSelect(user)} />
-                            <Card icon="user" label={user.username} description={user.emailAddress} />
-                        </div>
-                    ))}
-                </div>
-            </Modal>
-        </>
-
+        <DeleteModal
+            isOpen={isOpen}
+            title={isMultiUserDelete ? 'Delete Users' : 'Delete User'}
+            confirmationMessage={isMultiUserDelete ? 'Are you sure you want to delete these users?' : 'Are you sure you want to delete this user?'}
+            onClose={handleClose}
+            onDelete={handleDelete}
+            isLoading={showLoader}
+        />
     );
 };
 

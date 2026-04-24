@@ -20,7 +20,7 @@ const useStyles = createUseStyles({
 
 const LabelValuePair = ({ label, seperator, value, icon }) => {
     const classes = useStyles();
-    const displayLabel = `${label}${seperator}`; 
+    const displayLabel = `${label}${seperator}`;
 
     return (
         <div className={classes.container}>

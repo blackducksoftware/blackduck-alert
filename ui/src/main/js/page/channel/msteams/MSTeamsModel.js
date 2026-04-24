@@ -1,7 +1,7 @@
 export const MSTEAMS_INFO = {
     key: 'msteamskey',
     url: 'msteams',
-    label: 'MS Teams'
+    label: 'Microsoft Teams'
 };
 
 export const MSTEAMS_DISTRIBUTION_FIELD_KEYS = {

@@ -2,31 +2,35 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 
-const useStyles = createUseStyles({
+const useStyles = createUseStyles((theme) => ({
     modalHeader: {
         display: 'flex',
         fontSize: '20px',
-        padding: '10px',
-        backgroundColor: '#eeeeee',
-        borderBottom: 'solid 1px #D6D6D6'
+        margin: ['20px', '20px', '10px'],
+        paddingBottom: '10px',
+        borderBottom: `1px solid ${theme.colors.defaultBackgroundColor}`,
+        borderTopLeftRadius: theme.modal.modalBorderRadius,
+        borderTopRightRadius: theme.modal.modalBorderRadius
     },
     title: {
         flexBasis: '98%',
-        padding: ['2px', '4px'],
         textAlign: 'left'
     },
     closeBtn: {
         background: 'none',
-        color: 'inherit',
+        color: theme.colors.grey.default,
         border: 'none',
-        padding: ['2px', '10px'],
         font: 'inherit',
-        cursor: 'pointer',
+        height: 'fit-content',
         '&:focus': {
             outline: 0
+        },
+        '&:hover': {
+            color: theme.colors.grey.blackout,
+            backgroundColor: theme.colors.inputDisabled
         }
     }
-});
+}));
 
 const ModalHeader = ({ title, closeModal }) => {
     const classes = useStyles();

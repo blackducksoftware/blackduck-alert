@@ -4,28 +4,37 @@ import Select, { components } from 'react-select';
 import Creatable from 'react-select/creatable';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input/field/LabeledField';
 import DescriptorOption from 'common/component/descriptor/DescriptorOption';
+import { createUseStyles } from 'react-jss';
+import classNames from 'classnames';
+import theme from '_theme';
 
 const { Option, SingleValue, MultiValue } = components;
+
+const useStyles = createUseStyles({
+    input: {
+        width: ({ width }) => width
+    },
+    errorInput: {
+        outline: `1px solid ${theme.colors.red.default}`
+    }
+});
 
 const DynamicSelectInput = ({
     onChange,
     id,
     name,
-    inputClass,
+    width = '100%',
     options,
     searchable,
     placeholder,
     value,
     removeSelected,
     multiSelect,
-    selectSpacingClass,
     readOnly,
     clearable,
     onFocus,
-    labelClass,
-    customDescription,
-    description,
-    showDescriptionPlaceHolder,
+    fieldDescription,
+    tooltipDescription,
     label,
     errorName,
     errorValue,
@@ -35,7 +44,7 @@ const DynamicSelectInput = ({
     customVal,
     customSelect
 }) => {
-    const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
+    const classes = useStyles({ width });
     const selectedOptions = options.filter((option) => value.includes(option.value));
     if (creatable) {
         const selectedOptionValues = selectedOptions.map((selection) => selection.value);
@@ -92,11 +101,29 @@ const DynamicSelectInput = ({
 
     // moves the dropdown in front of our fixed buttons
     const selectStyles = {
-        menu: (base, state) => ({
+        menu: (base) => ({
             ...base,
             zIndex: '101'
+        }),
+        control: (base, state) => ({
+            ...base,
+            border: `1px solid ${theme.colors.grey.lightGrey}`,
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            fontSize: '14px',
+            outline: state.isFocused ? `2px solid ${theme.colors.defaultBorderColor}` : 'none',
+            '&:hover:not(:focus)': {
+                border: `1px solid ${theme.colors.defaultBorderColor}`
+            }
+        }),
+        multiValue: (base) => ({
+            ...base,
+            borderRadius: '4px'
         })
     };
+    const inputClass = classNames(classes.input, {
+        [classes.errorInput]: errorValue?.severity === 'ERROR'
+    });
 
     const createStandardSelect = () => (
         <Select
@@ -149,18 +176,14 @@ const DynamicSelectInput = ({
     return (
         <LabeledField
             id={id}
-            customDescription={customDescription}
-            description={description}
+            tooltipDescription={tooltipDescription}
+            fieldDescription={fieldDescription}
             errorName={errorName}
             errorValue={errorValue}
             label={label}
-            labelClass={labelClass}
             required={required}
-            showDescriptionPlaceHolder={showDescriptionPlaceHolder}
         >
-            <div className={selectClasses}>
-                {customSelect || selectComponent}
-            </div>
+            {customSelect || selectComponent}
         </LabeledField>
     );
 };
@@ -168,8 +191,6 @@ const DynamicSelectInput = ({
 DynamicSelectInput.propTypes = {
     id: PropTypes.string,
     name: PropTypes.string,
-    inputClass: PropTypes.string,
-    selectSpacingClass: PropTypes.string,
     options: PropTypes.array,
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
     placeholder: PropTypes.string,
@@ -181,17 +202,16 @@ DynamicSelectInput.propTypes = {
     onChange: PropTypes.func.isRequired,
     onFocus: PropTypes.func,
     label: PropTypes.string.isRequired,
-    labelClass: PropTypes.string,
-    description: PropTypes.string,
-    showDescriptionPlaceHolder: PropTypes.bool,
+    fieldDescription: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     required: PropTypes.bool,
     creatable: PropTypes.bool,
     maxMenuHeight: PropTypes.number,
-    customDescription: PropTypes.string,
+    tooltipDescription: PropTypes.string,
     customVal: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
-    customSelect: PropTypes.element
+    customSelect: PropTypes.element,
+    width: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
 };
 
 DynamicSelectInput.defaultProps = {
@@ -200,20 +220,16 @@ DynamicSelectInput.defaultProps = {
     value: [],
     placeholder: 'Choose a value',
     options: [],
-    inputClass: 'typeAheadField',
-    labelClass: 'col-sm-3',
-    selectSpacingClass: 'col-sm-8',
     searchable: false,
     removeSelected: false,
     readOnly: false,
     multiSelect: false,
     clearable: true,
     onFocus: () => null,
-    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
-    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT,
     creatable: false,
     customSelect: null
 };

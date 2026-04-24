@@ -3,6 +3,25 @@ import PropTypes from 'prop-types';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input/field/LabeledField';
 import FieldMappingRow from 'common/component/input/mapping/FieldMappingRow';
 import Button from 'common/component/button/Button';
+import { createUseStyles } from 'react-jss';
+
+const useStyles = createUseStyles((theme) => ({
+    additionalFieldsContainer: {
+        borderTop: `1px solid ${theme.colors.defaultBackgroundColor}`,
+        padding: ['20px', 0],
+        marginTop: '20px'
+    },
+    additionalFieldsContent: {
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        rowGap: '10px'
+    },
+    additionalFieldsDescription: {
+        fontSize: '14px',
+        color: theme.colors.grey.blackout
+    }
+}));
 
 const FluidFieldMappingField = ({
     id,
@@ -12,12 +31,10 @@ const FluidFieldMappingField = ({
     setValue,
     errorName,
     errorValue,
-    label,
-    labelClass,
     readonly,
-    required,
-    showDescriptionPlaceHolder
+    required
 }) => {
+    const classes = useStyles();
     const [fieldMappings, setFieldMappings] = useState([]);
 
     useEffect(() => {
@@ -57,28 +74,30 @@ const FluidFieldMappingField = ({
                 leftSide={key}
                 deleteRow={deleteMappingRow}
                 readonly={readonly}
+                key={key}
             />
         );
     });
 
     return (
-        <LabeledField
-            id={id}
-            description={description}
-            errorName={errorName}
-            errorValue={errorValue}
-            label={label}
-            labelClass={labelClass}
-            required={required}
-            showDescriptionPlaceHolder={showDescriptionPlaceHolder}
-        >
-            <div className="d-inline-flex">
-                <div className="container">
+        <div className={classes.additionalFieldsContainer}>
+            <h5>Additional Properties</h5>
+            <LabeledField
+                id={id}
+                errorName={errorName}
+                errorValue={errorValue}
+                label=""
+                required={required}
+            >
+                <p className={classes.additionalFieldsDescription}>{description}</p>
+                <div className={classes.additionalFieldsContent}>
                     {renderExistingRows}
-                    <Button id={id} onClick={addRow} text={buttonLabel} icon="plus" />
+                    <div>
+                        <Button id={id} onClick={addRow} text={buttonLabel} icon="plus" buttonStyle="actionSecondary" />
+                    </div>
                 </div>
-            </div>
-        </LabeledField>
+            </LabeledField>
+        </div>
     );
 };
 
@@ -86,15 +105,12 @@ FluidFieldMappingField.propTypes = {
     id: PropTypes.string,
     value: PropTypes.object.isRequired,
     setValue: PropTypes.func.isRequired,
-    label: PropTypes.string.isRequired,
     buttonLabel: PropTypes.string,
     description: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
-    labelClass: PropTypes.string,
     readonly: PropTypes.bool,
-    required: PropTypes.bool,
-    showDescriptionPlaceHolder: PropTypes.bool
+    required: PropTypes.bool
 };
 
 FluidFieldMappingField.defaultProps = {
@@ -103,9 +119,7 @@ FluidFieldMappingField.defaultProps = {
     description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
-    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 };
 
 export default FluidFieldMappingField;

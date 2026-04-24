@@ -37,7 +37,7 @@ const DistributionTableActions = ({ data, selected, setSelected, paramsConfig, s
                 />
             )}
 
-            <Button onClick={handleCreateProviderClick} type="button" icon="plus" text="Create Job" />
+            <Button onClick={handleCreateProviderClick} type="button" icon="plus" text="Create Job" buttonStyle="action" />
 
             <Button
                 onClick={handleDeleteProviderClick}
@@ -45,10 +45,18 @@ const DistributionTableActions = ({ data, selected, setSelected, paramsConfig, s
                 icon="trash"
                 isDisabled={selected.length === 0}
                 text="Delete"
-                buttonStyle="delete"
+                buttonStyle="actionSecondary"
             />
 
-            <Button onClick={handleRefresh} type="button" text="Refresh" isDisabled={fetching} showLoader={fetching} />
+            <Button
+                onClick={handleRefresh}
+                type="button"
+                text="Refresh"
+                isDisabled={fetching}
+                showLoader={fetching}
+                buttonStyle="actionSecondary"
+                icon="arrows-rotate"
+            />
 
             {showDeleteModal && (
                 <DistributionDeleteModal

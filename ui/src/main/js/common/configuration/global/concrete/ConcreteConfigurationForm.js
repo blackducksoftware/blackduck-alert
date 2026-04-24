@@ -21,6 +21,7 @@ const ConcreteConfigurationForm = ({
     displayCancel,
     children,
     testFields,
+    testModalTitle,
     buttonIdPrefix,
     afterSuccessfulSave,
     readonly,
@@ -177,7 +178,7 @@ const ConcreteConfigurationForm = ({
                 actionMessage={actionMessage}
                 errorIsDetailed={errorIsDetailed}
             />
-            <form className="form-horizontal" onSubmit={performSaveRequest} noValidate>
+            <form onSubmit={performSaveRequest} noValidate>
                 <div>
                     {children}
                 </div>
@@ -213,6 +214,7 @@ const ConcreteConfigurationForm = ({
                 disableTestModalSubmit={disableTestModalSubmit}
                 modalSubmitText={modalSubmitText}
                 testModalButtonTitle={testModalButtonTitle}
+                testModalTitle={testModalTitle}
             >
                 <div>
                     {testFields}
@@ -238,6 +240,7 @@ ConcreteConfigurationForm.propTypes = {
     displayCancel: PropTypes.bool,
     formDataId: PropTypes.string,
     testFields: PropTypes.node,
+    testModalTitle: PropTypes.string,
     buttonIdPrefix: PropTypes.string,
     afterSuccessfulSave: PropTypes.func,
     readonly: PropTypes.bool,
@@ -252,7 +255,8 @@ ConcreteConfigurationForm.propTypes = {
     modalSubmitText: PropTypes.string,
     testModalButtonTitle: PropTypes.string,
     isSaveDisabled: PropTypes.bool,
-    isDeleteDisabled: PropTypes.bool
+    isDeleteDisabled: PropTypes.bool,
+    ignoreValidation: PropTypes.bool
 };
 
 ConcreteConfigurationForm.defaultProps = {

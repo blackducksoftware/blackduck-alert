@@ -66,7 +66,7 @@ const CertificateModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMe
     return (
         <Modal
             isOpen={isOpen}
-            size="lg"
+            size="md"
             title={title}
             submitText={submitText}
             closeModal={handleClose}
@@ -85,8 +85,7 @@ const CertificateModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMe
             <TextInput
                 id="alias-textInputId"
                 name="alias"
-                label="Alias"
-                customDescription="The certificate alias name."
+                label="Certificate Alias Name"
                 required
                 onChange={handleOnChange('alias')}
                 value={getDisplayValue('alias')}
@@ -97,7 +96,6 @@ const CertificateModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMe
                 id="certificate-textAreaId"
                 name="certificateContent"
                 label="Certificate Content"
-                customDescription="The certificate content text."
                 required
                 onChange={handleOnChange('certificateContent')}
                 value={getDisplayValue('certificateContent')}
