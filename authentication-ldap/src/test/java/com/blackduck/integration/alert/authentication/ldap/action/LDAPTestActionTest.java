@@ -39,8 +39,8 @@ import com.blackduck.integration.alert.common.message.model.ConfigurationTestRes
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 
 class LDAPTestActionTest {
-    public static final String testUser = "testLDAPUsername";
-    public static final String testPass = "testLDAPPassword";
+    public static final String TEST_LDAP_USERNAME = "testLDAPUsername";
+    public static final String TEST_LDAP_PASSWORD = "testLDAPPassword";
     private static final AuthorizationManager authorizationManager = LDAPTestHelper.createAuthorizationManager();
 
     private static final AuthenticationDescriptorKey authenticationDescriptorKey = new AuthenticationDescriptorKey();
@@ -70,7 +70,7 @@ class LDAPTestActionTest {
 
     @Test
     void testAuthenticationValidationFails() {
-        LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(invalidLDAPConfigModel, testUser, testPass);
+        LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(invalidLDAPConfigModel, TEST_LDAP_USERNAME, TEST_LDAP_PASSWORD);
         ActionResponse<ValidationResponseModel> validationResponseModelActionResponse = ldapTestAction.testAuthentication(ldapConfigTestModel);
 
         assertEquals(HttpStatus.OK, validationResponseModelActionResponse.getHttpStatus());
@@ -86,7 +86,7 @@ class LDAPTestActionTest {
     @Test
     void testAuthenticationValidationSuccess() {
         validLDAPConfigModel.setUserSearchFilter("");
-        LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(validLDAPConfigModel, testUser, testPass);
+        LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(validLDAPConfigModel, TEST_LDAP_USERNAME, TEST_LDAP_PASSWORD);
         ActionResponse<ValidationResponseModel> validationResponseModelActionResponse = ldapTestAction.testAuthentication(ldapConfigTestModel);
 
         assertEquals(HttpStatus.OK, validationResponseModelActionResponse.getHttpStatus());
@@ -109,7 +109,7 @@ class LDAPTestActionTest {
 
         validLDAPConfigModel.setUserSearchFilter("");
         validLDAPConfigModel.setManagerPassword("");
-        LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(validLDAPConfigModel, testUser, testPass);
+        LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(validLDAPConfigModel, TEST_LDAP_USERNAME, TEST_LDAP_PASSWORD);
 
         ldapTestAction = new LDAPTestAction(authorizationManager, authenticationDescriptorKey, ldapConfigurationValidator, ldapManager, spiedLDAPConfigAccessor);
         ActionResponse<ValidationResponseModel> validationResponseModelActionResponse = ldapTestAction.testAuthentication(ldapConfigTestModel);
@@ -127,7 +127,7 @@ class LDAPTestActionTest {
 
     @Test
     void testEmptyAuthenticationProvider() {
-        LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(validLDAPConfigModel, testUser, testPass);
+        LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(validLDAPConfigModel, TEST_LDAP_USERNAME, TEST_LDAP_PASSWORD);
         LDAPManager spiedLDAPManager = Mockito.spy(ldapManager);
         assertDoesNotThrow(() -> Mockito.doReturn(Optional.empty()).when(spiedLDAPManager).createAuthProvider(validLDAPConfigModel));
 
@@ -144,7 +144,7 @@ class LDAPTestActionTest {
 
     @Test
     void testAuthenticateFailure() {
-        LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(validLDAPConfigModel, testUser, testPass);
+        LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(validLDAPConfigModel, TEST_LDAP_USERNAME, TEST_LDAP_PASSWORD);
         LDAPManager spiedLDAPManager = Mockito.spy(ldapManager);
         LdapAuthenticationProvider mockLdapAuthenticationProvider = Mockito.mock(LdapAuthenticationProvider.class);
         assertDoesNotThrow(() -> Mockito.doReturn(Optional.of(mockLdapAuthenticationProvider)).when(spiedLDAPManager).createAuthProvider(validLDAPConfigModel));
@@ -158,12 +158,12 @@ class LDAPTestActionTest {
         ValidationResponseModel validationResponseModel = validationResponseModelActionResponse.getContent()
             .orElseThrow(() -> new AssertionError("Expected response content not found"));
         assertTrue(validationResponseModel.hasErrors());
-        assertEquals(String.format("LDAP authentication failed for test user %s.", testUser), validationResponseModel.getMessage());
+        assertEquals(String.format("LDAP authentication failed for test user %s.", TEST_LDAP_USERNAME), validationResponseModel.getMessage());
     }
 
     @Test
     void testAuthenticateSuccess() {
-        LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(validLDAPConfigModel, testUser, testPass);
+        LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(validLDAPConfigModel, TEST_LDAP_USERNAME, TEST_LDAP_PASSWORD);
         LDAPManager spiedLDAPManager = Mockito.spy(ldapManager);
         LdapAuthenticationProvider mockLdapAuthenticationProvider = Mockito.mock(LdapAuthenticationProvider.class);
         assertDoesNotThrow(() -> Mockito.doReturn(Optional.of(mockLdapAuthenticationProvider)).when(spiedLDAPManager).createAuthProvider(validLDAPConfigModel));
@@ -184,7 +184,7 @@ class LDAPTestActionTest {
 
     @Test
     void testConfigModelContentInvalidConfig() {
-        LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(invalidLDAPConfigModel, testUser, testPass);
+        LDAPConfigTestModel ldapConfigTestModel = new LDAPConfigTestModel(invalidLDAPConfigModel, TEST_LDAP_USERNAME, TEST_LDAP_PASSWORD);
         ConfigurationTestResult configurationTestResult = ldapTestAction.testConfigModelContent(ldapConfigTestModel);
 
         assertFalse(configurationTestResult.isSuccess());

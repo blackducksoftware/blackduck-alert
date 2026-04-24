@@ -50,7 +50,7 @@ public class LDAPTestHelper {
     public static final String DEFAULT_USER_DN_PATTERNS = "";
     public static final String DEFAULT_USER_ATTRIBUTES = "";
     public static final String DEFAULT_GROUP_SEARCH_BASE = "ou=groups,dc=blackduck,dc=com";
-    public static final String DEFAULT_GROUp_SEARCH_FILTER = "uniquemember={0}";
+    public static final String DEFAULT_GROUP_SEARCH_FILTER = "uniquemember={0}";
     public static final String DEFAULT_GROUP_ROLE_ATTRIBUTES = "cn";
 
     public static LDAPConfigModel createValidLDAPConfigModel() {
@@ -70,7 +70,7 @@ public class LDAPTestHelper {
             DEFAULT_USER_DN_PATTERNS,
             DEFAULT_USER_ATTRIBUTES,
             DEFAULT_GROUP_SEARCH_BASE,
-            DEFAULT_GROUp_SEARCH_FILTER,
+            DEFAULT_GROUP_SEARCH_FILTER,
             DEFAULT_GROUP_ROLE_ATTRIBUTES
         );
     }
