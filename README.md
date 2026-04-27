@@ -57,7 +57,7 @@ Note: The server will be running locally over: https://localhost:8443/alert
 
 ##### 2. Start the webpack dev server #####
 ```bash
-pnpm run start
+pnpm start
 ```
 Note: The webpack dev server will be running locally over: https://localhost:2187/alert 
 
