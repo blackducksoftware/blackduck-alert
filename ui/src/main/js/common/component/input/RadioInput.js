@@ -21,8 +21,8 @@ const useStyles = createUseStyles({
 });
 
 const RadioInput = ({
-    id, description, errorName, errorValue, label, labelClass, name, onChange, readOnly, 
-    required, showDescriptionPlaceHolder, radioOptions, checked, isInModal, customDescription
+    id, fieldDescription, errorName, errorValue, label, name, onChange, readOnly,
+    required, radioOptions, checked, isInModal, tooltipDescription
 }) => {
     const classes = useStyles();
 
@@ -34,14 +34,12 @@ const RadioInput = ({
     return (
         <LabeledField
             id={id}
-            labelClass={labelClass}
-            description={description}
-            showDescriptionPlaceHolder={showDescriptionPlaceHolder}
+            fieldDescription={fieldDescription}
             label={label}
             errorName={errorName}
             errorValue={errorValue}
             required={required}
-            customDescription={customDescription}
+            tooltipDescription={tooltipDescription}
         >
             <div className={containerClass}>
                 {radioOptions.map((option) => (
@@ -68,19 +66,17 @@ const RadioInput = ({
 
 RadioInput.propTypes = {
     checked: PropTypes.string,
-    customDescription: PropTypes.string,
-    description: PropTypes.string,
+    tooltipDescription: PropTypes.string,
+    fieldDescription: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     id: PropTypes.string,
     isInModal: PropTypes.bool,
     label: PropTypes.string.isRequired,
-    labelClass: PropTypes.string,
     name: PropTypes.string,
     onChange: PropTypes.func,
     readOnly: PropTypes.bool,
     required: PropTypes.bool,
-    showDescriptionPlaceHolder: PropTypes.bool,
     radioOptions: PropTypes.array
 };
 
@@ -90,13 +86,10 @@ RadioInput.defaultProps = {
     onChange: () => true,
     readOnly: false,
     isInModal: false,
-    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
-    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
-
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 };
 
 export default RadioInput;

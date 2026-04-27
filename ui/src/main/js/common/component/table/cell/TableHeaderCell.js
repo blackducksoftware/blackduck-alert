@@ -4,9 +4,9 @@ import classNames from 'classnames';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const useStyles = createUseStyles({
+const useStyles = createUseStyles((theme) => ({
     headerCell: {
-        fontWeight: 'bold',
+        fontSize: '14px',
         '& > button': {
             background: 'none',
             border: 0,
@@ -28,7 +28,7 @@ const useStyles = createUseStyles({
     },
     sortableCell: {
         '&:hover': {
-            borderBottom: [1, 'solid', '#787884']
+            borderBottom: [1, 'solid', theme.colors.grey.default]
         }
     },
     buttonContainer: {
@@ -39,8 +39,11 @@ const useStyles = createUseStyles({
             border: 'none',
             outline: 'none'
         }
+    },
+    defaultSortIcon: {
+        color: theme.colors.grey.lightGrey
     }
-});
+}));
 
 const TableHeaderCell = ({ label, sortable, settings, onSort, name, sortConfig }) => {
     const classes = useStyles();
@@ -50,8 +53,11 @@ const TableHeaderCell = ({ label, sortable, settings, onSort, name, sortConfig }
         [classes.center]: settings?.alignment === 'center'
     });
 
-    function getSortIcon(direction) {
-        return direction === 'ASC' ? 'sort-up' : 'sort-down';
+    function getSortIcon() {
+        if (sortConfig?.name === name) {
+            return (<FontAwesomeIcon icon={sortConfig.direction === 'ASC' ? 'sort-up' : 'sort-down'} />);
+        }
+        return (<FontAwesomeIcon icon="sort" className={classes.defaultSortIcon} />);
     }
 
     return (
@@ -59,9 +65,7 @@ const TableHeaderCell = ({ label, sortable, settings, onSort, name, sortConfig }
             { sortable ? (
                 <button type="button" onClick={() => onSort(name)} className={classes.buttonContainer}>
                     {label}
-                    { sortConfig && sortConfig?.name === name ? (
-                        <FontAwesomeIcon icon={getSortIcon(sortConfig.direction)} />
-                    ) : <FontAwesomeIcon icon="sort" /> }
+                    {getSortIcon()}
                 </button>
             ) : <div className={classes.cell}>{label}</div> }
         </th>

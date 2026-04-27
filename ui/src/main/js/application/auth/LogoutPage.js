@@ -2,8 +2,8 @@ import React from 'react';
 import { createUseStyles } from 'react-jss';
 import { useDispatch } from 'react-redux';
 import { verifyLogin } from 'store/actions/session';
-import Header from 'common/component/Header';
 import Button from 'common/component/button/Button';
+import AuthorizationView from 'common/component/AuthorizationView';
 
 const useStyles = createUseStyles({
     dialogContainer: {
@@ -23,18 +23,13 @@ const LogoutPage = () => {
     }
 
     return (
-        <div className="wrapper">
-            <div className="loginContainer">
-                <div className="loginBox">
-                    <Header />
-                    <div className={classes.dialogContainer}>
-                        <div>You've successfully logged out of Alert!</div>
-                        <div>To complete logout please close your browser or click below.</div>
-                        <Button id="logout-redirect-login" onClick={handleLoginRedirect} text="Return to Login" />
-                    </div>
-                </div>
+        <AuthorizationView>
+            <div className={classes.dialogContainer}>
+                <div>You have successfully logged out of Alert!</div>
+                <div>To complete logout please close your browser or click below.</div>
+                <Button id="logout-redirect-login" onClick={handleLoginRedirect} text="Return to Login" buttonStyle="action" />
             </div>
-        </div>
+        </AuthorizationView>
     );
 };
 

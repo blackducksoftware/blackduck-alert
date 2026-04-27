@@ -3,69 +3,65 @@ import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-// TODO: Rework additional info, should accept more than lastUpdated
-// TODO: Last updated has perfect ability to become LabelValuePair reusable component
-
 const useStyles = createUseStyles((theme) => ({
     pageHeader: {
+        padding: '30px',
+        backgroundColor: theme.colors.white.default,
         width: '100%',
-        alignItems: 'center',
-        display: 'grid',
-        gridTemplateAreas: `
-            "logo title  additionalInfo"
-            "bottom bottom bottom"
-            "separator separator separator"
-        `,
-        gridTemplateColumns: 'auto 1fr auto',
-        padding: '8px'
+        display: 'flex',
+        flexDirection: 'row',
+        columnGap: '12px',
+        borderBottom: `solid 1px ${theme.colors.grey.lighterGrey}`
     },
     logoContainer: {
-        gridArea: 'logo',
-        height: '50px',
-        width: '50px',
-        backgroundColor: theme.colors.white.default,
-        border: 'solid 1px #ddd',
-        color: '#24256',
-        borderRadius: '50%',
+        height: '65px',
+        minWidth: '65px',
+        color: theme.colors.grey.darkerGrey,
+        borderRadius: '14px',
         padding: '8px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        marginRight: '8px'
+        backgroundColor: theme.colors.purple.darkerPurple,
+        boxShadow: '0 6px 12px rgba(0, 0, 0, 0.175)'
     },
     logoGlyph: {
-        opacity: '0.5',
-        width: '100%',
-        height: '100%'
+        fontSize: '30px'
+    },
+    titleContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between'
     },
     title: {
-        gridArea: 'title',
-
-        '& > h1': {
-            margin: 0
-        },
-
-        '& > small': {
-            fontSize: '1rem',
-            lineHeight: 1
-        }
+        padding: 0,
+        marginBottom: '10px',
+        position: 'relative',
+        fontWeight: '900',
+        borderBottom: 'none',
+        fontSize: '26px'
+    },
+    description: {
+        fontSize: '15px',
+        color: theme.colors.grey.darkGrey
     },
     additionalInfo: {
-        gridArea: 'additionalInfo',
-        alignSelf: 'start',
-        '&:empty + $title': {
-            gridColumnEnd: 'additionalInfo'
-        }
+        alignSelf: 'center',
+        marginLeft: 'auto',
+        paddingLeft: '20px',
+        minWidth: 'fit-content'
     },
-    bottom: {
-        gridArea: 'bottom',
-        padding: '5px'
+    lastUpdatedTitle: {
+        fontSize: '13px',
+        color: theme.colors.grey.darkGrey,
+        marginRight: '4px'
     },
-    headerSeperator: {
-        gridArea: 'separator',
-        borderBottom: `solid 1px ${theme.colors.grey.default}`,
-        margin: '10px 0',
-        width: '100%'
+    lastUpdatedBadge: {
+        fontSize: '13px',
+        color: theme.colors.grey.darkerGrey,
+        backgroundColor: theme.colors.grey.lighterGrey,
+        padding: '4px 12px',
+        borderRadius: '4px'
     }
 }));
 
@@ -76,29 +72,26 @@ const PageHeader = ({ title, description, icon, lastUpdated }) => {
         <header className={classes.pageHeader}>
             {icon ? (
                 <div className={classes.logoContainer}>
-                    <FontAwesomeIcon icon={icon} className={classes.logoGlyph} size="2x" />
+                    <FontAwesomeIcon icon={icon} className={classes.logoGlyph} color="white" />
                 </div>
             ) : null}
-            <div className={classes.title}>
-                <h1 className="descriptorHeader">
+            <div className={classes.titleContainer}>
+                <h1 className={classes.title}>
                     {title}
                 </h1>
-            </div>
-            <div className={classes.additionalInfo}>
-                {lastUpdated
-                && (
-                    <div>
-                        <label className="text-right">Last Updated:</label>
-                        <div className="d-inline-flex p-2">{lastUpdated}</div>
-                    </div>
-                )}
-            </div>
-            <div className={classes.bottom}>
-                <div>
+                <div className={classes.description}>
                     {description}
                 </div>
             </div>
-            <div className={classes.headerSeperator} />
+
+            <div className={classes.additionalInfo}>
+                {lastUpdated && (
+                    <div>
+                        <div className={classes.lastUpdatedTitle}>Last Updated:</div>
+                        <div className={classes.lastUpdatedBadge}>{lastUpdated}</div>
+                    </div>
+                )}
+            </div>
         </header>
     );
 };

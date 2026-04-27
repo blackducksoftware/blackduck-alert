@@ -18,7 +18,7 @@ const initialState = {
 const config = (state = initialState, action) => {
     switch (action.type) {
         case ABOUT_INFO_FETCHING:
-            return { ...state, fetching: true };
+            return { ...state, fetching: true, initialized: true };
         case ABOUT_INFO_FETCHED:
             return {
                 ...state,
@@ -35,7 +35,7 @@ const config = (state = initialState, action) => {
                 channelList: action.channels
             };
         case ABOUT_INFO_FETCH_ERROR:
-            return { ...state, fetching: false };
+            return { ...state, fetching: false, initialized: true };
         case SERIALIZE:
             return initialState;
         default:

@@ -1,9 +1,9 @@
 import React from 'react';
-import Header from 'common/component/Header';
 import { useDispatch } from 'react-redux';
 import Button from 'common/component/button/Button';
 import { createUseStyles } from 'react-jss';
 import { verifyLogin } from 'store/actions/session';
+import AuthorizationView from 'common/component/AuthorizationView';
 
 const useStyles = createUseStyles({
     dialogContainer: {
@@ -24,19 +24,14 @@ const SessionUnauthorizedPage = () => {
     }
 
     return (
-        <div className="wrapper">
-            <div className="loginContainer">
-                <div className="loginBox">
-                    <Header />
-                    <div className={classes.dialogContainer}>
-                        <div>You have been logged out due to an inactive session.</div>
-                        <div>This site is only for registered users.</div>
-                        <Button id="unauthorized-login" onClick={handleLoginRedirect} text="Return to Login" />
-                    </div>
-                </div>
+        <AuthorizationView>
+            <div className={classes.dialogContainer}>
+                <div>You have been logged out due to an inactive session.</div>
+                <div>This site is only for registered users.</div>
+                <Button id="unauthorized-login" onClick={handleLoginRedirect} text="Return to Login" buttonStyle="action" />
             </div>
-        </div>
+        </AuthorizationView>
     );
-}
+};
 
-export default SessionUnauthorizedPage
+export default SessionUnauthorizedPage;

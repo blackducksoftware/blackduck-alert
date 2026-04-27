@@ -1,23 +1,37 @@
 import React from 'react';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
 import MultiSelectHeaderCell from 'common/component/table/cell/MultiSelectHeaderCell';
 import TableHeaderCell from 'common/component/table/cell/TableHeaderCell';
 
-const useStyles = createUseStyles({
+const useStyles = createUseStyles((theme) => ({
     tableHead: {
-        backgroundColor: '#e7e7f0',
-        borderBottom: [1, 'solid', '#c8c8dd'],
-        borderTop: [1, 'solid', '#c8c8dd'],
-        height: '36px'
+        backgroundColor: theme.colors.white.darkWhite,
+        borderBottom: `solid 1px ${theme.colors.grey.lighterGrey}`,
+        borderTop: `solid 1px ${theme.colors.grey.lighterGrey}`,
+        height: '40px',
+
+        '&:hover': {
+            backgroundColor: theme.colors.white.darkWhite
+        }
+    },
+    nonMultiSelect: {
+        '& > tr > :first-child': {
+            paddingLeft: '30px'
+        }
     }
-});
+}));
 
 const TableHeader = ({ columns, multiSelect, selected, onSelected, tableData, onSort, sortConfig, disableSelectOptions, cellId }) => {
     const classes = useStyles();
 
+    const tableHeadClass = classNames(classes.tableHead, {
+        [classes.nonMultiSelect]: !multiSelect
+    });
+
     return (
-        <thead className={classes.tableHead}>
+        <thead className={tableHeadClass}>
             <tr>
                 { multiSelect && (
                     <MultiSelectHeaderCell

@@ -1,25 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createUseStyles } from 'react-jss';
 import PropTypes from 'prop-types';
 import { bulkDeleteRoles, fetchRoles } from 'store/actions/roles';
-import Modal from 'common/component/modal/Modal';
-import Card from 'common/component/Card';
-
-const useStyles = createUseStyles({
-    deleteConfirmMessage: {
-        margin: [0, '20px', '20px', '30px'],
-        fontSize: '16px',
-        fontWeight: 'bold'
-    },
-    cardContainer: {
-        display: 'flex',
-        marginLeft: '50px'
-    }
-});
+import DeleteModal from 'common/component/modal/DeleteModal';
 
 const RoleDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, setStatusMessage }) => {
-    const classes = useStyles();
     const dispatch = useDispatch();
     const { deleteStatus, error } = useSelector((state) => state.roles);
 
@@ -72,7 +57,7 @@ const RoleDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, set
                     type: 'success'
                 });
             }
-            setSelected([]);
+            setSelected?.([]);
             handleClose();
         }
 
@@ -86,43 +71,15 @@ const RoleDeleteModal = ({ isOpen, toggleModal, data, selected, setSelected, set
         }
     }, [deleteStatus]);
 
-    function toggleSelect(selection) {
-        const toggledRoles = selectedRoles.map((role) => {
-            if (role.id === selection.id) {
-                return { ...role, staged: !role.staged };
-            }
-            return role;
-        });
-
-        setSelectedRoles(toggledRoles);
-    }
-
     return (
-        <>
-            <Modal
-                isOpen={isOpen}
-                size="sm"
-                title={isMultiRoleDelete ? 'Delete Roles' : 'Delete Role'}
-                closeModal={handleClose}
-                handleCancel={handleClose}
-                handleSubmit={handleDelete}
-                submitText="Delete"
-                showLoader={showLoader}
-            >
-                <div className={classes.deleteConfirmMessage}>
-                    { isMultiRoleDelete ? 'Are you sure you want to delete these roles?' : 'Are you sure you want to delete this role?' }
-                </div>
-                <div>
-                    { selectedRoles?.map((role) => (
-                        <div className={classes.cardContainer}>
-                            <input type="checkbox" checked={role.staged} onChange={() => toggleSelect(role)} />
-                            <Card icon="user-cog" label={role.roleName} />
-                        </div>
-                    )) }
-                </div>
-            </Modal>
-        </>
-
+        <DeleteModal
+            isOpen={isOpen}
+            title={isMultiRoleDelete ? 'Delete Roles' : 'Delete Role'}
+            confirmationMessage={isMultiRoleDelete ? 'Are you sure you want to delete these roles?' : 'Are you sure you want to delete this role?'}
+            onClose={handleClose}
+            onDelete={handleDelete}
+            isLoading={showLoader}
+        />
     );
 };
 

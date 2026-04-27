@@ -8,6 +8,9 @@ const useStyles = createUseStyles({
         width: '45px'
     },
     inputStyle: {
+        '&:hover': {
+            cursor: 'pointer'
+        },
         '&:disabled': {
             cursor: 'not-allowed'
         }
@@ -68,7 +71,8 @@ MultiSelectHeaderCell.propTypes = {
     onSelected: PropTypes.func,
     selected: PropTypes.arrayOf(PropTypes.string),
     disableSelectOptions: PropTypes.shape({
-        disabledItems: PropTypes.array
+        disabledItems: PropTypes.array,
+        key: PropTypes.string
     }),
     cellId: PropTypes.string
 };

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { createUseStyles } from 'react-jss';
-import Checkbox from 'common/component/input/Checkbox';
+import CheckboxInput from 'common/component/input/CheckboxInput';
 import DynamicSelectInput from 'common/component/input/DynamicSelectInput';
 import Button from 'common/component/button/Button';
 
@@ -15,13 +15,12 @@ const useStyles = createUseStyles({
         backgroundColor: '#EDEDED',
         borderRadius: '5px',
         marginBottom: '10px',
-        paddingTop: '25px'
+        padding: '20px'
     },
     permissionOptions: {
         display: 'flex',
-        justifyContent: 'flex-end',
-        paddingRight: '95px',
-        columnGap: '35px',
+        justifyContent: 'center',
+        columnGap: '25px',
         marginBottom: '5px'
     },
     permissionFormActions: {
@@ -60,16 +59,10 @@ const PermissionTableActions = ({ data, handleValidatePermission }) => {
 
     function createContextOptions(descriptorOptions, selectedPermission, existingPermissions) {
         // Find all descriptorOptions items matching the selected permissions' descriptorName
-        const matching = descriptorOptions.filter(item => item.name === selectedPermission.descriptorName);
+        const matching = descriptorOptions.filter((item) => item.name === selectedPermission.descriptorName);
 
         // Filter out any of the above matching objects whose (name, context) exists in exisitingPermissions
-        const available = matching.filter(item =>
-            !existingPermissions.some(
-                permission =>
-                    permission.descriptorName === item.name &&
-                    permission.context === item.context
-            )
-        );
+        const available = matching.filter((item) => !existingPermissions.some((permission) => permission.descriptorName === item.name && permission.context === item.context));
 
         return available.map((permission) => ({
             label: permission.context,
@@ -78,7 +71,7 @@ const PermissionTableActions = ({ data, handleValidatePermission }) => {
     }
 
     function handleCheckboxChange(e) {
-        const { checked, name } = e;
+        const { checked, name } = e.target;
         setNewPermission((permission) => ({ ...permission, [name]: checked }));
     }
 
@@ -92,7 +85,7 @@ const PermissionTableActions = ({ data, handleValidatePermission }) => {
         const selectedValue = descriptors.find((descriptor) => descriptor.label === value[0]);
         setNewPermission((permission) => ({ ...permission, [name]: selectedValue.name, label: value[0] }));
     }
-    
+
     function handleSave(permission) {
         if (!permission[DESCRIPTOR] && !permission[CONTEXT]) {
             setFieldErrors({
@@ -156,41 +149,45 @@ const PermissionTableActions = ({ data, handleValidatePermission }) => {
                     errorValue={fieldErrors[CONTEXT]}
                 />
                 <div className={classes.permissionOptions}>
-                    <Checkbox
+                    <CheckboxInput
                         name="create"
                         id="create"
-                        label="Create"
+                        label=""
                         onChange={handleCheckboxChange}
                         isChecked={newPermission.create}
+                        checkboxValueLabel="Create"
                     />
-                    <Checkbox
+                    <CheckboxInput
                         name="delete"
                         id="delete"
-                        label="Delete"
+                        label=""
                         onChange={handleCheckboxChange}
                         isChecked={newPermission.delete}
+                        checkboxValueLabel="Delete"
                     />
-                    <Checkbox
+                    <CheckboxInput
                         name="read"
                         id="read"
-                        label="Read"
+                        label=""
                         onChange={handleCheckboxChange}
                         isChecked={newPermission.read}
-                        description="Testing Description"
+                        checkboxValueLabel="Read"
                     />
-                    <Checkbox
+                    <CheckboxInput
                         name="write"
                         id="write"
-                        label="Write"
+                        label=""
                         onChange={handleCheckboxChange}
                         isChecked={newPermission.write}
+                        checkboxValueLabel="Write"
                     />
-                    <Checkbox
+                    <CheckboxInput
                         name="execute"
                         id="execute"
-                        label="Execute"
+                        label=""
                         onChange={handleCheckboxChange}
                         isChecked={newPermission.execute}
+                        checkboxValueLabel="Execute"
                     />
                 </div>
                 <div className={classes.permissionFormActions}>
@@ -199,7 +196,7 @@ const PermissionTableActions = ({ data, handleValidatePermission }) => {
                         type="submit"
                         icon="plus"
                         text="Add Permission"
-                        style="default"
+                        buttonStyle="actionSecondary"
                         isDisabled={isDisabled}
                         title={isDisabled ? 'Configure input above to add permission' : 'Add permission'}
                     />
@@ -215,7 +212,7 @@ PermissionTableActions.propTypes = {
             descriptorName: PropTypes.string
         }))
     }),
-    handleValidatePermission: PropTypes.func,
+    handleValidatePermission: PropTypes.func
 };
 
 export default PermissionTableActions;

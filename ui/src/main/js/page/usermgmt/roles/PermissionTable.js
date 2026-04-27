@@ -56,11 +56,13 @@ const PermissionTable = ({ role, sendPermissionArray, handleFilterPermission }) 
             tableData={role.permissions}
             columns={COLUMNS}
             emptyTableConfig={emptyTableConfig}
-            tableActions={() => <PermissionTableActions 
-                data={role}
-                canDelete={canDelete}
-                handleValidatePermission={handleValidatePermission}
-            />}
+            tableActions={() => (
+                <PermissionTableActions
+                    data={role}
+                    canDelete={canDelete}
+                    handleValidatePermission={handleValidatePermission}
+                />
+            )}
         />
     );
 };

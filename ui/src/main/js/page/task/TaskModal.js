@@ -50,16 +50,14 @@ const TaskModal = ({ data, isOpen, toggleModal }) => {
                     value={nextRunTime}
                 />
 
-
                 {/* If properties array has content, Provider will be present in first position */}
-                { properties && properties.map(property => (
-                        <ReadOnlyField
-                            id={setId(property.key)}
-                            label={property.displayName}
-                            value={property.value}
-                        />
-                    ))
-                }
+                { properties && properties.map((property) => (
+                    <ReadOnlyField
+                        id={setId(property.key)}
+                        label={property.displayName}
+                        value={property.value}
+                    />
+                ))}
             </div>
         </Modal>
     );

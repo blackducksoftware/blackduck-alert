@@ -19,41 +19,8 @@ small {
   color: $blackduck-color-light-gray;
 }
 
-#description-tooltip {
-  pointer-events: none;
-}
-
-#description-tooltip > .tooltip-inner {
-  background-color: $blackduck-color-subhead-copy;
-  font-size: $base-font-size;
-  font-weight: $base-font-weight;
-  font-family: 'Roboto', 'Arial', sans-serif;
-}
-
-.descriptionPlaceHolder {
-  padding-right: 10px;
-  display: inline-flex;
-}
-
-.descriptionIcon:hover, .configurationDescriptionIcon:hover {
-  cursor: pointer;
-}
-
-.configurationDescriptionIcon {
-  padding-left: 6.5px;
-  padding-top: 6.5px;
-}
-
 .checkbox {
   vertical-align: middle;
-}
-
-.textInput {
-  width: 100%;
-}
-
-.textInput::placeholder {
-  color: black;
 }
 
 .inline {
@@ -63,6 +30,7 @@ small {
 .fieldError {
   color: $blackduck-color-platform-red;
   padding: 4px 0px 0px;
+  margin: 0;
 }
 
 .fieldWarning {
@@ -115,7 +83,7 @@ small {
   }
 }
 
-.typeAheadField, .accumulatorTypeAheadField {
+.typeAheadField {
   display: inline-block;
   width: 100%;
 }
@@ -135,46 +103,6 @@ small {
 .fadingField {
   opacity: 0;
   transition: opacity 2s ease-in-out 0s;
-}
-
-
-.fixedButtonGroupBuffer {
-  height: 29px;
-}
-
-.fixedButtonGroup {
-  display: flex;
-  justify-content: center;
-}
-
-.selectButton {
-  margin-left: 5px;
-  margin-top: 3px;
-  margin-bottom: 3px;
-  vertical-align: middle !important;
-}
-
-.selectClearButton {
-  margin: 3px;
-  vertical-align: middle !important;
-  border: 1px solid darken($color-danger, 5%);
-  background-color: $color-danger;
-  color: $blackduck-color-section-background;
-
-  &:hover {
-    background-color: darken($color-danger, 10%);
-    border-color: darken($color-danger, 17%);
-    color: $blackduck-color-section-background;
-  }
-}
-
-.tableSelectOkButton {
-  float: right;
-}
-
-.uploadButton {
-  margin-top: 5px;
-  margin-bottom: 5px;
 }
 
 .required::after {

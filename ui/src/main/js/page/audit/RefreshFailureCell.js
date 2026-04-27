@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import IconButton from 'common/component/button/IconButton';
-import StatusMessage from 'common/component/StatusMessage';
 import { useDispatch, useSelector } from 'react-redux';
-import { sendJob, sendNotification } from '../../store/actions/audit';
+import PropTypes from 'prop-types';
+import { sendJob, sendNotification } from 'store/actions/audit';
+import Dropdown from 'react-bootstrap/Dropdown';
+import StatusMessage from 'common/component/StatusMessage';
+import RowActionsCell from 'common/component/table/cell/RowActionsCell';
 
 const RefreshFailureCell = ({ data, settings }) => {
     const dispatch = useDispatch();
@@ -52,7 +53,11 @@ const RefreshFailureCell = ({ data, settings }) => {
                 />
             )}
 
-            <IconButton icon="sync" onClick={handleRefresh} />
+            <RowActionsCell>
+                <Dropdown.Item as="button" onClick={handleRefresh}>
+                    Refresh Job
+                </Dropdown.Item>
+            </RowActionsCell>
         </>
     );
 };

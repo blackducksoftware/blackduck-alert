@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Tab, Tabs } from 'react-bootstrap';
+import { Tab } from 'react-bootstrap';
 import DistributionTable from 'page/audit/DistributionTable';
 import TextArea from 'common/component/input/TextArea';
+import ViewTabs from 'common/component/navigation/ViewTabs';
 
 const AuditFailureModalContent = ({ data }) => {
     let jsonContent;
@@ -15,7 +16,7 @@ const AuditFailureModalContent = ({ data }) => {
     const jsonPrettyPrintContent = JSON.stringify(jsonContent, null, 2);
 
     return (
-        <Tabs defaultActiveKey={1} id="audit-details-tabs">
+        <ViewTabs defaultActiveKey={1} id="audit-details-tabs">
             <Tab eventKey={1} title="Distribution Jobs">
                 <DistributionTable data={data} />
             </Tab>
@@ -28,7 +29,7 @@ const AuditFailureModalContent = ({ data }) => {
                     value={jsonPrettyPrintContent}
                 />
             </Tab>
-        </Tabs>
+        </ViewTabs>
     );
 };
 

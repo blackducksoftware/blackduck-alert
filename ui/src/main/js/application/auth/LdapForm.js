@@ -8,6 +8,7 @@ import CheckboxInput from 'common/component/input/CheckboxInput';
 import DynamicSelectInput from 'common/component/input/DynamicSelectInput';
 import PasswordInput from 'common/component/input/PasswordInput';
 import TextInput from 'common/component/input/TextInput';
+import FormCard from 'common/component/FormCard';
 
 import * as ConfigurationRequestBuilder from 'common/util/configurationRequestBuilder';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
@@ -96,11 +97,11 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
         return ConfigurationRequestBuilder.createValidateRequest(ldapRequestUrl, csrfToken, formData);
     }
 
-    const isTestFormComplete = () => {
-        // This check will determine whether we enable or disable the Test Submit button within the Test Configuration modal
-        return (testFormData[AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPUsername]?.length > 0 &&
-            testFormData[AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPPassword]?.length > 0);
-    };
+    // This check will determine whether we enable or disable the Test Submit button within the Test Configuration modal
+    const isTestFormComplete = () => (
+        testFormData[AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPUsername]?.length > 0 &&
+            testFormData[AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPPassword]?.length > 0
+    );
 
     // Revise this to its own modal when we overhaul the modal changes.
     const testFields = (
@@ -110,7 +111,6 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                 id={AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPUsername}
                 name={AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPUsername}
                 label="User Name"
-                customDescription="The user name to test LDAP authentication; if LDAP authentication is enabled."
                 readOnly={false}
                 onChange={FieldModelUtilities.handleConcreteModelChange(testFormData, setTestFormData)}
                 value={testFormData[AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPUsername]}
@@ -119,7 +119,6 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                 id={AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPPassword}
                 name={AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPPassword}
                 label="Password"
-                customDescription="The password to test LDAP authentication; if LDAP authentication is enabled."
                 readOnly={false}
                 onChange={FieldModelUtilities.handleConcreteModelChange(testFormData, setTestFormData)}
                 value={testFormData[AUTHENTICATION_LDAP_GLOBAL_TEST_FIELD_KEYS.testLDAPPassword]}
@@ -128,8 +127,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
     );
 
     return (
-        <div className={classes.ldapForm}>
-            <h2>LDAP Configuration</h2>
+        <FormCard formTitle="LDAP Configuration">
             <ConcreteConfigurationForm
                 formDataId={formData.id}
                 setErrors={(formErrors) => setErrors(formErrors)}
@@ -142,8 +140,8 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                 displayDelete={formData.status !== 404}
                 displayTest={displayTest}
                 errorHandler={errorHandler}
-                deleteLabel="Delete LDAP Configuration"
-                submitLabel="Save LDAP Configuration"
+                deleteLabel="Delete"
+                submitLabel="Save"
                 testLabel="Test LDAP Configuration"
                 buttonIdPrefix="ldap-config"
                 testFields={testFields}
@@ -155,8 +153,9 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                 <CheckboxInput
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.enabled}
                     name={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.enabled}
-                    label="LDAP Enabled"
-                    description="If true, Alert will attempt to authenticate using the LDAP configuration."
+                    label=""
+                    checkboxValueLabel="Enable LDAP Configuration"
+                    checkboxValueDescription="If enabled, Alert will attempt to authenticate using the LDAP configuration."
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     isChecked={formData.enabled}
@@ -167,7 +166,6 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.serverName}
                     name={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.serverName}
                     label="LDAP Server URL"
-                    description="The URL of the LDAP Server."
                     readOnly={readonly}
                     required
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
@@ -178,8 +176,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                 <TextInput
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.managerDn}
                     name={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.managerDn}
-                    label="LDAP Distinguished Manager Name"
-                    description="The distinguished manager name of the LDAP server."
+                    label="Distinguished Manager Name"
                     readOnly={readonly}
                     required
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
@@ -190,8 +187,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                 <PasswordInput
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.managerPassword}
                     name={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.managerPassword}
-                    label="LDAP Manager Password"
-                    description="The password of the LDAP manager."
+                    label="Manager Password"
                     readOnly={readonly}
                     required
                     onChange={FieldModelUtilities.handleTestChange(formData, setFormData)}
@@ -203,8 +199,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                 <DynamicSelectInput
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.authenticationType}
                     name={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.authenticationType}
-                    label="LDAP Authentication Type"
-                    description="The type of authentication required to connect to the LDAP server."
+                    label="Authentication Type"
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     options={AUTH_TYPES}
@@ -215,8 +210,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                 <DynamicSelectInput
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.referral}
                     name={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.referral}
-                    label="LDAP Referral"
-                    description="Set the method to handle referrals."
+                    label="Referral Method"
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     options={REFERRAL_TYPES}
@@ -227,8 +221,8 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                 <TextInput
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.userSearchBase}
                     name={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.userSearchBase}
-                    label="LDAP User Search Base"
-                    description="The part of the LDAP directory in which user searches should be done."
+                    label="User Search Base"
+                    fieldDescription="The part of the LDAP directory in which user searches should be done."
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     value={formData[AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.userSearchBase] || undefined}
@@ -239,8 +233,8 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                 <TextInput
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.userSearchFilter}
                     name={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.userSearchFilter}
-                    label="LDAP User Search Filter"
-                    description="The filter used to search for user membership."
+                    label="User Search Filter"
+                    fieldDescription="The filter used to search for user membership."
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     value={formData[AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.userSearchFilter] || undefined}
@@ -250,8 +244,8 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                 <TextInput
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.userDnPatterns}
                     name={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.userDnPatterns}
-                    label="LDAP User DN Patterns"
-                    description="The pattern used used to supply a DN for the user. The pattern should be the name relative to the root DN."
+                    label="User DN Patterns"
+                    fieldDescription="The pattern used used to supply a DN for the user. The pattern should be the name relative to the root DN."
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     value={formData[AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.userDnPatterns] || undefined}
@@ -261,8 +255,8 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                 <TextInput
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.userAttributes}
                     name={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.userAttributes}
-                    label="LDAP User Attributes"
-                    description="User attributes to retrieve for users."
+                    label="User Attributes"
+                    fieldDescription="User attributes to retrieve for users."
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     value={formData[AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.userAttributes] || undefined}
@@ -272,8 +266,8 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                 <TextInput
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.groupSearchBase}
                     name={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.groupSearchBase}
-                    label="LDAP Group Search Base"
-                    description="The part of the LDAP directory in which group searches should be done."
+                    label="Group Search Base"
+                    fieldDescription="The part of the LDAP directory in which group searches should be done."
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     value={formData[AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.groupSearchBase] || undefined}
@@ -283,8 +277,8 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                 <TextInput
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.groupSearchFilter}
                     name={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.groupSearchFilter}
-                    label="LDAP Group Search Filter"
-                    description="The filter used to search for group membership."
+                    label="Group Search Filter"
+                    fieldDescription="The filter used to search for group membership."
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     value={formData[AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.groupSearchFilter]}
@@ -294,8 +288,8 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                 <TextInput
                     id={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.groupRoleAttribute}
                     name={AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.groupRoleAttribute}
-                    label="LDAP Group Role Attribute"
-                    description="The ID of the attribute which contains the role name for a group."
+                    label="Group Role Attribute"
+                    fieldDescription="The ID of the attribute which contains the role name for a group."
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleConcreteModelChange(formData, setFormData)}
                     value={formData[AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.groupRoleAttribute] || undefined}
@@ -303,7 +297,7 @@ const LdapForm = ({ csrfToken, errorHandler, readonly, displayTest }) => {
                     errorValue={errors.fieldErrors[AUTHENTICATION_LDAP_GLOBAL_FIELD_KEYS.groupRoleAttribute]}
                 />
             </ConcreteConfigurationForm>
-        </div>
+        </FormCard>
     );
 };
 

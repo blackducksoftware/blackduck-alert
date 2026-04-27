@@ -14,14 +14,12 @@ const EndpointSelectField = ({
     createRequestBody,
     csrfToken,
     currentConfig,
-    description,
     endpoint,
     errorName,
     errorValue,
+    fieldDescription,
     fieldKey,
-    inputClass,
     label,
-    labelClass,
     multiSelect,
     onChange,
     placeholder,
@@ -32,7 +30,7 @@ const EndpointSelectField = ({
     requiredRelatedFields,
     searchable,
     selectSpacingClass,
-    showDescriptionPlaceHolder,
+    tooltipDescription,
     value,
     customVal
 }) => {
@@ -59,7 +57,6 @@ const EndpointSelectField = ({
             if (response.ok) {
                 response.json().then((data) => {
                     const selectOptions = convertDataToOptions ? convertDataToOptions(data) : defaultConvertToOptions(data);
-                    // console.log('selectOptions', selectOptions, data);
                     setOptions(selectOptions);
                     setRequestErrorValue(null);
                 });
@@ -84,7 +81,6 @@ const EndpointSelectField = ({
                 options={options}
                 id={id || fieldKey}
                 name={id || fieldKey}
-                inputClass={inputClass}
                 searchable={searchable}
                 placeholder={placeholder}
                 value={value}
@@ -94,9 +90,8 @@ const EndpointSelectField = ({
                 selectSpacingClass={selectSpacingClass}
                 readOnly={readOnly}
                 clearable={clearable}
-                labelClass={labelClass}
-                description={description}
-                showDescriptionPlaceHolder={showDescriptionPlaceHolder}
+                tooltipDescription={tooltipDescription}
+                fieldDescription={fieldDescription}
                 label={label}
                 errorName={errorName}
                 errorValue={errorValue || requestErrorValue}
@@ -113,7 +108,6 @@ EndpointSelectField.propTypes = {
     currentConfig: PropTypes.object,
     endpoint: PropTypes.string.isRequired,
     fieldKey: PropTypes.string.isRequired,
-    inputClass: PropTypes.string,
     multiSelect: PropTypes.bool,
     placeholder: PropTypes.string,
     onChange: PropTypes.func.isRequired,
@@ -123,25 +117,22 @@ EndpointSelectField.propTypes = {
     searchable: PropTypes.bool,
     selectSpacingClass: PropTypes.string,
     value: PropTypes.array,
-    description: PropTypes.string,
+    fieldDescription: PropTypes.string,
+    tooltipDescription: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
-    labelClass: PropTypes.string,
     required: PropTypes.bool,
-    showDescriptionPlaceHolder: PropTypes.bool,
     createRequestBody: PropTypes.func,
     readOptionsRequest: PropTypes.func,
     convertDataToOptions: PropTypes.func,
-    customVal: PropTypes.oneOfType([ PropTypes.array, PropTypes.object])
+    customVal: PropTypes.oneOfType([PropTypes.array, PropTypes.object])
 };
 
 EndpointSelectField.defaultProps = {
     id: 'endpointSelectFieldId',
     clearable: true,
     currentConfig: {},
-    inputClass: 'typeAheadField',
-    labelClass: 'col-sm-3',
     multiSelect: false,
     placeholder: 'Choose a value',
     readOnly: false,
@@ -153,11 +144,10 @@ EndpointSelectField.defaultProps = {
     createRequestBody: null,
     readOptionsRequest: null,
     convertDataToOptions: null,
-    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
-    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 };
 
 export default EndpointSelectField;
