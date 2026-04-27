@@ -32,6 +32,7 @@ classes/
 *-lastrun.txt
 *-last-search.txt
 ui/node_modules
+ui/.pnpm-store
 /data/
 /data*/
 sonar-project.properties
