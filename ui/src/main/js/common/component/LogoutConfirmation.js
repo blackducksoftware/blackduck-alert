@@ -21,7 +21,6 @@ const LogoutConfirmation = ({ cancelLogout, logout, showLogoutConfirm }) => (
     </Modal>
 );
 
-
 LogoutConfirmation.propTypes = {
     showLogoutConfirm: PropTypes.bool.isRequired,
     cancelLogout: PropTypes.func.isRequired,

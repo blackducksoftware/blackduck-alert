@@ -15,7 +15,7 @@ describe('Testing PageHeader rendering', () => {
     const lastUpdated = '2022-04-21 14:55 (UTC)';
 
     test('default render all props present', () => {
-        const {queryByText} = render(
+        const { queryByText } = render(
             <PageHeader title={title} description={description} icon={icon} lastUpdated={lastUpdated} />
         );
 
