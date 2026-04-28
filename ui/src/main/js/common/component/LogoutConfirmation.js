@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { cancelLogout, logout } from 'store/actions/session';
+import { cancelLogout as cancelLogoutAction, logout as logoutAction } from 'store/actions/session';
 import Modal from 'common/component/modal/Modal';
 
 const LogoutConfirmation = ({ cancelLogout, logout, showLogoutConfirm }) => (
@@ -32,8 +32,8 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    logout: () => dispatch(logout()),
-    cancelLogout: () => dispatch(cancelLogout())
+    logout: () => dispatch(logoutAction()),
+    cancelLogout: () => dispatch(cancelLogoutAction())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(LogoutConfirmation);

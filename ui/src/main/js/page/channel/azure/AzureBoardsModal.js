@@ -262,7 +262,8 @@ AzureBoardsModal.propTypes = {
         type: PropTypes.string,
         submitText: PropTypes.string,
         title: PropTypes.string,
-        copyDescription: PropTypes.string
+        copyDescription: PropTypes.string,
+        openedAfterOAuthHandshake: PropTypes.bool
     }),
     setStatusMessage: PropTypes.func,
     successMessage: PropTypes.string,

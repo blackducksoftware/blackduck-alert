@@ -28,6 +28,7 @@ const IconButton = ({ id, type, onClick, role, title, icon, disabled }) => {
             id={id}
             role={role}
             className={classes.iconBtn}
+            // eslint-disable-next-line
             type={type}
             onClick={onClick}
             title={title}

@@ -10,7 +10,7 @@ class HttpInterceptor {
     ];
 
     static isAuthEndpoint(url) {
-        return this.AUTH_ENDPOINTS.some(endpoint => url.includes(endpoint));
+        return this.AUTH_ENDPOINTS.some((endpoint) => url.includes(endpoint));
     }
 
     static isAlertApiCall(url) {

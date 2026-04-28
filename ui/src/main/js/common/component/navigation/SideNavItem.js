@@ -42,25 +42,43 @@ const useStyles = createUseStyles({
     }
 });
 
-const SideNavItem = ({ ...props }) => {
+const SideNavItem = ({ hasSubMenu, subMenuItems, id, href, icon, label, type, onClick }) => {
     const classes = useStyles();
-    const { hasSubMenu, subMenuItems } = props;
 
     // If there is no submenu content, don't render anything.
     if (hasSubMenu && subMenuItems?.length === 0) {
         return null;
     }
 
-    const NavItem = hasSubMenu ? SideNavSubmenu : SideNavButtonItem;
-
     return (
-        <li className={classes.navItem} id={props.id}>
-            <NavItem {...props} />
+        <li className={classes.navItem} id={id}>
+            {hasSubMenu ? (
+                <SideNavSubmenu
+                    id={id}
+                    icon={icon}
+                    label={label}
+                    subMenuItems={subMenuItems}
+                />
+            ) : (
+                <SideNavButtonItem
+                    id={id}
+                    href={href}
+                    icon={icon}
+                    label={label}
+                    type={type}
+                    onClick={onClick}
+                />
+            )}
         </li>
     );
 };
 
 SideNavItem.propTypes = {
+    href: PropTypes.string,
+    icon: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
+    label: PropTypes.string,
+    onClick: PropTypes.func,
+    type: PropTypes.string,
     hasSubMenu: PropTypes.bool,
     subMenuItems: PropTypes.array,
     id: PropTypes.string.isRequired

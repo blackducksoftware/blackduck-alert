@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import BlackDuckLogoAllBlack from '/src/main/img/BlackDuckLogo.png';
+import BlackDuckLogoAllBlack from '/src/main/img/BlackDuckLogo.png'; // eslint-disable-line
 import FooterSystemMessages from 'application/FooterSystemMessages';
 import { createUseStyles } from 'react-jss';
 

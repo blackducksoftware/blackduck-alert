@@ -74,8 +74,8 @@ const ToggleSwitch = ({ onToggle, active }) => {
                 Auto-Refresh
             </span>
             <span>
-                <label className={classes.switch}>
-                    <input className={classes.switchInput} type="checkbox" checked={active} onChange={onToggle} />
+                <label className={classes.switch} htmlFor="auto-refresh-toggle">
+                    <input id="auto-refresh-toggle" className={classes.switchInput} type="checkbox" checked={active} onChange={onToggle} />
                     <span className={switchClasses} />
                 </label>
             </span>
