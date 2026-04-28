@@ -145,14 +145,12 @@ export function createMultiDeleteRequest(baseUrl, csrfToken, configurationIdArra
     const headersUtil = new HeaderUtilities();
     headersUtil.addXCsrfToken(csrfToken);
 
-    return Promise.all(stagedDeleteUrls.map((url) => (
-        fetch(url, {
-            credentials: 'same-origin',
-            method: 'DELETE',
-            headers: headersUtil.getHeaders(),
-            redirect: 'manual'
-        }))
-    ));
+    return Promise.all(stagedDeleteUrls.map((url) => fetch(url, {
+        credentials: 'same-origin',
+        method: 'DELETE',
+        headers: headersUtil.getHeaders(),
+        redirect: 'manual'
+    })));
 }
 
 export function createValidateRequest(apiUrl, csrfToken, fieldModel) {
@@ -188,9 +186,9 @@ export function createTestRequest(apiUrl, csrfToken, fieldModel, queryParamKey, 
 export function createFileUploadRequest(apiUrl, csrfToken, fieldName, files) {
     const fileData = new FormData();
     if (files && files.length) {
-        for (const file of files) {
+        files.forEach((file) => {
             fileData.append(`${fieldName}`, file);
-        }
+        });
     }
     const headersUtil = new HeaderUtilities();
     headersUtil.addXCsrfToken(csrfToken);

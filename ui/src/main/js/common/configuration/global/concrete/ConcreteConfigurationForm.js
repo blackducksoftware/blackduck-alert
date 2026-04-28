@@ -83,7 +83,9 @@ const ConcreteConfigurationForm = ({
         setErrorMessage(null);
         setErrors(HttpErrorUtilities.createEmptyErrorObject());
         setActionMessage(null);
-        testButtonClicked ? testButtonClicked() : null;
+        if (testButtonClicked) {
+            testButtonClicked();
+        }
 
         if (testFields) {
             setShowTest(true);

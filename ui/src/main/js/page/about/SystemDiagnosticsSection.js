@@ -59,7 +59,11 @@ const SystemDiagnosticsSection = () => {
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
         } catch (error) {
-            setSectionError(error);
+            if (error.message) {
+                setSectionError(`Error: ${error.message}`);
+            } else {
+                setSectionError('An error occurred while fetching system diagnostics.');
+            }
         } finally {
             setIsLoading(false);
         }
@@ -82,7 +86,7 @@ const SystemDiagnosticsSection = () => {
                 />
                 {sectionError && (
                     <div className={classes.errorMessage}>
-                        Error: {sectionError.message || 'An error occurred while fetching system diagnostics.'}
+                        {sectionError}
                     </div>
                 )}
             </div>

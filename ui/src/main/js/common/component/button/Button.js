@@ -134,6 +134,7 @@ const Button = ({ id, icon, type = 'button', isDisabled, onClick, role, buttonSt
             id={id}
             role={role}
             className={btnClass}
+            // eslint-disable-next-line
             type={type}
             onClick={onClick}
             title={title}

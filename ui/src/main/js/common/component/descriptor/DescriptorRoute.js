@@ -28,13 +28,13 @@ DescriptorRoute.propTypes = {
     uriPrefix: PropTypes.string,
     render: PropTypes.func.isRequired,
     descriptor: PropTypes.object,
-    hasTestFields: PropTypes.bool,
+    hasTestFields: PropTypes.bool
 };
 
 DescriptorRoute.defaultProps = {
     uriPrefix: '',
     descriptor: undefined,
-    hasTestFields: false,
+    hasTestFields: false
 };
 
 export default DescriptorRoute;
