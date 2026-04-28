@@ -16,7 +16,7 @@ describe('Testing PageHeader rendering', () => {
 
     test('default render all props present', () => {
         const {queryByText} = render(
-            <PageHeader title={title} description={description} icon={icon} lastUpdated={lastUpdated} />,
+            <PageHeader title={title} description={description} icon={icon} lastUpdated={lastUpdated} />
         );
 
         expect(queryByText(title)).toBeInTheDocument();

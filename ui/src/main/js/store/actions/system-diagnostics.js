@@ -1,7 +1,7 @@
 import {
     SYSTEM_DIAGNOSTICS_GET_FAIL,
     SYSTEM_DIAGNOSTICS_GET_REQUEST,
-    SYSTEM_DIAGNOSTICS_GET_SUCCESS,
+    SYSTEM_DIAGNOSTICS_GET_SUCCESS
 } from 'store/actions/types';
 import { SYSTEM_DIAGNOSTICS_URL } from 'common/util/configurationRequestBuilder';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
