@@ -60,11 +60,7 @@ const useStyles = createUseStyles({
         width: '80px'
     },
     main: {
-        gridArea: 'main',
-        backgroundColor: '#F7F7FA',
-        height: '100%',
-        overflow: 'auto',
-        padding: '15px'
+        gridArea: 'main'
     }
 });
 
@@ -111,7 +107,7 @@ const MainPage = () => {
             <Route
                 exact
                 path="/alert/general/about"
-                element={<AboutInfo globalDescriptorMap={globalDescriptorMap} distributionDescriptorMap={distributionDescriptorMap} />}
+                element={<AboutLayout globalDescriptorMap={globalDescriptorMap} distributionDescriptorMap={distributionDescriptorMap} />}
             />
 
             {/* Provider Page */}
@@ -204,7 +200,7 @@ const MainPage = () => {
             <Route
                 exact
                 path="/alert/components/certificates"
-                element={<CertificatesPageLayout csrfToken={csrfToken} errorHandler={errorHandler} />}
+                element={<CertificatesPageLayout csrfToken={csrfToken} errorHandler={errorHandler} readOnly={false} />}
             />
 
             {/* Scheduling Page */}

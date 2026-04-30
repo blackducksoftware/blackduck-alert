@@ -5,6 +5,7 @@ import MainPage from 'application/MainPage';
 import LoginPage from 'application/auth/LoginPage';
 import Footer from 'application/Footer';
 import { verifyLogin, verifySaml } from 'store/actions/session';
+import { getAboutInfo } from 'store/actions/about';
 import * as IconUtility from 'common/util/iconUtility';
 import LogoutPage from 'application/auth/LogoutPage';
 import SessionUnauthorizedPage from 'application/auth/SessionUnauthorizedPage';
@@ -26,6 +27,7 @@ const App = () => {
     useEffect(() => {
         dispatch(verifyLogin());
         dispatch(verifySaml());
+        dispatch(getAboutInfo());
     }, []);
 
     if (initializing) {

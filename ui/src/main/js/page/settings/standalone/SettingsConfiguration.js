@@ -9,7 +9,7 @@ import SettingsProxyConfiguration from 'page/settings/standalone/SettingsProxyCo
 import useGetPermissions from 'common/hooks/useGetPermissions';
 
 const SettingsConfiguration = ({
-    csrfToken, errorHandler, readOnly
+    csrfToken, errorHandler, descriptor
 }) => {
     const { readOnly, canTest, canSave, canDelete } = useGetPermissions(descriptor);
     
