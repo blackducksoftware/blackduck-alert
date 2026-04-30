@@ -14,8 +14,8 @@ This application provides the ability to send notifications from a provider to v
 ### Build Steps ###
 #### Requirements ####
  - JDK 17
- - Node 16.15.1 (Recommended)
- - NPM 8.11.0 (Recommended)
+ - Node 24.11.1 (Recommended Version)
+ - PNPM 10.33.0 (Recommended Version)
 
 To compile the UI and create the jar file run:
 
@@ -57,9 +57,9 @@ Note: The server will be running locally over: https://localhost:8443/alert
 
 ##### 2. Start the webpack dev server #####
 ```bash
-npm run start
+pnpm start
 ```
-Note: The webpack dev server will be running locally over: https://localhost:9000/alert 
+Note: The webpack dev server will be running locally over: https://localhost:2187/alert 
 
 ## Where can I get the latest release? ##
 <!-- The comments following wrap around the project url string for parsing during the build. Do Not Remove -->
