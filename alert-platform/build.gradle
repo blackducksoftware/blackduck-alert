@@ -15,10 +15,12 @@ dependencies {
 
         api 'org.jsoup:jsoup:1.15.4'
 
-        api 'com.blackduck.integration:integration-rest:11.1.2'
-        api 'com.blackduck.integration:integration-common:27.0.2'
-        api 'com.blackduck.integration:blackduck-common:67.0.9'
-        api 'com.blackduck.integration:int-jira-common:6.0.1'
+        api 'com.blackduck.integration:blackduck-common:68.0.1'
+        api 'com.blackduck.integration:int-jira-common:6.0.2'
+
+        // The below 2 dependencies should match what comes in via blackduck-common above
+        api 'com.blackduck.integration:integration-rest:11.1.3'
+        api 'com.blackduck.integration:integration-common:27.0.3'
 
         api 'com.google.cloud:libraries-bom:2.2.0'
         api 'com.google.oauth-client:google-oauth-client:1.34.1'
