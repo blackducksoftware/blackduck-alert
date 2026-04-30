@@ -13,10 +13,12 @@ import * as GlobalRequestHelper from 'common/configuration/global/GlobalRequestH
 import NumberInput from 'common/component/input/NumberInput';
 import PageLayout from 'common/component/PageLayout';
 import FormCard from 'common/component/FormCard';
+import useGetPermissions from '../../../../common/hooks/useGetPermissions';
 
 const JiraCloudGlobalConfiguration = ({
-    csrfToken, errorHandler, readonly, displayTest, displaySave, displayDelete
+    csrfToken, errorHandler, descriptor
 }) => {
+    const { readOnly, canDelete, canSave, canTest } = useGetPermissions(descriptor);
     const initModelFunction = () => {
         let initModel = FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, JIRA_CLOUD_INFO.key);
         initModel = FieldModelUtilities.updateFieldModelSingleValue(initModel, JIRA_CLOUD_GLOBAL_FIELD_KEYS.disablePluginCheck, 'true');
@@ -57,10 +59,10 @@ const JiraCloudGlobalConfiguration = ({
                     csrfToken={csrfToken}
                     buttonIdPrefix={JIRA_CLOUD_INFO.key}
                     retrieveData={retrieveData}
-                    readonly={readonly}
-                    displayTest={displayTest}
-                    displaySave={displaySave}
-                    displayDelete={displayDelete}
+                    readOnly={readOnly}
+                    displayTest={canTest}
+                    displaySave={canSave}
+                    displayDelete={canDelete}
                     errorHandler={errorHandler}
                     deleteLabel="Reset"
                 >
@@ -156,18 +158,7 @@ const JiraCloudGlobalConfiguration = ({
 JiraCloudGlobalConfiguration.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     errorHandler: PropTypes.object.isRequired,
-    // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
-    readonly: PropTypes.bool,
-    displayTest: PropTypes.bool,
-    displaySave: PropTypes.bool,
-    displayDelete: PropTypes.bool
-};
-
-JiraCloudGlobalConfiguration.defaultProps = {
-    readonly: false,
-    displayTest: true,
-    displaySave: true,
-    displayDelete: true
+    descriptor: PropTypes.object
 };
 
 export default JiraCloudGlobalConfiguration;

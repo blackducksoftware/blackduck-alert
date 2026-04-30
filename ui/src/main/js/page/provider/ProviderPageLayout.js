@@ -2,20 +2,25 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
 import ProviderTable from 'page/provider/ProviderTable';
-import PageLayout from 'common/component/PageLayout';
+import useGetPermissions from 'common/hooks/useGetPermissions';
 
-const ProviderPageLayout = ({ readonly }) => (
-    <PageLayout
-        title={BLACKDUCK_INFO.label}
-        description={BLACKDUCK_INFO.description}
-        headerIcon="handshake"
-    >
-        <ProviderTable readonly={readonly} />
-    </PageLayout>
-);
+const ProviderPageLayout = ({ descriptor }) => {
+    const { readOnly } = useGetPermissions(descriptor);
+    
+    return (
+        <div>
+            <PageHeader
+                title={BLACKDUCK_INFO.label}
+                description={BLACKDUCK_INFO.description}
+                icon="handshake"
+            />
+            <ProviderTable readonly={readOnly} />
+        </div>
+    );
+};
 
 ProviderPageLayout.propTypes = {
-    readonly: PropTypes.bool
+    descriptor: PropTypes.object
 };
 
 export default ProviderPageLayout;

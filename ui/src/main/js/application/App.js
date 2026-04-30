@@ -1,13 +1,10 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import MainPage from 'application/MainPage';
 import LoginPage from 'application/auth/LoginPage';
 import Footer from 'application/Footer';
 import { verifyLogin, verifySaml } from 'store/actions/session';
-import { getAboutInfo } from 'store/actions/about';
 import * as IconUtility from 'common/util/iconUtility';
 import LogoutPage from 'application/auth/LogoutPage';
 import SessionUnauthorizedPage from 'application/auth/SessionUnauthorizedPage';
@@ -18,75 +15,43 @@ import '@fortawesome/fontawesome-free/scss/v4-shims.scss';
 import '@fortawesome/fontawesome-free/js/v4-shims.js';
 
 import '../../css/main.scss';
+import { BrowserRouter } from 'react-router-dom';
 
 IconUtility.loadIconData();
 
-class App extends Component {
-    componentDidMount() {
-        const { verifyLogin: verifyLoginAction, verifySaml: verifySamlAction, getAboutInfo: getAboutInfoAction } = this.props;
+const App = () => {
+    const dispatch = useDispatch();
+    const { loggedIn, logoutPerformed, sessionUnauthorizationPerformed, initializing } = useSelector((state) => state.session);
 
-        verifyLoginAction();
-        verifySamlAction();
-        getAboutInfoAction();
+    useEffect(() => {
+        dispatch(verifyLogin());
+        dispatch(verifySaml());
+    }, []);
+
+    if (initializing) {
+        return (<div />);
     }
 
-    render() {
-        const {
-            initializing,
-            logoutPerformed,
-            sessionUnauthorizationPerformed,
-            loggedIn
-        } = this.props;
+    if (logoutPerformed) {
+        return <LogoutPage />;
+    }
 
-        if (initializing) {
-            return (<div />);
-        }
+    if (sessionUnauthorizationPerformed) {
+        return <SessionUnauthorizedPage />;
+    }
 
-        if (logoutPerformed) {
-            return <LogoutPage />;
-        }
+    const contentPage = loggedIn ? <MainPage /> : <LoginPage />;
 
-        if (sessionUnauthorizationPerformed) {
-            return <SessionUnauthorizedPage />;
-        }
-
-        const contentPage = loggedIn ? <MainPage /> : <LoginPage />;
-
-        return (
-            <div>
-                <div style={{ height: '96.5vh' }}>
-                    {contentPage}
-                </div>
-                <div style={{ height: '3.5vh' }}>
-                    <Footer />
-                </div>
+    return (
+        <BrowserRouter>
+            <div style={{ height: '96.5vh' }}>
+                {contentPage}
             </div>
-        );
-    }
+            <div style={{ height: '3.5vh' }}>
+                <Footer />
+            </div>
+        </BrowserRouter>
+    );
 }
 
-App.propTypes = {
-    loggedIn: PropTypes.bool.isRequired,
-    logoutPerformed: PropTypes.bool.isRequired,
-    sessionUnauthorizationPerformed: PropTypes.bool.isRequired,
-    initializing: PropTypes.bool.isRequired,
-    verifyLogin: PropTypes.func.isRequired,
-    verifySaml: PropTypes.func.isRequired,
-    getAboutInfo: PropTypes.func.isRequired
-};
-
-// Redux mappings to be used later....
-const mapStateToProps = (state) => ({
-    loggedIn: state.session.loggedIn,
-    logoutPerformed: state.session.logoutPerformed,
-    sessionUnauthorizationPerformed: state.session.sessionUnauthorizationPerformed,
-    initializing: state.session.initializing
-});
-
-const mapDispatchToProps = (dispatch) => ({
-    verifyLogin: () => dispatch(verifyLogin()),
-    verifySaml: () => dispatch(verifySaml()),
-    getAboutInfo: () => dispatch(getAboutInfo())
-});
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
+export default App;

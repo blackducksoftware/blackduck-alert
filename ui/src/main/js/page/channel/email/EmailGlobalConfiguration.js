@@ -12,10 +12,12 @@ import FluidFieldMappingField from 'common/component/input/mapping/FluidFieldMap
 import NumberInput from 'common/component/input/NumberInput';
 import PageLayout from 'common/component/PageLayout';
 import FormCard from 'common/component/FormCard';
+import useGetPermissions from 'common/hooks/useGetPermissions';
 
 const EmailGlobalConfiguration = ({
-    csrfToken, errorHandler, readonly, displayTest, displaySave, displayDelete
+    csrfToken, errorHandler, descriptor
 }) => {
+    const { readOnly, canDelete, canSave, canTest } = useGetPermissions(descriptor);
     const emailRequestUrl = `${ConfigurationRequestBuilder.CONFIG_API_URL}/email`;
     const additionalPropertiesName = 'additionalJavaMailProperties';
 
@@ -71,10 +73,10 @@ const EmailGlobalConfiguration = ({
                     validateRequest={() => ConfigurationRequestBuilder.createValidateRequest(emailRequestUrl, csrfToken, emailConfig)}
                     testRequest={() => ConfigurationRequestBuilder.createTestRequest(emailRequestUrl, csrfToken, emailConfig, 'sendTo', testEmailAddress)}
                     deleteLabel="Reset"
-                    readonly={readonly}
-                    displayTest={displayTest}
-                    displaySave={displaySave}
-                    displayDelete={displayDelete}
+                    readOnly={readOnly}
+                    displayTest={canTest}
+                    displaySave={canSave}
+                    displayDelete={canDelete}
                     errorHandler={errorHandler}
                 >
                     <TextInput
@@ -83,7 +85,7 @@ const EmailGlobalConfiguration = ({
                         label="Hostname"
                         fieldDescription="Hostname of the SMTP email server (e.g. smtp.gmail.com)"
                         required
-                        readOnly={readonly}
+                        readOnly={readOnly}
                         onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
                         value={emailConfig.smtpHost || undefined}
                         errorName="smtpHost"
@@ -95,7 +97,7 @@ const EmailGlobalConfiguration = ({
                         label="From"
                         fieldDescription="The email address to use as the return address."
                         required
-                        readOnly={readonly}
+                        readOnly={readOnly}
                         onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
                         value={emailConfig.smtpFrom || undefined}
                         errorName="smtpFrom"
@@ -106,7 +108,7 @@ const EmailGlobalConfiguration = ({
                         name="smtpPort"
                         label="Port"
                         fieldDescription="The SMTP server port to connect to."
-                        readOnly={readonly}
+                        readOnly={readOnly}
                         onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
                         value={emailConfig.smtpPort || undefined}
                         errorName="smtpPort"
@@ -118,7 +120,7 @@ const EmailGlobalConfiguration = ({
                         name="smtpAuth"
                         label="Authentication"
                         checkboxValueDescription="Select this if your SMTP server requires authentication, then fill in the SMTP User and SMTP Password below."
-                        readOnly={readonly}
+                        readOnly={readOnly}
                         onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
                         isChecked={(emailConfig.smtpAuth || 'false').toString().toLowerCase() === 'true'}
                         checkboxValueLabel="Enable Server Authentication"
@@ -130,7 +132,7 @@ const EmailGlobalConfiguration = ({
                         name="smtpUsername"
                         label="User"
                         fieldDescription="The username to authenticate with the SMTP server."
-                        readOnly={readonly}
+                        readOnly={readOnly}
                         onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
                         value={emailConfig.smtpUsername || undefined}
                         errorName="smtpUsername"
@@ -142,7 +144,7 @@ const EmailGlobalConfiguration = ({
                         name="smtpPassword"
                         label="Password"
                         fieldDescription="The password to authenticate with the SMTP server."
-                        readOnly={readonly}
+                        readOnly={readOnly}
                         onChange={fieldModelUtilities.handleTestChange(emailConfig, setEmailConfig)}
                         value={emailConfig.smtpPassword || undefined}
                         isSet={emailConfig.isSmtpPasswordSet}
@@ -156,7 +158,7 @@ const EmailGlobalConfiguration = ({
                         label="Additional Email Properties"
                         buttonLabel="Add Property"
                         description="Mapping of additional properties that can be used to appropriately configure your email connection."
-                        readonly={readonly}
+                        readOnly={readOnly}
                         value={emailConfig[additionalPropertiesName] || {}}
                         setValue={updateAdditionalProperties}
                         errorName="additionalJavaMailProperties"
@@ -171,18 +173,7 @@ const EmailGlobalConfiguration = ({
 EmailGlobalConfiguration.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     errorHandler: PropTypes.object.isRequired,
-    // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
-    readonly: PropTypes.bool,
-    displayTest: PropTypes.bool,
-    displaySave: PropTypes.bool,
-    displayDelete: PropTypes.bool
-};
-
-EmailGlobalConfiguration.defaultProps = {
-    readonly: false,
-    displayTest: true,
-    displaySave: true,
-    displayDelete: true
+    descriptor: PropTypes.object
 };
 
 export default EmailGlobalConfiguration;

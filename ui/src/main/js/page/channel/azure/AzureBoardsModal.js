@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { createUseStyles } from 'react-jss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Modal from 'common/component/modal/Modal';
@@ -41,7 +41,7 @@ function getInitialData(type, data) {
 const AzureBoardsModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMessage, successMessage, readonly, paramsConfig }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const history = useHistory();
+    const navigate = useNavigate();
     const { copyDescription, submitText, title, type, openedAfterOAuthHandshake } = modalOptions;
     const [azureModel, setAzureModel] = useState(getInitialData(type, data));
     const [showLoader, setShowLoader] = useState();
@@ -58,7 +58,7 @@ const AzureBoardsModal = ({ data, isOpen, toggleModal, modalOptions, setStatusMe
         // result in the modal reopening (see L66-L85 of AzureBoardsTable.js).  Therefore, if the modal is open based on a return from an OAuth
         // handshake and the user wants to close the modal, we need to refresh the page with the `alert/channels/azure_boards` being the new url
         if (openedAfterOAuthHandshake) {
-            history.push(AZURE_BOARDS_URLS.mainUrl);
+            navigate(AZURE_BOARDS_URLS.mainUrl);
         }
 
         toggleModal(false);

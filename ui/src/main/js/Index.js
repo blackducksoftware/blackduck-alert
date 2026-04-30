@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import { createBrowserHistory } from 'history';
 import App from 'application/App';
-import { ConnectedRouter, routerMiddleware } from 'connected-react-router';
+import { routerMiddleware } from 'connected-react-router';
 import rootReducer from 'store/reducers';
 import { ThemeProvider } from 'react-jss';
 import theme from '_theme';
@@ -27,12 +27,10 @@ dom.watch({
 });
 
 ReactDOM.render(
-    <Provider store={store}>
-        <ConnectedRouter history={history}>
-            <ThemeProvider theme={theme}>
-                <App />
-            </ThemeProvider>
-        </ConnectedRouter>
+<Provider store={store}>
+        <ThemeProvider theme={theme}>
+            <App />
+        </ThemeProvider>
     </Provider>,
     document.getElementById('react')
 );
