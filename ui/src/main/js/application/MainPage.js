@@ -69,7 +69,7 @@ const MainPage = () => {
     const dispatch = useDispatch();
     const { fetching, items: descriptors } = useSelector((state) => state.descriptors);
     const { csrfToken } = useSelector((state) => state.session);
-    const { autoRefresh } = useSelector((state) => state.refresh.autoRefresh);
+    const { autoRefresh } = useSelector((state) => state.refresh);
     
     const [globalDescriptorMap, setGlobalDescriptorMap] = useState({});
     const [distributionDescriptorMap, setDistributionDescriptorMap] = useState({});
@@ -92,7 +92,7 @@ const MainPage = () => {
         setDistributionDescriptorMap(newDistributionDescriptorMap);
     }, [descriptors]);
 
-    const errorHandler = HTTPErrorUtils.createErrorHandler(unauthorized);
+    const errorHandler = HTTPErrorUtils.createErrorHandler(() => dispatch(unauthorized()));
 
     const page = (
         <>

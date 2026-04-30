@@ -71,7 +71,6 @@ const AuthenticationPageLayout = ({
 AuthenticationPageLayout.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     errorHandler: PropTypes.object.isRequired,
-    readonly: PropTypes.bool,
     descriptor: PropTypes.object,
     globalDescriptorMap: PropTypes.object
 };
