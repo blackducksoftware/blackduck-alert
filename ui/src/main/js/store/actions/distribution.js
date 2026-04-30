@@ -94,11 +94,11 @@ export function deleteDistribution(distributions) {
     return (dispatch, getState) => {
         dispatch(deleteDistributionRequest());
         const { csrfToken } = getState().session;
-        Promise.all(distributions.map((distro) => { // eslint-disable-line
+        Promise.all(distributions.map((distro) => { // eslint-disable-line arrow-body-style
             return ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, distro.jobId);
         })).catch((error) => {
             dispatch(deleteDistributionError(error));
-            console.error; // eslint-disable-line
+            console.error; // eslint-disable-line no-unused-expressions
         }).then((response) => {
             if (response) {
                 dispatch(deleteDistributionSuccess());

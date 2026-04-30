@@ -46,7 +46,7 @@ const PaginationButton = ({ id, type, onClick, role, title, pageNumber, isActive
             id={id}
             role={role}
             className={paginationBtnClass}
-            // eslint-disable-next-line
+            // eslint-disable-next-line react/button-has-type
             type={type}
             onClick={onClick}
             title={title}

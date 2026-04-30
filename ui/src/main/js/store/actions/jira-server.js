@@ -269,11 +269,11 @@ export function deleteJiraServer(jiraServerModels) {
         dispatch(deleteJiraServerRequest());
         const { csrfToken } = getState().session;
 
-        Promise.all(jiraServerModels.map((server) => { // eslint-disable-line
+        Promise.all(jiraServerModels.map((server) => { // eslint-disable-line arrow-body-style
             return ConfigRequestBuilder.createDeleteRequest(JIRA_SERVER_URLS.jiraServerConfigUrl, csrfToken, server.id);
         })).catch((error) => {
             dispatch(deleteJiraServerError(error));
-            console.error; // eslint-disable-line
+            console.error; // eslint-disable-line no-unused-expressions
         }).then((response) => {
             if (response) {
                 dispatch(deleteJiraServerSuccess());

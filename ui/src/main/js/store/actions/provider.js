@@ -246,11 +246,11 @@ export function bulkDeleteProviders(providerIdArray) {
         dispatch(bulkDeleteProvidersRequest());
         const { csrfToken } = getState().session;
 
-        Promise.all(providerIdArray.map((provider) => { // eslint-disable-line
+        Promise.all(providerIdArray.map((provider) => { // eslint-disable-line arrow-body-style
             return ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, provider.id);
         })).catch((error) => {
             dispatch(bulkDeleteProvidersError(error));
-            console.error; // eslint-disable-line
+            console.error; // eslint-disable-line no-unused-expressions
         }).then((response) => {
             if (response) {
                 dispatch(bulkDeleteProvidersSuccess());

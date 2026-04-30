@@ -1,6 +1,6 @@
 import React from 'react';
-import '/src/main/css/logos.scss'; // eslint-disable-line
-import BlackDuckLogo from '/src/main/img/BlackDuckLogo.png'; // eslint-disable-line
+import '/src/main/css/logos.scss'; // eslint-disable-line import/no-absolute-path
+import BlackDuckLogo from '/src/main/img/BlackDuckLogo.png'; // eslint-disable-line import/no-absolute-path
 
 const Logo = () => (
     <div className="productLogo">

@@ -186,9 +186,9 @@ export function createTestRequest(apiUrl, csrfToken, fieldModel, queryParamKey, 
 export function createFileUploadRequest(apiUrl, csrfToken, fieldName, files) {
     const fileData = new FormData();
     if (files && files.length) {
-        files.forEach((file) => {
+        for (const file of files) { // eslint-disable-line no-restricted-syntax
             fileData.append(`${fieldName}`, file);
-        });
+        }
     }
     const headersUtil = new HeaderUtilities();
     headersUtil.addXCsrfToken(csrfToken);
