@@ -11,7 +11,6 @@ import {
     SESSION_UNAUTHORIZED
 } from 'store/actions/types';
 import HeaderUtilities from 'common/util/HeaderUtilities';
-import { push } from 'connected-react-router';
 
 /**
  * Triggers Logging In Reducer
@@ -200,7 +199,7 @@ export function cancelLogout() {
     };
 }
 
-export function logout() {
+export function logout(navigate) {
     return (dispatch, getState) => {
         // dispatch(loggingOut());
         const { csrfToken } = getState().session;
@@ -214,7 +213,7 @@ export function logout() {
         })
             .then(() => dispatch(loggedOut()))
             .then(() => dispatch(logOut()))
-            .then(() => dispatch(push('/alert')))
+            .then(() => navigate('/alert'))
             .catch((error) => {
                 console.log(error);
             });

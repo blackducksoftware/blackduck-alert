@@ -68,7 +68,7 @@ const MainPage = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { fetching, items: descriptors } = useSelector((state) => state.descriptors);
-    const { csrfToken } = useSelector((state) => state.session);
+    const { csrfToken, showLogoutConfirm } = useSelector((state) => state.session);
     const { autoRefresh } = useSelector((state) => state.refresh);
     
     const [globalDescriptorMap, setGlobalDescriptorMap] = useState({});
@@ -261,7 +261,7 @@ const MainPage = () => {
                 )}
             </div>
             <div className="modalsArea">
-                <LogoutConfirmation />
+                <LogoutConfirmation showLogoutConfirm={showLogoutConfirm} />
             </div>
         </div>
     );

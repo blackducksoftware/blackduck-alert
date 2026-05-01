@@ -35,9 +35,6 @@ importers:
       classnames:
         specifier: ^2.3.1
         version: 2.3.2
-      connected-react-router:
-        specifier: ^6.9.1
-        version: 6.9.3(history@4.10.1)(react-redux@7.2.9(react-dom@16.14.0(react@16.14.0))(react@16.14.0))(react-router@6.30.3(react@16.14.0))(react@16.14.0)(redux@4.2.1)
       history:
         specifier: ^4.10.1
         version: 4.10.1
@@ -1676,15 +1673,6 @@ packages:
     resolution: {integrity: sha512-U73+6lQFmfiNPrYbXqr6kZ1i1wiRqXnp2nhMsINseWXO8lDau0LGEffJ8kQi4EjLZympVgRdvqjAgiZ1tgzDDA==}
     engines: {node: '>=0.8'}
 
-  connected-react-router@6.9.3:
-    resolution: {integrity: sha512-4ThxysOiv/R2Dc4Cke1eJwjKwH1Y51VDwlOrOfs1LjpdYOVvCNjNkZDayo7+sx42EeGJPQUNchWkjAIJdXGIOQ==}
-    peerDependencies:
-      history: ^4.7.2
-      react: ^16.4.0 || ^17.0.0
-      react-redux: ^6.0.0 || ^7.1.0
-      react-router: ^4.3.1 || ^5.0.0
-      redux: ^3.6.0 || ^4.0.0
-
   content-disposition@0.5.4:
     resolution: {integrity: sha512-FveZTNuGw04cxlAiWbzi6zTAL/lhehaWbTtgluJh4/E95DqMwTmha3KZN1aAWA8cFIhHzMZUvLevkw5Rqk+tSQ==}
     engines: {node: '>= 0.6'}
@@ -2938,9 +2926,6 @@ packages:
     resolution: {integrity: sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==}
     deprecated: This package is deprecated. Use require('node:util').isDeepStrictEqual instead.
 
-  lodash.isequalwith@4.4.0:
-    resolution: {integrity: sha512-dcZON0IalGBpRmJBmMkaoV7d3I80R2O+FrzsZyHdNSFrANq/cgDqKQNmAHE8UEj4+QYWwwhkQOVdLHiAopzlsQ==}
-
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
 
@@ -3610,9 +3595,6 @@ packages:
   schema-utils@4.0.1:
     resolution: {integrity: sha512-lELhBAAly9NowEsX0yZBlw9ahZG+sK/1RJ21EpzdYHKEs13Vku3LJ+MIPhh4sMs0oCCeufZQEQbMekiA4vuVIQ==}
     engines: {node: '>= 12.13.0'}
-
-  seamless-immutable@7.1.4:
-    resolution: {integrity: sha512-XiUO1QP4ki4E2PHegiGAlu6r82o5A+6tRh7IkGGTVg/h+UoeX4nFBeCGPOhb4CYjvkqsfm/TUtvOMYC1xmV30A==}
 
   select-hose@2.0.0:
     resolution: {integrity: sha512-mEugaLK+YfkijB4fx0e6kImuJdCIt2LxCRcbEYPqRGCs4F2ogyfZU5IAZRdjCP8JPq2AtdNoC/Dux63d9Kiryg==}
@@ -6127,19 +6109,6 @@ snapshots:
 
   connect-history-api-fallback@2.0.0: {}
 
-  connected-react-router@6.9.3(history@4.10.1)(react-redux@7.2.9(react-dom@16.14.0(react@16.14.0))(react@16.14.0))(react-router@6.30.3(react@16.14.0))(react@16.14.0)(redux@4.2.1):
-    dependencies:
-      history: 4.10.1
-      lodash.isequalwith: 4.4.0
-      prop-types: 15.8.1
-      react: 16.14.0
-      react-redux: 7.2.9(react-dom@16.14.0(react@16.14.0))(react@16.14.0)
-      react-router: 6.30.3(react@16.14.0)
-      redux: 4.2.1
-    optionalDependencies:
-      immutable: 4.3.0
-      seamless-immutable: 7.1.4
-
   content-disposition@0.5.4:
     dependencies:
       safe-buffer: 5.2.1
@@ -7785,8 +7754,6 @@ snapshots:
 
   lodash.isequal@4.5.0: {}
 
-  lodash.isequalwith@4.4.0: {}
-
   lodash.merge@4.6.2: {}
 
   lodash.truncate@4.4.2: {}
@@ -8469,9 +8436,6 @@ snapshots:
       ajv: 8.12.0
       ajv-formats: 2.1.1(ajv@8.12.0)
       ajv-keywords: 5.1.0(ajv@8.12.0)
-
-  seamless-immutable@7.1.4:
-    optional: true
 
   select-hose@2.0.0: {}
 

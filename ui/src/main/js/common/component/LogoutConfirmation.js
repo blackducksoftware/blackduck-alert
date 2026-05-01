@@ -1,40 +1,43 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { cancelLogout, logout } from 'store/actions/session';
 import Modal from 'common/component/modal/Modal';
 
-const LogoutConfirmation = ({ cancelLogout, logout, showLogoutConfirm }) => (
-    <Modal
-        isOpen={showLogoutConfirm}
-        size="sm"
-        title="Confirm Logout"
-        closeModal={cancelLogout}
-        handleCancel={cancelLogout}
-        handleSubmit={logout}
-        submitText="Logout"
-        buttonStyle="action"
-    >
-        <div>
-            Are you sure you would like to logout?
-        </div>
-    </Modal>
-);
+const LogoutConfirmation = ({ showLogoutConfirm }) => {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    
+    const handleLogout = () => {
+        dispatch(logout(navigate));
+    };
+
+    const handleCancelLogout = () => {
+        dispatch(cancelLogout());
+    }
+
+    return (
+        <Modal
+            isOpen={showLogoutConfirm}
+            size="sm"
+            title="Confirm Logout"
+            closeModal={handleCancelLogout}
+            handleCancel={handleCancelLogout}
+            handleSubmit={handleLogout}
+            submitText="Logout"
+            buttonStyle="action"
+        >
+            <div>
+                Are you sure you would like to logout?
+            </div>
+        </Modal>
+    );
+};
 
 
 LogoutConfirmation.propTypes = {
-    showLogoutConfirm: PropTypes.bool.isRequired,
-    cancelLogout: PropTypes.func.isRequired,
-    logout: PropTypes.func.isRequired
+    showLogoutConfirm: PropTypes.bool.isRequired
 };
 
-const mapStateToProps = (state) => ({
-    showLogoutConfirm: state.session.showLogoutConfirm
-});
-
-const mapDispatchToProps = (dispatch) => ({
-    logout: () => dispatch(logout()),
-    cancelLogout: () => dispatch(cancelLogout())
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(LogoutConfirmation);
+export default LogoutConfirmation;
