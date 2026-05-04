@@ -13,7 +13,7 @@ import * as GlobalRequestHelper from 'common/configuration/global/GlobalRequestH
 import NumberInput from 'common/component/input/NumberInput';
 import PageLayout from 'common/component/PageLayout';
 import FormCard from 'common/component/FormCard';
-import useGetPermissions from '../../../../common/hooks/useGetPermissions';
+import useGetPermissions from 'common/hooks/useGetPermissions';
 
 const JiraCloudGlobalConfiguration = ({
     csrfToken, errorHandler, descriptor
@@ -59,7 +59,7 @@ const JiraCloudGlobalConfiguration = ({
                     csrfToken={csrfToken}
                     buttonIdPrefix={JIRA_CLOUD_INFO.key}
                     retrieveData={retrieveData}
-                    readOnly={readOnly}
+                    readonly={readOnly}
                     displayTest={canTest}
                     displaySave={canSave}
                     displayDelete={canDelete}

@@ -99,9 +99,7 @@ const MainPage = () => {
             <Route
                 exact
                 path="/alert/"
-                render={() => (
-                    <Navigate to="/alert/general/about" />
-                )}
+                element={<Navigate to="/alert/general/about" />}
             />
             {/* Home Page */}
             <Route
@@ -169,7 +167,7 @@ const MainPage = () => {
             {/* Edit Distribution Job Page */}
             <Route
                 exact
-                key="distribution-route"
+                key="distribution-route-edit"
                 path="/alert/jobs/distribution/edit/:id?"
                 element={<DistributionConfigurationForm csrfToken={csrfToken} readonly={false} descriptors={distributionDescriptorMap} errorHandler={errorHandler} />}
             />
@@ -177,7 +175,7 @@ const MainPage = () => {
             {/* Copy Distribution Job Page */}
             <Route
                 exact
-                key="distribution-route"
+                key="distribution-route-copy"
                 path="/alert/jobs/distribution/copy/:id?"
                 element={<DistributionConfigurationForm csrfToken={csrfToken} readonly={false} descriptors={distributionDescriptorMap} errorHandler={errorHandler} />}
             />
@@ -242,8 +240,6 @@ const MainPage = () => {
             </div>
         </div>
     );
-
-    const content = (fetching) ? spinner : page;
 
     return (
         <div className={classes.blackDuckAlertApp}>
