@@ -73,7 +73,7 @@ const EmailGlobalConfiguration = ({
                     validateRequest={() => ConfigurationRequestBuilder.createValidateRequest(emailRequestUrl, csrfToken, emailConfig)}
                     testRequest={() => ConfigurationRequestBuilder.createTestRequest(emailRequestUrl, csrfToken, emailConfig, 'sendTo', testEmailAddress)}
                     deleteLabel="Reset"
-                    readOnly={readOnly}
+                    readonly={readOnly}
                     displayTest={canTest}
                     displaySave={canSave}
                     displayDelete={canDelete}

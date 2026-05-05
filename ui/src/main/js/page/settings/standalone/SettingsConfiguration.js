@@ -12,7 +12,7 @@ const SettingsConfiguration = ({
     csrfToken, errorHandler, descriptor
 }) => {
     const { readOnly, canTest, canSave, canDelete } = useGetPermissions(descriptor);
-    
+
     return (
         <PageLayout
             title={SETTINGS_INFO.label}
