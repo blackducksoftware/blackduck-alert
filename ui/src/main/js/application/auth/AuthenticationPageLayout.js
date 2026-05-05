@@ -72,7 +72,7 @@ AuthenticationPageLayout.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     errorHandler: PropTypes.object.isRequired,
     descriptor: PropTypes.object,
-    globalDescriptorMap: PropTypes.object
+    globalDescriptorMap: PropTypes.object.isRequired
 };
 
 export default AuthenticationPageLayout;

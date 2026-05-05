@@ -104,21 +104,19 @@ const MainPage = () => {
     const page = (
         <>
             <Route
-                exact
                 path="/alert/"
                 element={<Navigate to="/alert/general/about" />}
             />
 
             {/* Home Page */}
             <Route
-                exact   
                 path="/alert/general/about"
                 element={<AboutLayout globalDescriptorMap={globalDescriptorMap} distributionDescriptorMap={distributionDescriptorMap} />}
             />
 
             {/* Provider Page */}
             <Route
-                exact
+
                 path="/alert/providers/blackduck"
                 element={(
                     <DescriptorRoute
@@ -130,7 +128,6 @@ const MainPage = () => {
 
             {/* Channel - Azure Boards Page */}
             <Route
-                exact
                 path="/alert/channels/azure_boards"
                 element={(
                     <DescriptorRoute
@@ -142,7 +139,6 @@ const MainPage = () => {
 
             {/* Channel - Email Page */}
             <Route
-                exact
                 path="/alert/channels/email"
                 element={(
                     <DescriptorRoute
@@ -154,7 +150,6 @@ const MainPage = () => {
 
             {/* Channel - Jira Cloud Page */}
             <Route
-                exact
                 path="/alert/channels/jira"
                 element={(
                     <DescriptorRoute
@@ -166,7 +161,6 @@ const MainPage = () => {
 
             {/* Channel - Jira Server Page */}
             <Route
-                exact
                 path="/alert/channels/jira_server"
                 element={(
                     <DescriptorRoute
@@ -178,7 +172,6 @@ const MainPage = () => {
 
             {/* Channel - MS Teams Page */}
             <Route
-                exact
                 path="/alert/channels/msteams"
                 element={(
                     <DescriptorRoute
@@ -190,7 +183,6 @@ const MainPage = () => {
 
             {/* Channel - Slack Page */}
             <Route
-                exact
                 path="/alert/channels/slack"
                 element={(
                     <DescriptorRoute
@@ -202,14 +194,12 @@ const MainPage = () => {
 
             {/* Create Distribution Job Page */}
             <Route
-                exact
                 path="/alert/jobs/distribution"
                 element={<DistributionConfiguration csrfToken={csrfToken} descriptors={descriptors} errorHandler={errorHandler} showRefreshButton={!autoRefresh} />}
             />
 
             {/* Edit Distribution Job Page */}
             <Route
-                exact
                 key="distribution-route-edit"
                 path="/alert/jobs/distribution/edit/:id?"
                 element={<DistributionConfigurationForm csrfToken={csrfToken} readonly={false} descriptors={distributionDescriptorMap} errorHandler={errorHandler} />}
@@ -217,7 +207,6 @@ const MainPage = () => {
 
             {/* Copy Distribution Job Page */}
             <Route
-                exact
                 key="distribution-route-copy"
                 path="/alert/jobs/distribution/copy/:id?"
                 element={<DistributionConfigurationForm csrfToken={csrfToken} readonly={false} descriptors={distributionDescriptorMap} errorHandler={errorHandler} />}
@@ -225,7 +214,6 @@ const MainPage = () => {
 
             {/* Audit Information Page */}
             <Route
-                exact
                 path="/alert/components/audit"
                 element={(
                     <DescriptorRoute
@@ -237,7 +225,6 @@ const MainPage = () => {
 
             {/* Authentication Page */}
             <Route
-                exact
                 path="/alert/components/authentication"
                 element={(
                     <DescriptorRoute
@@ -249,7 +236,6 @@ const MainPage = () => {
 
             {/* Certificates Page */}
             <Route
-                exact
                 path="/alert/components/certificates"
                 element={(
                     <DescriptorRoute
@@ -261,7 +247,6 @@ const MainPage = () => {
 
             {/* Scheduling Page */}
             <Route
-                exact
                 path="/alert/components/scheduling"
                 element={(
                     <DescriptorRoute
@@ -273,7 +258,6 @@ const MainPage = () => {
 
             {/* Settings Page */}
             <Route
-                exact
                 path="/alert/components/settings"
                 element={(
                     <DescriptorRoute
@@ -285,7 +269,6 @@ const MainPage = () => {
 
             {/* Task Management Page */}
             <Route
-                exact
                 path="/alert/components/tasks"
                 element={(
                     <DescriptorRoute
@@ -297,7 +280,6 @@ const MainPage = () => {
 
             {/* User Management Page */}
             <Route
-                exact
                 path="/alert/components/users"
                 element={(
                     <DescriptorRoute
