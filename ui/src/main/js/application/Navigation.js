@@ -144,8 +144,8 @@ const Navigation = ({ globalDescriptorMap }) => {
 
                 { doesDescriptorExist(globalDescriptorMap, SETTINGS_INFO.key) ? (
                     <SideNavItem href="/alert/components/settings" label="Settings" id="settings" icon="cog" type="link" />
-                ) :  null }
-                
+                ) : null }
+
                 <SideNavItem label="Logout" id="logout" icon="sign-out-alt" onClick={handleLogoutClick} />
             </ul>
         </div>
