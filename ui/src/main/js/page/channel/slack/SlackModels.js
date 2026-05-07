@@ -12,4 +12,3 @@ export const SLACK_DISTRIBUTION_FIELD_KEYS = {
 export const SLACK_URLS = {
     mainUrl: '/alert/channels/slack'
 };
-

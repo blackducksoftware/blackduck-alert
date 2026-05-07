@@ -66,7 +66,7 @@ const MTLSCertificateLayout = ({ csrfToken, errorHandler }) => {
         }
     };
 
-    const formHasAllData = (formData.hasOwnProperty('keyPassword') && formData.hasOwnProperty('keyContent') && formData.hasOwnProperty('clientCertificateContent'));
+    const formHasAllData = ('keyPassword' in formData && 'keyContent' in formData && 'clientCertificateContent' in formData);
     const certificateEnabled = formHasAllData && isSaveDisabled;
 
     function onSaveSuccess() {

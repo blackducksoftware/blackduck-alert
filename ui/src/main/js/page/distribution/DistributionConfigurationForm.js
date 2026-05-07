@@ -71,7 +71,7 @@ const DistributionConfigurationForm = ({
         // Determine if fieldConfiguredProjects has shape { label: projectName, href: projectHREF }
         //      If true change shape to { name: projectName, href: projectHREF, missing: false }
         //      If false, data shape is OK
-        if (fieldConfiguredProjects.some((project) => project.hasOwnProperty('label'))) {
+        if (fieldConfiguredProjects.some((project) => 'label' in project)) {
             configuredProviderProjects = fieldConfiguredProjects.map((selectedValue) => ({
                 name: selectedValue.label,
                 href: selectedValue.value,
@@ -328,7 +328,7 @@ const DistributionConfigurationForm = ({
     };
 
     function getProjectValues(data) {
-        if (data.some((project) => project.hasOwnProperty('label'))) {
+        if (data.some((project) => 'label' in project)) {
             return data;
         }
 
