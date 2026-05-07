@@ -1,4 +1,4 @@
-import { 
+import {
     isOperationAssigned,
     isOneOperationAssigned,
     OPERATIONS

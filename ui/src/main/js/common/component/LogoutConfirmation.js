@@ -8,14 +8,14 @@ import Modal from 'common/component/modal/Modal';
 const LogoutConfirmation = ({ showLogoutConfirm }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    
+
     const handleLogout = () => {
         dispatch(logout(navigate));
     };
 
     const handleCancelLogout = () => {
         dispatch(cancelLogout());
-    }
+    };
 
     return (
         <Modal

@@ -7,7 +7,7 @@ import useGetPermissions from 'common/hooks/useGetPermissions';
 
 const ProviderPageLayout = ({ descriptor }) => {
     const { readOnly } = useGetPermissions(descriptor);
-    
+
     return (
         <PageLayout
             title={BLACKDUCK_INFO.label}

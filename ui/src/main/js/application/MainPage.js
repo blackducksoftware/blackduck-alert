@@ -77,7 +77,7 @@ const MainPage = () => {
     const { fetching, items: descriptors } = useSelector((state) => state.descriptors);
     const { csrfToken, showLogoutConfirm } = useSelector((state) => state.session);
     const { autoRefresh } = useSelector((state) => state.refresh);
-    
+
     const [globalDescriptorMap, setGlobalDescriptorMap] = useState({});
     const [distributionDescriptorMap, setDistributionDescriptorMap] = useState({});
 
@@ -116,7 +116,6 @@ const MainPage = () => {
 
             {/* Provider Page */}
             <Route
-
                 path="/alert/providers/blackduck"
                 element={(
                     <DescriptorRoute

@@ -37,7 +37,7 @@ const SettingsConfiguration = ({
                         displaySave={canSave}
                         displayDelete={canDelete}
                     />
-            </Tab>
+                </Tab>
             </ViewTabs>
         </PageLayout>
     );
