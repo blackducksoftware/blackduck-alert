@@ -11,11 +11,17 @@ import * as GlobalRequestHelper from 'common/configuration/global/GlobalRequestH
 
 import { Tab } from 'react-bootstrap';
 import { AUTHENTICATION_INFO } from 'application/auth/AuthenticationModel';
-import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
+import { CONTEXT_TYPE, OPERATIONS, isOperationAssigned } from 'common/util/descriptorUtilities';
+import useGetPermissions from 'common/hooks/useGetPermissions';
 
 const AuthenticationPageLayout = ({
-    csrfToken, errorHandler, readonly, displayTest, displaySave, fileRead, fileWrite, fileDelete
+    csrfToken, errorHandler, descriptor, globalDescriptorMap
 }) => {
+    const { readOnly, canTest, canSave } = useGetPermissions(descriptor);
+    const fileRead = isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_READ);
+    const fileWrite = isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_WRITE);
+    const fileDelete = isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_DELETE);
+
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, AUTHENTICATION_INFO.key));
 
     const retrieveData = async () => {
@@ -40,17 +46,17 @@ const AuthenticationPageLayout = ({
                 <Tab eventKey={1} title="LDAP">
                     <LdapForm
                         csrfToken={csrfToken}
-                        readonly={readonly}
+                        readonly={readOnly}
                         errorHandler={errorHandler}
-                        displayTest={displayTest}
+                        displayTest={canTest}
                     />
                 </Tab>
                 <Tab eventKey={2} title="SAML">
                     <SamlForm
                         csrfToken={csrfToken}
-                        readonly={readonly}
-                        displayTest={displayTest}
-                        displaySave={displaySave}
+                        readonly={readOnly}
+                        displayTest={canTest}
+                        displaySave={canSave}
                         errorHandler={errorHandler}
                         fileRead={fileRead}
                         fileWrite={fileWrite}
@@ -65,12 +71,8 @@ const AuthenticationPageLayout = ({
 AuthenticationPageLayout.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     errorHandler: PropTypes.object.isRequired,
-    readonly: PropTypes.bool,
-    displayTest: PropTypes.bool,
-    displaySave: PropTypes.bool,
-    fileRead: PropTypes.bool,
-    fileWrite: PropTypes.bool,
-    fileDelete: PropTypes.bool
+    descriptor: PropTypes.object,
+    globalDescriptorMap: PropTypes.object.isRequired
 };
 
 export default AuthenticationPageLayout;

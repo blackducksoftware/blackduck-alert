@@ -4,22 +4,22 @@ import DistributionDeleteModal from 'page/distribution/DistributionDeleteModal';
 import StatusMessage from 'common/component/StatusMessage';
 import Dropdown from 'react-bootstrap/Dropdown';
 import RowActionsCell from 'common/component/table/cell/RowActionsCell';
-import { useHistory } from 'react-router-dom/cjs/react-router-dom';
 import { DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
+import { useNavigate } from 'react-router-dom';
 
 const DistributionRowActionsCell = ({ data, settings }) => {
-    const history = useHistory();
+    const navigate = useNavigate();
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
     const dataStagedForDelete = { models: [data] };
     const { paramsConfig, setParamsConfig, readonly } = settings;
 
     function handleCopyClick() {
-        history.push(`${DISTRIBUTION_URLS.distributionConfigCopyUrl}/${data.jobId}`);
+        navigate(`${DISTRIBUTION_URLS.distributionConfigCopyUrl}/${data.jobId}`);
     }
 
     function handleEditClick() {
-        history.push(`${DISTRIBUTION_URLS.distributionConfigUrl}/${data.jobId}`);
+        navigate(`${DISTRIBUTION_URLS.distributionConfigUrl}/${data.jobId}`);
     }
 
     function handleDeleteClick() {

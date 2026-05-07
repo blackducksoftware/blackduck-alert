@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createUseStyles } from 'react-jss';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { Redirect, Route, withRouter } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import Navigation from 'application/Navigation';
 import TopNavBar from 'application/TopNavBar';
 import LogoutConfirmation from 'common/component/LogoutConfirmation';
@@ -35,8 +34,7 @@ import { TASK_MANAGEMENT_INFO } from 'page/task/TaskManagementModel';
 import TaskManagementPageLayout from 'page/task/TaskManagementPageLayout';
 import { USER_MANAGEMENT_INFO } from 'page/usermgmt/UserModel';
 import UserManagement from 'page/usermgmt/UserManagement';
-import { CONTEXT_TYPE, isOperationAssigned, OPERATIONS } from 'common/util/descriptorUtilities';
-import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
+import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 import DistributionConfiguration from 'page/distribution/DistributionConfiguration';
 import DistributionConfigurationForm from 'page/distribution/DistributionConfigurationForm';
 import { unauthorized } from 'store/actions/session';
@@ -73,15 +71,18 @@ const useStyles = createUseStyles({
     }
 });
 
-const MainPage = ({
-    descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh, unauthorizedFunction
-}) => {
+const MainPage = () => {
     const classes = useStyles();
+    const dispatch = useDispatch();
+    const { fetching, items: descriptors } = useSelector((state) => state.descriptors);
+    const { csrfToken, showLogoutConfirm } = useSelector((state) => state.session);
+    const { autoRefresh } = useSelector((state) => state.refresh);
+
     const [globalDescriptorMap, setGlobalDescriptorMap] = useState({});
     const [distributionDescriptorMap, setDistributionDescriptorMap] = useState({});
 
     useEffect(() => {
-        getDescriptorsRedux();
+        dispatch(getDescriptors());
     }, []);
 
     useEffect(() => {
@@ -98,190 +99,195 @@ const MainPage = ({
         setDistributionDescriptorMap(newDistributionDescriptorMap);
     }, [descriptors]);
 
-    const errorHandler = HTTPErrorUtils.createErrorHandler(unauthorizedFunction);
-
-    const createRoute = (uriPrefix, urlName, component) => (
-        <Route
-            exact
-            key={urlName}
-            path={`${uriPrefix}${urlName}`}
-        >
-            {component}
-        </Route>
-    );
-    const providerUri = '/alert/providers/';
-    const channelUri = '/alert/channels/';
-    const componentUri = '/alert/components/';
+    const errorHandler = HTTPErrorUtils.createErrorHandler(() => dispatch(unauthorized()));
 
     const page = (
-        <div className="contentArea">
+        <>
             <Route
-                exact
                 path="/alert/"
-                render={() => (
-                    <Redirect to="/alert/general/about" />
-                )}
+                element={<Navigate to="/alert/general/about" />}
             />
-            <DescriptorRoute
-                uriPrefix={providerUri}
-                urlName={BLACKDUCK_INFO.url}
-                descriptor={globalDescriptorMap[BLACKDUCK_INFO.key]}
-                render={(readonly) => (
-                    <ProviderPageLayout
-                        readonly={readonly}
-                    />
-                )}
-            />
-            <DescriptorRoute
-                uriPrefix={channelUri}
-                urlName={AZURE_BOARDS_INFO.url}
-                descriptor={globalDescriptorMap[AZURE_BOARDS_INFO.key]}
-                render={(readonly, showDelete) => (
-                    <AzureBoardsPageLayout
-                        readonly={readonly}
-                        allowDelete={showDelete}
-                    />
-                )}
-            />
-            <DescriptorRoute
-                uriPrefix={channelUri}
-                urlName={EMAIL_INFO.url}
-                descriptor={globalDescriptorMap[EMAIL_INFO.key]}
-                render={(readOnly, showTest, showSave, showDelete) => (
-                    <EmailGlobalConfiguration
-                        csrfToken={csrfToken}
-                        errorHandler={errorHandler}
-                        readonly={readOnly}
-                        displayTest={showTest}
-                        displaySave={showSave}
-                        displayDelete={showDelete}
-                    />
-                )}
-            />
-            <DescriptorRoute
-                uriPrefix={channelUri}
-                urlName={JIRA_CLOUD_INFO.url}
-                descriptor={globalDescriptorMap[JIRA_CLOUD_INFO.key]}
-                render={(readOnly, showTest, showSave, showDelete) => (
-                    <JiraCloudGlobalConfiguration
-                        csrfToken={csrfToken}
-                        errorHandler={errorHandler}
-                        readonly={readOnly}
-                        displayTest={showTest}
-                        displaySave={showSave}
-                        displayDelete={showDelete}
-                    />
-                )}
-            />
-            <DescriptorRoute
-                uriPrefix={channelUri}
-                urlName={JIRA_SERVER_INFO.url}
-                descriptor={globalDescriptorMap[JIRA_SERVER_INFO.key]}
-                render={(readOnly, showDelete) => (
-                    <JiraServerPageLayout
-                        csrfToken={csrfToken}
-                        showRefreshButton={!autoRefresh}
-                        readonly={readOnly}
-                        allowDelete={showDelete}
-                    />
-                )}
-            />
-            <DescriptorRoute uriPrefix={channelUri} urlName={MSTEAMS_INFO.url} descriptor={globalDescriptorMap[MSTEAMS_INFO.key]} render={() => <MSTeamsGlobalConfiguration />} />
-            <DescriptorRoute uriPrefix={channelUri} urlName={SLACK_INFO.url} descriptor={globalDescriptorMap[SLACK_INFO.key]} render={() => <SlackGlobalConfiguration />} />
+
+            {/* Home Page */}
             <Route
-                exact
-                key="distribution-route"
-                path={[`${DISTRIBUTION_URLS.distributionConfigUrl}/:id?`, `${DISTRIBUTION_URLS.distributionConfigCopyUrl}/:id?`]}
-            >
-                <DistributionConfigurationForm csrfToken={csrfToken} readonly={false} descriptors={distributionDescriptorMap} errorHandler={errorHandler} />
-            </Route>
-            {createRoute('/alert/jobs/', DISTRIBUTION_INFO.url, <DistributionConfiguration csrfToken={csrfToken} descriptors={descriptors} errorHandler={errorHandler} showRefreshButton={!autoRefresh} />)}
-            <DescriptorRoute
-                uriPrefix={componentUri}
-                urlName={AUDIT_INFO.url}
-                descriptor={globalDescriptorMap[AUDIT_INFO.key]}
-                render={() => (
-                    <AuditPageLayout />
-                )}
+                path="/alert/general/about"
+                element={<AboutLayout globalDescriptorMap={globalDescriptorMap} distributionDescriptorMap={distributionDescriptorMap} />}
             />
-            <DescriptorRoute
-                uriPrefix={componentUri}
-                urlName={AUTHENTICATION_INFO.url}
-                descriptor={globalDescriptorMap[AUTHENTICATION_INFO.key]}
-                hasTestFields
-                render={(readOnly, showTest, showSave) => (
-                    <AuthenticationPageLayout
-                        csrfToken={csrfToken}
-                        readonly={readOnly}
-                        displayTest={showTest}
-                        displaySave={showSave}
-                        errorHandler={errorHandler}
-                        fileRead={isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_READ)}
-                        fileWrite={isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_WRITE)}
-                        fileDelete={isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_DELETE)}
+
+            {/* Provider Page */}
+            <Route
+                path="/alert/providers/blackduck"
+                element={(
+                    <DescriptorRoute
+                        descriptor={globalDescriptorMap[BLACKDUCK_INFO.key]}
+                        element={<ProviderPageLayout descriptor={globalDescriptorMap[BLACKDUCK_INFO.key]} />}
                     />
                 )}
             />
-            <DescriptorRoute
-                uriPrefix={componentUri}
-                urlName={CERTIFICATE_INFO.url}
-                descriptor={globalDescriptorMap[CERTIFICATE_INFO.key]}
-                render={(readOnly) => (
-                    <CertificatesPageLayout
-                        csrfToken={csrfToken}
-                        errorHandler={errorHandler}
-                        readOnly={readOnly}
+
+            {/* Channel - Azure Boards Page */}
+            <Route
+                path="/alert/channels/azure_boards"
+                element={(
+                    <DescriptorRoute
+                        descriptor={globalDescriptorMap[AZURE_BOARDS_INFO.key]}
+                        element={<AzureBoardsPageLayout descriptor={globalDescriptorMap[AZURE_BOARDS_INFO.key]} />}
                     />
                 )}
             />
-            <DescriptorRoute
-                uriPrefix={componentUri}
-                urlName={SCHEDULING_INFO.url}
-                descriptor={globalDescriptorMap[SCHEDULING_INFO.key]}
-                render={(readOnly, showTest, showSave) => (
-                    <SchedulingConfiguration
-                        csrfToken={csrfToken}
-                        errorHandler={errorHandler}
-                        readonly={readOnly}
-                        displaySave={showSave}
+
+            {/* Channel - Email Page */}
+            <Route
+                path="/alert/channels/email"
+                element={(
+                    <DescriptorRoute
+                        descriptor={globalDescriptorMap[EMAIL_INFO.key]}
+                        element={<EmailGlobalConfiguration csrfToken={csrfToken} errorHandler={errorHandler} descriptor={globalDescriptorMap[EMAIL_INFO.key]} />}
                     />
                 )}
             />
-            <DescriptorRoute
-                uriPrefix={componentUri}
-                urlName={SETTINGS_INFO.url}
-                descriptor={globalDescriptorMap[SETTINGS_INFO.key]}
-                render={(readOnly, showTest, showSave) => (
-                    <SettingsConfiguration
-                        csrfToken={csrfToken}
-                        errorHandler={errorHandler}
-                        readonly={readOnly}
-                        displayTest={isOperationAssigned(globalDescriptorMap[SETTINGS_INFO.key], OPERATIONS.EXECUTE)}
-                        displaySave={showSave}
-                        displayDelete={isOperationAssigned(globalDescriptorMap[SETTINGS_INFO.key], OPERATIONS.DELETE)}
+
+            {/* Channel - Jira Cloud Page */}
+            <Route
+                path="/alert/channels/jira"
+                element={(
+                    <DescriptorRoute
+                        descriptor={globalDescriptorMap[JIRA_CLOUD_INFO.key]}
+                        element={<JiraCloudGlobalConfiguration csrfToken={csrfToken} errorHandler={errorHandler} descriptor={globalDescriptorMap[JIRA_CLOUD_INFO.key]} />}
                     />
                 )}
             />
-            <DescriptorRoute
-                uriPrefix={componentUri}
-                urlName={TASK_MANAGEMENT_INFO.url}
-                descriptor={globalDescriptorMap[TASK_MANAGEMENT_INFO.key]}
-                render={() => (
-                    <TaskManagementPageLayout />
+
+            {/* Channel - Jira Server Page */}
+            <Route
+                path="/alert/channels/jira_server"
+                element={(
+                    <DescriptorRoute
+                        descriptor={globalDescriptorMap[JIRA_SERVER_INFO.key]}
+                        element={<JiraServerPageLayout descriptor={globalDescriptorMap[JIRA_SERVER_INFO.key]} />}
+                    />
                 )}
             />
-            <DescriptorRoute
-                uriPrefix={componentUri}
-                urlName={USER_MANAGEMENT_INFO.url}
-                descriptor={globalDescriptorMap[USER_MANAGEMENT_INFO.key]}
-                render={() => (
-                    <UserManagement />
+
+            {/* Channel - MS Teams Page */}
+            <Route
+                path="/alert/channels/msteams"
+                element={(
+                    <DescriptorRoute
+                        descriptor={globalDescriptorMap[MSTEAMS_INFO.key]}
+                        element={<MSTeamsGlobalConfiguration />}
+                    />
                 )}
             />
-            <Route exact path="/alert/general/about">
-                <AboutLayout globalDescriptorMap={globalDescriptorMap} distributionDescriptorMap={distributionDescriptorMap} />
-            </Route>
-        </div>
+
+            {/* Channel - Slack Page */}
+            <Route
+                path="/alert/channels/slack"
+                element={(
+                    <DescriptorRoute
+                        descriptor={globalDescriptorMap[SLACK_INFO.key]}
+                        element={<SlackGlobalConfiguration />}
+                    />
+                )}
+            />
+
+            {/* Create Distribution Job Page */}
+            <Route
+                path="/alert/jobs/distribution"
+                element={<DistributionConfiguration csrfToken={csrfToken} descriptors={descriptors} errorHandler={errorHandler} showRefreshButton={!autoRefresh} />}
+            />
+
+            {/* Edit Distribution Job Page */}
+            <Route
+                key="distribution-route-edit"
+                path="/alert/jobs/distribution/edit/:id?"
+                element={<DistributionConfigurationForm csrfToken={csrfToken} readonly={false} descriptors={distributionDescriptorMap} errorHandler={errorHandler} />}
+            />
+
+            {/* Copy Distribution Job Page */}
+            <Route
+                key="distribution-route-copy"
+                path="/alert/jobs/distribution/copy/:id?"
+                element={<DistributionConfigurationForm csrfToken={csrfToken} readonly={false} descriptors={distributionDescriptorMap} errorHandler={errorHandler} />}
+            />
+
+            {/* Audit Information Page */}
+            <Route
+                path="/alert/components/audit"
+                element={(
+                    <DescriptorRoute
+                        descriptor={globalDescriptorMap[AUDIT_INFO.key]}
+                        element={<AuditPageLayout />}
+                    />
+                )}
+            />
+
+            {/* Authentication Page */}
+            <Route
+                path="/alert/components/authentication"
+                element={(
+                    <DescriptorRoute
+                        descriptor={globalDescriptorMap[AUTHENTICATION_INFO.key]}
+                        element={<AuthenticationPageLayout csrfToken={csrfToken} errorHandler={errorHandler} descriptor={globalDescriptorMap[AUTHENTICATION_INFO.key]} globalDescriptorMap={globalDescriptorMap} />}
+                    />
+                )}
+            />
+
+            {/* Certificates Page */}
+            <Route
+                path="/alert/components/certificates"
+                element={(
+                    <DescriptorRoute
+                        descriptor={globalDescriptorMap[CERTIFICATE_INFO.key]}
+                        element={<CertificatesPageLayout csrfToken={csrfToken} errorHandler={errorHandler} readOnly={false} />}
+                    />
+                )}
+            />
+
+            {/* Scheduling Page */}
+            <Route
+                path="/alert/components/scheduling"
+                element={(
+                    <DescriptorRoute
+                        descriptor={globalDescriptorMap[SCHEDULING_INFO.key]}
+                        element={<SchedulingConfiguration csrfToken={csrfToken} errorHandler={errorHandler} descriptor={globalDescriptorMap[SCHEDULING_INFO.key]} />}
+                    />
+                )}
+            />
+
+            {/* Settings Page */}
+            <Route
+                path="/alert/components/settings"
+                element={(
+                    <DescriptorRoute
+                        descriptor={globalDescriptorMap[SETTINGS_INFO.key]}
+                        element={<SettingsConfiguration csrfToken={csrfToken} errorHandler={errorHandler} descriptor={globalDescriptorMap[SETTINGS_INFO.key]} />}
+                    />
+                )}
+            />
+
+            {/* Task Management Page */}
+            <Route
+                path="/alert/components/tasks"
+                element={(
+                    <DescriptorRoute
+                        descriptor={globalDescriptorMap[TASK_MANAGEMENT_INFO.key]}
+                        element={<TaskManagementPageLayout />}
+                    />
+                )}
+            />
+
+            {/* User Management Page */}
+            <Route
+                path="/alert/components/users"
+                element={(
+                    <DescriptorRoute
+                        descriptor={globalDescriptorMap[USER_MANAGEMENT_INFO.key]}
+                        element={<UserManagement />}
+                    />
+                )}
+            />
+        </>
     );
 
     const spinner = (
@@ -294,8 +300,6 @@ const MainPage = ({
         </div>
     );
 
-    const content = (fetching) ? spinner : page;
-
     return (
         <div className={classes.blackDuckAlertApp}>
             <div className={classes.topnav}>
@@ -305,34 +309,17 @@ const MainPage = ({
                 <Navigation globalDescriptorMap={globalDescriptorMap} />
             </div>
             <div className={classes.main}>
-                {content}
+                {fetching ? spinner : (
+                    <Routes>
+                        {page}
+                    </Routes>
+                )}
             </div>
             <div className="modalsArea">
-                <LogoutConfirmation />
+                <LogoutConfirmation showLogoutConfirm={showLogoutConfirm} />
             </div>
         </div>
     );
 };
 
-MainPage.propTypes = {
-    descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
-    fetching: PropTypes.bool.isRequired,
-    getDescriptorsRedux: PropTypes.func.isRequired,
-    csrfToken: PropTypes.string.isRequired,
-    autoRefresh: PropTypes.bool.isRequired,
-    unauthorizedFunction: PropTypes.func.isRequired
-};
-
-const mapStateToProps = (state) => ({
-    descriptors: state.descriptors.items,
-    fetching: state.descriptors.fetching,
-    csrfToken: state.session.csrfToken,
-    autoRefresh: state.refresh.autoRefresh
-});
-
-const mapDispatchToProps = (dispatch) => ({
-    getDescriptorsRedux: () => dispatch(getDescriptors()),
-    unauthorizedFunction: () => dispatch(unauthorized())
-});
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(MainPage));
+export default MainPage;

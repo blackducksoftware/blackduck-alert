@@ -13,10 +13,12 @@ import * as GlobalRequestHelper from 'common/configuration/global/GlobalRequestH
 import NumberInput from 'common/component/input/NumberInput';
 import PageLayout from 'common/component/PageLayout';
 import FormCard from 'common/component/FormCard';
+import useGetPermissions from 'common/hooks/useGetPermissions';
 
 const JiraCloudGlobalConfiguration = ({
-    csrfToken, errorHandler, readonly, displayTest, displaySave, displayDelete
+    csrfToken, errorHandler, descriptor
 }) => {
+    const { readOnly, canDelete, canSave, canTest } = useGetPermissions(descriptor);
     const initModelFunction = () => {
         let initModel = FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, JIRA_CLOUD_INFO.key);
         initModel = FieldModelUtilities.updateFieldModelSingleValue(initModel, JIRA_CLOUD_GLOBAL_FIELD_KEYS.disablePluginCheck, 'true');
@@ -57,10 +59,10 @@ const JiraCloudGlobalConfiguration = ({
                     csrfToken={csrfToken}
                     buttonIdPrefix={JIRA_CLOUD_INFO.key}
                     retrieveData={retrieveData}
-                    readonly={readonly}
-                    displayTest={displayTest}
-                    displaySave={displaySave}
-                    displayDelete={displayDelete}
+                    readonly={readOnly}
+                    displayTest={canTest}
+                    displaySave={canSave}
+                    displayDelete={canDelete}
                     errorHandler={errorHandler}
                     deleteLabel="Reset"
                 >
@@ -70,7 +72,7 @@ const JiraCloudGlobalConfiguration = ({
                         label="Server URL"
                         fieldDescription="Base URL of the Jira Cloud server."
                         required
-                        readOnly={readonly}
+                        readOnly={readOnly}
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, JIRA_CLOUD_GLOBAL_FIELD_KEYS.url)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_GLOBAL_FIELD_KEYS.url)}
@@ -82,7 +84,7 @@ const JiraCloudGlobalConfiguration = ({
                         label="Email Address"
                         fieldDescription="Note: Unless 'Jira Plugin Validation' is checked, this email address must belong to a Jira admin."
                         required
-                        readOnly={readonly}
+                        readOnly={readOnly}
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, JIRA_CLOUD_GLOBAL_FIELD_KEYS.emailAddress)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_GLOBAL_FIELD_KEYS.emailAddress)}
@@ -94,7 +96,7 @@ const JiraCloudGlobalConfiguration = ({
                         label="API Token"
                         fieldDescription="The API token of the specified Jira user."
                         required
-                        readOnly={readonly}
+                        readOnly={readOnly}
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, JIRA_CLOUD_GLOBAL_FIELD_KEYS.accessToken)}
                         isSet={FieldModelUtilities.isFieldModelValueSet(formData, JIRA_CLOUD_GLOBAL_FIELD_KEYS.accessToken)}
@@ -107,7 +109,7 @@ const JiraCloudGlobalConfiguration = ({
                         label="Timeout"
                         fieldDescription="The timeout in seconds for all connections to Jira Cloud."
                         required
-                        readOnly={readonly}
+                        readOnly={readOnly}
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelNumberValue(formData, JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_GLOBAL_FIELD_KEYS.timeout)}
@@ -119,7 +121,7 @@ const JiraCloudGlobalConfiguration = ({
                         label="Jira Plugin Validation"
                         checkboxValueLabel="Skip Jira plugin validation"
                         checkboxValueDescription="This will disable checking whether the 'Alert Issue Property Indexer' plugin is installed on the specified Jira instance. If the plugin is not installed, issues may not be updated correctly and duplicates may be created."
-                        readOnly={readonly}
+                        readOnly={readOnly}
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(formData, JIRA_CLOUD_GLOBAL_FIELD_KEYS.disablePluginCheck)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_GLOBAL_FIELD_KEYS.disablePluginCheck)}
@@ -142,7 +144,7 @@ const JiraCloudGlobalConfiguration = ({
                         csrfToken={csrfToken}
                         currentConfig={formData}
                         successBox={false}
-                        readOnly={readonly || !displayTest}
+                        readOnly={readOnly || !canTest}
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_GLOBAL_FIELD_KEYS.configurePlugin)}
                         errorValue={errors.fieldErrors[JIRA_CLOUD_GLOBAL_FIELD_KEYS.configurePlugin]}
@@ -156,18 +158,7 @@ const JiraCloudGlobalConfiguration = ({
 JiraCloudGlobalConfiguration.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     errorHandler: PropTypes.object.isRequired,
-    // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
-    readonly: PropTypes.bool,
-    displayTest: PropTypes.bool,
-    displaySave: PropTypes.bool,
-    displayDelete: PropTypes.bool
-};
-
-JiraCloudGlobalConfiguration.defaultProps = {
-    readonly: false,
-    displayTest: true,
-    displaySave: true,
-    displayDelete: true
+    descriptor: PropTypes.object
 };
 
 export default JiraCloudGlobalConfiguration;
