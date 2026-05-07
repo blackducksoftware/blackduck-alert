@@ -35,7 +35,6 @@ const LogoutConfirmation = ({ showLogoutConfirm }) => {
     );
 };
 
-
 LogoutConfirmation.propTypes = {
     showLogoutConfirm: PropTypes.bool.isRequired
 };

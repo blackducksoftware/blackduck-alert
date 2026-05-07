@@ -1,7 +1,7 @@
 import React from 'react';
 import { createUseStyles } from 'react-jss';
 import { NavLink } from 'react-router-dom';
-import BlackDuckLogo from '/src/main/img/BlackDuckLogo.png';
+import BlackDuckLogo from '/src/main/img/BlackDuckLogo.png'; // eslint-disable-line import/no-absolute-path
 
 const useStyles = createUseStyles({
     topNav: {

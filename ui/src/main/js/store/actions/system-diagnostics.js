@@ -1,7 +1,7 @@
 import {
     SYSTEM_DIAGNOSTICS_GET_FAIL,
     SYSTEM_DIAGNOSTICS_GET_REQUEST,
-    SYSTEM_DIAGNOSTICS_GET_SUCCESS,
+    SYSTEM_DIAGNOSTICS_GET_SUCCESS
 } from 'store/actions/types';
 import { SYSTEM_DIAGNOSTICS_URL } from 'common/util/configurationRequestBuilder';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
@@ -44,26 +44,25 @@ export function fetchSystemDiagnostics() {
         return fetch(url, {
             credentials: 'same-origin',
             headers: headersUtil.getHeaders()
-        }).then((response) => {
-            return response.json()
-                .then((responseData) => {
-                    if (response.ok) {
-                        dispatch(fetchingSystemDiagnosticsSuccess(responseData));
-                        return responseData;
-                    } else {
-                        errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
-                            let message = '';
-                            if (responseData && responseData.message) {
-                                message = responseData.message.toString();
-                            }
-                            return fetchingSystemDiagnosticsFail(message);
-                        }));
-                        const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
-                        dispatch(handler(response.status));
-                        throw new Error('Failed to fetch diagnostics');
-                    }
-                });
-        }).catch((error) => {
+        }).then((response) => (
+            response.json().then((responseData) => {
+                if (response.ok) {
+                    dispatch(fetchingSystemDiagnosticsSuccess(responseData));
+                    return responseData;
+                } else {
+                    errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
+                        let message = '';
+                        if (responseData && responseData.message) {
+                            message = responseData.message.toString();
+                        }
+                        return fetchingSystemDiagnosticsFail(message);
+                    }));
+                    const handler = HTTPErrorUtils.createHttpErrorHandler(errorHandlers);
+                    dispatch(handler(response.status));
+                    throw new Error('Failed to fetch diagnostics');
+                }
+            })
+        )).catch((error) => {
             console.log(error);
             dispatch(fetchingSystemDiagnosticsFail(error));
             throw error;

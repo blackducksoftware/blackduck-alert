@@ -280,11 +280,11 @@ export function bulkDeleteUsers(userIdArray) {
         dispatch(bulkDeleteUserRequest());
         const { csrfToken } = getState().session;
 
-        Promise.all(userIdArray.map((user) => { // eslint-disable-line
+        Promise.all(userIdArray.map((user) => { // eslint-disable-line arrow-body-style
             return ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.USER_API_URL, csrfToken, user.id);
         })).catch((error) => {
             dispatch(bulkDeleteUserFail(error));
-            console.error; // eslint-disable-line
+            console.error; // eslint-disable-line no-unused-expressions
         }).then((response) => {
             if (response) {
                 dispatch(bulkDeleteUserSuccess());

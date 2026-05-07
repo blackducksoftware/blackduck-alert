@@ -258,11 +258,11 @@ export function deleteAzureBoards(azureBoards) {
         dispatch(deleteAzureBoardsRequest());
         const { csrfToken } = getState().session;
 
-        Promise.all(azureBoards.map((board) => { // eslint-disable-line
+        Promise.all(azureBoards.map((board) => { // eslint-disable-line arrow-body-style
             return ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.AZURE_BOARDS_API_URL, csrfToken, board.id);
         })).catch((error) => {
             dispatch(deleteAzureBoardsError(error));
-            console.error; // eslint-disable-line
+            console.error; // eslint-disable-line no-unused-expressions
         }).then((response) => {
             if (response) {
                 dispatch(deleteAzureBoardsSuccess());

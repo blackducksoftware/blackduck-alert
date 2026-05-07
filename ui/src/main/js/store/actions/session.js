@@ -65,7 +65,7 @@ function logOut() {
 function unauthorizeUser() {
     return {
         type: SESSION_UNAUTHORIZED
-    }
+    };
 }
 
 const PARAM_IGNORE_SAML = 'ignoreSAML';
@@ -140,6 +140,7 @@ export function verifySaml() {
                 dispatch(loggedOut());
             } else {
                 response.json().then((body) => {
+                    // eslint-disable-next-line camelcase
                     const { saml_enabled } = body;
                     dispatch(samlEnabled(Boolean(saml_enabled)));
                 });

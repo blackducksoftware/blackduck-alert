@@ -9,7 +9,7 @@ import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 const initialState = {
     data: [],
     fetching: false,
-    error: HTTPErrorUtils.createEmptyErrorObject(),
+    error: HTTPErrorUtils.createEmptyErrorObject()
 };
 
 const systemDiagnostics = (state = initialState, action) => {
@@ -17,19 +17,19 @@ const systemDiagnostics = (state = initialState, action) => {
         case SYSTEM_DIAGNOSTICS_GET_REQUEST:
             return {
                 ...state,
-                fetching: true,
+                fetching: true
             };
         case SYSTEM_DIAGNOSTICS_GET_FAIL:
             return {
                 ...state,
                 fetching: false,
-                error: HTTPErrorUtils.createErrorObject(action),
+                error: HTTPErrorUtils.createErrorObject(action)
             };
         case SYSTEM_DIAGNOSTICS_GET_SUCCESS:
             return {
                 ...state,
                 fetching: false,
-                data: action.data,
+                data: action.data
             };
         case SERIALIZE:
             return initialState;
