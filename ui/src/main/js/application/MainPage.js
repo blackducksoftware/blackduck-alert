@@ -104,7 +104,7 @@ const MainPage = () => {
     const page = (
         <>
             <Route
-                path="/alert/"
+                path="/alert"
                 element={<Navigate to="/alert/general/about" />}
             />
 
