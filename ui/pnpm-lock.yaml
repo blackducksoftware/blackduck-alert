@@ -54,7 +54,7 @@ importers:
         specifier: ^7.2.3
         version: 7.2.9(react-dom@16.14.0(react@16.14.0))(react@16.14.0)
       react-router-dom:
-        specifier: ^6.30.3
+        specifier: ^6.21.3
         version: 6.30.3(react-dom@16.14.0(react@16.14.0))(react@16.14.0)
       react-select:
         specifier: ^4.3.1
