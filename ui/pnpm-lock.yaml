@@ -54,8 +54,8 @@ importers:
         specifier: ^7.2.3
         version: 7.2.9(react-dom@16.14.0(react@16.14.0))(react@16.14.0)
       react-router-dom:
-        specifier: ^6.21.3
-        version: 6.21.3(react-dom@16.14.0(react@16.14.0))(react@16.14.0)
+        specifier: ^6.4.2
+        version: 6.4.2(react-dom@16.14.0(react@16.14.0))(react@16.14.0)
       react-select:
         specifier: ^4.3.1
         version: 4.3.1(@types/react@17.0.58)(react-dom@16.14.0(react@16.14.0))(react@16.14.0)
@@ -1026,9 +1026,9 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0
 
-  '@remix-run/router@1.14.2':
-    resolution: {integrity: sha512-ACXpdMM9hmKZww21yEqWwiLws/UPLhNKvimN8RrYSqPSvB3ov7sLvAcfvaxePeLvccTQKGdkDIhLYApZVDFuKg==}
-    engines: {node: '>=14.0.0'}
+  '@remix-run/router@1.0.2':
+    resolution: {integrity: sha512-GRSOFhJzjGN+d4sKHTMSvNeUPoZiDHWmRnXfzaxrqe7dE/Nzlc8BiMSJdLDESZlndM7jIUrZ/F4yWqVYlI0rwQ==}
+    engines: {node: '>=14'}
 
   '@restart/hooks@0.4.16':
     resolution: {integrity: sha512-f7aCv7c+nU/3mF7NWLtVVr0Ra80RqsO89hO72r+Y/nvQr5+q0UFGkocElTH6MJApvReVh6JHUFYn2cw1WdHF3w==}
@@ -3382,16 +3382,16 @@ packages:
       react-native:
         optional: true
 
-  react-router-dom@6.21.3:
-    resolution: {integrity: sha512-kNzubk7n4YHSrErzjLK72j0B5i969GsuCGazRl3G6j1zqZBLjuSlYBdVdkDOgzGdPIffUOc9nmgiadTEVoq91g==}
-    engines: {node: '>=14.0.0'}
+  react-router-dom@6.4.2:
+    resolution: {integrity: sha512-yM1kjoTkpfjgczPrcyWrp+OuQMyB1WleICiiGfstnQYo/S8hPEEnVjr/RdmlH6yKK4Tnj1UGXFSa7uwAtmDoLQ==}
+    engines: {node: '>=14'}
     peerDependencies:
       react: '>=16.8'
       react-dom: '>=16.8'
 
-  react-router@6.21.3:
-    resolution: {integrity: sha512-a0H638ZXULv1OdkmiK6s6itNhoy33ywxmUFT/xtSoVyf9VnC7n7+VT4LjVzdIHSaF5TIh9ylUgxMXksHTgGrKg==}
-    engines: {node: '>=14.0.0'}
+  react-router@6.4.2:
+    resolution: {integrity: sha512-Rb0BAX9KHhVzT1OKhMvCDMw776aTYM0DtkxqUBP8dNBom3mPXlfNs76JNGK8wKJ1IZEY1+WGj+cvZxHVk/GiKw==}
+    engines: {node: '>=14'}
     peerDependencies:
       react: '>=16.8'
 
@@ -5281,7 +5281,7 @@ snapshots:
       '@swc/helpers': 0.5.13
       react: 16.14.0
 
-  '@remix-run/router@1.14.2': {}
+  '@remix-run/router@1.0.2': {}
 
   '@restart/hooks@0.4.16(react@16.14.0)':
     dependencies:
@@ -8187,16 +8187,16 @@ snapshots:
     optionalDependencies:
       react-dom: 16.14.0(react@16.14.0)
 
-  react-router-dom@6.21.3(react-dom@16.14.0(react@16.14.0))(react@16.14.0):
+  react-router-dom@6.4.2(react-dom@16.14.0(react@16.14.0))(react@16.14.0):
     dependencies:
-      '@remix-run/router': 1.14.2
+      '@remix-run/router': 1.0.2
       react: 16.14.0
       react-dom: 16.14.0(react@16.14.0)
-      react-router: 6.21.3(react@16.14.0)
+      react-router: 6.4.2(react@16.14.0)
 
-  react-router@6.21.3(react@16.14.0):
+  react-router@6.4.2(react@16.14.0):
     dependencies:
-      '@remix-run/router': 1.14.2
+      '@remix-run/router': 1.0.2
       react: 16.14.0
 
   react-select@4.3.1(@types/react@17.0.58)(react-dom@16.14.0(react@16.14.0))(react@16.14.0):
