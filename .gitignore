@@ -39,3 +39,4 @@ sonar-project.properties
 .scannerwork/
 /coverage/
 **/data
+**/.npmrc
