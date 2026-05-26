@@ -1,20 +1,19 @@
 import React from 'react';
 import { createUseStyles } from 'react-jss';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import SideNavItem from 'common/component/navigation/SideNavItem';
 import { confirmLogout } from 'store/actions/session';
+import { doesDescriptorExist, DESCRIPTOR_TYPE } from 'common/util/descriptorUtilities';
 import { AUDIT_INFO } from 'page/audit/AuditModel';
 import { AUTHENTICATION_INFO } from 'application/auth/AuthenticationModel';
-import { AZURE_BOARDS_INFO, AZURE_BOARDS_URLS } from 'page/channel/azure/AzureBoardsModel';
-import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
 import { CERTIFICATE_INFO } from 'page/certificates/CertificateModel';
-import { DESCRIPTOR_TYPE, doesDescriptorExist } from 'common/util/descriptorUtilities';
+import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
 import { EMAIL_INFO, EMAIL_URLS } from 'page/channel/email/EmailModels';
 import { JIRA_CLOUD_INFO, JIRA_CLOUD_URLS } from 'page/channel/jira/cloud/JiraCloudModel';
 import { JIRA_SERVER_INFO, JIRA_SERVER_URLS } from 'page/channel/jira/server/JiraServerModel';
 import { MSTEAMS_INFO, MSTEAMS_URLS } from 'page/channel/msteams/MSTeamsModel';
+import { AZURE_BOARDS_INFO, AZURE_BOARDS_URLS } from 'page/channel/azure/AzureBoardsModel';
 import { SCHEDULING_INFO } from 'page/scheduling/SchedulingModel';
 import { SETTINGS_INFO } from 'page/settings/SettingsModel';
 import { SLACK_INFO, SLACK_URLS } from 'page/channel/slack/SlackModels';
@@ -37,8 +36,9 @@ const useStyles = createUseStyles((theme) => ({
     }
 }));
 
-const Navigation = ({ confirmLogoutPressed, globalDescriptorMap }) => {
+const Navigation = ({ globalDescriptorMap }) => {
     const classes = useStyles();
+    const dispatch = useDispatch();
 
     const hasType = (descriptorType) => Object.values(globalDescriptorMap).some((descriptor) => descriptorType === descriptor.type);
 
@@ -118,6 +118,10 @@ const Navigation = ({ confirmLogoutPressed, globalDescriptorMap }) => {
         showOption: doesDescriptorExist(globalDescriptorMap, USER_MANAGEMENT_INFO.key)
     }];
 
+    function handleLogoutClick() {
+        dispatch(confirmLogout());
+    }
+
     return (
         <div className={classes.sideNavContent}>
             <ul className={classes.sideNav}>
@@ -141,19 +145,14 @@ const Navigation = ({ confirmLogoutPressed, globalDescriptorMap }) => {
                     <SideNavItem href="/alert/components/settings" label="Settings" id="settings" icon="cog" type="link" />
                 ) : null }
 
-                <SideNavItem label="Logout" id="logout" icon="sign-out-alt" onClick={() => confirmLogoutPressed()} />
+                <SideNavItem label="Logout" id="logout" icon="sign-out-alt" onClick={handleLogoutClick} />
             </ul>
         </div>
     );
 };
 
 Navigation.propTypes = {
-    confirmLogoutPressed: PropTypes.func.isRequired,
     globalDescriptorMap: PropTypes.object.isRequired
 };
 
-const mapDispatchToProps = (dispatch) => ({
-    confirmLogoutPressed: () => dispatch(confirmLogout())
-});
-
-export default withRouter(connect(null, mapDispatchToProps)(Navigation));
+export default Navigation;

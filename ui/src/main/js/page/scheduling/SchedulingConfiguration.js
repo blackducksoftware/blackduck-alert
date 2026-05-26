@@ -16,8 +16,10 @@ import ReadOnlyField from 'common/component/input/field/ReadOnlyField';
 import * as GlobalRequestHelper from 'common/configuration/global/GlobalRequestHelper';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 import FormCard from 'common/component/FormCard';
+import useGetPermissions from 'common/hooks/useGetPermissions';
 
-const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly, displaySave }) => {
+const SchedulingConfiguration = ({ csrfToken, errorHandler, descriptor }) => {
+    const { readOnly, canSave } = useGetPermissions(descriptor);
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, SCHEDULING_INFO.key));
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
 
@@ -45,8 +47,8 @@ const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly, displaySav
                     displayDelete={false}
                     buttonIdPrefix={SCHEDULING_INFO.key}
                     retrieveData={retrieveData}
-                    readonly={readonly}
-                    displaySave={displaySave}
+                    readonly={readOnly}
+                    displaySave={canSave}
                     errorHandler={errorHandler}
                 >
                     <DynamicSelectInput
@@ -55,7 +57,7 @@ const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly, displaySav
                         label="Daily Digest Hour Of Day"
                         fieldDescription="Select the hour of the day to run the daily digest distribution jobs."
                         required
-                        readOnly={readonly}
+                        readOnly={readOnly}
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         options={SCHEDULING_DIGEST_HOURS_OPTIONS}
                         clearable={false}
@@ -79,7 +81,7 @@ const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly, displaySav
                         label="Purge Notification Data"
                         tooltipDescription="Choose a frequency for cleaning up provider notification data; the default value is three days. When the purge runs, it deletes all notification data that is older than the selected value. EX: data older than 3 days will be deleted."
                         required
-                        readOnly={readonly}
+                        readOnly={readOnly}
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         options={SCHEDULING_PURGE_FREQUENCY_OPTIONS}
                         clearable={false}
@@ -103,7 +105,7 @@ const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly, displaySav
                         label="Purge Audit Failed Data"
                         tooltipDescription="Choose a frequency for cleaning up failed audit data; the default value is ten days. When the purge runs, it deletes all data that is older than the selected value. EX: data older than 10 days will be deleted."
                         required
-                        readOnly={readonly}
+                        readOnly={readOnly}
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         options={SCHEDULING_PURGE_AUDIT_FAILED_FREQUENCY_OPTIONS}
                         clearable={false}
@@ -130,14 +132,7 @@ const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly, displaySav
 SchedulingConfiguration.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     errorHandler: PropTypes.object.isRequired,
-    // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
-    readonly: PropTypes.bool,
-    displaySave: PropTypes.bool
-};
-
-SchedulingConfiguration.defaultProps = {
-    readonly: false,
-    displaySave: true
+    descriptor: PropTypes.object
 };
 
 export default SchedulingConfiguration;

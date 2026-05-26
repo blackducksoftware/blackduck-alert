@@ -4,19 +4,19 @@ import Button from 'common/component/button/Button';
 import DistributionDeleteModal from 'page/distribution/DistributionDeleteModal';
 import StatusMessage from 'common/component/StatusMessage';
 import { DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
-import { useHistory } from 'react-router-dom/cjs/react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { fetchDistribution } from 'store/actions/distribution';
 import { useDispatch, useSelector } from 'react-redux';
 
 const DistributionTableActions = ({ data, selected, setSelected, paramsConfig, setParamsConfig }) => {
     const dispatch = useDispatch();
-    const history = useHistory();
+    const navigate = useNavigate();
     const { fetching } = useSelector((state) => state.distribution);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
 
     function handleCreateProviderClick() {
-        history.push(DISTRIBUTION_URLS.distributionConfigUrl);
+        navigate(DISTRIBUTION_URLS.distributionConfigUrl);
     }
 
     function handleDeleteProviderClick() {

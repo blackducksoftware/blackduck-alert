@@ -1,40 +1,16 @@
 import React from 'react';
 import * as PropTypes from 'prop-types';
-import { Route } from 'react-router-dom';
-import * as DescriptorUtilities from 'common/util/descriptorUtilities';
 
-const DescriptorRoute = ({
-    descriptor, urlName, uriPrefix, hasTestFields, render
-}) => {
-    const [hasTest, hasSave, hasDelete] = DescriptorUtilities.getButtonPermissions(descriptor, hasTestFields);
-    const readonly = (descriptor) ? descriptor.readOnly : true;
-    const path = `${uriPrefix}${descriptor && urlName}`;
-
-    return descriptor
-        ? (
-            <Route
-                exact
-                key={urlName}
-                path={[path, `${path}/*`]}
-            >
-                {render(readonly, hasTest, hasSave, hasDelete)}
-            </Route>
-        )
-        : null;
-};
+/**
+ * This component is used to conditionally render a route based on the presence of a descriptor. We use
+ * descriptors as features that a user has access to based on their roles/permissions, so if a descriptor
+ * is not present, the user should not be able to access the route.
+ */
+const DescriptorRoute = ({ descriptor, element }) => (descriptor ? element : null);
 
 DescriptorRoute.propTypes = {
-    urlName: PropTypes.string.isRequired,
-    uriPrefix: PropTypes.string,
-    render: PropTypes.func.isRequired,
     descriptor: PropTypes.object,
-    hasTestFields: PropTypes.bool
-};
-
-DescriptorRoute.defaultProps = {
-    uriPrefix: '',
-    descriptor: undefined,
-    hasTestFields: false
+    element: PropTypes.node.isRequired
 };
 
 export default DescriptorRoute;

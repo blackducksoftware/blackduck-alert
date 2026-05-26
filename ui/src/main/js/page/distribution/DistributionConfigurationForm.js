@@ -18,7 +18,7 @@ import {
 import EndpointSelectField from 'common/component/input/EndpointSelectField';
 import TextInput from 'common/component/input/TextInput';
 import CollapsiblePane from 'common/component/CollapsiblePane';
-import { useHistory, useLocation, useParams } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import { CONTEXT_TYPE, isOneOperationAssigned, isOperationAssigned, OPERATIONS } from 'common/util/descriptorUtilities';
 import CommonDistributionConfigurationForm from 'page/distribution/CommonDistributionConfigurationForm';
@@ -47,7 +47,7 @@ const DistributionConfigurationForm = ({
     csrfToken, errorHandler, descriptors
 }) => {
     const { id } = useParams();
-    const history = useHistory();
+    const navigate = useNavigate();
     const location = useLocation();
     const [formData, setFormData] = useState({});
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
@@ -358,7 +358,7 @@ const DistributionConfigurationForm = ({
                     displayTest={!readonly}
                     isTestDisabled={!isOperationAssigned(descriptors[selectedChannel], OPERATIONS.EXECUTE)}
                     displayDelete={false}
-                    afterSuccessfulSave={() => history.push(DISTRIBUTION_URLS.distributionTableUrl)}
+                    afterSuccessfulSave={() => navigate(DISTRIBUTION_URLS.distributionTableUrl)}
                     retrieveData={retrieveData}
                     createDataToSend={updateJobData}
                     createDataToTest={createTestData}
