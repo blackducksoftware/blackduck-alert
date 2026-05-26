@@ -127,7 +127,7 @@ const MainPage = () => {
 
             {/* Channel - Azure Boards Page */}
             <Route
-                path="/alert/channels/azure_boards"
+                path="/alert/channels/azure_boards/*"
                 element={(
                     <DescriptorRoute
                         descriptor={globalDescriptorMap[AZURE_BOARDS_INFO.key]}
