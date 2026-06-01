@@ -8,6 +8,7 @@
 package com.blackduck.integration.alert.component.diagnostic.database;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.OffsetDateTime;
@@ -41,6 +42,7 @@ import com.blackduck.integration.alert.component.diagnostic.model.CompletedJobDu
 import com.blackduck.integration.alert.component.diagnostic.model.CompletedJobStageDurationModel;
 import com.blackduck.integration.alert.component.diagnostic.model.CompletedJobsDiagnosticModel;
 import com.blackduck.integration.alert.component.diagnostic.model.DiagnosticModel;
+import com.blackduck.integration.alert.component.diagnostic.model.JobExecutionDiagnosticModel;
 import com.blackduck.integration.alert.component.diagnostic.model.JobExecutionsDiagnosticModel;
 import com.blackduck.integration.alert.component.diagnostic.model.NotificationDiagnosticModel;
 import com.blackduck.integration.alert.component.diagnostic.model.RabbitMQDiagnosticModel;
@@ -49,6 +51,8 @@ import com.blackduck.integration.alert.component.diagnostic.utility.RabbitMQDiag
 import com.blackduck.integration.alert.database.audit.AuditEntryRepository;
 import com.blackduck.integration.alert.database.job.api.StaticJobAccessor;
 import com.blackduck.integration.alert.database.notification.NotificationContentRepository;
+
+import io.micrometer.common.util.StringUtils;
 
 class DefaultDiagnosticAccessorTest {
     public static final String TEST_JOB_NAME = "Job Name";
@@ -60,7 +64,7 @@ class DefaultDiagnosticAccessorTest {
     private JobCompletionStatusModelAccessor completedJobsAccessor;
 
     @BeforeEach
-    public void init() {
+    void init() {
         notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
         auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         rabbitMQDiagnosticUtility = Mockito.mock(RabbitMQDiagnosticUtility.class);
@@ -86,7 +90,10 @@ class DefaultDiagnosticAccessorTest {
         RabbitMQDiagnosticModel rabbitMQDiagnosticModel = createRabbitMQDiagnosticModel();
         CompletedJobsDiagnosticModel completedJobsDiagnosticModel = createJobDiagnosticModel();
         DiagnosticModel diagnosticModel = diagnosticAccessor.getDiagnosticInfo();
+        DiagnosticModel obfuscatedModel = diagnosticModel.obfuscate();
 
+        assertEquals(diagnosticModel, obfuscatedModel);
+        assertTrue(StringUtils.isNotBlank(diagnosticModel.getRequestTimestamp()));
         assertEquals(notificationDiagnosticModel, diagnosticModel.getNotificationDiagnosticModel());
         assertEquals(auditDiagnosticModel, diagnosticModel.getAuditDiagnosticModel());
         assertEquals(rabbitMQDiagnosticModel, diagnosticModel.getRabbitMQDiagnosticModel());
@@ -235,7 +242,21 @@ class DefaultDiagnosticAccessorTest {
     }
 
     private void assertExecutingJobDetails(JobExecutionsDiagnosticModel jobExecutionsDiagnosticModel) {
-
+        assertEquals(1, jobExecutionsDiagnosticModel.getTotalJobsInSystem());
+        assertEquals(1, jobExecutionsDiagnosticModel.getPendingJobs());
+        assertEquals(0, jobExecutionsDiagnosticModel.getFailedJobs());
+        assertEquals(0, jobExecutionsDiagnosticModel.getSuccessFulJobs());
+        JobExecutionDiagnosticModel executionModel = jobExecutionsDiagnosticModel.getJobExecutions().stream().findFirst()
+            .orElseThrow(() -> new AssertionError("Expected a job execution and none were found."));
+        assertEquals(TEST_JOB_NAME, executionModel.getJobName());
+        assertEquals(ChannelKeys.SLACK.getUniversalKey(), executionModel.getChannelName());
+        assertEquals(AuditEntryStatus.PENDING, executionModel.getStatus());
+        assertTrue(executionModel.getTotalNotificationCount() > 0);
+        assertTrue(executionModel.getProcessedNotificationCount() > 0);
+        assertEquals(0, executionModel.getRemainingEvents());
+        assertTrue(StringUtils.isNotBlank(executionModel.getStart()));
+        assertTrue(StringUtils.isEmpty(executionModel.getEnd()));
+        assertFalse(executionModel.getStages().isEmpty());
     }
 
     private void assertSystemDiagnostics(SystemDiagnosticModel systemDiagnosticModel) {
