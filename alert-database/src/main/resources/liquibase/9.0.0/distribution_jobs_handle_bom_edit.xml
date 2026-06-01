@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="dmaxfield" id="disable_bom_edit_only_dist_jobs">
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.distribution_jobs AS job
+            SET enabled = FALSE
+            WHERE job.job_id IN (
+                SELECT types.job_id
+                FROM alert.blackduck_job_notification_types AS types
+                GROUP BY types.job_id
+                HAVING SUM(CASE WHEN types.notification_type = 'BOM_EDIT' THEN 1 ELSE 0 END) = COUNT(*)
+            );
+        </sql>
+    </changeSet>
+    <changeSet author="dmaxfield" id="remove_bom_edit_not_only_type">
+        <sql dbms="postgresql" stripComments="true">
+            DELETE FROM alert.blackduck_job_notification_types AS types
+            WHERE types.notification_type = 'BOM_EDIT' AND types.job_id IN (
+                SELECT types.job_id
+                FROM alert.blackduck_job_notification_types AS types
+                WHERE types.notification_type != 'BOM_EDIT'
+            );
+        </sql>
+    </changeSet>
+</databaseChangeLog>
