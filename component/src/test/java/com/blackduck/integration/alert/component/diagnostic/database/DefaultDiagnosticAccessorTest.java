@@ -8,7 +8,6 @@
 package com.blackduck.integration.alert.component.diagnostic.database;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.OffsetDateTime;
@@ -135,13 +134,13 @@ class DefaultDiagnosticAccessorTest {
 
     private CompletedJobsDiagnosticModel createJobDiagnosticModel() {
         UUID jobConfigId = UUID.randomUUID();
-        Long notificationCount = 10L;
-        Long successCount = 1L;
-        Long failureCount = 0L;
+        long notificationCount = 10L;
+        long successCount = 1L;
+        long failureCount = 0L;
         String latestStatus = AuditEntryStatus.SUCCESS.name();
         OffsetDateTime firstRun = DateUtils.createCurrentDateTimestamp();
         OffsetDateTime lastRun = DateUtils.createCurrentDateTimestamp();
-        Long jobDuration = 100000L;
+        long jobDuration = 100000L;
         JobCompletionStatusDurations durations = new JobCompletionStatusDurations(jobDuration, 1000000L, 300000L, 0L, 0L, 0L);
 
         JobCompletionStatusModel statusModel = new JobCompletionStatusModel(
