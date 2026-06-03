@@ -251,12 +251,15 @@ class DefaultDiagnosticAccessorTest {
         assertEquals(TEST_JOB_NAME, executionModel.getJobName());
         assertEquals(ChannelKeys.SLACK.getUniversalKey(), executionModel.getChannelName());
         assertEquals(AuditEntryStatus.PENDING, executionModel.getStatus());
-        assertTrue(executionModel.getTotalNotificationCount() > 0);
-        assertTrue(executionModel.getProcessedNotificationCount() > 0);
+        assertEquals(100, executionModel.getTotalNotificationCount());
+        assertEquals(10, executionModel.getProcessedNotificationCount());
         assertEquals(0, executionModel.getRemainingEvents());
         assertTrue(StringUtils.isNotBlank(executionModel.getStart()));
         assertTrue(StringUtils.isEmpty(executionModel.getEnd()));
-        assertFalse(executionModel.getStages().isEmpty());
+        assertEquals(1, executionModel.getStages().size());
+        assertEquals(JobStage.NOTIFICATION_PROCESSING, executionModel.getStages().get(0).getStage());
+        assertTrue(StringUtils.isNotBlank(executionModel.getStages().get(0).getStart()));
+        assertTrue(StringUtils.isNotBlank(executionModel.getStages().get(0).getEnd()));
     }
 
     private void assertSystemDiagnostics(SystemDiagnosticModel systemDiagnosticModel) {
