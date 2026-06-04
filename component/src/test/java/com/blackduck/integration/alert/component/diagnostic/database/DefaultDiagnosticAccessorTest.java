@@ -41,6 +41,7 @@ import com.blackduck.integration.alert.component.diagnostic.model.CompletedJobDu
 import com.blackduck.integration.alert.component.diagnostic.model.CompletedJobStageDurationModel;
 import com.blackduck.integration.alert.component.diagnostic.model.CompletedJobsDiagnosticModel;
 import com.blackduck.integration.alert.component.diagnostic.model.DiagnosticModel;
+import com.blackduck.integration.alert.component.diagnostic.model.JobExecutionDiagnosticModel;
 import com.blackduck.integration.alert.component.diagnostic.model.JobExecutionsDiagnosticModel;
 import com.blackduck.integration.alert.component.diagnostic.model.NotificationDiagnosticModel;
 import com.blackduck.integration.alert.component.diagnostic.model.RabbitMQDiagnosticModel;
@@ -49,6 +50,8 @@ import com.blackduck.integration.alert.component.diagnostic.utility.RabbitMQDiag
 import com.blackduck.integration.alert.database.audit.AuditEntryRepository;
 import com.blackduck.integration.alert.database.job.api.StaticJobAccessor;
 import com.blackduck.integration.alert.database.notification.NotificationContentRepository;
+
+import io.micrometer.common.util.StringUtils;
 
 class DefaultDiagnosticAccessorTest {
     public static final String TEST_JOB_NAME = "Job Name";
@@ -60,7 +63,7 @@ class DefaultDiagnosticAccessorTest {
     private JobCompletionStatusModelAccessor completedJobsAccessor;
 
     @BeforeEach
-    public void init() {
+    void init() {
         notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
         auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         rabbitMQDiagnosticUtility = Mockito.mock(RabbitMQDiagnosticUtility.class);
@@ -86,7 +89,10 @@ class DefaultDiagnosticAccessorTest {
         RabbitMQDiagnosticModel rabbitMQDiagnosticModel = createRabbitMQDiagnosticModel();
         CompletedJobsDiagnosticModel completedJobsDiagnosticModel = createJobDiagnosticModel();
         DiagnosticModel diagnosticModel = diagnosticAccessor.getDiagnosticInfo();
+        DiagnosticModel obfuscatedModel = diagnosticModel.obfuscate();
 
+        assertEquals(diagnosticModel, obfuscatedModel);
+        assertTrue(StringUtils.isNotBlank(diagnosticModel.getRequestTimestamp()));
         assertEquals(notificationDiagnosticModel, diagnosticModel.getNotificationDiagnosticModel());
         assertEquals(auditDiagnosticModel, diagnosticModel.getAuditDiagnosticModel());
         assertEquals(rabbitMQDiagnosticModel, diagnosticModel.getRabbitMQDiagnosticModel());
@@ -128,13 +134,13 @@ class DefaultDiagnosticAccessorTest {
 
     private CompletedJobsDiagnosticModel createJobDiagnosticModel() {
         UUID jobConfigId = UUID.randomUUID();
-        Long notificationCount = 10L;
-        Long successCount = 1L;
-        Long failureCount = 0L;
+        long notificationCount = 10L;
+        long successCount = 1L;
+        long failureCount = 0L;
         String latestStatus = AuditEntryStatus.SUCCESS.name();
         OffsetDateTime firstRun = DateUtils.createCurrentDateTimestamp();
         OffsetDateTime lastRun = DateUtils.createCurrentDateTimestamp();
-        Long jobDuration = 100000L;
+        long jobDuration = 100000L;
         JobCompletionStatusDurations durations = new JobCompletionStatusDurations(jobDuration, 1000000L, 300000L, 0L, 0L, 0L);
 
         JobCompletionStatusModel statusModel = new JobCompletionStatusModel(
@@ -235,7 +241,24 @@ class DefaultDiagnosticAccessorTest {
     }
 
     private void assertExecutingJobDetails(JobExecutionsDiagnosticModel jobExecutionsDiagnosticModel) {
-
+        assertEquals(1, jobExecutionsDiagnosticModel.getTotalJobsInSystem());
+        assertEquals(1, jobExecutionsDiagnosticModel.getPendingJobs());
+        assertEquals(0, jobExecutionsDiagnosticModel.getFailedJobs());
+        assertEquals(0, jobExecutionsDiagnosticModel.getSuccessFulJobs());
+        JobExecutionDiagnosticModel executionModel = jobExecutionsDiagnosticModel.getJobExecutions().stream().findFirst()
+            .orElseThrow(() -> new AssertionError("Expected a job execution and none were found."));
+        assertEquals(TEST_JOB_NAME, executionModel.getJobName());
+        assertEquals(ChannelKeys.SLACK.getUniversalKey(), executionModel.getChannelName());
+        assertEquals(AuditEntryStatus.PENDING, executionModel.getStatus());
+        assertEquals(100, executionModel.getTotalNotificationCount());
+        assertEquals(10, executionModel.getProcessedNotificationCount());
+        assertEquals(0, executionModel.getRemainingEvents());
+        assertTrue(StringUtils.isNotBlank(executionModel.getStart()));
+        assertTrue(StringUtils.isEmpty(executionModel.getEnd()));
+        assertEquals(1, executionModel.getStages().size());
+        assertEquals(JobStage.NOTIFICATION_PROCESSING, executionModel.getStages().get(0).getStage());
+        assertTrue(StringUtils.isNotBlank(executionModel.getStages().get(0).getStart()));
+        assertTrue(StringUtils.isNotBlank(executionModel.getStages().get(0).getEnd()));
     }
 
     private void assertSystemDiagnostics(SystemDiagnosticModel systemDiagnosticModel) {
