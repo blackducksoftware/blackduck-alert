@@ -45,7 +45,7 @@
     },
     "packageManager": "pnpm@10.33.0",
     "devDependencies": {
-        "@babel/core": "^7.11.6",
+        "@babel/core": "^7.29.6",
         "@babel/eslint-parser": "^7.11.5",
         "@babel/eslint-plugin": "^7.11.5",
         "@babel/plugin-proposal-object-rest-spread": "^7.11.0",
