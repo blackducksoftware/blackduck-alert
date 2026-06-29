@@ -8,11 +8,14 @@ describe('Testing CollapsiblePane', () => {
     test('Rendering CollapsiblePane toggle collapse', async () => {
         const user = userEvent.setup();
 
-        renderComponent(<CollapsiblePane
-            id={'collapsiblePaneId'}
-            title={'Collapsible Pane Configuration'}
-            children={<div>Test Child</div>}
-        />);
+        renderComponent(
+            <CollapsiblePane
+                id={'collapsiblePaneId'}
+                title={'Collapsible Pane Configuration'}
+            >
+                <div>Test Child</div>
+            </CollapsiblePane>
+        );
 
         const childElement = screen.getByText('Test Child');
         // Expect the child element to be initially hidden
