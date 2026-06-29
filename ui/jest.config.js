@@ -8,9 +8,9 @@ module.exports = {
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   collectCoverageFrom: [
-    'src/**/*.{js,jsx}', // Include all JS and JSX files in the src directory
-    '!src/**/*.test.{js,jsx}', // Exclude test files
-    '!src/main/js/app.js', // Exclude the main app entry point
+    'src/**/*.{js,jsx}',
+    '!src/**/*.test.{js,jsx}',
+    '!src/main/js/app.js',
   ],
   testMatch: [
     '**/__tests__/**/*.{js,jsx}',
