@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { applyMiddleware, createStore } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
@@ -22,11 +22,12 @@ dom.watch({
     autoReplaceSvgRoot: document
 });
 
-ReactDOM.render(
+const container = document.getElementById('react');
+const root = createRoot(container);
+root.render(
     <Provider store={store}>
         <ThemeProvider theme={theme}>
             <App />
         </ThemeProvider>
-    </Provider>,
-    document.getElementById('react')
+    </Provider>
 );
