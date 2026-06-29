@@ -16,4 +16,3 @@ describe('Testing SystemMessage', () => {
         expect(screen.getByText("Black Duck configuration is invalid. Black Duck configurations missing.")).toBeInTheDocument();
     });
 });
-

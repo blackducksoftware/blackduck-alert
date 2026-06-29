@@ -21,8 +21,8 @@ function wrapComponent(component, store) {
     );
 }
 
-export function renderComponent(component, { store, options = {} } = {}) {
-    const result = render(wrapComponent(component, store), options);
+export function renderComponent(component, { store, ...renderOptions } = {}) {
+    const result = render(wrapComponent(component, store), renderOptions);
     return {
         ...result,
         rerender: (updatedComponent) => result.rerender(wrapComponent(updatedComponent, store)),

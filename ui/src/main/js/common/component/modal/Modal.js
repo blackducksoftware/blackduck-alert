@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import ReactDOM from 'react-dom';
+import { createPortal } from 'react-dom';
 import { createUseStyles } from 'react-jss';
 import ModalHeader from 'common/component/modal/ModalHeader';
 import ModalFooter from 'common/component/modal/ModalFooter';
@@ -88,7 +88,7 @@ const Modal = ({
         return null;
     }
 
-    return ReactDOM.createPortal(
+    return createPortal(
         <div className={classes.modal}>
             <div className={modalStyleClass}>
                 <div className={classes.modalContent}>
