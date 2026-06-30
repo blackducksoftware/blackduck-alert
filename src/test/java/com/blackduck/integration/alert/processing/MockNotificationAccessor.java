@@ -147,12 +147,12 @@ public class MockNotificationAccessor implements NotificationAccessor {
 
     @Override
     public void setNotificationsProcessedById(Set<Long> notificationIds) {
-
+        throw new UnsupportedOperationException("Not implemented in test mock");
     }
 
     @Override
     public void deleteNotification(AlertNotificationModel notification) {
-
+        throw new UnsupportedOperationException("Not implemented in test mock");
     }
 
     @Override
@@ -195,7 +195,7 @@ public class MockNotificationAccessor implements NotificationAccessor {
 
     @Override
     public void setNotificationsMappingById(Set<Long> notificationIds) {
-
+        throw new UnsupportedOperationException("Not implemented in test mock");
     }
 
     @Override

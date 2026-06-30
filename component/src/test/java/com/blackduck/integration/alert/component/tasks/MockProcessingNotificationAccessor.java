@@ -70,7 +70,7 @@ public class MockProcessingNotificationAccessor implements NotificationAccessor 
         List<AlertNotificationModel> notifications = alertNotificationModels.stream()
             .sorted(Comparator.comparing(AlertNotificationModel::getCreatedAt))
             .filter(withinRange)
-            .collect(Collectors.toList());
+            .toList();
         List<List<AlertNotificationModel>> partitionedLists = ListUtils.partition(notifications, pageSize);
         int totalPages = partitionedLists.size();
         if (partitionedLists.size() >= pageNumber) {
@@ -96,10 +96,10 @@ public class MockProcessingNotificationAccessor implements NotificationAccessor 
         List<AlertNotificationModel> notificationsNotProcessed = alertNotificationModels
             .stream()
             .filter(Predicate.not(AlertNotificationModel::getProcessed))
-            .collect(Collectors.toList());
+            .toList();
         
         Page<AlertNotificationModel> pageOfNotifications;
-        if (notificationsNotProcessed.size() > 0) {
+        if (!notificationsNotProcessed.isEmpty()) {
             pageOfNotifications = new PageImpl<>(notificationsNotProcessed);
         } else {
             pageOfNotifications = Page.empty();
@@ -113,10 +113,10 @@ public class MockProcessingNotificationAccessor implements NotificationAccessor 
             .stream()
             .filter(model -> model.getProviderConfigId().equals(providerConfigId))
             .filter(Predicate.not(AlertNotificationModel::getProcessed))
-            .collect(Collectors.toList());
+            .toList();
 
         Page<AlertNotificationModel> pageOfNotifications;
-        if (notificationsNotProcessed.size() > 0) {
+        if (!notificationsNotProcessed.isEmpty()) {
             pageOfNotifications = new PageImpl<>(notificationsNotProcessed);
         } else {
             pageOfNotifications = Page.empty();
@@ -136,12 +136,12 @@ public class MockProcessingNotificationAccessor implements NotificationAccessor 
 
     @Override
     public void setNotificationsProcessedById(Set<Long> notificationIds) {
-
+        throw new UnsupportedOperationException("Not implemented in test mock");
     }
 
     @Override
     public void deleteNotification(AlertNotificationModel notification) {
-
+        throw new UnsupportedOperationException("Not implemented in test mock");
     }
 
     @Override
@@ -203,7 +203,7 @@ public class MockProcessingNotificationAccessor implements NotificationAccessor 
 
     @Override
     public void setNotificationsMappingById(Set<Long> notificationIds) {
-
+        throw new UnsupportedOperationException("Not implemented in test mock");
     }
 
     @Override

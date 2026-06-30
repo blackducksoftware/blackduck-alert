@@ -131,6 +131,7 @@ public class BlackDuckApiTokenValidator {
         private String subscriptionTargetReleaseName;
 
         public AlertNotificationSubscriptionsSubscriptionView() {
+            // For serialization
         }
 
         public Date getCreatedAt() {
