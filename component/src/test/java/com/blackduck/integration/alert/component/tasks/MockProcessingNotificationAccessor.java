@@ -99,7 +99,7 @@ public class MockProcessingNotificationAccessor implements NotificationAccessor 
             .toList();
         
         Page<AlertNotificationModel> pageOfNotifications;
-        if (notificationsNotProcessed.size() > 0) {
+        if (!notificationsNotProcessed.isEmpty()) {
             pageOfNotifications = new PageImpl<>(notificationsNotProcessed);
         } else {
             pageOfNotifications = Page.empty();
@@ -116,7 +116,7 @@ public class MockProcessingNotificationAccessor implements NotificationAccessor 
             .toList();
 
         Page<AlertNotificationModel> pageOfNotifications;
-        if (notificationsNotProcessed.size() > 0) {
+        if (!notificationsNotProcessed.isEmpty()) {
             pageOfNotifications = new PageImpl<>(notificationsNotProcessed);
         } else {
             pageOfNotifications = Page.empty();
