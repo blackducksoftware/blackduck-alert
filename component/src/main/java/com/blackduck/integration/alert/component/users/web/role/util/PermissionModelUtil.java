@@ -24,35 +24,40 @@ public final class PermissionModelUtil {
             String descriptorKey = permissionModel.getDescriptorName();
             String context = permissionModel.getContext();
             PermissionKey permissionKey = new PermissionKey(context, descriptorKey);
-
-            int accessOperationsBits = 0;
-            if (permissionModel.isCreate()) {
-                accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.CREATE.getBit());
-            }
-            if (permissionModel.isRead()) {
-                accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.READ.getBit());
-            }
-            if (permissionModel.isDelete()) {
-                accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.DELETE.getBit());
-            }
-            if (permissionModel.isExecute()) {
-                accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.EXECUTE.getBit());
-            }
-            if (permissionModel.isWrite()) {
-                accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.WRITE.getBit());
-            }
-            if (permissionModel.isUploadDelete()) {
-                accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.UPLOAD_FILE_DELETE.getBit());
-            }
-            if (permissionModel.isUploadRead()) {
-                accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.UPLOAD_FILE_READ.getBit());
-            }
-            if (permissionModel.isUploadWrite()) {
-                accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.UPLOAD_FILE_WRITE.getBit());
-            }
-
-            permissionMatrix.put(permissionKey, accessOperationsBits);
+            permissionMatrix.put(permissionKey, computeAccessOperationsBits(permissionModel));
         }
         return new PermissionMatrixModel(permissionMatrix);
+    }
+
+    private static int computeAccessOperationsBits(PermissionModel permissionModel) {
+        int accessOperationsBits = 0;
+        if (permissionModel.isCreate()) {
+            accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.CREATE.getBit());
+        }
+        if (permissionModel.isRead()) {
+            accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.READ.getBit());
+        }
+        if (permissionModel.isDelete()) {
+            accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.DELETE.getBit());
+        }
+        if (permissionModel.isExecute()) {
+            accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.EXECUTE.getBit());
+        }
+        if (permissionModel.isWrite()) {
+            accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.WRITE.getBit());
+        }
+        if (permissionModel.isUploadDelete()) {
+            accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.UPLOAD_FILE_DELETE.getBit());
+        }
+        if (permissionModel.isUploadRead()) {
+            accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.UPLOAD_FILE_READ.getBit());
+        }
+        if (permissionModel.isUploadWrite()) {
+            accessOperationsBits = BitwiseUtil.combineBits(accessOperationsBits, AccessOperation.UPLOAD_FILE_WRITE.getBit());
+        }
+        return accessOperationsBits;
+    }
+
+    private PermissionModelUtil() {
     }
 }
