@@ -5,6 +5,7 @@ module.exports = {
     '^common/(.*)$': '<rootDir>/src/main/js/common/$1',
     '^page/(.*)$': '<rootDir>/src/main/js/page/$1',
     '^store/(.*)$': '<rootDir>/src/main/js/store/$1',
+    '^_theme$': '<rootDir>/src/main/js/_theme',
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   collectCoverageFrom: [
