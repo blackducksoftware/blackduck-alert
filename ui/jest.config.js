@@ -11,7 +11,7 @@ module.exports = {
   collectCoverageFrom: [
     'src/**/*.{js,jsx}',
     '!src/**/*.test.{js,jsx}',
-    '!src/main/js/index.js',
+    '!src/main/js/Index.js',
   ],
   testMatch: [
     '**/__tests__/**/*.{js,jsx}',
