@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { ThemeProvider } from 'react-jss';
 import { Provider } from 'react-redux';
-import theme from '../src/main/js/_theme';
+import theme from '_theme';
 
 /**
  * This file provides a custom render function that wraps test components with necessary information such as providers and themes.

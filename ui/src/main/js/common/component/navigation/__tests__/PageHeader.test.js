@@ -1,6 +1,6 @@
 import React from 'react';
-import PageHeader from '../PageHeader';
-import { renderComponent } from '../../../../../../../test/renderer';
+import PageHeader from 'common/component/navigation/PageHeader';
+import { renderComponent } from 'test/renderer';
 import { screen } from '@testing-library/react';
 
 describe('Testing PageHeader rendering', () => {

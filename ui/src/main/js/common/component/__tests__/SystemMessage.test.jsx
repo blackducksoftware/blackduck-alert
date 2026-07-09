@@ -1,6 +1,6 @@
 import React from 'react';
-import SystemMessage from '../SystemMessage';
-import { renderComponent } from '../../../../../../test/renderer';
+import SystemMessage from 'common/component/SystemMessage';
+import { renderComponent } from 'test/renderer';
 import { screen } from '@testing-library/react';
 
 describe('Testing SystemMessage', () => {

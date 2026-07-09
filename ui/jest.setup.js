@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { loadIconData } from './src/main/js/common/util/iconUtility';
+import { loadIconData } from 'common/util/iconUtility';
 
 /**
  * Load icon data for tests so that FontAwesomeIcon can render icons correctly and not throw errors about missing icons.

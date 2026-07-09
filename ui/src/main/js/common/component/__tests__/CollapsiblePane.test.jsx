@@ -1,6 +1,6 @@
 import React from 'react';
-import { renderComponent } from '../../../../../../test/renderer';
-import CollapsiblePane from '../CollapsiblePane';
+import { renderComponent } from 'test/renderer';
+import CollapsiblePane from 'common/component/CollapsiblePane';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
