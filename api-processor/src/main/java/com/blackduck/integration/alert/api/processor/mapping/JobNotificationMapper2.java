@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +29,7 @@ import com.blackduck.integration.alert.common.rest.model.AlertPagedDetails;
 
 @Component
 public class JobNotificationMapper2 {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final ProcessingJobAccessor2 processingJobAccessor;
     private final JobNotificationMappingAccessor jobNotificationMappingAccessor;
 
@@ -77,12 +80,15 @@ public class JobNotificationMapper2 {
 
         String projectName = filteredDistributionJobRequestModel.getProjectName().stream().findFirst().orElse(StringUtils.EMPTY);
         String projectVersionName = filteredDistributionJobRequestModel.getProjectVersionNames().stream().findFirst().orElse(StringUtils.EMPTY);
+        Long notificationId = filteredDistributionJobRequestModel.getNotificationId().orElse(null);
 
         AlertPagedDetails<SimpleFilteredDistributionJobResponseModel> jobs = processingJobAccessor.getMatchingEnabledJobsForNotifications(
             filteredDistributionJobRequestModel,
             pageNumber,
             pageSize
         );
+
+        boolean anyMapped = false;
         while (jobs.getCurrentPage() <= jobs.getTotalPages()) {
             List<JobToNotificationMappingModel> mappings = new LinkedList<>();
             for (SimpleFilteredDistributionJobResponseModel job : jobs.getModels()) {
@@ -91,13 +97,24 @@ public class JobNotificationMapper2 {
                 }
             }
             if (!mappings.isEmpty()) {
+                anyMapped = true;
                 jobNotificationMappingAccessor.addJobMappings(mappings);
+                mappings.forEach(mapping ->
+                    logger.debug("Notification {} mapped to job {} [correlationId: {}]", mapping.getNotificationId(), mapping.getJobId(), correlationId));
             }
             pageNumber++;
             jobs = processingJobAccessor.getMatchingEnabledJobsForNotifications(
                 filteredDistributionJobRequestModel,
                 pageNumber,
                 pageSize
+            );
+        }
+
+        if (!anyMapped) {
+            logger.debug(
+                "Notification {} matched no enabled distribution jobs [correlationId: {}, project: {}, version: {}, types: {}]",
+                notificationId, correlationId, projectName, projectVersionName,
+                filteredDistributionJobRequestModel.getNotificationTypes()
             );
         }
     }

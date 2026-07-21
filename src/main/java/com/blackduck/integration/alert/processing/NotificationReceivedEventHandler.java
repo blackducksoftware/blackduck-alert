@@ -77,6 +77,9 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
             } else {
                 eventManager.sendEvent(new JobNotificationMappedEvent(correlationID));
             }
+        } else {
+            logger.info("No page of notifications was found, sending all notifications mapped by correlation id: {}.", correlationID);
+            eventManager.sendEvent(new JobNotificationMappedEvent(correlationID));
         }
         logger.info("Finished processing batch for provider({}): {} event for notifications.", providerConfigId, correlationID);
     }
