@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.blackduck.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueBomComponentDetails;
@@ -49,6 +51,7 @@ import com.blackduck.integration.rest.exception.IntegrationRestException;
 public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<String> {
     private static final String FAILED_TO_CREATE_ISSUE_MESSAGE = "Failed to create an issue in Jira.";
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final JiraErrorMessageUtility jiraErrorMessageUtility;
     private final JiraIssueAlertPropertiesManager issuePropertiesManager;
     private final String issueCreatorDescriptorKey;
@@ -74,8 +77,12 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
     protected final ExistingIssueDetails<String> createIssueAndExtractDetails(IssueCreationModel alertIssueCreationModel) throws AlertException {
         Optional<ExistingIssueDetails<String>> existingIssue = doesIssueExist(alertIssueCreationModel);
         if (existingIssue.isPresent()) {
+            ExistingIssueDetails<String> existingIssueDetails = existingIssue.get();
+            logger.debug("Found existing Jira issue for Alert Issue ID: {}. Jira Issue Details: Jira ID: {} Jira Key: {}",
+                alertIssueCreationModel.getAlertIssueId(), existingIssueDetails.getIssueId(), existingIssueDetails.getIssueKey());
             return existingIssue.get();
         }
+        logger.debug("Did not discover existing Jira issues for Alert Issue ID: {}", alertIssueCreationModel.getAlertIssueId());
         ExistingIssueDetails<String> existingIssueDetails;
         MessageReplacementValues replacementValues = alertIssueCreationModel.getSource()
             .map(this::createCustomFieldReplacementValues)
@@ -85,6 +92,7 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
             ).build());
         T creationRequest = createIssueCreationRequest(alertIssueCreationModel, replacementValues);
         try {
+            logger.debug("Attempting to create new issue for Alert Issue ID: {}", alertIssueCreationModel.getAlertIssueId());
             IssueCreationResponseModel issueCreationResponseModel = createIssue(creationRequest);
             IssueResponseModel createdIssue = fetchIssue(issueCreationResponseModel.getKey());
             IssueFieldsComponent createdIssueFields = createdIssue.getFields();
@@ -121,6 +129,7 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
     }
 
     protected Optional<ExistingIssueDetails<String>> doesIssueExist(IssueCreationModel alertIssueCreationModel) {
+        logger.debug("Attempting to find existing Jira issues for Alert Issue ID: {}", alertIssueCreationModel.getAlertIssueId());
         String query = alertIssueCreationModel.getQueryString().orElse(null);
         if (StringUtils.isBlank(query)) {
             return Optional.empty();
