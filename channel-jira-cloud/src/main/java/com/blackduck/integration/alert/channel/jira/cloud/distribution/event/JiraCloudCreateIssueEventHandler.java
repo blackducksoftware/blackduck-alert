@@ -10,7 +10,6 @@ package com.blackduck.integration.alert.channel.jira.cloud.distribution.event;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import com.blackduck.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
 import org.apache.commons.lang3.StringUtils;
@@ -114,10 +113,10 @@ public class JiraCloudCreateIssueEventHandler extends IssueTrackerCreateIssueEve
                 if (issueDoesNotExist) {
                     List<IssueTrackerIssueResponseModel<String>> responses = messageSender.sendMessage(creationModel);
                     postProcess(new IssueTrackerResponse<>("Success", responses));
-                    List<String> issueKeys = responses.stream()
-                        .map(IssueTrackerIssueResponseModel::getIssueId)
-                        .collect(Collectors.toList());
-                    logger.info("Created issues: {}", issueKeys);
+                    List<String> issuePairs = responses.stream()
+                        .map(response -> response.getIssueId() + " | " + response.getIssueKey())
+                        .toList();
+                    logger.info("Created issues (Issue ID | Issue Key): {}", issuePairs);
                 }
             } catch (AlertException ex) {
                 logger.error("Cannot create issue for job {}", jobId);
