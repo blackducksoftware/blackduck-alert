@@ -22,7 +22,7 @@ import com.blackduck.integration.alert.api.common.model.exception.AlertException
 import com.blackduck.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 
 public abstract class IssueTrackerIssueCommenter<T extends Serializable> {
-    public static final String COMMENTING_DISABLED_MESSAGE = "Commenting on issues is disabled. Skipping.";
+    public static final String COMMENTING_DISABLED_MESSAGE = "Commenting on issues is disabled. Skipping. Alert Issue ID: {}";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -34,12 +34,13 @@ public abstract class IssueTrackerIssueCommenter<T extends Serializable> {
 
     public final Optional<IssueTrackerIssueResponseModel<T>> commentOnIssue(IssueCommentModel<T> issueCommentModel) throws AlertException {
         if (!isCommentingEnabled()) {
-            logger.debug(COMMENTING_DISABLED_MESSAGE);
+            logger.debug(COMMENTING_DISABLED_MESSAGE, issueCommentModel.getAlertIssueId());
             return Optional.empty();
         }
 
         addComments(issueCommentModel);
         IssueTrackerIssueResponseModel<T> responseModel = issueResponseCreator.createIssueResponse(issueCommentModel.getSource().orElse(null), issueCommentModel.getExistingIssueDetails(), IssueOperation.UPDATE);
+        logger.debug("Commented on issue with Alert Issue ID: {}", issueCommentModel.getAlertIssueId());
         return Optional.of(responseModel);
     }
 
@@ -49,7 +50,7 @@ public abstract class IssueTrackerIssueCommenter<T extends Serializable> {
 
     protected void addComments(IssueCommentModel<T> issueCommentModel) throws AlertException {
         if (!isCommentingEnabled()) {
-            logger.debug(COMMENTING_DISABLED_MESSAGE);
+            logger.debug(COMMENTING_DISABLED_MESSAGE, issueCommentModel.getAlertIssueId());
             return;
         }
 

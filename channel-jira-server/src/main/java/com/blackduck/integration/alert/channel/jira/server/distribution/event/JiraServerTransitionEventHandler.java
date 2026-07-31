@@ -73,6 +73,7 @@ public class JiraServerTransitionEventHandler extends IssueTrackerTransitionEven
     public void handleEvent(JiraServerTransitionEvent event) {
         UUID jobId = event.getJobId();
         Optional<JiraServerJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
+        logger.debug("Begin Handle Event: {} for Alert Issue ID: {}", getClass().getSimpleName(), event.getTransitionModel().getAlertIssueId());
         if (details.isPresent()) {
             try {
                 JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraPropertiesWithJobId(jobId);

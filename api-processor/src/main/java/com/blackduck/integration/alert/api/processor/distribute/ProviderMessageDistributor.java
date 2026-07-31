@@ -66,7 +66,7 @@ public class ProviderMessageDistributor {
         Set<Long> notificationIds = processedMessageHolder.extractAllNotificationIds();
         executingJobManager.incrementExpectedNotificationsSent(jobExecutionId, notificationIds.size());
         DistributionEvent event = new DistributionEvent(destinationKey, jobId, jobExecutionId, jobName, notificationIds, processedMessageHolder.toProviderMessageHolder());
-        logger.info("Sending {}. Event ID: {}. Job ID: {}. Destination: {}", EVENT_CLASS_NAME, event.getEventId(), jobId, destinationKey);
+        logger.info("Sending {}. Event ID: {}. Job ID: {}. Job Execution ID: {}. Destination: {}", EVENT_CLASS_NAME, event.getEventId(), jobId, event.getJobExecutionId(), destinationKey);
         if (logger.isDebugEnabled()) {
             String joinedIds = StringUtils.join(notificationIds, ", ");
             notificationLogger.debug("Creating event: {}. Job ID: {}. For notifications: {}", event.getEventId(), jobId, joinedIds);

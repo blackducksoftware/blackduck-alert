@@ -12,11 +12,10 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.blackduck.integration.alert.api.common.model.AlertSerializableModel;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
 import com.blackduck.integration.jira.common.cloud.model.AtlassianDocumentFormatModel;
 
-public class IssueCreationModel extends AlertSerializableModel {
+public class IssueCreationModel extends IssueActionModel {
     private static final long serialVersionUID = -3568919050386494416L;
     private final String queryString;
     private final String title;

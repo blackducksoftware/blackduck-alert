@@ -55,7 +55,7 @@ public abstract class IssueTrackerIssueCreator<T extends Serializable> {
      */
     public final IssueTrackerIssueResponseModel<T> createIssueTrackerIssue(IssueCreationModel alertIssueCreationModel) throws AlertException {
         ExistingIssueDetails<T> createdIssueDetails = createIssueAndExtractDetails(alertIssueCreationModel);
-        logger.debug("Created new {} issue: {}", channelKey.getDisplayName(), createdIssueDetails);
+        logger.debug("Created new {} issue with Alert Issue ID: {}, Issue details: {}", channelKey.getDisplayName(), alertIssueCreationModel.getAlertIssueId(), createdIssueDetails);
 
         IssueTrackerCallbackInfo callbackInfo = null;
         Optional<ProjectIssueModel> optionalSource = alertIssueCreationModel.getSource();
@@ -93,6 +93,7 @@ public abstract class IssueTrackerIssueCreator<T extends Serializable> {
         postCreateComments.addAll(creationModel.getPostCreateComments());
 
         IssueCommentModel<T> commentRequestModel = new IssueCommentModel<>(issueDetails, postCreateComments, projectSource);
+        logger.debug("Issue Creator for Alert Issue ID: {}, creating comment model with Alert Issue ID: {}", creationModel.getAlertIssueId(), commentRequestModel.getAlertIssueId());
         commenter.commentOnIssue(commentRequestModel);
     }
 

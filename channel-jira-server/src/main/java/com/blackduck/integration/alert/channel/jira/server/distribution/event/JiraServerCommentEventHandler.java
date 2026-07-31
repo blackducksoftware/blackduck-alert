@@ -73,6 +73,7 @@ public class JiraServerCommentEventHandler extends IssueTrackerCommentEventHandl
     public void handleEvent(JiraServerCommentEvent event) {
         UUID jobId = event.getJobId();
         Optional<JiraServerJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
+        logger.debug("Begin Handle Event: {} for Alert Issue ID: {}", getClass().getSimpleName(), event.getCommentModel().getAlertIssueId());
         if (details.isPresent()) {
             try {
                 JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraPropertiesWithJobId(jobId);

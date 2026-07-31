@@ -10,6 +10,9 @@ package com.blackduck.integration.alert.channel.jira.server.distribution.delegat
 import java.util.Set;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.blackduck.integration.alert.api.channel.issue.tracker.event.IssueTrackerTransitionIssueEvent;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueTransitionModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerTransitionEventGenerator;
@@ -17,6 +20,7 @@ import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
 import com.blackduck.integration.alert.channel.jira.server.distribution.event.JiraServerTransitionEvent;
 
 public class JiraServerTransitionGenerator implements IssueTrackerTransitionEventGenerator<String> {
+    private Logger logger = LoggerFactory.getLogger(getClass());
     private final JiraServerChannelKey channelKey;
     private final UUID jobExecutionId;
     private final UUID jobId;
@@ -31,6 +35,7 @@ public class JiraServerTransitionGenerator implements IssueTrackerTransitionEven
 
     @Override
     public IssueTrackerTransitionIssueEvent<String> generateEvent(IssueTransitionModel<String> model) {
+        logger.debug("Generate Jira Server Transition Event for Alert Issue ID {}. Job Execution ID: {}", model.getAlertIssueId(), jobExecutionId);
         return new JiraServerTransitionEvent(
             IssueTrackerTransitionIssueEvent.createDefaultEventDestination(channelKey),
             jobExecutionId,

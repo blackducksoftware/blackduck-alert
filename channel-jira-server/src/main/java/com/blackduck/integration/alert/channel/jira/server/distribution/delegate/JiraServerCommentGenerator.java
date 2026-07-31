@@ -10,6 +10,9 @@ package com.blackduck.integration.alert.channel.jira.server.distribution.delegat
 import java.util.Set;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.blackduck.integration.alert.api.channel.issue.tracker.event.IssueTrackerCommentEvent;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCommentModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.send.IssueTrackerCommentEventGenerator;
@@ -17,6 +20,7 @@ import com.blackduck.integration.alert.api.descriptor.JiraServerChannelKey;
 import com.blackduck.integration.alert.channel.jira.server.distribution.event.JiraServerCommentEvent;
 
 public class JiraServerCommentGenerator implements IssueTrackerCommentEventGenerator<String> {
+    private Logger logger = LoggerFactory.getLogger(getClass());
     private final JiraServerChannelKey channelKey;
     private final UUID jobExecutionId;
     private final UUID jobId;
@@ -31,6 +35,7 @@ public class JiraServerCommentGenerator implements IssueTrackerCommentEventGener
 
     @Override
     public IssueTrackerCommentEvent<String> generateEvent(IssueCommentModel<String> model) {
+        logger.debug("Generate Jira Server Comment Event for Alert Issue ID {}. Job Execution ID: {}", model.getAlertIssueId(), jobExecutionId);
         return new JiraServerCommentEvent(IssueTrackerCommentEvent.createDefaultEventDestination(channelKey), jobExecutionId, jobId, notificationIds, model);
     }
 }
