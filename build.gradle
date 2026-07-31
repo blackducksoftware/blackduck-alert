@@ -19,6 +19,8 @@ plugins {
 }
 
 ext {
+    tomcatVersion = '10.1.57'
+
     userID = 'id -u'.execute().text.trim()
     groupID = 'id -g'.execute().text.trim()
 
@@ -111,6 +113,10 @@ allprojects {
     configurations {
         all {
             exclude group: 'com.blackducksoftware.bdio', module: 'bdio2'
+            resolutionStrategy {
+                force "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}"
+                force "org.apache.tomcat:tomcat-annotations-api:${tomcatVersion}"
+            }
         }
     }
     // disable the test task when running the alert server to speed up startup time.
