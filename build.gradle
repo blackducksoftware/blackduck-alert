@@ -19,6 +19,8 @@ plugins {
 }
 
 ext {
+    tomcatVersion = '10.1.57'
+
     userID = 'id -u'.execute().text.trim()
     groupID = 'id -g'.execute().text.trim()
 
@@ -111,6 +113,14 @@ allprojects {
     configurations {
         all {
             exclude group: 'com.blackducksoftware.bdio', module: 'bdio2'
+
+            /* Spring is no longer patching the 3.5 line of Spring Boot, but Apache Tomcat
+               has critical & high vulnerabilities it has addressed in newer releases.
+               Because of the this, force the Apache Tomcat version to the patched version */
+            resolutionStrategy {
+                force "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}"
+                force "org.apache.tomcat:tomcat-annotations-api:${tomcatVersion}"
+            }
         }
     }
     // disable the test task when running the alert server to speed up startup time.

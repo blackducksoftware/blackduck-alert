@@ -32,6 +32,11 @@ dependencies {
         api 'org.javassist:javassist:3.29.2-GA'
         api 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4'
 
+        // Spring Boot 3.5.16 manages 10.1.55 with strictly; 10.1.57 contains security fixes.
+        // Enforced via resolutionStrategy.force in root build.gradle allprojects block.
+        api "org.apache.tomcat.embed:tomcat-embed-core:${rootProject.ext.tomcatVersion}"
+        api "org.apache.tomcat:tomcat-annotations-api:${rootProject.ext.tomcatVersion}"
+
         api "org.opensaml:opensaml-core:4.3.0"
         api "org.opensaml:opensaml-saml-api:4.3.0"
         api "org.opensaml:opensaml-saml-impl:4.3.0"
