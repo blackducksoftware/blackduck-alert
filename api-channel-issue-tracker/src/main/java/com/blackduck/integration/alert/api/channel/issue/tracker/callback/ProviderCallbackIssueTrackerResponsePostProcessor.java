@@ -10,8 +10,9 @@ package com.blackduck.integration.alert.api.channel.issue.tracker.callback;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +24,7 @@ import com.blackduck.integration.alert.common.channel.issuetracker.IssueTrackerC
 
 @Component
 public class ProviderCallbackIssueTrackerResponsePostProcessor implements IssueTrackerResponsePostProcessor {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final EventManager eventManager;
 
     @Autowired
@@ -38,23 +40,30 @@ public class ProviderCallbackIssueTrackerResponsePostProcessor implements IssueT
 
     private <T extends Serializable> List<IssueTrackerCallbackEvent> createCallbackEvents(IssueTrackerResponse<T> issueTrackerResponse) {
         return issueTrackerResponse.getUpdatedIssues()
-                   .stream()
-                   .map(this::createProviderCallbackEvent)
-                   .flatMap(Optional::stream)
-                   .collect(Collectors.toList());
+            .stream()
+            .map(this::createProviderCallbackEvent)
+            .flatMap(Optional::stream)
+            .toList();
     }
 
     private <T extends Serializable> Optional<IssueTrackerCallbackEvent> createProviderCallbackEvent(IssueTrackerIssueResponseModel<T> issueResponseModel) {
         return issueResponseModel.getCallbackInfo()
-                   .map(callbackInfo ->
-                            new IssueTrackerCallbackEvent(
-                                callbackInfo,
-                                issueResponseModel.getIssueKey(),
-                                issueResponseModel.getIssueLink(),
-                                issueResponseModel.getIssueOperation(),
-                                issueResponseModel.getIssueTitle()
-                            )
-                   );
+            .map(callbackInfo -> {
+                logger.debug(
+                    "Creating issue tracker callback event: issue key: [{}], issue operation: [{}], issue title: [{}], link: [{}]",
+                    issueResponseModel.getIssueKey(),
+                    issueResponseModel.getIssueOperation(),
+                    issueResponseModel.getIssueTitle(),
+                    issueResponseModel.getIssueLink()
+                );
+                return new IssueTrackerCallbackEvent(
+                    callbackInfo,
+                    issueResponseModel.getIssueKey(),
+                    issueResponseModel.getIssueLink(),
+                    issueResponseModel.getIssueOperation(),
+                    issueResponseModel.getIssueTitle()
+                );
+            });
     }
 
 }

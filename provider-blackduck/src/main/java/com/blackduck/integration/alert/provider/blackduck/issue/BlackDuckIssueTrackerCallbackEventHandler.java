@@ -38,7 +38,11 @@ public class BlackDuckIssueTrackerCallbackEventHandler implements AlertEventHand
     private final BlackDuckPropertiesFactory blackDuckPropertiesFactory;
     private final ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
 
-    public BlackDuckIssueTrackerCallbackEventHandler(Gson gson, BlackDuckPropertiesFactory blackDuckPropertiesFactory, ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor) {
+    public BlackDuckIssueTrackerCallbackEventHandler(
+        Gson gson,
+        BlackDuckPropertiesFactory blackDuckPropertiesFactory,
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor
+    ) {
         this.gson = gson;
         this.blackDuckPropertiesFactory = blackDuckPropertiesFactory;
         this.configurationModelConfigurationAccessor = configurationModelConfigurationAccessor;
@@ -47,11 +51,19 @@ public class BlackDuckIssueTrackerCallbackEventHandler implements AlertEventHand
     @Override
     public void handle(IssueTrackerCallbackEvent event) {
         String eventId = event.getEventId();
-        logger.debug("Handling issue-tracker callback event with id '{}' for issue key: {}", eventId, event.getIssueKey());
-
         IssueTrackerCallbackInfo callbackInfo = event.getCallbackInfo();
+        logger.debug(
+            "Start handling issue-tracker callback. event id: '{}', issue key: {}, issue summary: {} provider id: {}, project-version URL: {}, Callback URL: {}",
+            eventId,
+            event.getIssueKey(),
+            event.getIssueSummary(),
+            callbackInfo.getProviderConfigId(),
+            callbackInfo.getBlackDuckProjectVersionUrl(),
+            callbackInfo.getCallbackUrl()
+        );
+
         Optional<BlackDuckServicesFactory> optionalBlackDuckServicesFactory = createBlackDuckProperties(callbackInfo.getProviderConfigId())
-                                                                                  .flatMap(this::createBlackDuckServicesFactory);
+            .flatMap(this::createBlackDuckServicesFactory);
         if (optionalBlackDuckServicesFactory.isPresent()) {
             BlackDuckServicesFactory blackDuckServicesFactory = optionalBlackDuckServicesFactory.get();
             BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
@@ -61,12 +73,12 @@ public class BlackDuckIssueTrackerCallbackEventHandler implements AlertEventHand
             BlackDuckProviderIssueModel issueModel = createBlackDuckIssueModel(event);
             createOrUpdateBlackDuckIssue(blackDuckProviderIssueHandler, issueModel, callbackInfo);
         }
-        logger.debug("Finished handling issue-tracker callback event with id '{}' for issue key: {}", eventId, event.getIssueKey());
+        logger.debug("Finished handling issue-tracker callback. event id: '{}', issue key: {}", eventId, event.getIssueKey());
     }
 
     private Optional<BlackDuckProperties> createBlackDuckProperties(Long providerConfigId) {
         return configurationModelConfigurationAccessor.getConfigurationById(providerConfigId)
-                   .map(blackDuckPropertiesFactory::createProperties);
+            .map(blackDuckPropertiesFactory::createProperties);
     }
 
     private Optional<BlackDuckServicesFactory> createBlackDuckServicesFactory(BlackDuckProperties blackDuckProperties) {
@@ -81,11 +93,23 @@ public class BlackDuckIssueTrackerCallbackEventHandler implements AlertEventHand
         }
     }
 
-    private void createOrUpdateBlackDuckIssue(BlackDuckProviderIssueHandler blackDuckProviderIssueHandler, BlackDuckProviderIssueModel issueModel, IssueTrackerCallbackInfo callbackInfo) {
+    private void createOrUpdateBlackDuckIssue(
+        BlackDuckProviderIssueHandler blackDuckProviderIssueHandler,
+        BlackDuckProviderIssueModel issueModel,
+        IssueTrackerCallbackInfo callbackInfo
+    ) {
         try {
             blackDuckProviderIssueHandler.createOrUpdateBlackDuckIssue(issueModel, callbackInfo.getCallbackUrl(), callbackInfo.getBlackDuckProjectVersionUrl());
         } catch (IntegrationException e) {
-            logger.error("Failed to create or update Black Duck issue: {}", issueModel, e);
+            logger.debug(
+                "An error occurred while trying to map an issue to a Black Duck project/version. issue key: {}, issue summary: {}, provider id: {}, project-version URL: {}, Callback URL: {}",
+                issueModel.getKey(),
+                issueModel.getSummary(),
+                callbackInfo.getProviderConfigId(),
+                callbackInfo.getBlackDuckProjectVersionUrl(),
+                callbackInfo.getCallbackUrl()
+            );
+            logger.error("Failed to create or update Black Duck project/version. issue key: {}", issueModel.getKey(), e);
         }
     }
 
@@ -95,15 +119,11 @@ public class BlackDuckIssueTrackerCallbackEventHandler implements AlertEventHand
     }
 
     private String mapOperationToAlertStatus(IssueOperation issueOperation) {
-        switch (issueOperation) {
-            case OPEN:
-            case UPDATE:
-                return "Created by Alert";
-            case RESOLVE:
-                return "Resolved by Alert";
-            default:
-                return "Unknown";
-        }
+        return switch (issueOperation) {
+            case OPEN, UPDATE -> "Created by Alert";
+            case RESOLVE -> "Resolved by Alert";
+            default -> "Unknown";
+        };
     }
 
 }
