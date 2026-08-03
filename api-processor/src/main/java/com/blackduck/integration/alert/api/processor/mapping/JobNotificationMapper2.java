@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +29,7 @@ import com.blackduck.integration.alert.common.rest.model.AlertPagedDetails;
 
 @Component
 public class JobNotificationMapper2 {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final ProcessingJobAccessor2 processingJobAccessor;
     private final JobNotificationMappingAccessor jobNotificationMappingAccessor;
 
@@ -83,6 +86,8 @@ public class JobNotificationMapper2 {
             pageNumber,
             pageSize
         );
+
+        boolean anyMapped = false;
         while (jobs.getCurrentPage() <= jobs.getTotalPages()) {
             List<JobToNotificationMappingModel> mappings = new LinkedList<>();
             for (SimpleFilteredDistributionJobResponseModel job : jobs.getModels()) {
@@ -91,7 +96,10 @@ public class JobNotificationMapper2 {
                 }
             }
             if (!mappings.isEmpty()) {
+                anyMapped = true;
                 jobNotificationMappingAccessor.addJobMappings(mappings);
+                mappings.forEach(mapping ->
+                    logger.debug("Notification [{}] mapped to job {} [correlationId: {}]", mapping.getNotificationId(), mapping.getJobId(), correlationId));
             }
             pageNumber++;
             jobs = processingJobAccessor.getMatchingEnabledJobsForNotifications(
@@ -100,5 +108,28 @@ public class JobNotificationMapper2 {
                 pageSize
             );
         }
+
+        if (!anyMapped && logger.isDebugEnabled()) {
+            String additionalNotificationContext = getAdditionalNotificationContext(filteredDistributionJobRequestModel);
+            logger.debug(
+                "Notification [{}] matched no enabled distribution jobs [correlationId: {}, project: {}, version: {}, types: {}{}]",
+                filteredDistributionJobRequestModel.getNotificationId().map(Object::toString).orElse("unknown"),
+                correlationId,
+                projectName,
+                projectVersionName,
+                filteredDistributionJobRequestModel.getNotificationTypes(),
+                additionalNotificationContext
+            );
+        }
+    }
+
+    private String getAdditionalNotificationContext(final FilteredDistributionJobRequestModel filteredDistributionJobRequestModel) {
+        String additionalNotificationContext = "";
+        if (!filteredDistributionJobRequestModel.getPolicyNames().isEmpty()) {
+            additionalNotificationContext = ", policy names: " + filteredDistributionJobRequestModel.getPolicyNames();
+        } else if (!filteredDistributionJobRequestModel.getVulnerabilitySeverities().isEmpty()) {
+            additionalNotificationContext = ", vulnerability severities: " + filteredDistributionJobRequestModel.getVulnerabilitySeverities();
+        }
+        return additionalNotificationContext;
     }
 }
