@@ -35,23 +35,19 @@ ext {
     moduleName = 'com.blackduck.integration.alert.main'
 
     // DOCKER IMAGE VERSIONS
+
     // https://hub.docker.com/_/postgres/tags?name=16.
     postgresContainerVersionMigration = '16.14'
-
     // This version is auto updated in src/test/resources/spring-test.properties for the test jdbc connection
     // https://hub.docker.com/_/postgres/tags?name=17.
     postgresContainerVersionCurrent = '17.10'
-
     // https://hub.docker.com/_/alpine/tags?name=3.
-    alpineImageVersion = '3.23'
-
+    alpineImageVersion = '3.24'
     // https://hub.docker.com/_/rabbitmq/tags?name=4.
     rabbitmqImageVersion = '4.2'
-
     // https://hub.docker.com/u/blackducksoftware?page=1&search=blackduck-cfssl
     cfsslImageVersion = '1.0.37'
-
-    //https://hub.docker.com/u/blackducksoftware?page=1&search=hub-docker-common
+    // https://hub.docker.com/u/blackducksoftware?page=1&search=hub-docker-common
     hubDockerCommonImageVersion = '1.0.9'
 
     // All variables that start with 'dockerBuildParam+' will all be passed to the 'docker build' command
