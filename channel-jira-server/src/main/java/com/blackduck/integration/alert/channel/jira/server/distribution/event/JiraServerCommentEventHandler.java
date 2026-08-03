@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.blackduck.integration.jira.common.server.builder.IssueRequestModelFieldsBuilder;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,8 +73,9 @@ public class JiraServerCommentEventHandler extends IssueTrackerCommentEventHandl
     @Override
     public void handleEvent(JiraServerCommentEvent event) {
         UUID jobId = event.getJobId();
+        IssueCommentModel<String> commentModel = event.getCommentModel();
+        logger.debug("Begin Handle Event: {} for Alert Issue ID: {}", getClass().getSimpleName(), commentModel.getAlertIssueId());
         Optional<JiraServerJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
-        logger.debug("Begin Handle Event: {} for Alert Issue ID: {}", getClass().getSimpleName(), event.getCommentModel().getAlertIssueId());
         if (details.isPresent()) {
             try {
                 JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraPropertiesWithJobId(jobId);
@@ -104,11 +106,10 @@ public class JiraServerCommentEventHandler extends IssueTrackerCommentEventHandl
                     jiraErrorMessageUtility,
                     jiraServerQueryExecutor
                 );
-                IssueCommentModel<String> commentModel = event.getCommentModel();
                 List<IssueTrackerIssueResponseModel<String>> responses = messageSender.sendMessage(commentModel);
                 postProcess(new IssueTrackerResponse<>("Success", responses));
             } catch (AlertException ex) {
-                logger.error("Cannot comment on issue for job {}", jobId);
+                logger.error("Cannot comment on issue for job id: {}, Alert Issue ID: {}", jobId, commentModel.getAlertIssueId());
                 logger.error("Cause: ", ex);
             }
         } else {

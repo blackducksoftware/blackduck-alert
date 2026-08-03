@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.blackduck.integration.jira.common.server.builder.IssueRequestModelFieldsBuilder;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,17 +117,17 @@ public class JiraServerCreateIssueEventHandler extends IssueTrackerCreateIssueEv
                     List<String> issuePairs = responses.stream()
                         .map(response -> response.getIssueId() + " | " + response.getIssueKey())
                         .toList();
-                    logger.info("Created issues (Issue ID | Issue Key): {}", issuePairs);
+                    logger.info("Created issues for Alert Issue ID: {}, (Issue ID | Issue Key): {}", creationModel.getAlertIssueId(), issuePairs);
                 } else {
-                    logger.debug("Issue already exists for query: {}", jqlQuery);
+                    logger.debug("Issue already exists. Alert Issue ID: {}, JQL query: {}", creationModel.getAlertIssueId(), jqlQuery);
                 }
             } catch (AlertException ex) {
-                logger.error("Cannot create issue for job {}", jobId);
+                logger.error("Cannot create issue for job id: {}, Alert Issue ID: {}", jobId, creationModel.getAlertIssueId());
                 logger.error("Query: {}", creationModel.getQueryString());
                 logger.error("Cause: ", ex);
             }
         } else {
-            logger.error("No Jira Server job found with id {}", jobId);
+            logger.error("No Jira Server job found with job id: {}, Alert Issue ID: {}", jobId, creationModel.getAlertIssueId());
         }
     }
 
