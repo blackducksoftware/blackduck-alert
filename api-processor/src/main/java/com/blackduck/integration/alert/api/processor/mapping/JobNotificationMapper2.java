@@ -98,8 +98,10 @@ public class JobNotificationMapper2 {
             if (!mappings.isEmpty()) {
                 anyMapped = true;
                 jobNotificationMappingAccessor.addJobMappings(mappings);
-                mappings.forEach(mapping ->
-                    logger.debug("Notification [{}] mapped to job {} [correlationId: {}]", mapping.getNotificationId(), mapping.getJobId(), correlationId));
+                if (logger.isDebugEnabled()) {
+                    mappings.forEach(mapping ->
+                        logger.debug("Notification [{}] mapped to job {} [correlationId: {}]", mapping.getNotificationId(), mapping.getJobId(), correlationId));
+                }
             }
             pageNumber++;
             jobs = processingJobAccessor.getMatchingEnabledJobsForNotifications(
