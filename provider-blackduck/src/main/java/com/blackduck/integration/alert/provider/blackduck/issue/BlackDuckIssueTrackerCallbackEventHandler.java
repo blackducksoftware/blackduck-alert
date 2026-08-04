@@ -53,7 +53,7 @@ public class BlackDuckIssueTrackerCallbackEventHandler implements AlertEventHand
         String eventId = event.getEventId();
         IssueTrackerCallbackInfo callbackInfo = event.getCallbackInfo();
         logger.debug(
-            "Start handling issue-tracker callback. event id: '{}', issue key: {}, issue summary: {} provider id: {}, project-version URL: {}, Callback URL: {}",
+            "Start handling issue-tracker callback. event id: '{}', issue key: {}, issue summary: {}, provider id: {}, project-version URL: {}, callback URL: {}",
             eventId,
             event.getIssueKey(),
             event.getIssueSummary(),
@@ -102,7 +102,7 @@ public class BlackDuckIssueTrackerCallbackEventHandler implements AlertEventHand
             blackDuckProviderIssueHandler.createOrUpdateBlackDuckIssue(issueModel, callbackInfo.getCallbackUrl(), callbackInfo.getBlackDuckProjectVersionUrl());
         } catch (IntegrationException e) {
             logger.debug(
-                "An error occurred while trying to map an issue to a Black Duck project/version. issue key: {}, issue summary: {}, provider id: {}, project-version URL: {}, Callback URL: {}",
+                "An error occurred while trying to map an issue to a Black Duck project/version. issue key: {}, issue summary: {}, provider id: {}, project-version URL: {}, callback URL: {}",
                 issueModel.getKey(),
                 issueModel.getSummary(),
                 callbackInfo.getProviderConfigId(),

@@ -113,7 +113,7 @@ public class JiraServerCommentEventHandler extends IssueTrackerCommentEventHandl
                 logger.error("Cause: ", ex);
             }
         } else {
-            logger.error("No Jira Server job found with id {}", jobId);
+            logger.error("No Jira Server job found with job id: {}, Alert Issue ID: {}", jobId, commentModel.getAlertIssueId());
         }
     }
 }

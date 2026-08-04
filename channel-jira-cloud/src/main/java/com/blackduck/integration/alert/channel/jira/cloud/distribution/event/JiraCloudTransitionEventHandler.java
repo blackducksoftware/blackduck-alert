@@ -115,7 +115,7 @@ public class JiraCloudTransitionEventHandler extends IssueTrackerTransitionEvent
                 logger.error("Cause: ", ex);
             }
         } else {
-            logger.error("No Jira Cloud job found with id {}", jobId);
+            logger.error("No Jira Cloud job found with job id: {}, Alert Issue ID: {}", jobId, transitionModel.getAlertIssueId());
         }
     }
 }

@@ -115,7 +115,7 @@ public class JiraCloudCommentEventHandler extends IssueTrackerCommentEventHandle
                 logger.error("Cause: ", ex);
             }
         } else {
-            logger.error("No Jira Cloud job found with id {}", jobId);
+            logger.error("No Jira Cloud job found with id {}, Alert Issue ID: {}", jobId, commentModel.getAlertIssueId());
         }
     }
 
