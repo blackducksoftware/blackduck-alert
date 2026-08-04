@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.blackduck.integration.jira.common.server.builder.IssueRequestModelFieldsBuilder;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,8 +73,9 @@ public class JiraServerTransitionEventHandler extends IssueTrackerTransitionEven
     @Override
     public void handleEvent(JiraServerTransitionEvent event) {
         UUID jobId = event.getJobId();
+        IssueTransitionModel<String> transitionModel = event.getTransitionModel();
+        logger.debug("Begin Handle Event: {} for Alert Issue ID: {}", getClass().getSimpleName(), transitionModel.getAlertIssueId());
         Optional<JiraServerJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
-        logger.debug("Begin Handle Event: {} for Alert Issue ID: {}", getClass().getSimpleName(), event.getTransitionModel().getAlertIssueId());
         if (details.isPresent()) {
             try {
                 JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraPropertiesWithJobId(jobId);
@@ -104,14 +106,14 @@ public class JiraServerTransitionEventHandler extends IssueTrackerTransitionEven
                     jiraErrorMessageUtility,
                     jiraServerQueryExecutor
                 );
-                IssueTransitionModel<String> transitionModel = event.getTransitionModel();
                 List<IssueTrackerIssueResponseModel<String>> responses = messageSender.sendMessage(transitionModel);
                 postProcess(new IssueTrackerResponse<>("Success", responses));
             } catch (AlertException ex) {
-                logger.error("Cannot transition issue for job {}", jobId);
+                logger.error("Cannot transition issue for job id: {}, Alert Issue ID: {}", jobId, transitionModel.getAlertIssueId());
+                logger.error("Cause: ", ex);
             }
         } else {
-            logger.error("No Jira Server job found with id {}", jobId);
+            logger.error("No Jira Server job found with job id: {}, Alert Issue ID: {}", jobId, transitionModel.getAlertIssueId());
         }
     }
 }
