@@ -20,6 +20,7 @@ plugins {
 
 ext {
     tomcatVersion = '10.1.57'
+    bouncyCastleVersion = '1.84'
 
     userID = 'id -u'.execute().text.trim()
     groupID = 'id -g'.execute().text.trim()
@@ -125,11 +126,16 @@ allprojects {
             exclude group: 'com.blackducksoftware.bdio', module: 'bdio2'
 
             /* Spring is no longer patching the 3.5 line of Spring Boot, but Apache Tomcat
-               has critical & high vulnerabilities it has addressed in newer releases.
-               Because of the this, force the Apache Tomcat version to the patched version */
+               has critical & high vulnerabilities it has addressed in newer releases and
+               bouncycastle does as well. Because of this, force version of Apache Tomcat
+               and bouncycastle to patched versions */
             resolutionStrategy {
                 force "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}"
                 force "org.apache.tomcat:tomcat-annotations-api:${tomcatVersion}"
+
+                force "org.bouncycastle:bcprov-jdk18on:${bouncyCastleVersion}"
+                force "org.bouncycastle:bcpkix-jdk18on:${bouncyCastleVersion}"
+                force "org.bouncycastle:bcutil-jdk18on:${bouncyCastleVersion}"
             }
         }
     }
