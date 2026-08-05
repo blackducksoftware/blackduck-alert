@@ -34,20 +34,30 @@ ext {
 
     moduleName = 'com.blackduck.integration.alert.main'
 
-    // This version is also in src/test/resources/spring-test.properties for the test jdbc connection
-    postgresContainerVersionMigration = '16.13'
-    postgresContainerVersionCurrent = '17.9'
+    // DOCKER IMAGE VERSIONS
 
-    cfsslImageVersion = '1.0.35'
+    // https://hub.docker.com/_/postgres/tags?name=16.
+    postgresContainerVersionMigration = '16.14'
+    // This version is auto updated in src/test/resources/spring-test.properties for the test jdbc connection
+    // https://hub.docker.com/_/postgres/tags?name=17.
+    postgresContainerVersionCurrent = '17.10'
+    // https://hub.docker.com/_/alpine/tags?name=3.
+    alpineImageVersion = '3.24'
+    // https://hub.docker.com/_/rabbitmq/tags?name=4.
+    rabbitmqImageVersion = '4.2'
+    // https://hub.docker.com/u/blackducksoftware?page=1&search=blackduck-cfssl
+    cfsslImageVersion = '1.0.37'
+    // https://hub.docker.com/u/blackducksoftware?page=1&search=hub-docker-common
+    hubDockerCommonImageVersion = '1.0.9'
 
     // All variables that start with 'dockerBuildParam+' will all be passed to the 'docker build' command
-    dockerBuildParam_BASEIMAGE_HUB_DOCKER_COMMON = 'blackducksoftware/hub-docker-common:1.0.7'
-    dockerBuildParam_BASEIMAGE_BLACKDUCK_ALERT = 'alpine:3.23'
+    dockerBuildParam_BASEIMAGE_HUB_DOCKER_COMMON = 'blackducksoftware/hub-docker-common:' + hubDockerCommonImageVersion
+    dockerBuildParam_BASEIMAGE_BLACKDUCK_ALERT = 'alpine:' + alpineImageVersion
     dockerBuildParam_BASEIMAGE_BLACKDUCK_ALERT_DB_MIGRATION = 'postgres:' + postgresContainerVersionMigration + '-alpine'
     dockerBuildParam_BASEIMAGE_BLACKDUCK_ALERT_DB = 'postgres:' + postgresContainerVersionCurrent + '-alpine'
     dockerBuildParam_POSTGRES_CURRENT_MAJOR_VERSION = postgresContainerVersionCurrent.split('\\.')[0]
     dockerBuildParam_POSTGRES_MIGRATION_VERSION = postgresContainerVersionMigration
-    dockerBuildParam_BASEIMAGE_BLACKDUCK_ALERT_RABBITMQ = 'rabbitmq:4.2-alpine'
+    dockerBuildParam_BASEIMAGE_BLACKDUCK_ALERT_RABBITMQ = 'rabbitmq:' + rabbitmqImageVersion + '-alpine'
 
     // General Docker Variables
     dockerStagingDirectory = project.buildDir.toString() + '/docker-staging'
