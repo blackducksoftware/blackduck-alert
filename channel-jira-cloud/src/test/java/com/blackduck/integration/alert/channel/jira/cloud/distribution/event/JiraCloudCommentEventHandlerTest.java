@@ -27,7 +27,10 @@ import com.blackduck.integration.alert.api.channel.issue.tracker.search.Existing
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.enumeration.IssueCategory;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.enumeration.IssueStatus;
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.distribution.audit.AuditFailedEvent;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudProperties;
@@ -101,6 +104,52 @@ class JiraCloudCommentEventHandlerTest {
         );
         handler.handle(event);
         assertEquals(0, issueCounter.get());
+        Mockito.verify(eventManager).sendEvent(Mockito.any(AuditFailedEvent.class));
+    }
+
+    @Test
+    void handleEventExceptionSendsAuditFailedEvent() throws Exception {
+        UUID jobExecutionId = UUID.randomUUID();
+        UUID jobId = UUID.randomUUID();
+        Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
+
+        JiraCloudPropertiesFactory propertiesFactory = Mockito.mock(JiraCloudPropertiesFactory.class);
+        Mockito.when(propertiesFactory.createJiraProperties()).thenThrow(new AlertConfigurationException("Simulated connection failure"));
+
+        IssueTrackerCallbackInfoCreator callbackInfoCreator = new IssueTrackerCallbackInfoCreator();
+        IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();
+        JiraCloudMessageSenderFactory messageSenderFactory = new JiraCloudMessageSenderFactory(
+            gson,
+            ChannelKeys.JIRA_CLOUD,
+            propertiesFactory,
+            callbackInfoCreator,
+            issueCategoryRetriever,
+            eventManager,
+            executingJobManager
+        );
+        JobDetailsAccessor<JiraCloudJobDetailsModel> jobDetailsAccessor = jobId1 -> Optional.of(createJobDetails(jobId));
+
+        JiraCloudCommentEventHandler handler = new JiraCloudCommentEventHandler(
+            eventManager,
+            gson,
+            propertiesFactory,
+            messageSenderFactory,
+            jobDetailsAccessor,
+            responsePostProcessor,
+            executingJobManager
+        );
+        ExistingIssueDetails<String> existingIssueDetails = new ExistingIssueDetails<>("id", "key", "summary", "link", IssueStatus.UNKNOWN, IssueCategory.BOM);
+        IssueCommentModel<String> model = new IssueCommentModel<>(existingIssueDetails, List.of("A comment"), null);
+        JiraCloudCommentEvent event = new JiraCloudCommentEvent(
+            IssueTrackerCommentEvent.createDefaultEventDestination(ChannelKeys.JIRA_CLOUD),
+            jobExecutionId,
+            jobId,
+            notificationIds,
+            model
+        );
+
+        handler.handle(event);
+        Mockito.verify(eventManager).sendEvent(Mockito.any(AuditFailedEvent.class));
     }
 
     @Test
