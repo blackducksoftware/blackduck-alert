@@ -71,7 +71,7 @@ public class JiraServerCommentEventHandler extends IssueTrackerCommentEventHandl
     }
 
     @Override
-    public void handleEvent(JiraServerCommentEvent event) {
+    public void handleEvent(JiraServerCommentEvent event) throws AlertException {
         UUID jobId = event.getJobId();
         IssueCommentModel<String> commentModel = event.getCommentModel();
         logger.debug("Begin Handle Event: {} for Alert Issue ID: {}", getClass().getSimpleName(), commentModel.getAlertIssueId());
@@ -111,9 +111,12 @@ public class JiraServerCommentEventHandler extends IssueTrackerCommentEventHandl
             } catch (AlertException ex) {
                 logger.error("Cannot comment on issue for job id: {}, Alert Issue ID: {}", jobId, commentModel.getAlertIssueId());
                 logger.error("Cause: ", ex);
+                throw ex;
             }
         } else {
-            logger.error("No Jira Server job found with job id: {}, Alert Issue ID: {}", jobId, commentModel.getAlertIssueId());
+            String errorMessage = String.format("No Jira Server job found with job id: %s, Alert Issue ID: %s", jobId, commentModel.getAlertIssueId());
+            logger.error(errorMessage);
+            throw new AlertException(errorMessage);
         }
     }
 }

@@ -71,7 +71,7 @@ public class JiraServerTransitionEventHandler extends IssueTrackerTransitionEven
     }
 
     @Override
-    public void handleEvent(JiraServerTransitionEvent event) {
+    public void handleEvent(JiraServerTransitionEvent event) throws AlertException {
         UUID jobId = event.getJobId();
         IssueTransitionModel<String> transitionModel = event.getTransitionModel();
         logger.debug("Begin Handle Event: {} for Alert Issue ID: {}", getClass().getSimpleName(), transitionModel.getAlertIssueId());
@@ -111,9 +111,12 @@ public class JiraServerTransitionEventHandler extends IssueTrackerTransitionEven
             } catch (AlertException ex) {
                 logger.error("Cannot transition issue for job id: {}, Alert Issue ID: {}", jobId, transitionModel.getAlertIssueId());
                 logger.error("Cause: ", ex);
+                throw ex;
             }
         } else {
-            logger.error("No Jira Server job found with job id: {}, Alert Issue ID: {}", jobId, transitionModel.getAlertIssueId());
+            String errorMessage = String.format("No Jira Server job found with job id: %s, Alert Issue ID: %s", jobId, transitionModel.getAlertIssueId());
+            logger.error(errorMessage);
+            throw new AlertException(errorMessage);
         }
     }
 }
