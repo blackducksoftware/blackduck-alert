@@ -113,6 +113,7 @@ public class JiraCloudTransitionEventHandler extends IssueTrackerTransitionEvent
             } catch (AlertException ex) {
                 logger.error("Cannot transition issue for job id: {}, Alert Issue ID: {}", jobId, transitionModel.getAlertIssueId());
                 logger.error("Cause: ", ex);
+                // Re-throw the error so the base class can publish an AuditFailedEvent with detailed error information.
                 throw ex;
             }
         } else {

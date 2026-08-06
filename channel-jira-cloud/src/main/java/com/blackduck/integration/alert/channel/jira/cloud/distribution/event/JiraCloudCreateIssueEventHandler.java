@@ -126,6 +126,7 @@ public class JiraCloudCreateIssueEventHandler extends IssueTrackerCreateIssueEve
                 logger.error("Cannot create issue for job id: {}, Alert Issue ID: {}", jobId, creationModel.getAlertIssueId());
                 logger.error("Query: {}", creationModel.getQueryString());
                 logger.error("Cause: ", ex);
+                // Re-throw the error so the base class can publish an AuditFailedEvent with detailed error information.
                 throw ex;
             }
         } else {
