@@ -28,7 +28,9 @@ import com.blackduck.integration.alert.api.channel.issue.tracker.search.Existing
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.enumeration.IssueCategory;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.enumeration.IssueStatus;
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.distribution.audit.AuditFailedEvent;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.channel.jira.server.JiraServerProperties;
@@ -118,6 +120,54 @@ class JiraServerTransitionEventHandlerTest {
         );
         handler.handle(event);
         assertEquals(0, issueCounter.get());
+        Mockito.verify(eventManager).sendEvent(Mockito.any(AuditFailedEvent.class));
+    }
+
+    @Test
+    void handleEventExceptionSendsAuditFailedEvent() throws Exception {
+        UUID jobExecutionId = UUID.randomUUID();
+        UUID jobId = UUID.randomUUID();
+        Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
+
+        JiraServerJobDetailsModel jobDetailsModel = createJobDetails(jobId);
+
+        JiraServerPropertiesFactory propertiesFactory = Mockito.mock(JiraServerPropertiesFactory.class);
+        Mockito.when(propertiesFactory.createJiraPropertiesWithJobId(jobId)).thenThrow(new AlertConfigurationException("Simulated connection failure"));
+
+        IssueTrackerCallbackInfoCreator callbackInfoCreator = new IssueTrackerCallbackInfoCreator();
+        IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();
+        JiraServerMessageSenderFactory messageSenderFactory = new JiraServerMessageSenderFactory(
+            gson,
+            ChannelKeys.JIRA_SERVER,
+            propertiesFactory,
+            callbackInfoCreator,
+            issueCategoryRetriever,
+            eventManager,
+            executingJobManager
+        );
+
+        jobDetailsAccessor.saveConcreteJobDetails(jobId, jobDetailsModel);
+        JiraServerTransitionEventHandler handler = new JiraServerTransitionEventHandler(
+            eventManager,
+            gson,
+            propertiesFactory,
+            messageSenderFactory,
+            jobDetailsAccessor,
+            responsePostProcessor,
+            executingJobManager
+        );
+        ExistingIssueDetails<String> existingIssueDetails = new ExistingIssueDetails<>("id", "key", "summary", "link", IssueStatus.UNKNOWN, IssueCategory.BOM);
+        IssueTransitionModel<String> model = new IssueTransitionModel<>(existingIssueDetails, IssueOperation.RESOLVE, List.of(), null);
+        JiraServerTransitionEvent event = new JiraServerTransitionEvent(
+            IssueTrackerTransitionIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
+            jobExecutionId,
+            jobId,
+            notificationIds,
+            model
+        );
+
+        handler.handle(event);
+        Mockito.verify(eventManager).sendEvent(Mockito.any(AuditFailedEvent.class));
     }
 
     @Test
