@@ -5,7 +5,7 @@ import FadeField from 'common/component/FadeField';
 import MessageFormatter from 'common/component/MessageFormatter';
 
 const StatusMessage = ({
-    id, errorMessage, actionMessage, errorIsDetailed
+    id = 'statusMessageId', errorMessage, actionMessage, errorIsDetailed = false
 }) => {
     const [showError, setShowError] = useState(false);
     const [showMessage, setShowMessage] = useState(false);
@@ -68,13 +68,6 @@ StatusMessage.propTypes = {
     errorMessage: PropTypes.string,
     errorIsDetailed: PropTypes.bool,
     actionMessage: PropTypes.string
-};
-
-StatusMessage.defaultProps = {
-    id: 'statusMessageId',
-    errorMessage: null,
-    errorIsDetailed: false,
-    actionMessage: null
 };
 
 export default StatusMessage;

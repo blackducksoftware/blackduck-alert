@@ -28,7 +28,7 @@ const useStyles = createUseStyles((theme) => ({
     }
 }));
 
-const SystemMessage = ({ createdAt, content, severity, id }) => {
+const SystemMessage = ({ createdAt, content, severity = 'INFO', id = 'systemMessageId' }) => {
     const classes = useStyles();
 
     function getIcon(messageSeverity) {
@@ -62,13 +62,6 @@ SystemMessage.propTypes = {
     severity: PropTypes.string,
     createdAt: PropTypes.string,
     content: PropTypes.string
-};
-
-SystemMessage.defaultProps = {
-    id: 'systemMessageId',
-    severity: 'INFO',
-    createdAt: '',
-    content: ''
 };
 
 export default SystemMessage;

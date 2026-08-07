@@ -12,7 +12,12 @@ import DynamicSelectInput from 'common/component/input/DynamicSelectInput';
 import FormCard from 'common/component/FormCard';
 
 const SettingsProxyConfiguration = ({
-    csrfToken, errorHandler, readOnly, displayTest, displaySave, displayDelete
+    csrfToken,
+    errorHandler,
+    readOnly = false,
+    displayTest = true,
+    displaySave = true,
+    displayDelete = true
 }) => {
     const proxyRequestUrl = `${ConfigurationRequestBuilder.PROXY_API_URL}`;
 
@@ -142,13 +147,6 @@ SettingsProxyConfiguration.propTypes = {
     displayTest: PropTypes.bool,
     displaySave: PropTypes.bool,
     displayDelete: PropTypes.bool
-};
-
-SettingsProxyConfiguration.defaultProps = {
-    readOnly: false,
-    displayTest: true,
-    displaySave: true,
-    displayDelete: true
 };
 
 export default SettingsProxyConfiguration;

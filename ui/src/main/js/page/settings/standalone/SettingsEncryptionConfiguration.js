@@ -10,7 +10,7 @@ import ReadOnlyField from 'common/component/input/field/ReadOnlyField';
 import FormCard from 'common/component/FormCard';
 
 const SettingsEncryptionConfiguration = ({
-    csrfToken, errorHandler, readonly, displaySave
+    csrfToken, errorHandler, readonly = false, displaySave = true
 }) => {
     const encryptionRequestUrl = `${ConfigurationRequestBuilder.ENCRYPTION_API_URL}`;
 
@@ -94,11 +94,6 @@ SettingsEncryptionConfiguration.propTypes = {
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
     readonly: PropTypes.bool,
     displaySave: PropTypes.bool
-};
-
-SettingsEncryptionConfiguration.defaultProps = {
-    readonly: false,
-    displaySave: true
 };
 
 export default SettingsEncryptionConfiguration;

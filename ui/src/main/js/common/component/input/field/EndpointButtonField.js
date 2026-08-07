@@ -8,25 +8,25 @@ import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import Button from 'common/component/button/Button';
 
 const EndpointButtonField = ({
-    id,
+    id = 'endpointButtonFieldId',
     buttonLabel,
     csrfToken,
     currentConfig,
-    tooltipDescription,
+    tooltipDescription = LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     fieldDescription,
     endpoint,
-    errorValue,
+    errorValue = LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     fieldKey,
-    fields,
+    fields = [],
     label,
-    name,
+    name = '',
     onChange,
-    readOnly,
-    required,
-    requiredRelatedFields,
-    statusMessage,
+    readOnly = false,
+    required = LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    requiredRelatedFields = [],
+    statusMessage = 'Success',
     successBox,
-    value
+    value = false
 }) => {
     const [showModal, setShowModal] = useState(false);
     const [fieldError, setFieldError] = useState(errorValue);
@@ -135,19 +135,6 @@ EndpointButtonField.propTypes = {
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
     required: PropTypes.bool
-};
-
-EndpointButtonField.defaultProps = {
-    id: 'endpointButtonFieldId',
-    fields: [],
-    name: '',
-    readOnly: false,
-    requiredRelatedFields: [],
-    statusMessage: 'Success',
-    value: false,
-    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
-    errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 };
 
 export default EndpointButtonField;

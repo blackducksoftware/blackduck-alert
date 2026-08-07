@@ -9,18 +9,18 @@ import StatusMessage from 'common/component/StatusMessage';
 const CommonDistributionConfigurationForm = ({
     formData,
     setFormData,
-    setTestFormData,
+    setTestFormData = () => null,
     csrfToken,
     setErrors,
-    displaySave,
-    displayTest,
-    displayDelete,
+    displaySave = true,
+    displayTest = true,
+    displayDelete = false,
     isSaveDisabled,
     isTestDisabled,
     children,
     testFields,
-    buttonIdPrefix,
-    afterSuccessfulSave,
+    buttonIdPrefix = 'common-form',
+    afterSuccessfulSave = () => null,
     retrieveData,
     createDataToSend,
     createDataToTest,
@@ -220,18 +220,6 @@ CommonDistributionConfigurationForm.propTypes = {
     createDataToSend: PropTypes.func,
     createDataToTest: PropTypes.func,
     errorHandler: PropTypes.object.isRequired
-};
-
-CommonDistributionConfigurationForm.defaultProps = {
-    displaySave: true,
-    displayTest: true,
-    displayDelete: false,
-    testFields: null,
-    setTestFormData: () => null,
-    buttonIdPrefix: 'common-form',
-    afterSuccessfulSave: () => null,
-    createDataToSend: null,
-    createDataToTest: null
 };
 
 export default CommonDistributionConfigurationForm;

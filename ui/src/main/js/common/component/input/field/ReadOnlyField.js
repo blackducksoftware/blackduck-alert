@@ -13,7 +13,16 @@ const useStyles = createUseStyles({
 });
 
 const ReadOnlyField = ({
-    id, alt, tooltipDescription, errorName, errorValue, label, required, url, value, fieldDescription
+    id = 'readOnlyFieldId',
+    alt = '',
+    tooltipDescription = LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    errorName = LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
+    errorValue = LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
+    label,
+    required = LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    url = '',
+    value = '',
+    fieldDescription
 }) => {
     const classes = useStyles();
     const altValue = alt || url;
@@ -46,17 +55,6 @@ ReadOnlyField.propTypes = {
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
     required: PropTypes.bool
-};
-
-ReadOnlyField.defaultProps = {
-    id: 'readOnlyFieldId',
-    value: '',
-    url: '',
-    alt: '',
-    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
-    errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
-    errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 };
 
 export default ReadOnlyField;

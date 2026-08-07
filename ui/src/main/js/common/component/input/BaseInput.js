@@ -30,8 +30,9 @@ const useStyles = createUseStyles((theme) => ({
 }));
 
 const BaseInput = ({
-    id, errorValue, name, onChange, readOnly, value, placeholder,
-    isDisabled, width, type, min, max
+    id = 'BaseInputId', errorValue = LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
+    name = 'name', onChange = () => true, readOnly, value = '', placeholder,
+    isDisabled, width = '100%', type = 'text', min, max
 }) => {
     const classes = useStyles({ width });
     const inputClass = classNames(classes.input, {
@@ -69,18 +70,6 @@ BaseInput.propTypes = {
     max: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     type: PropTypes.string
-};
-
-BaseInput.defaultProps = {
-    id: 'BaseInputId',
-    name: 'name',
-    onChange: () => true,
-    readOnly: false,
-    value: '',
-    errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    isDisabled: false,
-    width: '100%',
-    type: 'text'
 };
 
 export default BaseInput;

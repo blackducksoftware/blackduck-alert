@@ -60,7 +60,13 @@ function getDisplayPages(currentPage, totalPages) {
     return links;
 }
 
-const Pagination = ({ data, onPage }) => {
+const Pagination = ({
+    data = {
+        currentPage: 0,
+        totalPages: 1
+    },
+    onPage
+}) => {
     const classes = useStyles();
     const { currentPage, totalPages } = data;
 
@@ -106,13 +112,6 @@ const Pagination = ({ data, onPage }) => {
             <IconButton icon="angle-double-right" onClick={handleEndPageClick} />
         </div>
     );
-};
-
-Pagination.defaultProps = {
-    data: {
-        currentPage: 0,
-        totalPages: 1
-    }
 };
 
 Pagination.propTypes = {

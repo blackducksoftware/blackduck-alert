@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 
 const MessageFormatter = ({
-    id, errorIsDetailed, message
+    id = 'messageFormatterId', errorIsDetailed = false, message = null
 }) => {
     const determineDisplayMessage = () => {
         if (!message) {
@@ -44,12 +44,6 @@ MessageFormatter.propTypes = {
     id: PropTypes.string,
     errorIsDetailed: PropTypes.bool,
     message: PropTypes.string
-};
-
-MessageFormatter.defaultProps = {
-    id: 'messageFormatterId',
-    errorIsDetailed: false,
-    message: null
 };
 
 export default MessageFormatter;

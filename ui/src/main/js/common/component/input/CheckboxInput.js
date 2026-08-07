@@ -28,7 +28,13 @@ const useStyles = createUseStyles((theme) => ({
 }));
 
 const CheckboxInput = ({
-    id, fieldDescription, errorName, errorValue, isChecked, label, name, onChange, readOnly, required, tooltipDescription, checkboxValueLabel, checkboxValueDescription
+    id = 'checkboxInputId', isChecked = false, label, name = 'name', 
+    onChange = () => true, readOnly, fieldDescription,
+    checkboxValueLabel, checkboxValueDescription,
+    errorName = LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
+    errorValue = LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
+    required = LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    tooltipDescription = LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT
 }) => {
     const classes = useStyles();
     const inputClass = classNames(classes.input, {
@@ -82,18 +88,6 @@ CheckboxInput.propTypes = {
     tooltipDescription: PropTypes.string,
     checkboxValueLabel: PropTypes.string,
     checkboxValueDescription: PropTypes.string
-};
-
-CheckboxInput.defaultProps = {
-    id: 'checkboxInputId',
-    isChecked: false,
-    name: 'name',
-    onChange: () => true,
-    readOnly: false,
-    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
-    errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
-    errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 };
 
 export default CheckboxInput;
