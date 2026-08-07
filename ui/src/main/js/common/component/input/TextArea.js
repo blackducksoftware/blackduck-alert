@@ -30,8 +30,19 @@ const useStyles = createUseStyles((theme) => ({
 }));
 
 const TextArea = ({
-    id, errorName, errorValue, label, name, onChange, readOnly, required,
-    value, tooltipDescription, isDisabled, rows, fieldDescription
+    id = 'textAreaId',
+    errorName = LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
+    errorValue = LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
+    label,
+    name = 'name',
+    onChange = () => true,
+    readOnly = false,
+    required = LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    value = '',
+    tooltipDescription = LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    isDisabled = false,
+    rows = 8,
+    fieldDescription
 }) => {
     const classes = useStyles();
     const onChangeHandler = readOnly ? null : onChange;
@@ -70,20 +81,6 @@ TextArea.propTypes = {
     fieldDescription: PropTypes.string,
     isDisabled: PropTypes.bool,
     rows: PropTypes.number
-};
-
-TextArea.defaultProps = {
-    id: 'textAreaId',
-    name: 'name',
-    onChange: () => true,
-    readOnly: false,
-    value: '',
-    errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
-    errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
-    isDisabled: false,
-    rows: 8
 };
 
 export default TextArea;

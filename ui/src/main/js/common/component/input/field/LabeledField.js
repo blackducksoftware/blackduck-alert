@@ -88,7 +88,15 @@ const useStyles = createUseStyles((theme) => ({
 }));
 
 const LabeledField = ({
-    id, children, tooltipDescription, errorName, errorValue, label, required, fieldDescription, isDisabled
+    id = 'labeledFieldId',
+    children,
+    tooltipDescription,
+    errorName,
+    errorValue,
+    label,
+    required = LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    fieldDescription,
+    isDisabled
 }) => {
     const classes = useStyles();
     const [showTooltip, setShowTooltip] = useState(false);
@@ -157,15 +165,6 @@ LabeledField.propTypes = {
     required: PropTypes.bool,
     isDisabled: PropTypes.bool,
     fieldDescription: PropTypes.string
-};
-
-LabeledField.defaultProps = {
-    id: 'labeledFieldId',
-    children: null,
-    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
-    errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
-    errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 };
 
 export default LabeledField;

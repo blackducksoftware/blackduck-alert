@@ -30,24 +30,28 @@ const useStyles = createUseStyles((theme) => ({
 }));
 
 const UploadFileButtonField = ({
-    id,
+    id = 'uploadFileButtonFieldId',
     accept,
     capture,
     buttonLabel,
     csrfToken,
-    tooltipDescription,
+    tooltipDescription = LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     endpoint,
-    errorValue,
+    errorValue = LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     fieldKey,
     label,
-    name,
-    readOnly,
-    required,
-    statusMessage,
-    permissions,
-    onChange,
-    customEndpoint,
-    value,
+    name = '',
+    readOnly = false,
+    required = LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    statusMessage = 'Upload Metadata File Success',
+    permissions = {
+        read: true,
+        write: true,
+        delete: true
+    },
+    onChange = () => {},
+    customEndpoint = '',
+    value = '',
     valueToCheckFileExistsOnChange
 }) => {
     const classes = useStyles();
@@ -213,27 +217,6 @@ UploadFileButtonField.propTypes = {
     customEndpoint: PropTypes.string,
     value: PropTypes.any,
     valueToCheckFileExistsOnChange: PropTypes.any
-};
-
-UploadFileButtonField.defaultProps = {
-    id: 'uploadFileButtonFieldId',
-    accept: null,
-    capture: null,
-    name: '',
-    readOnly: false,
-    statusMessage: 'Upload Metadata File Success',
-    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
-    errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
-    permissions: {
-        read: true,
-        write: true,
-        delete: true
-    },
-    onChange: () => {},
-    customEndpoint: '',
-    value: '',
-    valueToCheckFileExistsOnChange: ''
 };
 
 export default UploadFileButtonField;

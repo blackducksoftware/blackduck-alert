@@ -4,8 +4,20 @@ import LabeledField, { LabelFieldPropertyDefaults } from 'common/component/input
 import BaseInput from 'common/component/input/BaseInput';
 
 const NumberInput = ({
-    readOnly, id, name, value, onChange, label, errorName,
-    errorValue, required, tooltipDescription, minimumValue, maximumValue, width, fieldDescription
+    readOnly = false,
+    id = 'numberInputId',
+    name = 'name',
+    value = '',
+    onChange = () => true,
+    label,
+    errorName = LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
+    errorValue = LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
+    required = LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    tooltipDescription = LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    minimumValue = 0,
+    maximumValue = Number.MAX_SAFE_INTEGER,
+    width,
+    fieldDescription
 }) => {
     const onChangeHandler = readOnly ? null : onChange;
 
@@ -49,20 +61,6 @@ NumberInput.propTypes = {
     minimumValue: PropTypes.number,
     maximumValue: PropTypes.number,
     width: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-};
-
-NumberInput.defaultProps = {
-    id: 'numberInputId',
-    value: '',
-    readOnly: false,
-    name: 'name',
-    onChange: () => true,
-    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
-    errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
-    errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
-    minimumValue: 0,
-    maximumValue: Number.MAX_SAFE_INTEGER
 };
 
 export default NumberInput;

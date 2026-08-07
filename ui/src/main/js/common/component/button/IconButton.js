@@ -21,7 +21,7 @@ const useStyles = createUseStyles({
     }
 });
 
-const IconButton = ({ id, type, onClick, role, title, icon, disabled }) => {
+const IconButton = ({ id, type = 'button', onClick, role, title, icon, disabled }) => {
     const classes = useStyles();
     return (
         <button
@@ -37,10 +37,6 @@ const IconButton = ({ id, type, onClick, role, title, icon, disabled }) => {
             <FontAwesomeIcon icon={icon} />
         </button>
     );
-};
-
-IconButton.defaultProps = {
-    type: 'button'
 };
 
 IconButton.propTypes = {

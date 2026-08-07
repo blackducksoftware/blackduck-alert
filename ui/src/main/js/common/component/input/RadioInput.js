@@ -21,8 +21,19 @@ const useStyles = createUseStyles({
 });
 
 const RadioInput = ({
-    id, fieldDescription, errorName, errorValue, label, name, onChange, readOnly,
-    required, radioOptions, checked, isInModal, tooltipDescription
+    id = 'checkboxInputId',
+    fieldDescription,
+    errorName = LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
+    errorValue = LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
+    label,
+    name = 'name',
+    onChange = () => true,
+    readOnly = false,
+    required = LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    radioOptions,
+    checked,
+    isInModal = false,
+    tooltipDescription = LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT
 }) => {
     const classes = useStyles();
 
@@ -78,18 +89,6 @@ RadioInput.propTypes = {
     readOnly: PropTypes.bool,
     required: PropTypes.bool,
     radioOptions: PropTypes.array
-};
-
-RadioInput.defaultProps = {
-    id: 'checkboxInputId',
-    name: 'name',
-    onChange: () => true,
-    readOnly: false,
-    isInModal: false,
-    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
-    errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
-    errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 };
 
 export default RadioInput;
