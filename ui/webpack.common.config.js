@@ -44,8 +44,16 @@ module.exports = {
                 name: 'img/[name].[ext]'
             }
         }, {
+            test: /\.css$/i,
+            use: ['style-loader', 'css-loader']
+        }, {
             test: /\.s[ac]ss$/i,
-            use: ['style-loader', 'css-loader', 'sass-loader']
+            use: ['style-loader', 'css-loader', {
+                loader: 'sass-loader',
+                options: {
+                    api: 'modern'
+                }
+            }]
         }, {
             test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
             use: [
