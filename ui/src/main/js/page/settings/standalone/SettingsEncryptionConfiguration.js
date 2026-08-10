@@ -10,7 +10,10 @@ import ReadOnlyField from 'common/component/input/field/ReadOnlyField';
 import FormCard from 'common/component/FormCard';
 
 const SettingsEncryptionConfiguration = ({
-    csrfToken, errorHandler, readonly = false, displaySave = true
+    csrfToken,
+    errorHandler,
+    readonly = false,
+    displaySave = true
 }) => {
     const encryptionRequestUrl = `${ConfigurationRequestBuilder.ENCRYPTION_API_URL}`;
 

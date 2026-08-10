@@ -65,7 +65,12 @@ const useStyles = createUseStyles((theme) => ({
     }
 }));
 
-const PageHeader = ({ title, description = '', icon, lastUpdated }) => {
+const PageHeader = ({
+    title,
+    description = '',
+    icon,
+    lastUpdated
+}) => {
     const classes = useStyles();
 
     return (

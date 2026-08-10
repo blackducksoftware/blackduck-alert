@@ -2,7 +2,13 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import Button from 'common/component/button/Button';
 
-const CollapsiblePane = ({ children, id = 'collapsiblePaneId', title, expanded = false, isDisabled = false }) => {
+const CollapsiblePane = ({
+    children,
+    id = 'collapsiblePaneId',
+    title,
+    expanded = false,
+    isDisabled = false
+}) => {
     const [isExpanded, setIsExpanded] = useState(expanded);
 
     function toggleCollapsiblePane() {

@@ -33,7 +33,15 @@ const useStyles = createUseStyles((theme) => ({
     }
 }));
 
-const PaginationButton = ({ id, type = 'button', onClick, role, title, pageNumber, isActive }) => {
+const PaginationButton = ({
+    id,
+    type = 'button',
+    onClick,
+    role,
+    title,
+    pageNumber,
+    isActive
+}) => {
     const classes = useStyles();
 
     const paginationBtnClass = useMemo(() => classNames(classes.paginationBtn, {

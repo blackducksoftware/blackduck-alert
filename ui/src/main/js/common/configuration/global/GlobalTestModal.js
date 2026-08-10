@@ -3,8 +3,15 @@ import PropTypes from 'prop-types';
 import Modal from 'common/component/modal/Modal';
 
 const GlobalTestModal = ({
-    children, showTestModal, handleTest, handleCancel, performingAction = false,
-    modalSubmitText, disableTestModalSubmit, testModalButtonTitle, testModalTitle
+    children,
+    showTestModal,
+    handleTest,
+    handleCancel,
+    performingAction = false,
+    modalSubmitText,
+    disableTestModalSubmit,
+    testModalButtonTitle,
+    testModalTitle
 }) => (
     <Modal
         isOpen={showTestModal}

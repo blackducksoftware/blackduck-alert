@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 
 const MessageFormatter = ({
-    id = 'messageFormatterId', errorIsDetailed = false, message = null
+    id = 'messageFormatterId',
+    errorIsDetailed = false,
+    message = null
 }) => {
     const determineDisplayMessage = () => {
         if (!message) {
