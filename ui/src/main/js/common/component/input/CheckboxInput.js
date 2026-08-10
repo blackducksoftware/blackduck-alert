@@ -28,9 +28,15 @@ const useStyles = createUseStyles((theme) => ({
 }));
 
 const CheckboxInput = ({
-    id = 'checkboxInputId', isChecked = false, label, name = 'name', 
-    onChange = () => true, readOnly, fieldDescription,
-    checkboxValueLabel, checkboxValueDescription,
+    id = 'checkboxInputId',
+    isChecked = false,
+    label,
+    name = 'name', 
+    onChange = () => true,
+    readOnly,
+    fieldDescription,
+    checkboxValueLabel,
+    checkboxValueDescription,
     errorName = LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue = LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     required = LabelFieldPropertyDefaults.REQUIRED_DEFAULT,

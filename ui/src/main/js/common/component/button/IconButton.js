@@ -21,7 +21,15 @@ const useStyles = createUseStyles({
     }
 });
 
-const IconButton = ({ id, type = 'button', onClick, role, title, icon, disabled }) => {
+const IconButton = ({
+    id,
+    type = 'button',
+    onClick,
+    role,
+    title,
+    icon,
+    disabled
+}) => {
     const classes = useStyles();
     return (
         <button

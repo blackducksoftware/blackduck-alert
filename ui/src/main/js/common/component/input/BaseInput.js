@@ -30,9 +30,18 @@ const useStyles = createUseStyles((theme) => ({
 }));
 
 const BaseInput = ({
-    id = 'BaseInputId', errorValue = LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    name = 'name', onChange = () => true, readOnly, value = '', placeholder,
-    isDisabled, width = '100%', type = 'text', min, max
+    id = 'BaseInputId',
+    errorValue = LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
+    name = 'name',
+    onChange = () => true,
+    readOnly,
+    value = '',
+    placeholder,
+    isDisabled,
+    width = '100%',
+    type = 'text',
+    min,
+    max
 }) => {
     const classes = useStyles({ width });
     const inputClass = classNames(classes.input, {

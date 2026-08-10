@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-const FadeField = ({ timeout = 5000, children }) => {
+const FadeField = ({
+    timeout = 5000,
+    children
+}) => {
     const [showChildren, setShowChildren] = useState(true);
     const [removeChildren, setRemoveChildren] = useState(false);
 

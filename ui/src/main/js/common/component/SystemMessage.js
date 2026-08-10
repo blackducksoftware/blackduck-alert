@@ -28,7 +28,12 @@ const useStyles = createUseStyles((theme) => ({
     }
 }));
 
-const SystemMessage = ({ createdAt, content, severity = 'INFO', id = 'systemMessageId' }) => {
+const SystemMessage = ({
+    createdAt,
+    content,
+    severity = 'INFO',
+    id = 'systemMessageId'
+}) => {
     const classes = useStyles();
 
     function getIcon(messageSeverity) {
