@@ -26,7 +26,7 @@ import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
 import com.blackduck.integration.alert.common.persistence.util.AuditStackTraceUtil;
 
 public abstract class JobSubTaskEventHandler<T extends JobSubTaskEvent> implements AlertEventHandler<T> {
-    private final Logger logger = LoggerFactory.getLogger(JobSubTaskEventHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final EventManager eventManager;
     private final JobStage jobStage;
     private final ExecutingJobManager executingJobManager;
