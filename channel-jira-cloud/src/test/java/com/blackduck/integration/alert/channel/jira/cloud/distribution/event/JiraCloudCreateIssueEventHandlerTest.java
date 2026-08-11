@@ -15,10 +15,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.blackduck.integration.jira.common.cloud.builder.AtlassianDocumentFormatModelBuilder;
-import com.blackduck.integration.jira.common.cloud.model.AtlassianDocumentFormatModel;
-import com.blackduck.integration.jira.common.cloud.model.JiraCloudIssueResponseModel;
-import com.blackduck.integration.jira.common.cloud.model.component.JiraCloudIssueFieldsComponent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -31,9 +27,16 @@ import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueBomC
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.distribution.audit.AuditFailedEvent;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.event.EventManager;
+
+import com.blackduck.integration.jira.common.cloud.builder.AtlassianDocumentFormatModelBuilder;
+import com.blackduck.integration.jira.common.cloud.model.AtlassianDocumentFormatModel;
+import com.blackduck.integration.jira.common.cloud.model.JiraCloudIssueResponseModel;
+import com.blackduck.integration.jira.common.cloud.model.component.JiraCloudIssueFieldsComponent;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.blackduck.integration.alert.channel.jira.cloud.JiraCloudPropertiesFactory;
@@ -52,10 +55,8 @@ import com.blackduck.integration.jira.common.cloud.service.IssueSearchService;
 import com.blackduck.integration.jira.common.cloud.service.IssueService;
 import com.blackduck.integration.jira.common.cloud.service.JiraCloudServiceFactory;
 import com.blackduck.integration.jira.common.cloud.service.ProjectService;
-import com.blackduck.integration.jira.common.model.components.IssueFieldsComponent;
 import com.blackduck.integration.jira.common.model.components.ProjectComponent;
 import com.blackduck.integration.jira.common.model.response.IssueCreationResponseModel;
-import com.blackduck.integration.jira.common.model.response.IssueResponseModel;
 import com.blackduck.integration.jira.common.model.response.PageOfProjectsResponseModel;
 import com.blackduck.integration.jira.common.rest.service.IssuePropertyService;
 import com.google.gson.Gson;
@@ -125,6 +126,55 @@ class JiraCloudCreateIssueEventHandlerTest {
         );
 
         handler.handle(event);
+        Mockito.verify(eventManager).sendEvent(Mockito.any(AuditFailedEvent.class));
+    }
+
+    @Test
+    void handleEventExceptionSendsAuditFailedEvent() throws Exception {
+        UUID jobExecutionId = UUID.randomUUID();
+        UUID jobId = UUID.randomUUID();
+        Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
+
+        JiraCloudJobDetailsModel jobDetailsModel = createJobDetails(jobId);
+
+        JiraCloudPropertiesFactory propertiesFactory = Mockito.mock(JiraCloudPropertiesFactory.class);
+        Mockito.when(propertiesFactory.createJiraProperties()).thenThrow(new AlertConfigurationException("Simulated connection failure"));
+
+        IssueTrackerCallbackInfoCreator callbackInfoCreator = new IssueTrackerCallbackInfoCreator();
+        IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();
+        JiraCloudMessageSenderFactory messageSenderFactory = new JiraCloudMessageSenderFactory(
+            gson,
+            ChannelKeys.JIRA_CLOUD,
+            propertiesFactory,
+            callbackInfoCreator,
+            issueCategoryRetriever,
+            eventManager,
+            executingJobManager
+        );
+
+        jobDetailsAccessor.saveJiraCloudJobDetails(jobId, jobDetailsModel);
+        JiraCloudCreateIssueEventHandler handler = new JiraCloudCreateIssueEventHandler(
+            eventManager,
+            gson,
+            propertiesFactory,
+            messageSenderFactory,
+            jobDetailsAccessor,
+            responsePostProcessor,
+            executingJobManager
+        );
+
+        LinkableItem provider = new LinkableItem("provider", "test-provider");
+        IssueCreationModel issueCreationModel = IssueCreationModel.simple("title", "description", List.of(), provider);
+        JiraCloudCreateIssueEvent event = new JiraCloudCreateIssueEvent(
+            IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_CLOUD),
+            jobExecutionId,
+            jobId,
+            notificationIds,
+            issueCreationModel
+        );
+
+        handler.handle(event);
+        Mockito.verify(eventManager).sendEvent(Mockito.any(AuditFailedEvent.class));
     }
 
     @Test
@@ -368,7 +418,20 @@ class JiraCloudCreateIssueEventHandlerTest {
         AtlassianDocumentFormatModelBuilder atlassianDocumentFormatModelBuilder = new AtlassianDocumentFormatModelBuilder();
         atlassianDocumentFormatModelBuilder.addSingleParagraphTextNode("description");
         AtlassianDocumentFormatModel descriptionModel = atlassianDocumentFormatModelBuilder.build();
-        JiraCloudIssueFieldsComponent issueFieldsComponent = new JiraCloudIssueFieldsComponent(List.of(), null, null, "summary", descriptionModel, List.of(), null, List.of(), null, null, null, null);
+        JiraCloudIssueFieldsComponent issueFieldsComponent = new JiraCloudIssueFieldsComponent(
+            List.of(),
+            null,
+            null,
+            "summary",
+            descriptionModel,
+            List.of(),
+            null,
+            List.of(),
+            null,
+            null,
+            null,
+            null
+        );
 
         return new JiraCloudIssueResponseModel("", id, "", id, Map.of(), Map.of(), Map.of(), null, null, null, null, issueFieldsComponent);
     }

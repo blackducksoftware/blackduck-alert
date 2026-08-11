@@ -29,7 +29,9 @@ import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueBomC
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.IssueCreationModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.model.ProjectIssueModel;
 import com.blackduck.integration.alert.api.channel.issue.tracker.search.IssueCategoryRetriever;
+import com.blackduck.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
+import com.blackduck.integration.alert.api.distribution.audit.AuditFailedEvent;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
@@ -127,6 +129,55 @@ class JiraServerCreateIssueEventHandlerTest {
 
         handler.handle(event);
         assertEquals(0, issueCounter.get());
+        Mockito.verify(eventManager).sendEvent(Mockito.any(AuditFailedEvent.class));
+    }
+
+    @Test
+    void handleEventExceptionSendsAuditFailedEvent() throws Exception {
+        UUID jobExecutionId = UUID.randomUUID();
+        UUID jobId = UUID.randomUUID();
+        Set<Long> notificationIds = Set.of(1L, 2L, 3L, 4L);
+
+        JiraServerJobDetailsModel jobDetailsModel = createJobDetails(jobId);
+
+        JiraServerPropertiesFactory propertiesFactory = Mockito.mock(JiraServerPropertiesFactory.class);
+        Mockito.when(propertiesFactory.createJiraPropertiesWithJobId(jobId)).thenThrow(new AlertConfigurationException("Simulated connection failure"));
+
+        IssueTrackerCallbackInfoCreator callbackInfoCreator = new IssueTrackerCallbackInfoCreator();
+        IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();
+        JiraServerMessageSenderFactory messageSenderFactory = new JiraServerMessageSenderFactory(
+            gson,
+            ChannelKeys.JIRA_SERVER,
+            propertiesFactory,
+            callbackInfoCreator,
+            issueCategoryRetriever,
+            eventManager,
+            executingJobManager
+        );
+
+        jobDetailsAccessor.saveConcreteJobDetails(jobId, jobDetailsModel);
+        JiraServerCreateIssueEventHandler handler = new JiraServerCreateIssueEventHandler(
+            eventManager,
+            gson,
+            propertiesFactory,
+            messageSenderFactory,
+            jobDetailsAccessor,
+            responsePostProcessor,
+            executingJobManager
+        );
+
+        LinkableItem provider = new LinkableItem("provider", "test-provider");
+        IssueCreationModel issueCreationModel = IssueCreationModel.simple("title", "description", List.of(), provider);
+        JiraServerCreateIssueEvent event = new JiraServerCreateIssueEvent(
+            IssueTrackerCreateIssueEvent.createDefaultEventDestination(ChannelKeys.JIRA_SERVER),
+            jobExecutionId,
+            jobId,
+            notificationIds,
+            issueCreationModel
+        );
+
+        handler.handle(event);
+        Mockito.verify(eventManager).sendEvent(Mockito.any(AuditFailedEvent.class));
     }
 
     @Test

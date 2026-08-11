@@ -73,7 +73,7 @@ public class JiraServerCreateIssueEventHandler extends IssueTrackerCreateIssueEv
     }
 
     @Override
-    public synchronized void handleEvent(IssueTrackerCreateIssueEvent event) {
+    public synchronized void handleEvent(IssueTrackerCreateIssueEvent event) throws AlertException {
         UUID jobId = event.getJobId();
         IssueCreationModel creationModel = event.getCreationModel();
         logger.debug("Begin Handle Event: {} for Alert Issue ID: {}", getClass().getSimpleName(), creationModel.getAlertIssueId());
@@ -125,9 +125,13 @@ public class JiraServerCreateIssueEventHandler extends IssueTrackerCreateIssueEv
                 logger.error("Cannot create issue for job id: {}, Alert Issue ID: {}", jobId, creationModel.getAlertIssueId());
                 logger.error("Query: {}", creationModel.getQueryString());
                 logger.error("Cause: ", ex);
+                // Re-throw the error so the base class can publish an AuditFailedEvent with detailed error information.
+                throw ex;
             }
         } else {
-            logger.error("No Jira Server job found with job id: {}, Alert Issue ID: {}", jobId, creationModel.getAlertIssueId());
+            String errorMessage = String.format("No Jira Server job found with job id: %s, Alert Issue ID: %s", jobId, creationModel.getAlertIssueId());
+            logger.error(errorMessage);
+            throw new AlertException(errorMessage);
         }
     }
 
