@@ -41,7 +41,7 @@ ext {
     postgresContainerVersionMigration = '16.14'
     // This version is auto updated in src/test/resources/spring-test.properties for the test jdbc connection
     // https://hub.docker.com/_/postgres/tags?name=17.
-    postgresContainerVersionCurrent = '17.10'
+    postgresContainerVersionCurrent = '17.9'
     // https://hub.docker.com/_/alpine/tags?name=3.
     alpineImageVersion = '3.24'
     // https://hub.docker.com/_/rabbitmq/tags?name=4.
@@ -78,7 +78,7 @@ ext {
 }
 
 mainClassName = 'com.blackduck.integration.alert.Application'
-version = '9.0.0-SIGQA2-SNAPSHOT'
+version = '9.0.0-SIGQA2-DANA-SNAPSHOT'
 
 ext.isSnapshot = project.version.endsWith('-SNAPSHOT')
 ext.isSIGQA = project.version.contains('-SIGQA')
