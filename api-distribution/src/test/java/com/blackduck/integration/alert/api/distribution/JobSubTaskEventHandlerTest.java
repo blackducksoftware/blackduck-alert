@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
+import com.blackduck.integration.alert.api.distribution.audit.AuditFailedEvent;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJob;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJobManager;
 import com.blackduck.integration.alert.api.distribution.execution.JobStage;
@@ -47,7 +48,6 @@ class JobSubTaskEventHandlerTest {
     @Test
     void testHandleEvent() {
         String destination = "destination";
-        UUID parentEventId = UUID.randomUUID();
         UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
@@ -73,9 +73,7 @@ class JobSubTaskEventHandlerTest {
 
     @Test
     void testHandleExceptionEvent() {
-
         String destination = "destination";
-        UUID parentEventId = UUID.randomUUID();
         UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
@@ -92,7 +90,6 @@ class JobSubTaskEventHandlerTest {
     @Test
     void testHandleEventCountToZero() {
         String destination = "destination";
-        UUID parentEventId = UUID.randomUUID();
         UUID jobExecutionId = UUID.randomUUID();
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
@@ -102,6 +99,23 @@ class JobSubTaskEventHandlerTest {
         handler.handle(event);
 
         assertTrue(handler.wasHandlerCalled());
+    }
+
+    @Test
+    void testHandleUnknownException() {
+        String destination = "destination";
+        UUID jobExecutionId = UUID.randomUUID();
+        UUID jobId = UUID.randomUUID();
+        Set<Long> notificationIds = Set.of(1L, 2L, 3L);
+
+        TestHandler handler = new TestHandler(eventManager, executingJobManager);
+        handler.setShouldThrowRuntimeException(true);
+
+        TestEvent event = new TestEvent(destination, jobExecutionId, jobId, notificationIds);
+        handler.handle(event);
+
+        assertTrue(handler.wasHandlerCalled(), "Handler should have been called before the exception was thrown");
+        Mockito.verify(eventManager).sendEvent(Mockito.any(AuditFailedEvent.class));
     }
 
     private static class TestEvent extends JobSubTaskEvent {
@@ -115,6 +129,7 @@ class JobSubTaskEventHandlerTest {
     private static class TestHandler extends JobSubTaskEventHandler<TestEvent> {
         private boolean handlerCalled = false;
         private boolean shouldThrowException = false;
+        private boolean shouldThrowRuntimeException = false;
 
         protected TestHandler(
             EventManager eventManager,
@@ -130,6 +145,9 @@ class JobSubTaskEventHandlerTest {
             if (shouldThrowException) {
                 throw new AlertException("Test handler throws exception");
             }
+            if (shouldThrowRuntimeException) {
+                throw new RuntimeException("Test handler throws unexpected runtime exception");
+            }
         }
 
         public boolean wasHandlerCalled() {
@@ -142,6 +160,10 @@ class JobSubTaskEventHandlerTest {
 
         public void setShouldThrowException(boolean shouldThrowException) {
             this.shouldThrowException = shouldThrowException;
+        }
+
+        public void setShouldThrowRuntimeException(boolean shouldThrowRuntimeException) {
+            this.shouldThrowRuntimeException = shouldThrowRuntimeException;
         }
     }
 }
