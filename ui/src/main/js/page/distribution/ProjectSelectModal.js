@@ -79,7 +79,15 @@ export default function ProjectSelectModal({ isOpen, handleClose, csrfToken, pro
                             setSearchTerm(newSearchTerm);
                         }}
                         selected={selectedProjectNames}
-                        onSelected={(rowID, rowData) => {
+                        onSelected={(rowIDOrAllIDs, rowData) => {
+                            if (!rowData) {
+                                const newSelected = (data?.models || [])
+                                    .filter((m) => rowIDOrAllIDs.includes(m.name))
+                                    .map((m) => ({ label: m.name, value: m.href }));
+                                setSelected(newSelected);
+                                return;
+                            }
+                            
                             if (selectedProjectNames.includes(rowData.name)) {
                                 setSelected(selected.filter((project) => project.value !== rowData.href));
                             } else {
@@ -113,5 +121,5 @@ ProjectSelectModal.propTypes = {
     csrfToken: PropTypes.string,
     projectRequestBody: PropTypes.func,
     handleSubmit: PropTypes.func,
-    formData: PropTypes.oneOf([PropTypes.object, PropTypes.array])
+    formData: PropTypes.oneOfType([PropTypes.object, PropTypes.array])
 };

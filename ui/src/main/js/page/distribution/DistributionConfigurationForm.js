@@ -327,6 +327,13 @@ const DistributionConfigurationForm = ({
         });
     };
 
+    const handleProjectSelectChange = (selectedOptions) => FieldModelUtilities.handleChange(providerModel, setProviderModel)({
+        target: {
+            name: DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects,
+            value: selectedOptions || []
+        }
+    });
+
     function getProjectValues(data) {
         if (data.some((project) => 'label' in project)) {
             return data;
@@ -512,7 +519,15 @@ const DistributionConfigurationForm = ({
                                 errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects]}
                                 customSelect={(
                                     <>
-                                        <div className="typeAheadField">
+                                        <div
+                                            className="typeAheadField"
+                                            onClick={(event) => {
+                                                if (event.target.closest('[data-project-remove="true"]') || event.target.closest('[data-project-clear="true"]')) {
+                                                    return;
+                                                }
+                                                setShowProjectSelectModal(true);
+                                            }}
+                                        >
                                             <Select
                                                 noOptionsMessage={() => null}
                                                 openMenuOnClick={false}
@@ -521,7 +536,16 @@ const DistributionConfigurationForm = ({
                                                 value={getProjectValues(FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects))}
                                                 isMulti
                                                 isClearable
+                                                onChange={(newValue, { action }) => {
+                                                    if (action === 'clear') {
+                                                        handleProjectSelectChange([]);
+                                                    }
+                                                }}
                                                 styles={{
+                                                    control: (base) => ({
+                                                        ...base,
+                                                        cursor: 'pointer'
+                                                    }),
                                                     dropdownIndicator: (base) => ({
                                                         ...base,
                                                         padding: '12px'
@@ -540,9 +564,29 @@ const DistributionConfigurationForm = ({
                                                             <FontAwesomeIcon icon="plus" onClick={() => setShowProjectSelectModal(true)} />
                                                         </components.DropdownIndicator>
                                                     ),
+                                                    ClearIndicator: ({ ...props }) => (
+                                                        <components.ClearIndicator
+                                                            {...props}
+                                                            innerProps={{
+                                                                ...props.innerProps,
+                                                                'data-project-clear': 'true'
+                                                            }}
+                                                        />
+                                                    ),
                                                     MultiValueRemove: ({ ...props }) => (
                                                         <components.MultiValueRemove
                                                             {...props}
+                                                            innerProps={{
+                                                                ...props.innerProps,
+                                                                'data-project-remove': 'true',
+                                                                onMouseDown: (event) => {
+                                                                    event.stopPropagation();
+                                                                },
+                                                                onClick: (event) => {
+                                                                    event.stopPropagation();
+                                                                    removeSelectedProject(props.data);
+                                                                }
+                                                            }}
                                                         >
                                                             <FontAwesomeIcon
                                                                 icon="times"
