@@ -87,7 +87,7 @@ export default function ProjectSelectModal({ isOpen, handleClose, csrfToken, pro
                                 setSelected(newSelected);
                                 return;
                             }
-                            
+
                             if (selectedProjectNames.includes(rowData.name)) {
                                 setSelected(selected.filter((project) => project.value !== rowData.href));
                             } else {
@@ -121,5 +121,11 @@ ProjectSelectModal.propTypes = {
     csrfToken: PropTypes.string,
     projectRequestBody: PropTypes.func,
     handleSubmit: PropTypes.func,
-    formData: PropTypes.oneOfType([PropTypes.object, PropTypes.array])
+    formData: PropTypes.oneOfType([
+        PropTypes.array, 
+        PropTypes.shape({
+            label: PropTypes.string,
+            value: PropTypes.string
+        })
+    ])
 };
