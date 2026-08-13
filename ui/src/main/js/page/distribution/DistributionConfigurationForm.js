@@ -665,6 +665,7 @@ const DistributionConfigurationForm = ({
                         value={FieldModelUtilities.getFieldModelValues(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
                         errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.channelName]}
+                        menuPlacement="top"
                     />
                     {renderChannelFields()}
                 </CommonDistributionConfigurationForm>
