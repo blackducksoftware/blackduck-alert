@@ -290,7 +290,12 @@ class NotificationAccessorTestIT {
         notificationManager.saveAllNotifications(List.of(entityToFind1));
         notificationManager.saveAllNotifications(List.of(entityToFind2));
 
-        List<AlertNotificationModel> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate, AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE).getModels();
+        List<AlertNotificationModel> foundList = notificationManager.findByCreatedAtBetween(
+            startDate,
+            endDate,
+            AlertPagedModel.DEFAULT_PAGE_NUMBER,
+            AlertPagedModel.DEFAULT_PAGE_SIZE
+        ).getModels();
 
         assertEquals(2, foundList.size());
         assertNotificationModel(entityToFind1, foundList.get(0));
@@ -310,7 +315,12 @@ class NotificationAccessorTestIT {
         entity = createNotificationModel(createdAtLater);
         notificationManager.saveAllNotifications(List.of(entity));
 
-        List<AlertNotificationModel> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate, AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE).getModels();
+        List<AlertNotificationModel> foundList = notificationManager.findByCreatedAtBetween(
+            startDate,
+            endDate,
+            AlertPagedModel.DEFAULT_PAGE_NUMBER,
+            AlertPagedModel.DEFAULT_PAGE_SIZE
+        ).getModels();
 
         assertTrue(foundList.isEmpty());
     }
@@ -381,6 +391,36 @@ class NotificationAccessorTestIT {
     }
 
     @Test
+    void testSaveSkipsDuplicateContentIdInBatch() {
+        String sharedContentId = "duplicate-content-id-" + UUID.randomUUID();
+        OffsetDateTime createdAt = DateUtils.createCurrentDateTimestamp();
+
+        AlertNotificationModel firstOccurrence = createNotificationModelWithContentId(createdAt, sharedContentId);
+        AlertNotificationModel duplicateOccurrence = createNotificationModelWithContentId(createdAt, sharedContentId);
+
+        List<AlertNotificationModel> savedModels = notificationManager.saveAllNotifications(List.of(firstOccurrence, duplicateOccurrence));
+
+        assertEquals(1, savedModels.size(), "Only the first occurrence of a duplicate contentId in a batch should be saved");
+        assertEquals(1, notificationContentRepository.count(), "Only one row should exist in the database after saving a batch with a duplicate contentId");
+    }
+
+    @Test
+    void testSaveSkipsNotificationAlreadyInDatabase() {
+        String sharedContentId = "existing-content-id-" + UUID.randomUUID();
+        OffsetDateTime createdAt = DateUtils.createCurrentDateTimestamp();
+
+        AlertNotificationModel original = createNotificationModelWithContentId(createdAt, sharedContentId);
+        List<AlertNotificationModel> firstSave = notificationManager.saveAllNotifications(List.of(original));
+        assertEquals(1, firstSave.size(), "First save should persist the notification");
+
+        AlertNotificationModel duplicate = createNotificationModelWithContentId(createdAt, sharedContentId);
+        List<AlertNotificationModel> secondSave = notificationManager.saveAllNotifications(List.of(duplicate));
+
+        assertTrue(secondSave.isEmpty(), "Saving a notification whose contentId already exists in the database should return an empty list");
+        assertEquals(1, notificationContentRepository.count(), "The database should still contain only one notification after a duplicate save attempt");
+    }
+
+    @Test
     void testDeleteNotification() {
         AlertNotificationModel notificationEntity = createNotificationModel();
         AlertNotificationModel savedModel = notificationManager.saveAllNotifications(List.of(notificationEntity)).get(0);
@@ -423,7 +463,16 @@ class NotificationAccessorTestIT {
         assertTrue(alertNotificationModelTest.get().getProcessed());
     }
 
+    private AlertNotificationModel createNotificationModel() {
+        OffsetDateTime createdAt = DateUtils.createCurrentDateTimestamp();
+        return createNotificationModel(createdAt);
+    }
+
     private AlertNotificationModel createNotificationModel(OffsetDateTime createdAt) {
+        return createNotificationModelWithContentId(createdAt, String.format("content-id-%s", UUID.randomUUID()));
+    }
+
+    private AlertNotificationModel createNotificationModelWithContentId(OffsetDateTime createdAt, String contentId) {
         return new AlertNotificationModel(
             providerConfigModel.getConfigurationId(),
             "provider",
@@ -433,18 +482,20 @@ class NotificationAccessorTestIT {
             createdAt,
             createdAt,
             false,
-            String.format("content-id-%s", UUID.randomUUID()),
+            contentId,
             false
         );
     }
 
-    private AlertNotificationModel createNotificationModel() {
-        OffsetDateTime createdAt = DateUtils.createCurrentDateTimestamp();
-        return createNotificationModel(createdAt);
-    }
-
     private NotificationEntity createNotificationContent(OffsetDateTime createdAt) {
-        MockNotificationContent mockedNotificationContent = new MockNotificationContent(createdAt, "provider", createdAt, NOTIFICATION_TYPE, "{content: \"content is here...\"}", providerConfigModel.getConfigurationId());
+        MockNotificationContent mockedNotificationContent = new MockNotificationContent(
+            createdAt,
+            "provider",
+            createdAt,
+            NOTIFICATION_TYPE,
+            "{content: \"content is here...\"}",
+            providerConfigModel.getConfigurationId()
+        );
         return mockedNotificationContent.createEntity();
     }
 

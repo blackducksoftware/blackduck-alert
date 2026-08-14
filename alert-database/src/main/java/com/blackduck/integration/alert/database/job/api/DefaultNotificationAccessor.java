@@ -9,6 +9,7 @@ package com.blackduck.integration.alert.database.job.api;
 
 import java.time.OffsetDateTime;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -70,9 +71,13 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     public List<AlertNotificationModel> saveAllNotifications(Collection<AlertNotificationModel> notifications) {
         List<NotificationEntity> entitiesToSave = new LinkedList<>();
 
+        Set<String> contentIdsToSave = new HashSet<>();
         for (AlertNotificationModel model : notifications) {
             if (notificationContentRepository.existsByContentId(model.getContentId())) {
                 logger.info("Notification already exists for provider: {} contentId: {}", model.getProviderConfigId(), model.getContentId());
+                logger.debug("Content: {}", model.getContent());
+            } else if (!contentIdsToSave.add(model.getContentId())) {
+                logger.info("Duplicate notification in batch for provider: {}, contentId: {}", model.getProviderConfigId(), model.getContentId());
                 logger.debug("Content: {}", model.getContent());
             } else {
                 entitiesToSave.add(fromModel(model));
@@ -82,14 +87,14 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         return notificationContentRepository.saveAllAndFlush(entitiesToSave)
             .stream()
             .map(this::toModel)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public List<AlertNotificationModel> saveAllNotificationsInBatch(final UUID batchId, final Collection<AlertNotificationModel> notifications) {
         List<AlertNotificationModel> models = saveAllNotifications(notifications);
-        if(!models.isEmpty()) {
+        if (!models.isEmpty()) {
             List<NotificationBatchEntity> batchDataList = models.stream()
                 .map(notification -> new NotificationBatchEntity(notification.getProviderConfigId(), batchId, notification.getId()))
                 .toList();
@@ -186,10 +191,10 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         String sortingField = "createdAt";
         // We can only modify the query for the fields that exist in NotificationContent
         if (StringUtils.isNotBlank(sortField) && "createdAt".equalsIgnoreCase(sortField)
-                || "provider".equalsIgnoreCase(sortField)
-                || COLUMN_NAME_PROVIDER_CREATION_TIME.equalsIgnoreCase(sortField)
-                || "notificationType".equalsIgnoreCase(sortField)
-                || "content".equalsIgnoreCase(sortField)) {
+            || "provider".equalsIgnoreCase(sortField)
+            || COLUMN_NAME_PROVIDER_CREATION_TIME.equalsIgnoreCase(sortField)
+            || "notificationType".equalsIgnoreCase(sortField)
+            || "content".equalsIgnoreCase(sortField)) {
             sortingField = sortField;
             sortQuery = true;
         }
@@ -271,11 +276,11 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         Sort.Order sortingOrder = Sort.Order.asc(COLUMN_NAME_PROVIDER_CREATION_TIME);
         PageRequest pageRequest = PageRequest.of(currentPage, pageSize, Sort.by(sortingOrder));
         Page<AlertNotificationModel> pageOfNotifications = notificationContentRepository.findNotMappedAndNotProcessedNotifications(
-                        providerConfigId,
-                        batchId,
-                        pageRequest
-                )
-                .map(this::toModel);
+                providerConfigId,
+                batchId,
+                pageRequest
+            )
+            .map(this::toModel);
         List<AlertNotificationModel> alertNotificationModels = pageOfNotifications.getContent();
         return new AlertPagedModel<>(pageOfNotifications.getTotalPages(), currentPage, pageSize, alertNotificationModels);
     }
@@ -284,9 +289,9 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     @Transactional
     public void setNotificationsMapping(List<AlertNotificationModel> notifications) {
         Set<Long> notificationIds = notifications
-                .stream()
-                .map(AlertNotificationModel::getId)
-                .collect(Collectors.toSet());
+            .stream()
+            .map(AlertNotificationModel::getId)
+            .collect(Collectors.toSet());
         setNotificationsMappingById(notificationIds);
     }
 
@@ -299,7 +304,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
 
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public boolean hasMoreNotificationsToMap(long providerConfigId,  UUID batchId) {
+    public boolean hasMoreNotificationsToMap(long providerConfigId, UUID batchId) {
         return notificationContentRepository.existsByProviderConfigIdAndMappingToJobsFalse(providerConfigId, batchId);
     }
 
