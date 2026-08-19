@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -526,14 +527,17 @@ class NotificationAccessorTestIT {
     }
 
     private AlertNotificationModel createNotificationModelWithContentId(OffsetDateTime createdAt, String contentId) {
+        // Truncate to microseconds to match PostgreSQL TIMESTAMP WITH TIME ZONE precision.
+        // Without this, some systems with only microsecond precision will result in tests failures.
+        OffsetDateTime microsCreatedAt = createdAt.truncatedTo(ChronoUnit.MICROS);
         return new AlertNotificationModel(
             providerConfigModel.getConfigurationId(),
             "provider",
             "providerConfigName",
             NOTIFICATION_TYPE,
             "{content: \"content is here...\"}",
-            createdAt,
-            createdAt,
+            microsCreatedAt,
+            microsCreatedAt,
             false,
             contentId,
             false
