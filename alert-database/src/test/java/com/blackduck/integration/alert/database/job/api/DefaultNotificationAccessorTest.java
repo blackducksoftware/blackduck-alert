@@ -21,6 +21,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.mockito.verification.VerificationMode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -126,17 +127,7 @@ class DefaultNotificationAccessorTest {
         AlertNotificationModel testAlertNotificationModel = alertNotificationModelList.get(0);
         testExpectedAlertNotificationModel(expectedAlertNotificationModel, testAlertNotificationModel);
 
-        Mockito.verify(notificationContentRepository, Mockito.times(1)).saveIgnoreContentIdConflict(
-            Mockito.any(OffsetDateTime.class),
-            Mockito.anyString(),
-            Mockito.any(Long.class),
-            Mockito.any(OffsetDateTime.class),
-            Mockito.anyString(),
-            Mockito.anyString(),
-            Mockito.anyBoolean(),
-            Mockito.anyString(),
-            Mockito.anyBoolean()
-        );
+        verifySaveIgnoreContentIdConflict(notificationContentRepository, Mockito.times(1));
     }
 
     @Test
@@ -200,17 +191,7 @@ class DefaultNotificationAccessorTest {
 
         assertEquals(1, result.size(), "Only the first occurrence of a duplicate contentId should be saved");
 
-        Mockito.verify(notificationContentRepository, Mockito.times(1)).saveIgnoreContentIdConflict(
-            Mockito.any(OffsetDateTime.class),
-            Mockito.anyString(),
-            Mockito.any(Long.class),
-            Mockito.any(OffsetDateTime.class),
-            Mockito.anyString(),
-            Mockito.anyString(),
-            Mockito.anyBoolean(),
-            Mockito.anyString(),
-            Mockito.anyBoolean()
-        );
+        verifySaveIgnoreContentIdConflict(notificationContentRepository, Mockito.times(1));
     }
 
     @Test
@@ -241,17 +222,7 @@ class DefaultNotificationAccessorTest {
 
         assertTrue(result.isEmpty(), "Notifications already in the database should not be saved again");
 
-        Mockito.verify(notificationContentRepository, Mockito.never()).saveIgnoreContentIdConflict(
-            Mockito.any(OffsetDateTime.class),
-            Mockito.anyString(),
-            Mockito.any(Long.class),
-            Mockito.any(OffsetDateTime.class),
-            Mockito.anyString(),
-            Mockito.anyString(),
-            Mockito.anyBoolean(),
-            Mockito.anyString(),
-            Mockito.anyBoolean()
-        );
+        verifySaveIgnoreContentIdConflict(notificationContentRepository, Mockito.never());
     }
 
     @Test
@@ -262,17 +233,7 @@ class DefaultNotificationAccessorTest {
         List<AlertNotificationModel> alertNotificationModelList = notificationManager.saveAllNotifications(new ArrayList<>());
 
         assertTrue(alertNotificationModelList.isEmpty());
-        Mockito.verify(notificationContentRepository, Mockito.never()).saveIgnoreContentIdConflict(
-            Mockito.any(OffsetDateTime.class),
-            Mockito.anyString(),
-            Mockito.any(Long.class),
-            Mockito.any(OffsetDateTime.class),
-            Mockito.anyString(),
-            Mockito.anyString(),
-            Mockito.anyBoolean(),
-            Mockito.anyString(),
-            Mockito.anyBoolean()
-        );
+        verifySaveIgnoreContentIdConflict(notificationContentRepository, Mockito.never());
         Mockito.verify(notificationContentRepository, Mockito.never()).findByContentIdIn(Mockito.any());
     }
 
@@ -714,6 +675,20 @@ class DefaultNotificationAccessorTest {
         Mockito.when(notificationContentRepository.existsByProcessedFalse()).thenReturn(Boolean.TRUE);
         DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, null, null, notificationBatchRepository);
         assertTrue(notificationManager.hasMoreNotificationsToProcess());
+    }
+
+    private void verifySaveIgnoreContentIdConflict(NotificationContentRepository repository, VerificationMode mode) {
+        Mockito.verify(repository, mode).saveIgnoreContentIdConflict(
+            Mockito.any(OffsetDateTime.class),
+            Mockito.anyString(),
+            Mockito.any(Long.class),
+            Mockito.any(OffsetDateTime.class),
+            Mockito.anyString(),
+            Mockito.anyString(),
+            Mockito.anyBoolean(),
+            Mockito.anyString(),
+            Mockito.anyBoolean()
+        );
     }
 
     private void testExpectedAlertNotificationModel(AlertNotificationModel expected, AlertNotificationModel actual) {
