@@ -111,8 +111,10 @@ class DefaultNotificationAccessorTest {
         NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
         ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
 
-        Mockito.when(notificationContentRepository.existsByContentId(contentId)).thenReturn(false);
-        Mockito.when(notificationContentRepository.findByContentIdIn(Mockito.any())).thenReturn(List.of(notificationEntity));
+        // First call: prefetch returns empty (notification does not yet exist); second call: post-save retrieve returns the saved entity
+        Mockito.when(notificationContentRepository.findByContentIdIn(Mockito.any()))
+            .thenReturn(List.of())
+            .thenReturn(List.of(notificationEntity));
         Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.any())).thenReturn(Optional.of(configurationModel));
 
         DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(
@@ -177,8 +179,10 @@ class DefaultNotificationAccessorTest {
         NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
         ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
 
-        Mockito.when(notificationContentRepository.existsByContentId(contentId)).thenReturn(false);
-        Mockito.when(notificationContentRepository.findByContentIdIn(Mockito.any())).thenReturn(List.of(savedEntity));
+        // First call: prefetch returns empty (neither occurrence exists yet); second call: post-save retrieve returns the saved entity
+        Mockito.when(notificationContentRepository.findByContentIdIn(Mockito.any()))
+            .thenReturn(List.of())
+            .thenReturn(List.of(savedEntity));
         Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.any())).thenReturn(Optional.of(createConfigurationModel()));
 
         DefaultNotificationAccessor defaultNotificationAccessor = new DefaultNotificationAccessor(
@@ -213,9 +217,23 @@ class DefaultNotificationAccessorTest {
             false
         );
 
+        NotificationEntity existingEntity = new NotificationEntity(
+            id,
+            createdAt,
+            provider,
+            providerConfigId,
+            providerCreationTime,
+            notificationType,
+            content,
+            false,
+            contentId,
+            false
+        );
+
         NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
 
-        Mockito.when(notificationContentRepository.existsByContentId(contentId)).thenReturn(true);
+        // Prefetch returns the existing entity, causing the in-memory filter to skip it
+        Mockito.when(notificationContentRepository.findByContentIdIn(Mockito.any())).thenReturn(List.of(existingEntity));
 
         DefaultNotificationAccessor defaultNotificationAccessor = new DefaultNotificationAccessor(notificationContentRepository, null, null, notificationBatchRepository);
         List<AlertNotificationModel> result = defaultNotificationAccessor.saveAllNotifications(List.of(alreadyPersistedModel));

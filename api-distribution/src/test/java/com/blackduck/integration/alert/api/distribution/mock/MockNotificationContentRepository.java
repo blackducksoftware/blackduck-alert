@@ -8,6 +8,7 @@
 package com.blackduck.integration.alert.api.distribution.mock;
 
 import java.time.OffsetDateTime;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,6 +33,7 @@ import com.blackduck.integration.alert.test.common.database.MockRepositoryContai
 
 public class MockNotificationContentRepository extends MockRepositoryContainer<Long, NotificationEntity> implements NotificationContentRepository {
     private final MockNotificationBatchRepository mockNotificationBatchRepository;
+
     public MockNotificationContentRepository(final Function<NotificationEntity, Long> idGenerator) {
         super(idGenerator);
         mockNotificationBatchRepository = new MockNotificationBatchRepository();
@@ -202,7 +204,7 @@ public class MockNotificationContentRepository extends MockRepositoryContainer<L
     }
 
     @Override
-    public Page<NotificationEntity> findNotMappedAndNotProcessedNotifications(long providerConfigId, UUID batchId,  Pageable pageable) {
+    public Page<NotificationEntity> findNotMappedAndNotProcessedNotifications(long providerConfigId, UUID batchId, Pageable pageable) {
         Set<Long> notificationsInBatch = mockNotificationBatchRepository.findAll().stream()
             .filter(entity -> entity.getBatchId().equals(batchId))
             .map(NotificationBatchEntity::getNotificationId)
@@ -212,12 +214,12 @@ public class MockNotificationContentRepository extends MockRepositoryContainer<L
         Predicate<NotificationEntity> notProcessed = Predicate.not(NotificationEntity::getProcessed);
         Predicate<NotificationEntity> providerConfigIdEqual = notificationEntity -> notificationEntity.getProviderConfigId().equals(providerConfigId);
         List<NotificationEntity> notifications = findAll().stream()
-                .sorted(Comparator.comparing(NotificationEntity::getProviderCreationTime))
-                .filter(providerConfigIdEqual)
-                .filter(notificationInBatch)
-                .filter(mappingFalse)
-                .filter(notProcessed)
-                .toList();
+            .sorted(Comparator.comparing(NotificationEntity::getProviderCreationTime))
+            .filter(providerConfigIdEqual)
+            .filter(notificationInBatch)
+            .filter(mappingFalse)
+            .filter(notProcessed)
+            .toList();
         int pageSize = pageable.getPageSize();
         int pageNumber = pageable.getPageNumber();
         List<List<NotificationEntity>> partitionedLists = ListUtils.partition(notifications, pageSize);
@@ -235,14 +237,14 @@ public class MockNotificationContentRepository extends MockRepositoryContainer<L
         Predicate<NotificationEntity> notMapped = Predicate.not(NotificationEntity::isMappingToJobs);
         Predicate<NotificationEntity> providerAndMappingToJobsFalse = providerConfigIdEqual.and(notMapped);
         return findAll()
-                .stream()
-                .anyMatch(providerAndMappingToJobsFalse);
+            .stream()
+            .anyMatch(providerAndMappingToJobsFalse);
     }
 
     @Override
     public void setMappingToJobsByIds(Set<Long> notificationIds) {
         findAllById(notificationIds)
-                .forEach(NotificationEntity::setMappingToJobsToTrue);
+            .forEach(NotificationEntity::setMappingToJobsToTrue);
     }
 
     @Override
@@ -253,27 +255,29 @@ public class MockNotificationContentRepository extends MockRepositoryContainer<L
         Predicate<NotificationEntity> providerMappingAndProcessedFalse = providerConfigIdEqual.and(notMapped).and(notProcessed);
 
         List<NotificationEntity> entities = findAll().stream()
-                .filter(providerMappingAndProcessedFalse)
-                .toList();
+            .filter(providerMappingAndProcessedFalse)
+            .toList();
 
         List<NotificationEntity> updatedEntities = entities.stream()
-                .map(this::setMappingAndProcessedToFalse)
-                .toList();
+            .map(this::setMappingAndProcessedToFalse)
+            .toList();
 
         saveAll(updatedEntities);
     }
 
     private NotificationEntity setMappingAndProcessedToFalse(NotificationEntity entity) {
-        return new NotificationEntity(entity.getId(),
-                entity.getCreatedAt(),
-                entity.getProvider(),
-                entity.getProviderConfigId(),
-                entity.getProviderCreationTime(),
-                entity.getNotificationType(),
-                entity.getContent(),
-                false,
-                entity.getContentId(),
-                false);
+        return new NotificationEntity(
+            entity.getId(),
+            entity.getCreatedAt(),
+            entity.getProvider(),
+            entity.getProviderConfigId(),
+            entity.getProviderCreationTime(),
+            entity.getNotificationType(),
+            entity.getContent(),
+            false,
+            entity.getContentId(),
+            false
+        );
     }
 
     @Override
@@ -285,6 +289,30 @@ public class MockNotificationContentRepository extends MockRepositoryContainer<L
         return notificationsPerHourMap.entrySet().stream()
             .map(entry -> new NotificationCountsPerHour(entry.getKey(), entry.getValue()))
             .sorted(Comparator.comparing(NotificationCountsPerHour::getAccumulationHour))
+            .toList();
+    }
+
+    @Override
+    public void saveIgnoreContentIdConflict(
+        final OffsetDateTime createdAt,
+        final String provider,
+        final Long providerConfigId,
+        final OffsetDateTime providerCreationTime,
+        final String notificationType,
+        final String content,
+        final boolean processed,
+        final String contentId,
+        final boolean mappingToJobs
+    ) {
+        if (!existsByContentId(contentId)) {
+            super.save(new NotificationEntity(createdAt, provider, providerConfigId, providerCreationTime, notificationType, content, processed, contentId, mappingToJobs));
+        }
+    }
+
+    @Override
+    public List<NotificationEntity> findByContentIdIn(final Collection<String> contentIds) {
+        return findAll().stream()
+            .filter(entity -> contentIds.contains(entity.getContentId()))
             .toList();
     }
 }

@@ -127,7 +127,7 @@ class NotificationContentRepositoryTestIT {
         saveNotificationWithContentId(providerConfig.getId(), contentId);
         saveNotificationWithContentId(providerConfig.getId(), contentId);
 
-        assertEquals(1, notificationContentRepository.count(), "A duplicate contentId not produce a second row");
+        assertEquals(1, notificationContentRepository.count(), "A duplicate contentId should not produce a second row");
     }
 
     @Test

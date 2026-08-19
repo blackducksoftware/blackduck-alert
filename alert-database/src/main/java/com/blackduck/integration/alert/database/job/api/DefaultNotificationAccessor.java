@@ -69,11 +69,23 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public List<AlertNotificationModel> saveAllNotifications(Collection<AlertNotificationModel> notifications) {
-        List<NotificationEntity> entitiesToSave = new ArrayList<>();
+        if (notifications.isEmpty()) {
+            return List.of();
+        }
+        
+        // Prefetch all content IDs in a batch to determine if duplicates exist when performing in-memory filtering.
+        Set<String> allBatchContentIds = notifications.stream()
+            .map(AlertNotificationModel::getContentId)
+            .collect(Collectors.toSet());
+        Set<String> existingContentIds = notificationContentRepository.findByContentIdIn(allBatchContentIds)
+            .stream()
+            .map(NotificationEntity::getContentId)
+            .collect(Collectors.toSet());
 
+        List<NotificationEntity> entitiesToSave = new ArrayList<>();
         Set<String> contentIdsToSave = new HashSet<>();
         for (AlertNotificationModel model : notifications) {
-            if (notificationContentRepository.existsByContentId(model.getContentId())) {
+            if (existingContentIds.contains(model.getContentId())) {
                 logger.info("Notification already exists for provider: {} contentId: {}", model.getProviderConfigId(), model.getContentId());
                 logger.debug("Content: {}", model.getContent());
             } else if (!contentIdsToSave.add(model.getContentId())) {
