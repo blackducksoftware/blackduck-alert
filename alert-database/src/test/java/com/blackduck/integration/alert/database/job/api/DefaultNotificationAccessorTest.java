@@ -18,8 +18,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import org.mockito.ArgumentCaptor;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -112,7 +110,8 @@ class DefaultNotificationAccessorTest {
         NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
         ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
 
-        Mockito.when(notificationContentRepository.saveAllAndFlush(Mockito.any())).thenReturn(List.of(notificationEntity));
+        Mockito.when(notificationContentRepository.existsByContentId(contentId)).thenReturn(false);
+        Mockito.when(notificationContentRepository.findByContentIdIn(Mockito.any())).thenReturn(List.of(notificationEntity));
         Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.any())).thenReturn(Optional.of(configurationModel));
 
         DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(
@@ -126,6 +125,18 @@ class DefaultNotificationAccessorTest {
         assertEquals(1, alertNotificationModelList.size());
         AlertNotificationModel testAlertNotificationModel = alertNotificationModelList.get(0);
         testExpectedAlertNotificationModel(expectedAlertNotificationModel, testAlertNotificationModel);
+
+        Mockito.verify(notificationContentRepository, Mockito.times(1)).saveIgnoreContentIdConflict(
+            Mockito.any(OffsetDateTime.class),
+            Mockito.anyString(),
+            Mockito.any(Long.class),
+            Mockito.any(OffsetDateTime.class),
+            Mockito.anyString(),
+            Mockito.anyString(),
+            Mockito.anyBoolean(),
+            Mockito.anyString(),
+            Mockito.anyBoolean()
+        );
     }
 
     @Test
@@ -176,7 +187,7 @@ class DefaultNotificationAccessorTest {
         ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
 
         Mockito.when(notificationContentRepository.existsByContentId(contentId)).thenReturn(false);
-        Mockito.when(notificationContentRepository.saveAllAndFlush(Mockito.any())).thenReturn(List.of(savedEntity));
+        Mockito.when(notificationContentRepository.findByContentIdIn(Mockito.any())).thenReturn(List.of(savedEntity));
         Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.any())).thenReturn(Optional.of(createConfigurationModel()));
 
         DefaultNotificationAccessor defaultNotificationAccessor = new DefaultNotificationAccessor(
@@ -189,9 +200,17 @@ class DefaultNotificationAccessorTest {
 
         assertEquals(1, result.size(), "Only the first occurrence of a duplicate contentId should be saved");
 
-        ArgumentCaptor<List<NotificationEntity>> saveCaptor = ArgumentCaptor.captor();
-        Mockito.verify(notificationContentRepository).saveAllAndFlush(saveCaptor.capture());
-        assertEquals(1, saveCaptor.getValue().size(), "Only one entity should be passed to saveAllAndFlush when the batch contains a duplicate contentId");
+        Mockito.verify(notificationContentRepository, Mockito.times(1)).saveIgnoreContentIdConflict(
+            Mockito.any(OffsetDateTime.class),
+            Mockito.anyString(),
+            Mockito.any(Long.class),
+            Mockito.any(OffsetDateTime.class),
+            Mockito.anyString(),
+            Mockito.anyString(),
+            Mockito.anyBoolean(),
+            Mockito.anyString(),
+            Mockito.anyBoolean()
+        );
     }
 
     @Test
@@ -216,28 +235,45 @@ class DefaultNotificationAccessorTest {
         NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
 
         Mockito.when(notificationContentRepository.existsByContentId(contentId)).thenReturn(true);
-        Mockito.when(notificationContentRepository.saveAllAndFlush(Mockito.any())).thenReturn(List.of());
 
         DefaultNotificationAccessor defaultNotificationAccessor = new DefaultNotificationAccessor(notificationContentRepository, null, null, notificationBatchRepository);
         List<AlertNotificationModel> result = defaultNotificationAccessor.saveAllNotifications(List.of(alreadyPersistedModel));
 
         assertTrue(result.isEmpty(), "Notifications already in the database should not be saved again");
 
-        ArgumentCaptor<List<NotificationEntity>> saveCaptor = ArgumentCaptor.captor();
-        Mockito.verify(notificationContentRepository).saveAllAndFlush(saveCaptor.capture());
-        assertTrue(saveCaptor.getValue().isEmpty(), "No entities should be passed to saveAllAndFlush when all notifications already exist in the database");
+        Mockito.verify(notificationContentRepository, Mockito.never()).saveIgnoreContentIdConflict(
+            Mockito.any(OffsetDateTime.class),
+            Mockito.anyString(),
+            Mockito.any(Long.class),
+            Mockito.any(OffsetDateTime.class),
+            Mockito.anyString(),
+            Mockito.anyString(),
+            Mockito.anyBoolean(),
+            Mockito.anyString(),
+            Mockito.anyBoolean()
+        );
     }
 
     @Test
     void saveAllNotificationsEmptyModelListTest() {
         NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
 
-        Mockito.when(notificationContentRepository.saveAll(Mockito.any())).thenReturn(new ArrayList<>());
-
         DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, null, null, notificationBatchRepository);
         List<AlertNotificationModel> alertNotificationModelList = notificationManager.saveAllNotifications(new ArrayList<>());
 
         assertTrue(alertNotificationModelList.isEmpty());
+        Mockito.verify(notificationContentRepository, Mockito.never()).saveIgnoreContentIdConflict(
+            Mockito.any(OffsetDateTime.class),
+            Mockito.anyString(),
+            Mockito.any(Long.class),
+            Mockito.any(OffsetDateTime.class),
+            Mockito.anyString(),
+            Mockito.anyString(),
+            Mockito.anyBoolean(),
+            Mockito.anyString(),
+            Mockito.anyBoolean()
+        );
+        Mockito.verify(notificationContentRepository, Mockito.never()).findByContentIdIn(Mockito.any());
     }
 
     @Test

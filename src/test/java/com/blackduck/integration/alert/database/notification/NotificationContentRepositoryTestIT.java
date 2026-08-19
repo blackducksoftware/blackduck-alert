@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -36,6 +37,7 @@ import com.blackduck.integration.alert.test.common.TestTags;
 import com.blackduck.integration.alert.util.AlertIntegrationTest;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
+@Transactional
 @AlertIntegrationTest
 @Tag(TestTags.DEFAULT_INTEGRATION)
 class NotificationContentRepositoryTestIT {
@@ -56,7 +58,6 @@ class NotificationContentRepositoryTestIT {
     }
 
     @Test
-    @Transactional
     void findByProcessedFalseOrderByProviderCreationTimeAscTestIT() {
         // Create provider config (required for FK constraint)
         DescriptorConfigEntity providerConfig = createProviderConfig();
@@ -94,7 +95,6 @@ class NotificationContentRepositoryTestIT {
     }
 
     @Test
-    @Transactional
     void countByProcessedTest() {
         DescriptorConfigEntity providerConfig = createProviderConfig();
         Long providerConfigId = providerConfig.getId();
@@ -107,6 +107,99 @@ class NotificationContentRepositoryTestIT {
 
         assertEquals(1, notificationContentRepository.countByProcessed(true));
         assertEquals(2, notificationContentRepository.countByProcessed(false));
+    }
+
+    @Test
+    void saveIgnoreContentIdConflictInsertsNewNotificationTest() {
+        DescriptorConfigEntity providerConfig = createProviderConfig();
+        String contentId = String.format("content-id-%s", UUID.randomUUID());
+
+        saveNotificationWithContentId(providerConfig.getId(), contentId);
+
+        assertEquals(1, notificationContentRepository.count(), "A new notification with a unique contentId should be inserted");
+    }
+
+    @Test
+    void saveIgnoreContentIdConflictIgnoresDuplicateContentIdTest() {
+        DescriptorConfigEntity providerConfig = createProviderConfig();
+        String contentId = String.format("content-id-%s", UUID.randomUUID());
+
+        saveNotificationWithContentId(providerConfig.getId(), contentId);
+        saveNotificationWithContentId(providerConfig.getId(), contentId);
+
+        assertEquals(1, notificationContentRepository.count(), "A duplicate contentId not produce a second row");
+    }
+
+    @Test
+    void saveIgnoreContentIdConflictSequentialIdIncrementTest() {
+        DescriptorConfigEntity providerConfig = createProviderConfig();
+        int numberOfNotifications = 5;
+        List<String> contentIds = new ArrayList<>();
+        for (int i = 0; i < numberOfNotifications; i++) {
+            String contentId = String.format("content-id-%s", UUID.randomUUID());
+            contentIds.add(contentId);
+            saveNotificationWithContentId(providerConfig.getId(), contentId);
+        }
+
+        List<NotificationEntity> savedNotificationEntities = notificationContentRepository.findByContentIdIn(contentIds);
+        savedNotificationEntities.sort(Comparator.comparing(NotificationEntity::getId));
+
+        assertEquals(numberOfNotifications, savedNotificationEntities.size());
+        long firstId = savedNotificationEntities.get(0).getId();
+        for (int i = 0; i < savedNotificationEntities.size(); i++) {
+            assertEquals(firstId + i, savedNotificationEntities.get(i).getId(), "Notification IDs should be sequential starting from the first inserted ID");
+        }
+    }
+
+    @Test
+    void findByContentIdInReturnsMatchingEntitiesTest() {
+        DescriptorConfigEntity providerConfig = createProviderConfig();
+        OffsetDateTime now = OffsetDateTime.now();
+
+        NotificationEntity first = createNotification(providerConfig.getId(), now);
+        NotificationEntity second = createNotification(providerConfig.getId(), now);
+        notificationContentRepository.saveAll(List.of(first, second));
+
+        List<NotificationEntity> result = notificationContentRepository.findByContentIdIn(List.of(first.getContentId(), second.getContentId()));
+
+        assertEquals(2, result.size(), "Both saved notifications should be returned when queried by their contentIds");
+    }
+
+    @Test
+    void findByContentIdInReturnsEmptyWhenNoMatchesTest() {
+        List<NotificationEntity> result = notificationContentRepository.findByContentIdIn(
+            List.of(String.format("non-existent-content-id-%s", UUID.randomUUID()), String.format("non-existent-content-id-%s", UUID.randomUUID()))
+        );
+
+        assertTrue(result.isEmpty(), "No entities should be returned when none of the contentIds exist in the database");
+    }
+
+    @Test
+    void findByContentIdInReturnsSubsetForPartialMatchesTest() {
+        DescriptorConfigEntity providerConfig = createProviderConfig();
+        NotificationEntity saved = createNotification(providerConfig.getId(), OffsetDateTime.now());
+        notificationContentRepository.save(saved);
+
+        List<NotificationEntity> result = notificationContentRepository.findByContentIdIn(
+            List.of(saved.getContentId(), String.format("non-existent-content-id-%s", UUID.randomUUID()))
+        );
+
+        assertEquals(1, result.size(), "Only the notification with a matching contentId should be returned");
+        assertEquals(saved.getContentId(), result.get(0).getContentId(), "The returned entity should match the saved contentId");
+    }
+
+    private void saveNotificationWithContentId(Long providerConfigId, String contentId) {
+        notificationContentRepository.saveIgnoreContentIdConflict(
+            OffsetDateTime.now(),
+            BLACK_DUCK_PROVIDER_KEY.getUniversalKey(),
+            providerConfigId,
+            OffsetDateTime.now(),
+            NotificationType.VULNERABILITY.name(),
+            "{\"content\": {}}",
+            false,
+            contentId,
+            false
+        );
     }
 
     private DescriptorConfigEntity createProviderConfig() {

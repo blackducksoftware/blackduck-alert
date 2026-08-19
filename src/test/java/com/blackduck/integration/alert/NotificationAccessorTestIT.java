@@ -120,7 +120,6 @@ class NotificationAccessorTestIT {
 
     private void cleanDB() {
         notificationContentRepository.deleteAllInBatch();
-        notificationContentRepository.deleteAllInBatch();
         auditNotificationRepository.deleteAllInBatch();
         auditEntryRepository.deleteAllInBatch();
         descriptorConfigRepository.deleteAllInBatch();
@@ -390,6 +389,9 @@ class NotificationAccessorTestIT {
         assertEquals(notification1.getCreatedAt(), remainingNotification.getCreatedAt());
     }
 
+    /**
+     * Verifies that only the first occurrence of a duplicate {@code contentId} within a single batch is persisted.
+     */
     @Test
     void testSaveSkipsDuplicateContentIdInBatch() {
         String sharedContentId = "duplicate-content-id-" + UUID.randomUUID();
@@ -404,6 +406,9 @@ class NotificationAccessorTestIT {
         assertEquals(1, notificationContentRepository.count(), "Only one row should exist in the database after saving a batch with a duplicate contentId");
     }
 
+    /**
+     * Verifies that a notification whose {@code contentId} already exists in the database is not persisted again.
+     */
     @Test
     void testSaveSkipsNotificationAlreadyInDatabase() {
         String sharedContentId = "existing-content-id-" + UUID.randomUUID();
@@ -418,6 +423,54 @@ class NotificationAccessorTestIT {
 
         assertTrue(secondSave.isEmpty(), "Saving a notification whose contentId already exists in the database should return an empty list");
         assertEquals(1, notificationContentRepository.count(), "The database should still contain only one notification after a duplicate save attempt");
+    }
+
+    /**
+     * Verifies that {@link DefaultNotificationAccessor#saveAllNotifications} correctly handles a batch
+     * containing all three deduplication scenarios simultaneously:
+     * <ul>
+     *   <li>Notifications whose {@code contentId} is new — these should be persisted and returned.</li>
+     *   <li>Notifications whose {@code contentId} already exists in the database — these should be silently skipped.</li>
+     *   <li>Notifications whose {@code contentId} appears more than once within the same batch — only the first
+     *       occurrence should be persisted; subsequent duplicates should be filtered.</li>
+     * </ul>
+     */
+    @Test
+    void testSaveMixedBatchContentIds() {
+        OffsetDateTime createdAt = DateUtils.createCurrentDateTimestamp();
+
+        // Save 2 notifications so they already exist in the database
+        String existingContentId1 = "existing-1-" + UUID.randomUUID();
+        String existingContentId2 = "existing-2-" + UUID.randomUUID();
+        notificationManager.saveAllNotifications(List.of(
+            createNotificationModelWithContentId(createdAt, existingContentId1),
+            createNotificationModelWithContentId(createdAt, existingContentId2)
+        ));
+
+        // Build a mixed batch:
+        // - 2 new unique notifications (should be saved)
+        // - 2 already in the database (should be skipped)
+        // - 1 in-batch duplicate of a new notification (should be skipped)
+        String newContentId1 = "new-1-" + UUID.randomUUID();
+        String newContentId2 = "new-2-" + UUID.randomUUID();
+        List<AlertNotificationModel> mixedBatch = List.of(
+            createNotificationModelWithContentId(createdAt, newContentId1),
+            createNotificationModelWithContentId(createdAt, newContentId2),
+            createNotificationModelWithContentId(createdAt, existingContentId1),
+            createNotificationModelWithContentId(createdAt, existingContentId2),
+            createNotificationModelWithContentId(createdAt, newContentId1)
+        );
+
+        List<AlertNotificationModel> savedModels = notificationManager.saveAllNotifications(mixedBatch);
+
+        assertEquals(2, savedModels.size(), "Only the 2 new unique notifications should be returned when saving.");
+        assertEquals(4, notificationContentRepository.count(), "The database should contain 2 pre-existing + 2 new notifications.");
+
+        List<String> savedContentIds = savedModels.stream()
+            .map(AlertNotificationModel::getContentId)
+            .toList();
+        assertTrue(savedContentIds.contains(newContentId1), "The first new notification should be in the returned list");
+        assertTrue(savedContentIds.contains(newContentId2), "The second new notification should be in the returned list");
     }
 
     @Test

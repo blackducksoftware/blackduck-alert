@@ -8,6 +8,7 @@
 package com.blackduck.integration.alert.database.notification;
 
 import java.time.OffsetDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -93,7 +94,7 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
 
     long countByProviderConfigIdAndNotificationType(long providerConfigId, String notificationType);
 
-    @Query(value ="SELECT entity FROM NotificationEntity entity"
+    @Query(value = "SELECT entity FROM NotificationEntity entity"
         + " INNER JOIN NotificationBatchEntity batch ON entity.id = batch.notificationId"
         + " WHERE batch.batchId = :batchId"
         + " AND entity.providerConfigId = :providerId"
@@ -111,20 +112,20 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
         + " AND entity.processed = false"
         + ") THEN true ELSE false END"
         + " FROM NotificationEntity entity")
-    boolean existsByProviderConfigIdAndMappingToJobsFalse(@Param("providerId") long providerConfigId, @Param("batchId")  UUID batchId);
+    boolean existsByProviderConfigIdAndMappingToJobsFalse(@Param("providerId") long providerConfigId, @Param("batchId") UUID batchId);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE NotificationEntity entity "
-            + "SET entity.mappingToJobs = true "
-            + "WHERE entity.id IN :notificationIds"
+        + "SET entity.mappingToJobs = true "
+        + "WHERE entity.id IN :notificationIds"
     )
     void setMappingToJobsByIds(@Param("notificationIds") Set<Long> notificationIds);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE NotificationEntity entity "
-            + "SET entity.mappingToJobs = false "
-            + "WHERE entity.providerConfigId = :providerConfigId "
-            + "AND entity.processed = false"
+        + "SET entity.mappingToJobs = false "
+        + "WHERE entity.providerConfigId = :providerConfigId "
+        + "AND entity.processed = false"
     )
     void setMappingToJobsFalseWhenProcessedFalse(@Param("providerConfigId") long providerConfigId);
 
@@ -134,4 +135,27 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
         + " GROUP BY DATE_TRUNC('hour', entity.createdAt)"
         + " ORDER BY DATE_TRUNC('hour', entity.createdAt) ")
     List<NotificationCountsPerHour> findNotificationCountsPerHourByProviderConfigId(@Param("providerConfigId") long providerConfigId);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(
+        value = "INSERT INTO alert.raw_notification_content "
+            + "(created_at, provider, provider_config_id, provider_creation_time, notification_type, content, processed, content_id, mapping_to_jobs) "
+            + "VALUES (:createdAt, :provider, :providerConfigId, :providerCreationTime, :notificationType, :content, :processed, :contentId, :mappingToJobs) "
+            + "ON CONFLICT (content_id) DO NOTHING",
+        nativeQuery = true
+    )
+    void saveIgnoreContentIdConflict(
+        @Param("createdAt") OffsetDateTime createdAt,
+        @Param("provider") String provider,
+        @Param("providerConfigId") Long providerConfigId,
+        @Param("providerCreationTime") OffsetDateTime providerCreationTime,
+        @Param("notificationType") String notificationType,
+        @Param("content") String content,
+        @Param("processed") boolean processed,
+        @Param("contentId") String contentId,
+        @Param("mappingToJobs") boolean mappingToJobs
+    );
+
+    List<NotificationEntity> findByContentIdIn(Collection<String> contentIds);
 }
+

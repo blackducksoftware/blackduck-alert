@@ -84,7 +84,24 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
             }
         }
 
-        return notificationContentRepository.saveAllAndFlush(entitiesToSave)
+        for (NotificationEntity entity : entitiesToSave) {
+            notificationContentRepository.saveIgnoreContentIdConflict(
+                entity.getCreatedAt(),
+                entity.getProvider(),
+                entity.getProviderConfigId(),
+                entity.getProviderCreationTime(),
+                entity.getNotificationType(),
+                entity.getContent(),
+                entity.getProcessed(),
+                entity.getContentId(),
+                entity.isMappingToJobs()
+            );
+        }
+
+        if (contentIdsToSave.isEmpty()) {
+            return List.of();
+        }
+        return notificationContentRepository.findByContentIdIn(contentIdsToSave)
             .stream()
             .map(this::toModel)
             .toList();

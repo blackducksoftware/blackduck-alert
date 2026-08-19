@@ -320,5 +320,8 @@ ALTER SEQUENCE alert.descriptor_configs_id_seq INCREMENT 50;
 ALTER SEQUENCE alert.field_values_id_seq INCREMENT 50;
 ALTER SEQUENCE alert.provider_projects_id_seq INCREMENT 50;
 ALTER SEQUENCE alert.provider_users_id_seq INCREMENT 50;
-ALTER SEQUENCE alert.raw_notification_content_id_seq INCREMENT 50;
 ALTER SEQUENCE alert.system_messages_id_seq INCREMENT 50;
+
+-- raw_notification_content is inserted using native PSQL query rather than hibernate.
+ALTER SEQUENCE alert.raw_notification_content_id_seq INCREMENT 1;
+
