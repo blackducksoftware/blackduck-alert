@@ -8,9 +8,9 @@
 package com.blackduck.integration.alert.database.job.api;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -69,7 +69,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public List<AlertNotificationModel> saveAllNotifications(Collection<AlertNotificationModel> notifications) {
-        List<NotificationEntity> entitiesToSave = new LinkedList<>();
+        List<NotificationEntity> entitiesToSave = new ArrayList<>();
 
         Set<String> contentIdsToSave = new HashSet<>();
         for (AlertNotificationModel model : notifications) {
