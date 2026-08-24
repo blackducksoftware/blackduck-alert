@@ -152,31 +152,25 @@ class BlackDuckMessageBomComponentDetailsCreatorTest {
 
     @Test
     void buildProjectVersionVulnerabilitiesUrlValidTest() throws IntegrationException {
-        Mockito.when(vulnerabilityDetailsCreator.hasSecurityRisk(Mockito.any())).thenReturn(true);
-        Mockito.when(blackDuckApiClient.getAllResponses(Mockito.<BlackDuckMultipleRequest<BlackDuckVersionBomVulnerabilityView>>any())).thenReturn(List.of());
-        Mockito.when(vulnerabilityDetailsCreator.toComponentVulnerabilities(Mockito.any())).thenReturn(ComponentVulnerabilities.none());
-
-        ProjectVersionComponentVersionView bomComponent = createBomComponent(BOM_COMPONENT_HREF, COMPONENT_VERSION_URL, false);
-        // Calling createBomComponentDetails exercises buildProjectVersionVulnerabilitiesUrl internally.
-        // Verified by the endpoint URL assertion in retrieveVulnerabilitiesCallsCorrectEndpointTest.
-        bomComponentDetailsCreator.createBomComponentDetails(bomComponent, List.of(), ComponentUpgradeGuidance.none(), List.of());
-
-        Mockito.verify(blackDuckApiClient, Mockito.times(1)).getAllResponses(Mockito.<BlackDuckMultipleRequest<BlackDuckVersionBomVulnerabilityView>>any());
+        HttpUrl result = bomComponentDetailsCreator.buildProjectVersionVulnerabilitiesUrl(new HttpUrl(BOM_COMPONENT_HREF));
+        assertEquals(EXPECTED_VULN_ENDPOINT, result.string(), "Expected project version vulnerabilities URL");
     }
 
     @Test
     void buildProjectVersionVulnerabilitiesUrlInvalidTest() throws IntegrationException {
-        Mockito.when(vulnerabilityDetailsCreator.hasSecurityRisk(Mockito.any())).thenReturn(true);
-
-        // Href does not contain /components/ — expect IntegrationException
-        String invalidHref = "https://hub/api/no-components-segment/00000000-0000-0000-0000-000000000001";
-        ProjectVersionComponentVersionView bomComponent = createBomComponent(invalidHref, COMPONENT_VERSION_URL, false);
-
+        HttpUrl httpUrl = new HttpUrl("https://hub/api/no-components-segment/00000000-0000-0000-0000-000000000001");
         assertThrows(
             IntegrationException.class,
-            () -> bomComponentDetailsCreator.createBomComponentDetails(bomComponent, List.of(), ComponentUpgradeGuidance.none(), List.of()),
+            () -> bomComponentDetailsCreator.buildProjectVersionVulnerabilitiesUrl(httpUrl),
             "Expected IntegrationException when href contains no /components/ segment"
         );
+    }
+
+    @Test
+    void buildProjectVersionVulnerabilitiesUrlStripsQueryStringTest() throws IntegrationException {
+        HttpUrl hrefWithQuery = new HttpUrl(BOM_COMPONENT_HREF + "?someParam=value");
+        HttpUrl result = bomComponentDetailsCreator.buildProjectVersionVulnerabilitiesUrl(hrefWithQuery);
+        assertEquals(EXPECTED_VULN_ENDPOINT, result.string(), "Expected query string to be stripped from derived vulnerabilities URL");
     }
 
     @Test
