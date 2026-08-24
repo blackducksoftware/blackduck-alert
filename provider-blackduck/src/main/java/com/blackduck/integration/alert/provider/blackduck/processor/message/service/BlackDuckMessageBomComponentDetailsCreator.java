@@ -7,6 +7,8 @@
  */
 package com.blackduck.integration.alert.provider.blackduck.processor.message.service;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
@@ -257,7 +259,7 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         // TODO: The bom component response does not yet include a pre-encoded component version URL suitable for the
         // bomComponents filter. Until it does, the URL is encoded manually here. When Hub provides the encoded value
         // directly this manual encoding should become a fallback for backwards compatibility.
-        String encodedComponentVersionUrl = Base64.getEncoder().encodeToString(componentVersionUrl.getBytes(StandardCharsets.UTF_8));
+        String encodedComponentVersionUrl = Base64.getUrlEncoder().encodeToString(componentVersionUrl.getBytes(StandardCharsets.UTF_8));
         String filterValue = BOM_COMPONENT_FILTER_KEY + ":" + encodedComponentVersionUrl;
 
         UrlMultipleResponses<BlackDuckVersionBomVulnerabilityView> urlMultipleResponses =
@@ -272,13 +274,24 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         return vulnerabilityDetailsCreator.toComponentVulnerabilities(vulnerabilityViews);
     }
 
-    private HttpUrl buildProjectVersionVulnerabilitiesUrl(HttpUrl bomComponentHref) throws IntegrationException {
-        String href = bomComponentHref.string();
-        int componentsIndex = href.indexOf(COMPONENTS_URL_SEGMENT);
-        if (componentsIndex < 0) {
-            throw new IntegrationException("Unable to derive project version URL from component href: " + href);
+    protected HttpUrl buildProjectVersionVulnerabilitiesUrl(HttpUrl bomComponentHref) throws IntegrationException {
+        URI uri;
+        try {
+            uri = new URI(bomComponentHref.string());
+        } catch (URISyntaxException e) {
+            throw new IntegrationException("Unable to parse component href as a URI: " + bomComponentHref.string(), e);
         }
-        return new HttpUrl(href.substring(0, componentsIndex) + VULNERABILITIES_PATH);
+
+        String path = uri.getPath();
+        int componentsIndex = path.indexOf(COMPONENTS_URL_SEGMENT);
+        if (componentsIndex < 0) {
+            throw new IntegrationException("Unable to derive project version URL from component href: " + bomComponentHref.string());
+        }
+
+        String projectVersionPath = path.substring(0, componentsIndex) + VULNERABILITIES_PATH;
+        String baseUrl = uri.getScheme() + "://" + uri.getAuthority();
+        String vulnerabilitiesUrl = baseUrl + projectVersionPath;
+        return new HttpUrl(vulnerabilitiesUrl);
     }
 
     private List<ComponentPolicy> retrieveComponentPolicies(ProjectVersionComponentVersionView bomComponent, List<ComponentConcern> componentConcerns) throws IntegrationException {
