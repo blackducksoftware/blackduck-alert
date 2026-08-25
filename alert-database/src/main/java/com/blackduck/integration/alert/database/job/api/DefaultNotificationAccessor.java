@@ -72,7 +72,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         if (notifications.isEmpty()) {
             return List.of();
         }
-        
+
         // Prefetch all content IDs in a batch to determine if duplicates exist when performing in-memory filtering.
         Set<String> allBatchContentIds = notifications.stream()
             .map(AlertNotificationModel::getContentId)
@@ -113,6 +113,8 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         if (contentIdsToSave.isEmpty()) {
             return List.of();
         }
+        // Native query insert bypasses Hibernate's identity management. As a result, the in-memory NotificationEntities do not have their ID populated.
+        // A fetch is required to ensure the correct notifications are returned with the correct IDs.
         return notificationContentRepository.findByContentIdIn(contentIdsToSave)
             .stream()
             .map(this::toModel)
