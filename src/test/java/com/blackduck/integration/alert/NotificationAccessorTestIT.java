@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -119,7 +120,6 @@ class NotificationAccessorTestIT {
     }
 
     private void cleanDB() {
-        notificationContentRepository.deleteAllInBatch();
         notificationContentRepository.deleteAllInBatch();
         auditNotificationRepository.deleteAllInBatch();
         auditEntryRepository.deleteAllInBatch();
@@ -290,7 +290,12 @@ class NotificationAccessorTestIT {
         notificationManager.saveAllNotifications(List.of(entityToFind1));
         notificationManager.saveAllNotifications(List.of(entityToFind2));
 
-        List<AlertNotificationModel> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate, AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE).getModels();
+        List<AlertNotificationModel> foundList = notificationManager.findByCreatedAtBetween(
+            startDate,
+            endDate,
+            AlertPagedModel.DEFAULT_PAGE_NUMBER,
+            AlertPagedModel.DEFAULT_PAGE_SIZE
+        ).getModels();
 
         assertEquals(2, foundList.size());
         assertNotificationModel(entityToFind1, foundList.get(0));
@@ -310,7 +315,12 @@ class NotificationAccessorTestIT {
         entity = createNotificationModel(createdAtLater);
         notificationManager.saveAllNotifications(List.of(entity));
 
-        List<AlertNotificationModel> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate, AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE).getModels();
+        List<AlertNotificationModel> foundList = notificationManager.findByCreatedAtBetween(
+            startDate,
+            endDate,
+            AlertPagedModel.DEFAULT_PAGE_NUMBER,
+            AlertPagedModel.DEFAULT_PAGE_SIZE
+        ).getModels();
 
         assertTrue(foundList.isEmpty());
     }
@@ -380,6 +390,90 @@ class NotificationAccessorTestIT {
         assertEquals(notification1.getCreatedAt(), remainingNotification.getCreatedAt());
     }
 
+    /**
+     * Verifies that only the first occurrence of a duplicate {@code contentId} within a single batch is persisted.
+     */
+    @Test
+    void testSaveSkipsDuplicateContentIdInBatch() {
+        String sharedContentId = "duplicate-content-id-" + UUID.randomUUID();
+        OffsetDateTime createdAt = DateUtils.createCurrentDateTimestamp();
+
+        AlertNotificationModel firstOccurrence = createNotificationModelWithContentId(createdAt, sharedContentId);
+        AlertNotificationModel duplicateOccurrence = createNotificationModelWithContentId(createdAt, sharedContentId);
+
+        List<AlertNotificationModel> savedModels = notificationManager.saveAllNotifications(List.of(firstOccurrence, duplicateOccurrence));
+
+        assertEquals(1, savedModels.size(), "Only the first occurrence of a duplicate contentId in a batch should be saved");
+        assertEquals(1, notificationContentRepository.count(), "Only one row should exist in the database after saving a batch with a duplicate contentId");
+    }
+
+    /**
+     * Verifies that a notification whose {@code contentId} already exists in the database is not persisted again.
+     */
+    @Test
+    void testSaveSkipsNotificationAlreadyInDatabase() {
+        String sharedContentId = "existing-content-id-" + UUID.randomUUID();
+        OffsetDateTime createdAt = DateUtils.createCurrentDateTimestamp();
+
+        AlertNotificationModel original = createNotificationModelWithContentId(createdAt, sharedContentId);
+        List<AlertNotificationModel> firstSave = notificationManager.saveAllNotifications(List.of(original));
+        assertEquals(1, firstSave.size(), "First save should persist the notification");
+
+        AlertNotificationModel duplicate = createNotificationModelWithContentId(createdAt, sharedContentId);
+        List<AlertNotificationModel> secondSave = notificationManager.saveAllNotifications(List.of(duplicate));
+
+        assertTrue(secondSave.isEmpty(), "Saving a notification whose contentId already exists in the database should return an empty list");
+        assertEquals(1, notificationContentRepository.count(), "The database should still contain only one notification after a duplicate save attempt");
+    }
+
+    /**
+     * Verifies that {@link DefaultNotificationAccessor#saveAllNotifications} correctly handles a batch
+     * containing all three deduplication scenarios simultaneously:
+     * <ul>
+     *   <li>Notifications whose {@code contentId} is new — these should be persisted and returned.</li>
+     *   <li>Notifications whose {@code contentId} already exists in the database — these should be silently skipped.</li>
+     *   <li>Notifications whose {@code contentId} appears more than once within the same batch — only the first
+     *       occurrence should be persisted; subsequent duplicates should be filtered.</li>
+     * </ul>
+     */
+    @Test
+    void testSaveMixedBatchContentIds() {
+        OffsetDateTime createdAt = DateUtils.createCurrentDateTimestamp();
+
+        // Save 2 notifications so they already exist in the database
+        String existingContentId1 = "existing-1-" + UUID.randomUUID();
+        String existingContentId2 = "existing-2-" + UUID.randomUUID();
+        notificationManager.saveAllNotifications(List.of(
+            createNotificationModelWithContentId(createdAt, existingContentId1),
+            createNotificationModelWithContentId(createdAt, existingContentId2)
+        ));
+
+        // Build a mixed batch:
+        // - 2 new unique notifications (should be saved)
+        // - 2 already in the database (should be skipped)
+        // - 1 in-batch duplicate of a new notification (should be skipped)
+        String newContentId1 = "new-1-" + UUID.randomUUID();
+        String newContentId2 = "new-2-" + UUID.randomUUID();
+        List<AlertNotificationModel> mixedBatch = List.of(
+            createNotificationModelWithContentId(createdAt, newContentId1),
+            createNotificationModelWithContentId(createdAt, newContentId2),
+            createNotificationModelWithContentId(createdAt, existingContentId1),
+            createNotificationModelWithContentId(createdAt, existingContentId2),
+            createNotificationModelWithContentId(createdAt, newContentId1)
+        );
+
+        List<AlertNotificationModel> savedModels = notificationManager.saveAllNotifications(mixedBatch);
+
+        assertEquals(2, savedModels.size(), "Only the 2 new unique notifications should be returned when saving.");
+        assertEquals(4, notificationContentRepository.count(), "The database should contain 2 pre-existing + 2 new notifications.");
+
+        List<String> savedContentIds = savedModels.stream()
+            .map(AlertNotificationModel::getContentId)
+            .toList();
+        assertTrue(savedContentIds.contains(newContentId1), "The first new notification should be in the returned list");
+        assertTrue(savedContentIds.contains(newContentId2), "The second new notification should be in the returned list");
+    }
+
     @Test
     void testDeleteNotification() {
         AlertNotificationModel notificationEntity = createNotificationModel();
@@ -423,28 +517,42 @@ class NotificationAccessorTestIT {
         assertTrue(alertNotificationModelTest.get().getProcessed());
     }
 
+    private AlertNotificationModel createNotificationModel() {
+        OffsetDateTime createdAt = DateUtils.createCurrentDateTimestamp();
+        return createNotificationModel(createdAt);
+    }
+
     private AlertNotificationModel createNotificationModel(OffsetDateTime createdAt) {
+        return createNotificationModelWithContentId(createdAt, String.format("content-id-%s", UUID.randomUUID()));
+    }
+
+    private AlertNotificationModel createNotificationModelWithContentId(OffsetDateTime createdAt, String contentId) {
+        // Truncate to microseconds to match PostgreSQL TIMESTAMP WITH TIME ZONE precision.
+        // Without this, some systems with only microsecond precision will result in tests failures.
+        OffsetDateTime microsCreatedAt = createdAt.truncatedTo(ChronoUnit.MICROS);
         return new AlertNotificationModel(
             providerConfigModel.getConfigurationId(),
             "provider",
             "providerConfigName",
             NOTIFICATION_TYPE,
             "{content: \"content is here...\"}",
-            createdAt,
-            createdAt,
+            microsCreatedAt,
+            microsCreatedAt,
             false,
-            String.format("content-id-%s", UUID.randomUUID()),
+            contentId,
             false
         );
     }
 
-    private AlertNotificationModel createNotificationModel() {
-        OffsetDateTime createdAt = DateUtils.createCurrentDateTimestamp();
-        return createNotificationModel(createdAt);
-    }
-
     private NotificationEntity createNotificationContent(OffsetDateTime createdAt) {
-        MockNotificationContent mockedNotificationContent = new MockNotificationContent(createdAt, "provider", createdAt, NOTIFICATION_TYPE, "{content: \"content is here...\"}", providerConfigModel.getConfigurationId());
+        MockNotificationContent mockedNotificationContent = new MockNotificationContent(
+            createdAt,
+            "provider",
+            createdAt,
+            NOTIFICATION_TYPE,
+            "{content: \"content is here...\"}",
+            providerConfigModel.getConfigurationId()
+        );
         return mockedNotificationContent.createEntity();
     }
 

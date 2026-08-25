@@ -21,6 +21,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.mockito.verification.VerificationMode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -110,27 +111,148 @@ class DefaultNotificationAccessorTest {
         NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
         ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
 
-        Mockito.when(notificationContentRepository.saveAllAndFlush(Mockito.any())).thenReturn(List.of(notificationEntity));
+        // First call: prefetch returns empty (notification does not yet exist); second call: post-save retrieve returns the saved entity
+        Mockito.when(notificationContentRepository.findByContentIdIn(Mockito.any()))
+            .thenReturn(List.of())
+            .thenReturn(List.of(notificationEntity));
         Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.any())).thenReturn(Optional.of(configurationModel));
 
-        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, null, configurationModelConfigurationAccessor, notificationBatchRepository);
+        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(
+            notificationContentRepository,
+            null,
+            configurationModelConfigurationAccessor,
+            notificationBatchRepository
+        );
         List<AlertNotificationModel> alertNotificationModelList = notificationManager.saveAllNotifications(List.of(alertNotificationModel));
 
         assertEquals(1, alertNotificationModelList.size());
         AlertNotificationModel testAlertNotificationModel = alertNotificationModelList.get(0);
         testExpectedAlertNotificationModel(expectedAlertNotificationModel, testAlertNotificationModel);
+
+        verifySaveIgnoreContentIdConflict(notificationContentRepository, Mockito.times(1));
+    }
+
+    @Test
+    void saveAllNotificationsWithDuplicateContentIdInBatchTest() {
+        OffsetDateTime createdAt = DateUtils.createCurrentDateTimestamp();
+        OffsetDateTime providerCreationTime = createdAt.minusSeconds(10);
+
+        AlertNotificationModel firstOccurrence = new AlertNotificationModel(
+            null,
+            providerConfigId,
+            provider,
+            providerConfigName,
+            notificationType,
+            content,
+            createdAt,
+            providerCreationTime,
+            false,
+            contentId,
+            false
+        );
+        AlertNotificationModel duplicateOccurrence = new AlertNotificationModel(
+            null,
+            providerConfigId,
+            provider,
+            providerConfigName,
+            notificationType,
+            content,
+            createdAt,
+            providerCreationTime,
+            false,
+            contentId,
+            false
+        );
+        NotificationEntity savedEntity = new NotificationEntity(
+            id,
+            createdAt,
+            provider,
+            providerConfigId,
+            providerCreationTime,
+            notificationType,
+            content,
+            false,
+            contentId,
+            false
+        );
+
+        NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
+        ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
+
+        // First call: prefetch returns empty (neither occurrence exists yet); second call: post-save retrieve returns the saved entity
+        Mockito.when(notificationContentRepository.findByContentIdIn(Mockito.any()))
+            .thenReturn(List.of())
+            .thenReturn(List.of(savedEntity));
+        Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.any())).thenReturn(Optional.of(createConfigurationModel()));
+
+        DefaultNotificationAccessor defaultNotificationAccessor = new DefaultNotificationAccessor(
+            notificationContentRepository,
+            null,
+            configurationModelConfigurationAccessor,
+            notificationBatchRepository
+        );
+        List<AlertNotificationModel> result = defaultNotificationAccessor.saveAllNotifications(List.of(firstOccurrence, duplicateOccurrence));
+
+        assertEquals(1, result.size(), "Only the first occurrence of a duplicate contentId should be saved");
+
+        verifySaveIgnoreContentIdConflict(notificationContentRepository, Mockito.times(1));
+    }
+
+    @Test
+    void saveAllNotificationsSkipsNotificationAlreadyInDatabaseTest() {
+        OffsetDateTime createdAt = DateUtils.createCurrentDateTimestamp();
+        OffsetDateTime providerCreationTime = createdAt.minusSeconds(10);
+
+        AlertNotificationModel alreadyPersistedModel = new AlertNotificationModel(
+            null,
+            providerConfigId,
+            provider,
+            providerConfigName,
+            notificationType,
+            content,
+            createdAt,
+            providerCreationTime,
+            false,
+            contentId,
+            false
+        );
+
+        NotificationEntity existingEntity = new NotificationEntity(
+            id,
+            createdAt,
+            provider,
+            providerConfigId,
+            providerCreationTime,
+            notificationType,
+            content,
+            false,
+            contentId,
+            false
+        );
+
+        NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
+
+        // Prefetch returns the existing entity, causing the in-memory filter to skip it
+        Mockito.when(notificationContentRepository.findByContentIdIn(Mockito.any())).thenReturn(List.of(existingEntity));
+
+        DefaultNotificationAccessor defaultNotificationAccessor = new DefaultNotificationAccessor(notificationContentRepository, null, null, notificationBatchRepository);
+        List<AlertNotificationModel> result = defaultNotificationAccessor.saveAllNotifications(List.of(alreadyPersistedModel));
+
+        assertTrue(result.isEmpty(), "Notifications already in the database should not be saved again");
+
+        verifySaveIgnoreContentIdConflict(notificationContentRepository, Mockito.never());
     }
 
     @Test
     void saveAllNotificationsEmptyModelListTest() {
         NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
 
-        Mockito.when(notificationContentRepository.saveAll(Mockito.any())).thenReturn(new ArrayList<>());
-
         DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, null, null, notificationBatchRepository);
         List<AlertNotificationModel> alertNotificationModelList = notificationManager.saveAllNotifications(new ArrayList<>());
 
         assertTrue(alertNotificationModelList.isEmpty());
+        verifySaveIgnoreContentIdConflict(notificationContentRepository, Mockito.never());
+        Mockito.verify(notificationContentRepository, Mockito.never()).findByContentIdIn(Mockito.any());
     }
 
     @Test
@@ -158,7 +280,12 @@ class DefaultNotificationAccessorTest {
         Mockito.when(notificationContentRepository.findAllSentNotifications(Mockito.any())).thenReturn(allSentNotifications);
         Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.any())).thenReturn(Optional.of(configurationModel));
 
-        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, null, configurationModelConfigurationAccessor, notificationBatchRepository);
+        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(
+            notificationContentRepository,
+            null,
+            configurationModelConfigurationAccessor,
+            notificationBatchRepository
+        );
         Page<AlertNotificationModel> alertNotificationModelPage = notificationManager.findAll(pageRequest, Boolean.TRUE);
 
         assertEquals(1, alertNotificationModelPage.getTotalPages());
@@ -191,7 +318,12 @@ class DefaultNotificationAccessorTest {
         Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.any())).thenReturn(Optional.of(configurationModel));
         Mockito.when(notificationContentRepository.findAll(pageRequest)).thenReturn(allSentNotifications);
 
-        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, null, configurationModelConfigurationAccessor, notificationBatchRepository);
+        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(
+            notificationContentRepository,
+            null,
+            configurationModelConfigurationAccessor,
+            notificationBatchRepository
+        );
         Page<AlertNotificationModel> alertNotificationModelPage = notificationManager.findAll(pageRequest, Boolean.FALSE);
 
         assertEquals(1, alertNotificationModelPage.getTotalPages());
@@ -226,7 +358,12 @@ class DefaultNotificationAccessorTest {
         Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.any())).thenReturn(Optional.of(configurationModel));
         Mockito.when(notificationContentRepository.findMatchingNotification(Mockito.any(), Mockito.any())).thenReturn(notificationEntityPage);
 
-        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, null, configurationModelConfigurationAccessor, notificationBatchRepository);
+        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(
+            notificationContentRepository,
+            null,
+            configurationModelConfigurationAccessor,
+            notificationBatchRepository
+        );
         Page<AlertNotificationModel> alertNotificationModelPage = notificationManager.findAllWithSearch(searchTerm, pageRequest, Boolean.TRUE);
         Page<AlertNotificationModel> alertNotificationModelPageShowNotificationsFalse = notificationManager.findAllWithSearch(searchTerm, pageRequest, Boolean.FALSE);
 
@@ -261,7 +398,12 @@ class DefaultNotificationAccessorTest {
         Mockito.when(notificationContentRepository.findAllByIdInOrderByProviderCreationTimeAsc(Mockito.any())).thenReturn(List.of(notificationEntity1));
         Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.any())).thenReturn(Optional.of(configurationModel));
 
-        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, null, configurationModelConfigurationAccessor, notificationBatchRepository);
+        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(
+            notificationContentRepository,
+            null,
+            configurationModelConfigurationAccessor,
+            notificationBatchRepository
+        );
         List<AlertNotificationModel> alertNotificationModelList = notificationManager.findByIds(List.of(1L));
 
         assertEquals(1, alertNotificationModelList.size());
@@ -291,7 +433,12 @@ class DefaultNotificationAccessorTest {
         Mockito.when(notificationContentRepository.findById(Mockito.any())).thenReturn(Optional.of(notificationEntity));
         Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.any())).thenReturn(Optional.of(configurationModel));
 
-        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, null, configurationModelConfigurationAccessor, notificationBatchRepository);
+        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(
+            notificationContentRepository,
+            null,
+            configurationModelConfigurationAccessor,
+            notificationBatchRepository
+        );
         Optional<AlertNotificationModel> alertNotificationModel = notificationManager.findById(1L);
 
         assertTrue(alertNotificationModel.isPresent());
@@ -320,8 +467,14 @@ class DefaultNotificationAccessorTest {
         Mockito.when(notificationContentRepository.findByCreatedAtBetween(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new PageImpl<>(List.of(notificationEntity)));
         Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.any())).thenReturn(Optional.of(configurationModel));
 
-        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, null, configurationModelConfigurationAccessor, notificationBatchRepository);
-        List<AlertNotificationModel> alertNotificationModelList = notificationManager.findByCreatedAtBetween(DateUtils.createCurrentDateTimestamp(),
+        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(
+            notificationContentRepository,
+            null,
+            configurationModelConfigurationAccessor,
+            notificationBatchRepository
+        );
+        List<AlertNotificationModel> alertNotificationModelList = notificationManager.findByCreatedAtBetween(
+                DateUtils.createCurrentDateTimestamp(),
                 DateUtils.createCurrentDateTimestamp(),
                 AlertPagedModel.DEFAULT_PAGE_NUMBER, AlertPagedModel.DEFAULT_PAGE_SIZE
             )
@@ -354,7 +507,12 @@ class DefaultNotificationAccessorTest {
         Mockito.when(notificationContentRepository.findByCreatedAtBefore(Mockito.any())).thenReturn(List.of(notificationEntity));
         Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.any())).thenReturn(Optional.of(configurationModel));
 
-        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, null, configurationModelConfigurationAccessor, notificationBatchRepository);
+        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(
+            notificationContentRepository,
+            null,
+            configurationModelConfigurationAccessor,
+            notificationBatchRepository
+        );
         List<AlertNotificationModel> alertNotificationModelList = notificationManager.findByCreatedAtBefore(DateUtils.createCurrentDateTimestamp());
 
         assertEquals(1, alertNotificationModelList.size());
@@ -384,7 +542,12 @@ class DefaultNotificationAccessorTest {
         Mockito.when(notificationContentRepository.findByCreatedAtBefore(Mockito.any())).thenReturn(List.of(notificationEntity));
         Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.any())).thenReturn(Optional.of(configurationModel));
 
-        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, null, configurationModelConfigurationAccessor, notificationBatchRepository);
+        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(
+            notificationContentRepository,
+            null,
+            configurationModelConfigurationAccessor,
+            notificationBatchRepository
+        );
         List<AlertNotificationModel> alertNotificationModelList = notificationManager.findByCreatedAtBeforeDayOffset(1);
 
         assertEquals(1, alertNotificationModelList.size());
@@ -404,7 +567,12 @@ class DefaultNotificationAccessorTest {
         AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
         ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
 
-        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, auditEntryRepository, configurationModelConfigurationAccessor, notificationBatchRepository);
+        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(
+            notificationContentRepository,
+            auditEntryRepository,
+            configurationModelConfigurationAccessor,
+            notificationBatchRepository
+        );
         PageRequest pageRequest = notificationManager.getPageRequestForNotifications(pageNumber, pageSize, sortField, sortOrder);
 
         assertEquals(pageNumber, pageRequest.getPageNumber());
@@ -434,7 +602,12 @@ class DefaultNotificationAccessorTest {
         Mockito.when(notificationContentRepository.findByProcessedFalseOrderByProviderCreationTimeAsc(Mockito.any())).thenReturn(pageOfNotificationEntities);
         Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.any())).thenReturn(Optional.of(configurationModel));
 
-        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, null, configurationModelConfigurationAccessor, notificationBatchRepository);
+        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(
+            notificationContentRepository,
+            null,
+            configurationModelConfigurationAccessor,
+            notificationBatchRepository
+        );
         AlertPagedModel<AlertNotificationModel> model = notificationManager.getFirstPageOfNotificationsNotProcessed(100);
 
         List<AlertNotificationModel> alertNotificationModelList = model.getModels();
@@ -444,7 +617,8 @@ class DefaultNotificationAccessorTest {
 
     @Test
     void setNotificationsProcessedTest() {
-        AlertNotificationModel alertNotificationModel = new AlertNotificationModel(null,
+        AlertNotificationModel alertNotificationModel = new AlertNotificationModel(
+            null,
             providerConfigId,
             provider,
             providerConfigName,
@@ -460,7 +634,12 @@ class DefaultNotificationAccessorTest {
         NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
         ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor = Mockito.mock(ConfigurationModelConfigurationAccessor.class);
 
-        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, null, configurationModelConfigurationAccessor, notificationBatchRepository);
+        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(
+            notificationContentRepository,
+            null,
+            configurationModelConfigurationAccessor,
+            notificationBatchRepository
+        );
         notificationManager.setNotificationsProcessed(List.of(alertNotificationModel));
 
         Mockito.verify(notificationContentRepository).setProcessedByIds(Mockito.any());
@@ -489,7 +668,12 @@ class DefaultNotificationAccessorTest {
         Mockito.when(notificationContentRepository.findAllById(Mockito.any())).thenReturn(List.of(notificationEntity));
         Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.any())).thenReturn(Optional.of(configurationModel));
 
-        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, null, configurationModelConfigurationAccessor, notificationBatchRepository);
+        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(
+            notificationContentRepository,
+            null,
+            configurationModelConfigurationAccessor,
+            notificationBatchRepository
+        );
         notificationManager.setNotificationsProcessedById(notificationIds);
 
         Mockito.verify(notificationContentRepository).setProcessedByIds(Mockito.any());
@@ -509,6 +693,20 @@ class DefaultNotificationAccessorTest {
         Mockito.when(notificationContentRepository.existsByProcessedFalse()).thenReturn(Boolean.TRUE);
         DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, null, null, notificationBatchRepository);
         assertTrue(notificationManager.hasMoreNotificationsToProcess());
+    }
+
+    private void verifySaveIgnoreContentIdConflict(NotificationContentRepository repository, VerificationMode mode) {
+        Mockito.verify(repository, mode).saveIgnoreContentIdConflict(
+            Mockito.any(OffsetDateTime.class),
+            Mockito.anyString(),
+            Mockito.any(Long.class),
+            Mockito.any(OffsetDateTime.class),
+            Mockito.anyString(),
+            Mockito.anyString(),
+            Mockito.anyBoolean(),
+            Mockito.anyString(),
+            Mockito.anyBoolean()
+        );
     }
 
     private void testExpectedAlertNotificationModel(AlertNotificationModel expected, AlertNotificationModel actual) {
