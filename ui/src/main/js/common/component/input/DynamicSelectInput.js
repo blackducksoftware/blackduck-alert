@@ -42,7 +42,8 @@ const DynamicSelectInput = ({
     creatable,
     maxMenuHeight,
     customVal,
-    customSelect
+    customSelect,
+    menuPlacement = 'auto'
 }) => {
     const classes = useStyles({ width });
     const selectedOptions = options.filter((option) => value.includes(option.value));
@@ -142,7 +143,7 @@ const DynamicSelectInput = ({
             isDisabled={readOnly}
             noOptionsMessage={() => 'No options available'}
             onFocus={onFocus}
-            menuPlacement="auto"
+            menuPlacement={menuPlacement}
             maxMenuHeight={maxMenuHeight || 250}
             styles={selectStyles}
         />
@@ -211,7 +212,8 @@ DynamicSelectInput.propTypes = {
     tooltipDescription: PropTypes.string,
     customVal: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
     customSelect: PropTypes.element,
-    width: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    menuPlacement: PropTypes.oneOf(['auto', 'top', 'bottom'])
 };
 
 export default DynamicSelectInput;

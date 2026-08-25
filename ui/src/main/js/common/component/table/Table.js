@@ -65,7 +65,7 @@ const Table = ({
                 <TableSkeleton />
             )}
 
-            { (!tableData || tableData?.length === 0) && (
+            { (!isLoading && (!tableData || tableData?.length === 0)) && (
                 <EmptyTableView emptyTableConfig={emptyTableConfig} />
             )}
 
