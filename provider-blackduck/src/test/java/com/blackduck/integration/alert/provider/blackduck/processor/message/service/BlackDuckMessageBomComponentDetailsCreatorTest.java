@@ -13,10 +13,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
@@ -45,6 +52,7 @@ import com.blackduck.integration.blackduck.service.BlackDuckApiClient;
 import com.blackduck.integration.blackduck.service.request.BlackDuckMultipleRequest;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.rest.HttpUrl;
+import com.blackduck.integration.rest.request.Request;
 
 class BlackDuckMessageBomComponentDetailsCreatorTest {
     private static final String COMPONENT_NAME = "test-component";
@@ -112,8 +120,18 @@ class BlackDuckMessageBomComponentDetailsCreatorTest {
 
         BlackDuckMultipleRequest<BlackDuckVersionBomVulnerabilityView> spec = captor.getValue();
         String requestUrl = spec.getUrlResponse().getUrl().string();
-        assertTrue(requestUrl.endsWith("/vulnerabilities"), "Expected endpoint URL to end with /vulnerabilities, but got: " + requestUrl);
         assertEquals(EXPECTED_VULN_ENDPOINT, requestUrl, "Unexpected vulnerabilities endpoint URL");
+
+        String expectedEncodedUrl = Base64.getEncoder().encodeToString(COMPONENT_VERSION_URL.getBytes(StandardCharsets.UTF_8));
+        String expectedFilter = "bomComponents:" + expectedEncodedUrl;
+        Request request = spec.getRequest();
+        Set<String> filterValues = request.getQueryParameters().getOrDefault("filter", Set.of());
+        assertTrue(filterValues.contains(expectedFilter), "Expected filter query parameter 'bomComponents:<base64EncodedUrl>', but got: " + filterValues);
+        assertEquals(
+            "application/vnd.blackducksoftware.bill-of-materials-8+json",
+            request.getHeaders().get("Accept"),
+            "Expected Accept header for bill-of-materials media type"
+        );
     }
 
     @Test
@@ -255,6 +273,37 @@ class BlackDuckMessageBomComponentDetailsCreatorTest {
         );
         Mockito.verify(blackDuckApiClient, Mockito.never()).getAllResponses(Mockito.<BlackDuckMultipleRequest<BlackDuckVersionBomVulnerabilityView>>any());
         Mockito.verify(vulnerabilityDetailsCreator, Mockito.never()).hasSecurityRisk(Mockito.any());
+    }
+
+    private static Stream<Arguments> standardBase64EncodingProvider() {
+        return Stream.of(
+            Arguments.of("ht>ps://hub/api/components/plus/versions/test", "+", "-"),
+            Arguments.of("ht?ps://hub/api/components/slash/versions/test", "/", "_")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("standardBase64EncodingProvider")
+    @SuppressWarnings("unchecked")
+    void filterUsesStandardBase64EncodingTest(String componentVersionUrl, String expectedStandardChar, String expectedUrlSafeChar) throws IntegrationException {
+        String encodedComponentVersionUrl = Base64.getEncoder().encodeToString(componentVersionUrl.getBytes(StandardCharsets.UTF_8));
+
+        Mockito.when(vulnerabilityDetailsCreator.hasSecurityRisk(Mockito.any())).thenReturn(true);
+        Mockito.when(blackDuckApiClient.getAllResponses(Mockito.<BlackDuckMultipleRequest<BlackDuckVersionBomVulnerabilityView>>any())).thenReturn(List.of());
+        Mockito.when(vulnerabilityDetailsCreator.toComponentVulnerabilities(Mockito.any())).thenReturn(ComponentVulnerabilities.none());
+
+        ProjectVersionComponentVersionView bomComponent = createBomComponent(BOM_COMPONENT_HREF, componentVersionUrl, false);
+        bomComponentDetailsCreator.createBomComponentDetails(bomComponent, List.of(), ComponentUpgradeGuidance.none(), List.of());
+
+        ArgumentCaptor<BlackDuckMultipleRequest<BlackDuckVersionBomVulnerabilityView>> captor = ArgumentCaptor.forClass(BlackDuckMultipleRequest.class);
+        Mockito.verify(blackDuckApiClient, Mockito.times(1)).getAllResponses(captor.capture());
+
+        Set<String> filterValues = captor.getValue().getRequest().getQueryParameters().getOrDefault("filter", Set.of());
+        String expectedFilter = "bomComponents:" + encodedComponentVersionUrl;
+        assertTrue(
+            filterValues.contains(expectedFilter),
+            "Expected filter to use standard Base64 (with '" + expectedStandardChar + "'), not URL-safe (with '" + expectedUrlSafeChar + "')"
+        );
     }
 
     private ProjectVersionComponentVersionView createBomComponent(String href, String componentVersionUrl, boolean policyInViolation) throws IntegrationException {
