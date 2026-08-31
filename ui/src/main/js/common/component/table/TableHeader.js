@@ -20,20 +20,29 @@ const useStyles = createUseStyles((theme) => ({
         '& > tr > :first-child': {
             paddingLeft: '30px'
         }
+    },
+    nonMultiSelectExpandable: {
+        '& > tr > :nth-child(2)': {
+            paddingLeft: '30px'
+        }
+    },
+    expandIconHeader: {
+        width: '40px'
     }
 }));
 
-const TableHeader = ({ columns, multiSelect, selected, onSelected, tableData, onSort, sortConfig, disableSelectOptions, cellId }) => {
+const TableHeader = ({ columns, multiSelect, selected, onSelected, tableData, onSort, sortConfig, disableSelectOptions, cellId, hasExpandableContent }) => {
     const classes = useStyles();
 
     const tableHeadClass = classNames(classes.tableHead, {
-        [classes.nonMultiSelect]: !multiSelect
+        [classes.nonMultiSelect]: !multiSelect && !hasExpandableContent,
+        [classes.nonMultiSelectExpandable]: !multiSelect && hasExpandableContent
     });
 
     return (
         <thead className={tableHeadClass}>
             <tr>
-                { multiSelect && (
+                {multiSelect && (
                     <MultiSelectHeaderCell
                         selected={selected}
                         onSelected={onSelected}
@@ -43,7 +52,9 @@ const TableHeader = ({ columns, multiSelect, selected, onSelected, tableData, on
                     />
                 )}
 
-                { columns.map((column) => (
+                {hasExpandableContent && <th className={classes.expandIconHeader} />}
+
+                {columns.map((column) => (
                     <TableHeaderCell
                         key={column.key}
                         label={column.label}
@@ -75,7 +86,8 @@ TableHeader.propTypes = {
         direction: PropTypes.string
     }),
     disableSelectOptions: PropTypes.object,
-    cellId: PropTypes.string
+    cellId: PropTypes.string,
+    hasExpandableContent: PropTypes.bool
 };
 
 export default TableHeader;

@@ -21,7 +21,7 @@ const useStyles = createUseStyles({
     }
 });
 
-const WrapperCell = ({ children, settings }) => {
+const WrapperCell = ({ children, settings, colSpan }) => {
     const classes = useStyles();
     const cellStyle = classNames(classes.wrapperCell, {
         [classes.right]: settings?.alignment === 'right',
@@ -29,7 +29,7 @@ const WrapperCell = ({ children, settings }) => {
     });
 
     return (
-        <td className={cellStyle}>
+        <td className={cellStyle} colSpan={colSpan}>
             {children}
         </td>
     );
@@ -37,7 +37,8 @@ const WrapperCell = ({ children, settings }) => {
 
 WrapperCell.propTypes = {
     settings: PropTypes.object,
-    children: PropTypes.any
+    children: PropTypes.any,
+    colSpan: PropTypes.number
 };
 
 export default WrapperCell;
