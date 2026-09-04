@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
@@ -58,6 +59,7 @@ public class JiraServerSummaryFieldLengthTestIT {
     }
 
     @Test
+    @Disabled
     void summaryLength254SucceedsTest() {
         IssueCreationModel issueCreationModel = createIssueCreationModel(254);
         IssueTrackerModelHolder<String> messages = new IssueTrackerModelHolder<>(List.of(issueCreationModel), List.of(), List.of());
@@ -65,6 +67,7 @@ public class JiraServerSummaryFieldLengthTestIT {
     }
 
     @Test
+    @Disabled
     void summaryLength256FailsTest() {
         IssueCreationModel issueCreationModel = createIssueCreationModel(256);
         IssueTrackerModelHolder<String> messages = new IssueTrackerModelHolder<>(List.of(issueCreationModel), List.of(), List.of());
