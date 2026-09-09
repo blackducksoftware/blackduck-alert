@@ -259,7 +259,7 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         // TODO: The bom component response does not yet include a pre-encoded component version URL suitable for the
         // bomComponents filter. Until it does, the URL is encoded manually here. When Hub provides the encoded value
         // directly this manual encoding should become a fallback for backwards compatibility.
-        String encodedComponentVersionUrl = Base64.getEncoder().encodeToString(componentVersionUrl.getBytes(StandardCharsets.UTF_8));
+        String encodedComponentVersionUrl = Base64.getUrlEncoder().encodeToString(componentVersionUrl.getBytes(StandardCharsets.UTF_8));
         String filterValue = BOM_COMPONENT_FILTER_KEY + ":" + encodedComponentVersionUrl;
 
         UrlMultipleResponses<BlackDuckVersionBomVulnerabilityView> urlMultipleResponses =
