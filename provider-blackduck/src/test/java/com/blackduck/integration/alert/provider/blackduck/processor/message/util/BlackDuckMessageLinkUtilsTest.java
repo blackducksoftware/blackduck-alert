@@ -33,6 +33,20 @@ public class BlackDuckMessageLinkUtilsTest {
     }
 
     @Test
+    public void createProjectVersionLinkTest() throws IntegrationException {
+        String expectedUrl = EXAMPLE_BLACKDUCK_PROJECT_VERSION_URL;
+        String inputUrl = expectedUrl + BlackDuckMessageLinkUtils.URI_PIECE_COMPONENTS
+            + "/bb9a56d3-8a48-43fd-8db1-5a7529b857f0/versions/9b36b6b4-8221-4071-8685-8c567d68e90e";
+        HttpUrl inputHttpUrl = new HttpUrl(inputUrl);
+
+        ProjectVersionComponentVersionView bomComponent = Mockito.mock(ProjectVersionComponentVersionView.class);
+        Mockito.when(bomComponent.getHref()).thenReturn(inputHttpUrl);
+
+        String projectVersionLink = BlackDuckMessageLinkUtils.createProjectVersionLink(bomComponent);
+        assertEquals(expectedUrl, projectVersionLink, "Expected project version URL without /components segment");
+    }
+
+    @Test
     public void createComponentQueryLinkTest() throws IntegrationException {
         String componentName = "An Example Component";
         String encodedComponentName = componentName.replace(" ", "%20");
