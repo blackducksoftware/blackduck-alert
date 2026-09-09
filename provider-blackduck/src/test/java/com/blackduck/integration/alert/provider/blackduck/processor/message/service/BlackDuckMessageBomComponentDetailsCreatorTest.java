@@ -9,7 +9,6 @@ package com.blackduck.integration.alert.provider.blackduck.processor.message.ser
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
@@ -162,29 +161,6 @@ class BlackDuckMessageBomComponentDetailsCreatorTest {
         BomComponentDetails bomComponentDetails = bomComponentDetailsCreator.createBomComponentDetails(bomComponent, List.of(), ComponentUpgradeGuidance.none(), List.of());
 
         assertFalse(bomComponentDetails.getComponentVulnerabilities().hasVulnerabilities(), "Expected no vulnerabilities for empty API response");
-    }
-
-    @Test
-    void buildProjectVersionVulnerabilitiesUrlValidTest() throws IntegrationException {
-        HttpUrl result = bomComponentDetailsCreator.buildProjectVersionVulnerabilitiesUrl(new HttpUrl(BOM_COMPONENT_HREF));
-        assertEquals(EXPECTED_VULN_ENDPOINT, result.string(), "Expected project version vulnerabilities URL");
-    }
-
-    @Test
-    void buildProjectVersionVulnerabilitiesUrlInvalidTest() throws IntegrationException {
-        HttpUrl httpUrl = new HttpUrl("https://hub/api/no-components-segment/00000000-0000-0000-0000-000000000001");
-        assertThrows(
-            IntegrationException.class,
-            () -> bomComponentDetailsCreator.buildProjectVersionVulnerabilitiesUrl(httpUrl),
-            "Expected IntegrationException when href contains no /components/ segment"
-        );
-    }
-
-    @Test
-    void buildProjectVersionVulnerabilitiesUrlStripsQueryStringTest() throws IntegrationException {
-        HttpUrl hrefWithQuery = new HttpUrl(BOM_COMPONENT_HREF + "?someParam=value");
-        HttpUrl result = bomComponentDetailsCreator.buildProjectVersionVulnerabilitiesUrl(hrefWithQuery);
-        assertEquals(EXPECTED_VULN_ENDPOINT, result.string(), "Expected query string to be stripped from derived vulnerabilities URL");
     }
 
     @Test
