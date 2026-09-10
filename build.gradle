@@ -38,16 +38,16 @@ ext {
     // DOCKER IMAGE VERSIONS
 
     // https://hub.docker.com/_/postgres/tags?name=16.
-    postgresContainerVersionMigration = '16.14'
+    postgresContainerVersionMigration = '16.15'
     // This version is auto updated in src/test/resources/spring-test.properties for the test jdbc connection
     // https://hub.docker.com/_/postgres/tags?name=17.
-    postgresContainerVersionCurrent = '17.10'
+    postgresContainerVersionCurrent = '17.11'
     // https://hub.docker.com/_/alpine/tags?name=3.
     alpineImageVersion = '3.24'
     // https://hub.docker.com/_/rabbitmq/tags?name=4.
     rabbitmqImageVersion = '4.2'
     // https://hub.docker.com/u/blackducksoftware?page=1&search=blackduck-cfssl
-    cfsslImageVersion = '1.0.37'
+    cfsslImageVersion = '1.0.38'
     // https://hub.docker.com/u/blackducksoftware?page=1&search=hub-docker-common
     hubDockerCommonImageVersion = '1.0.9'
 
