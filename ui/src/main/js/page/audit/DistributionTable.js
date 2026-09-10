@@ -130,7 +130,7 @@ const DistributionTable = ({ data }) => {
                     label=""
                     readOnly
                     name="notificationContent"
-                    value={data.errorStackTrace}
+                    value={data.errorStackTrace || ''}
                 />
                 {data.errorStackTrace && (
                     <CopyStacktraceButton stackTrace={data.errorStackTrace} />
