@@ -6,6 +6,7 @@ import Table from 'common/component/table/Table';
 import EventTypeCell from 'page/audit/EventTypeCell';
 import DistributionLastSentCell from 'page/audit/DistributionLastSentCell';
 import RefreshFailureCell from 'page/audit/RefreshFailureCell';
+import TextArea from 'common/component/input/TextArea';
 
 const emptyTableConfig = {
     message: 'There are no records to display for this table.'
@@ -18,13 +19,8 @@ const useStyles = createUseStyles(theme => ({
     },
     errorTitle: {
         fontWeight: 'bold',
-        color: 'red'
-    },
-    stackTrace: {
-        display: '-webkit-box',
-        '-webkit-line-clamp': 3,
-        '-webkit-box-orient': 'vertical',
-        overflow: 'hidden'
+        color: 'red',
+        paddingBottom: '4px'
     },
     copyButtonWrapper: {
         position: 'relative',
@@ -129,7 +125,13 @@ const DistributionTable = ({ data }) => {
         return (
             <div className={classes.expandedContentCell}>
                 <div className={classes.errorTitle}>{data.errorMessage}</div>
-                <div className={classes.stackTrace}>{data.errorStackTrace}</div>
+                <TextArea
+                    sizeClass="col-sm-12"
+                    label=""
+                    readOnly
+                    name="notificationContent"
+                    value={data.errorStackTrace}
+                />
                 {data.errorStackTrace && (
                     <CopyStacktraceButton stackTrace={data.errorStackTrace} />
                 )}
