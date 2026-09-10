@@ -19,7 +19,7 @@ const useStyles = createUseStyles(theme => ({
     },
     errorTitle: {
         fontWeight: 'bold',
-        color: 'red',
+        color: theme.status.error.text,
         paddingBottom: '4px'
     },
     copyButtonWrapper: {
@@ -121,19 +121,21 @@ const DistributionTable = ({ data }) => {
         }
     }];
 
-    function getExpandableRowContent(data) {
+    function getExpandableRowContent(rowData) {
         return (
             <div className={classes.expandedContentCell}>
-                <div className={classes.errorTitle}>{data.errorMessage}</div>
-                <TextArea
-                    sizeClass="col-sm-12"
-                    label=""
-                    readOnly
-                    name="notificationContent"
-                    value={data.errorStackTrace || ''}
-                />
-                {data.errorStackTrace && (
-                    <CopyStacktraceButton stackTrace={data.errorStackTrace} />
+                <div className={classes.errorTitle}>{rowData.errorMessage}</div>
+                {rowData.errorStackTrace && (
+                    <>
+                        <TextArea
+                            sizeClass="col-sm-12"
+                            label=""
+                            readOnly
+                            name="notificationContent"
+                            value={rowData.errorStackTrace || ''}
+                        />
+                        <CopyStacktraceButton stackTrace={rowData.errorStackTrace} />
+                    </>
                 )}
             </div>
         );
@@ -144,7 +146,7 @@ const DistributionTable = ({ data }) => {
             tableData={data?.jobs}
             columns={COLUMNS}
             emptyTableConfig={emptyTableConfig}
-            isExpandable={rowData => !!rowData}
+            isExpandable={rowData => !!(rowData.errorMessage || rowData.errorStackTrace)}
             ExpandableContent={getExpandableRowContent}
         />
     );
@@ -152,7 +154,7 @@ const DistributionTable = ({ data }) => {
 
 DistributionTable.propTypes = {
     data: PropTypes.shape({
-        jobs: PropTypes.object,
+        jobs: PropTypes.arrayOf(PropTypes.object),
         id: PropTypes.string
     })
 };
