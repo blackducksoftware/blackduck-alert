@@ -52,7 +52,9 @@ const TableHeader = ({ columns, multiSelect, selected, onSelected, tableData, on
                     />
                 )}
 
-                {hasExpandableContent && <th className={classes.expandIconHeader} />}
+                {hasExpandableContent && 
+                    <th className={classes.expandIconHeader} aria-hidden="true" />
+                }
 
                 {columns.map((column) => (
                     <TableHeaderCell

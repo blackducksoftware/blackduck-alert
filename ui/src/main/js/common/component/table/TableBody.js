@@ -49,10 +49,10 @@ const useStyles = createUseStyles((theme) => ({
     }
 }));
 
-const ACTION_ELEMENTS = ['button', 'a'];
+const ACTION_ELEMENTS = ['button', 'a', 'input', 'select', 'textarea', 'label'];
 
 function isAction(element) {
-    return ACTION_ELEMENTS.some(tag => element.closest(tag));
+    return element?.closest ? ACTION_ELEMENTS.some(tag => element.closest(tag)) : false;
 }
 
 function ExpandedContentCell({ data, expandedRows, rowIndex, isExpandable, ExpandableContent }) {
@@ -62,7 +62,7 @@ function ExpandedContentCell({ data, expandedRows, rowIndex, isExpandable, Expan
         return null;
     }
 
-    if (isExpandable(data)) {
+    if (isExpandable?.(data)) {
         const isExpanded = expandedRows.includes(rowIndex);
         return (
             <td className={classes.expandIconCell}>
@@ -131,7 +131,19 @@ const TableBody = ({ columns, multiSelect, tableData, selected, onSelected, disa
                     <React.Fragment key={`${rowIndex}-table-row`}>
                         <tr
                             className={tableRowClass}
+                            role={expandable ? 'button' : undefined}
+                            tabIndex={expandable ? 0 : undefined}
+                            aria-expanded={expandable ? expanded : undefined}
                             onClick={event => handleRowClick(event, rowData, rowIndex)}
+                            onKeyDown={(event) => {
+                                 if (!expandable || isAction(event.target)) {
+                                     return;
+                                 }
+                                 if (event.key === 'Enter' || event.key === ' ') {
+                                     event.preventDefault();
+                                     handleRowExpander(rowIndex);
+                                 }
+                             }}
                         >
                             <ExpandedContentCell
                                 data={rowData}

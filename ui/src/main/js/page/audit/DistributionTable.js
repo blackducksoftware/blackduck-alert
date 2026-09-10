@@ -69,10 +69,14 @@ function CopyStacktraceButton({ stackTrace }) {
     const [copied, setCopied] = useState(false);
 
     function handleCopy() {
-        navigator.clipboard.writeText(stackTrace).then(() => {
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        });
+        navigator.clipboard.writeText(stackTrace)
+            .then(() => {
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+            })
+            .catch(() => {
+                // Clipboard can fail due to permissions / insecure context.
+            });
     }
 
     return (
