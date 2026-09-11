@@ -34,7 +34,7 @@ const useStyles = createUseStyles((theme) => ({
 const Table = ({
     columns, multiSelect, selected, onSelected, disableSelectOptions, tableData, handleSearchChange,
     searchBarPlaceholder, tableActions, onToggle, active, onSort, sortConfig, data, onPage, emptyTableConfig,
-    defaultSearchValue, onPageSize, showPageSize, pageSize, cellId, isLoading
+    defaultSearchValue, onPageSize, showPageSize, pageSize, cellId, isLoading, ExpandableContent, isExpandable
 }) => {
     const classes = useStyles();
 
@@ -82,6 +82,7 @@ const Table = ({
                             sortConfig={sortConfig}
                             disableSelectOptions={disableSelectOptions}
                             cellId={cellId}
+                            hasExpandableContent={!!ExpandableContent}
                         />
                         <TableBody
                             columns={columns}
@@ -91,6 +92,8 @@ const Table = ({
                             onSelected={onSelected}
                             disableSelectOptions={disableSelectOptions}
                             cellId={cellId}
+                            ExpandableContent={ExpandableContent}
+                            isExpandable={isExpandable}
                         />
                     </table>
 
@@ -134,7 +137,9 @@ Table.propTypes = {
     defaultSearchValue: PropTypes.string,
     pageSize: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     cellId: PropTypes.string,
-    isLoading: PropTypes.bool
+    isLoading: PropTypes.bool,
+    ExpandableContent: PropTypes.func,
+    isExpandable: PropTypes.func
 };
 
 export default Table;
