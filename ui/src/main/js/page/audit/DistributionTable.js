@@ -19,7 +19,7 @@ const useStyles = createUseStyles(theme => ({
     },
     errorTitle: {
         fontWeight: 'bold',
-        color: theme.status.error.text,
+        color: theme.colors.status.error.text,
         paddingBottom: '4px'
     },
     copyButtonWrapper: {
@@ -122,16 +122,18 @@ const DistributionTable = ({ data }) => {
     }];
 
     function getExpandableRowContent(rowData) {
+        const stackTraceId = `${rowData.id}-stacktrace-error`;
         return (
             <div className={classes.expandedContentCell}>
                 <div className={classes.errorTitle}>{rowData.errorMessage}</div>
                 {rowData.errorStackTrace && (
                     <>
                         <TextArea
+                            id={stackTraceId}
                             sizeClass="col-sm-12"
                             label=""
                             readOnly
-                            name="notificationContent"
+                            name={stackTraceId}
                             value={rowData.errorStackTrace || ''}
                         />
                         <CopyStacktraceButton stackTrace={rowData.errorStackTrace} />
