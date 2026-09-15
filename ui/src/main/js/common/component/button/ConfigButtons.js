@@ -20,7 +20,13 @@ const useStyles = createUseStyles((theme) => ({
     }
 }));
 
-const TestButton = ({ includeTest, testId, onTestClick, testLabel, isTestDisabled }) => {
+const TestButton = ({
+    includeTest,
+    testId = 'testButton',
+    onTestClick,
+    testLabel = 'Test Configuration',
+    isTestDisabled
+}) => {
     if (includeTest) {
         return (
             <Button
@@ -43,7 +49,12 @@ TestButton.propTypes = {
     isTestDisabled: PropTypes.bool
 };
 
-const SaveButton = ({ includeSave, submitId, submitLabel, isSaveDisabled }) => {
+const SaveButton = ({
+    includeSave = true,
+    submitId = 'submitButton',
+    submitLabel = 'Save',
+    isSaveDisabled
+}) => {
     if (includeSave) {
         return (
             <Button
@@ -65,7 +76,12 @@ SaveButton.propTypes = {
     isSaveDisabled: PropTypes.bool
 };
 
-const CancelButton = ({ includeCancel, cancelId, onCancelClick, cancelLabel }) => {
+const CancelButton = ({
+    includeCancel,
+    cancelId = 'cancelButton',
+    onCancelClick,
+    cancelLabel = 'Cancel'
+}) => {
     if (includeCancel) {
         return (
             <Button id={cancelId} onClick={onCancelClick} text={cancelLabel} buttonStyle="actionSecondary" />
@@ -81,7 +97,13 @@ CancelButton.propTypes = {
     cancelLabel: PropTypes.string
 };
 
-const DeleteButton = ({ includeDelete, deleteId, handleDelete, deleteLabel, isDeleteDisabled }) => {
+const DeleteButton = ({
+    includeDelete,
+    deleteId = 'deleteButton',
+    handleDelete,
+    deleteLabel = 'Delete',
+    isDeleteDisabled
+}) => {
     if (includeDelete) {
         return (
             <Button
@@ -105,11 +127,27 @@ DeleteButton.propTypes = {
 };
 
 const ConfigButtons = ({
-    cancelId, submitId, testId, deleteId, includeCancel, includeSave,
-    includeTest, includeDelete, onCancelClick, onTestClick, onDeleteClick,
-    performingAction, submitLabel, testLabel, cancelLabel, deleteLabel,
-    confirmDeleteTitle, confirmDeleteMessage, isSaveDisabled,
-    isDeleteDisabled, isTestDisabled
+    cancelId,
+    submitId,
+    testId,
+    deleteId,
+    includeCancel,
+    includeSave,
+    includeTest,
+    includeDelete,
+    onCancelClick,
+    onTestClick,
+    onDeleteClick = () => true,
+    performingAction,
+    submitLabel,
+    testLabel,
+    cancelLabel,
+    deleteLabel,
+    confirmDeleteTitle = 'Confirm Delete',
+    confirmDeleteMessage = 'Are you sure you want to delete?',
+    isSaveDisabled,
+    isDeleteDisabled,
+    isTestDisabled
 }) => {
     const classes = useStyles();
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -207,27 +245,6 @@ ConfigButtons.propTypes = {
     isSaveDisabled: PropTypes.bool,
     isDeleteDisabled: PropTypes.bool,
     isTestDisabled: PropTypes.bool
-};
-
-ConfigButtons.defaultProps = {
-    cancelId: 'cancelButton',
-    submitId: 'submitButton',
-    testId: 'testButton',
-    deleteId: 'deleteButton',
-    includeCancel: false,
-    includeSave: true,
-    includeTest: false,
-    includeDelete: false,
-    performingAction: false,
-    onCancelClick: () => true,
-    onTestClick: (evt) => true,
-    onDeleteClick: () => true,
-    submitLabel: 'Save',
-    testLabel: 'Test Configuration',
-    deleteLabel: 'Delete',
-    cancelLabel: 'Cancel',
-    confirmDeleteTitle: 'Confirm Delete',
-    confirmDeleteMessage: 'Are you sure you want to delete?'
 };
 
 export default ConfigButtons;

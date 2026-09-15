@@ -24,15 +24,15 @@ const useStyles = createUseStyles((theme) => ({
 }));
 
 const FluidFieldMappingField = ({
-    id,
+    id = 'fieldMappingFieldId',
     buttonLabel,
     description,
     value,
     setValue,
     errorName,
     errorValue,
-    readonly,
-    required
+    readonly = false,
+    required = LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 }) => {
     const classes = useStyles();
     const [fieldMappings, setFieldMappings] = useState([]);
@@ -111,15 +111,6 @@ FluidFieldMappingField.propTypes = {
     errorValue: PropTypes.object,
     readonly: PropTypes.bool,
     required: PropTypes.bool
-};
-
-FluidFieldMappingField.defaultProps = {
-    id: 'fieldMappingFieldId',
-    readonly: false,
-    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
-    errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
-    errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 };
 
 export default FluidFieldMappingField;

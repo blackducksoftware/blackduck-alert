@@ -5,18 +5,18 @@ import StatusMessage from 'common/component/StatusMessage';
 import Button from 'common/component/button/Button';
 
 const ButtonField = ({
-    id,
+    id = 'endpointButtonFieldId',
     buttonLabel,
-    tooltipDescription,
+    tooltipDescription = LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     fieldDescription,
-    fieldError,
+    fieldError = LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     fieldKey,
     label,
-    readOnly,
+    readOnly = false,
     onSendClick,
-    required,
+    required = LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
     success,
-    statusMessage
+    statusMessage = 'Success'
 }) => {
     const [progress, setProgress] = useState(false);
 
@@ -58,15 +58,6 @@ ButtonField.propTypes = {
     statusMessage: PropTypes.string,
     fieldDescription: PropTypes.string,
     tooltipDescription: PropTypes.string
-};
-
-ButtonField.defaultProps = {
-    id: 'endpointButtonFieldId',
-    readOnly: false,
-    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
-    fieldError: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
-    statusMessage: 'Success'
 };
 
 export default ButtonField;

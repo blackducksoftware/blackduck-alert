@@ -32,12 +32,12 @@ const useStyles = createUseStyles((theme) => ({
 
 const FieldMappingRow = ({
     index,
-    leftSide,
-    rightSide,
+    leftSide = '',
+    rightSide = '',
     setMapping,
     deleteRow,
-    mappingSymbol,
-    readonly
+    mappingSymbol = ' = ',
+    readonly = false
 }) => {
     const classes = useStyles();
     const [currentLeftSide, setCurrentLeftSide] = useState(leftSide);
@@ -95,13 +95,6 @@ FieldMappingRow.propTypes = {
     rightSide: PropTypes.string,
     mappingSymbol: PropTypes.any,
     readonly: PropTypes.bool
-};
-
-FieldMappingRow.defaultProps = {
-    leftSide: '',
-    rightSide: '',
-    mappingSymbol: ' = ',
-    readonly: false
 };
 
 export default FieldMappingRow;

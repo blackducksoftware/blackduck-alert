@@ -7,7 +7,7 @@ import StatusMessage from 'common/component/StatusMessage';
 
 const ConcreteConfigurationForm = ({
     formDataId,
-    clearTestForm,
+    clearTestForm = () => null,
     setErrors,
     getRequest,
     deleteRequest,
@@ -15,27 +15,27 @@ const ConcreteConfigurationForm = ({
     createRequest,
     validateRequest,
     testRequest,
-    displaySave,
-    displayTest,
-    displayDelete,
-    displayCancel,
+    displaySave = true,
+    displayTest = true,
+    displayDelete = true,
+    displayCancel = false,
     children,
     testFields,
     testModalTitle,
-    buttonIdPrefix,
-    afterSuccessfulSave,
-    readonly,
+    buttonIdPrefix = 'common-form',
+    afterSuccessfulSave = () => null,
+    readonly = false,
     errorHandler,
     cancelLabel,
     deleteLabel,
     submitLabel,
     testLabel,
     testButtonClicked,
-    postDeleteAction,
+    postDeleteAction = () => {},
     disableTestModalSubmit,
     modalSubmitText,
     testModalButtonTitle,
-    ignoreValidation,
+    ignoreValidation = false,
     isSaveDisabled,
     isDeleteDisabled
 }) => {
@@ -259,22 +259,6 @@ ConcreteConfigurationForm.propTypes = {
     isSaveDisabled: PropTypes.bool,
     isDeleteDisabled: PropTypes.bool,
     ignoreValidation: PropTypes.bool
-};
-
-ConcreteConfigurationForm.defaultProps = {
-    testRequest: () => null,
-    displaySave: true,
-    displayTest: true,
-    displayDelete: true,
-    displayCancel: false,
-    formDataId: null,
-    testFields: null,
-    clearTestForm: () => null,
-    buttonIdPrefix: 'common-form',
-    afterSuccessfulSave: () => null,
-    readonly: false,
-    postDeleteAction: () => {},
-    ignoreValidation: false
 };
 
 export default ConcreteConfigurationForm;

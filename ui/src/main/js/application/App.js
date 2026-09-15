@@ -9,12 +9,8 @@ import { getAboutInfo } from 'store/actions/about';
 import * as IconUtility from 'common/util/iconUtility';
 import LogoutPage from 'application/auth/LogoutPage';
 import SessionUnauthorizedPage from 'application/auth/SessionUnauthorizedPage';
-// These are needed for the react-bootstrap tables to show the ascending/descending icons
-import '@fortawesome/fontawesome-free/scss/fontawesome.scss';
-import '@fortawesome/fontawesome-free/js/all.js';
-import '@fortawesome/fontawesome-free/scss/v4-shims.scss';
-import '@fortawesome/fontawesome-free/js/v4-shims.js';
 
+import 'bootstrap/dist/css/bootstrap.css';
 import '../../css/main.scss';
 import { BrowserRouter } from 'react-router-dom';
 

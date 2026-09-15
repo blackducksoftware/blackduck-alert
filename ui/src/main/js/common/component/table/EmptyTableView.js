@@ -10,7 +10,11 @@ const useStyles = createUseStyles({
     }
 });
 
-const EmptyTableView = ({ emptyTableConfig }) => {
+const EmptyTableView = ({
+    emptyTableConfig = {
+        message: 'There are no records to display for this table.'
+    }
+}) => {
     const classes = useStyles();
 
     return (
@@ -18,12 +22,6 @@ const EmptyTableView = ({ emptyTableConfig }) => {
             {emptyTableConfig?.message}
         </div>
     );
-};
-
-EmptyTableView.defaultProps = {
-    emptyTableConfig: {
-        message: 'There are no records to display for this table.'
-    }
 };
 
 EmptyTableView.propTypes = {

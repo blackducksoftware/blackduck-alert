@@ -65,9 +65,23 @@ const useStyles = createUseStyles((theme) => ({
 }));
 
 const Modal = ({
-    isOpen, size, title, closeModal, children, handleCancel, handleSubmit,
-    handleTest, submitText, testText, showLoader, notification, showNotification, buttonStyle,
-    disableSubmit, submitTitle, noOverflow
+    isOpen,
+    size = 'md',
+    title,
+    closeModal,
+    children,
+    handleCancel,
+    handleSubmit,
+    handleTest,
+    submitText,
+    testText,
+    showLoader,
+    notification,
+    showNotification,
+    buttonStyle,
+    disableSubmit,
+    submitTitle,
+    noOverflow
 }) => {
     const classes = useStyles();
 
@@ -118,10 +132,6 @@ const Modal = ({
         </div>,
         modalRoot
     );
-};
-
-Modal.defaultProps = {
-    size: 'md'
 };
 
 Modal.propTypes = {

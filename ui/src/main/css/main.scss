@@ -1,8 +1,5 @@
-@import 'variables';
 // Alert specific
-@import 'app';
-@import 'field';
-@import 'header';
-@import 'logos';
-// Third-party
-@import '~bootstrap/dist/css/bootstrap.css';
+@use 'app';
+@use 'field';
+@use 'header';
+@use 'logos';

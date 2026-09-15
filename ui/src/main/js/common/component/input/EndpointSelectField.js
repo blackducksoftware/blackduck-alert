@@ -8,30 +8,30 @@ import { LabelFieldPropertyDefaults } from './field/LabeledField';
 
 // TODO Remove currentConfig and requiredRelatedFields
 const EndpointSelectField = ({
-    id,
-    clearable,
+    id = 'endpointSelectFieldId',
+    clearable = true,
     convertDataToOptions,
     createRequestBody,
     csrfToken,
-    currentConfig,
+    currentConfig = null,
     endpoint,
-    errorName,
-    errorValue,
+    errorName = LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
+    errorValue = LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     fieldDescription,
     fieldKey,
     label,
-    multiSelect,
+    multiSelect = false,
     onChange,
-    placeholder,
-    readOnly,
+    placeholder = 'Choose a value',
+    readOnly = false,
     readOptionsRequest,
-    removeSelected,
-    required,
-    requiredRelatedFields,
-    searchable,
+    removeSelected = false,
+    required = LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    requiredRelatedFields = [],
+    searchable = false,
     selectSpacingClass,
-    tooltipDescription,
-    value,
+    tooltipDescription = LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    value = [],
     customVal
 }) => {
     const [options, setOptions] = useState([]);
@@ -127,27 +127,6 @@ EndpointSelectField.propTypes = {
     readOptionsRequest: PropTypes.func,
     convertDataToOptions: PropTypes.func,
     customVal: PropTypes.oneOfType([PropTypes.array, PropTypes.object])
-};
-
-EndpointSelectField.defaultProps = {
-    id: 'endpointSelectFieldId',
-    clearable: true,
-    currentConfig: {},
-    multiSelect: false,
-    placeholder: 'Choose a value',
-    readOnly: false,
-    removeSelected: false,
-    requiredRelatedFields: [],
-    searchable: false,
-    selectSpacingClass: 'col-sm-8',
-    value: [],
-    createRequestBody: null,
-    readOptionsRequest: null,
-    convertDataToOptions: null,
-    tooltipDescription: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
-    errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
-    errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 };
 
 export default EndpointSelectField;

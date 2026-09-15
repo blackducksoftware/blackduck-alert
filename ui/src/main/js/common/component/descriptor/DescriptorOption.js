@@ -15,8 +15,4 @@ DescriptorOption.propTypes = {
     style: PropTypes.object
 };
 
-DescriptorOption.defaultProps = {
-    style: {}
-};
-
 export default DescriptorOption;

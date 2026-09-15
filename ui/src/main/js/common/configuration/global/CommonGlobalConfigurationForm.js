@@ -10,20 +10,20 @@ import StatusMessage from 'common/component/StatusMessage';
 const CommonGlobalConfigurationForm = ({
     formData,
     setFormData,
-    testFormData,
-    setTestFormData,
+    testFormData = {},
+    setTestFormData = () => null,
     csrfToken,
     setErrors,
-    displaySave,
-    displayTest,
-    displayDelete,
-    displayCancel,
+    displaySave = true,
+    displayTest = true,
+    displayDelete = true,
+    displayCancel = false,
     children,
     testFields,
-    buttonIdPrefix,
-    afterSuccessfulSave,
+    buttonIdPrefix = 'common-form',
+    afterSuccessfulSave = () => null,
     retrieveData,
-    readonly,
+    readonly = false,
     errorHandler,
     deleteLabel
 }) => {
@@ -221,19 +221,6 @@ CommonGlobalConfigurationForm.propTypes = {
     readonly: PropTypes.bool,
     errorHandler: PropTypes.object.isRequired,
     deleteLabel: PropTypes.string
-};
-
-CommonGlobalConfigurationForm.defaultProps = {
-    displaySave: true,
-    displayTest: true,
-    displayDelete: true,
-    displayCancel: false,
-    testFields: null,
-    testFormData: {},
-    setTestFormData: () => null,
-    buttonIdPrefix: 'common-form',
-    afterSuccessfulSave: () => null,
-    readonly: false
 };
 
 export default CommonGlobalConfigurationForm;

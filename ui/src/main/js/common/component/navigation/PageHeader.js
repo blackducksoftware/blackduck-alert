@@ -65,7 +65,12 @@ const useStyles = createUseStyles((theme) => ({
     }
 }));
 
-const PageHeader = ({ title, description, icon, lastUpdated }) => {
+const PageHeader = ({
+    title,
+    description = '',
+    icon,
+    lastUpdated
+}) => {
     const classes = useStyles();
 
     return (
@@ -101,11 +106,6 @@ PageHeader.propTypes = {
     description: PropTypes.string,
     icon: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
     lastUpdated: PropTypes.string
-};
-
-PageHeader.defaultProps = {
-    description: '',
-    lastUpdated: null
 };
 
 export default PageHeader;

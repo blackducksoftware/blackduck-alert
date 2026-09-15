@@ -18,7 +18,12 @@ const useStyles = createUseStyles({
     }
 });
 
-const LabelValuePair = ({ label, seperator, value, icon }) => {
+const LabelValuePair = ({
+    label,
+    seperator = ':',
+    value,
+    icon
+}) => {
     const classes = useStyles();
     const displayLabel = `${label}${seperator}`;
 
@@ -33,10 +38,6 @@ const LabelValuePair = ({ label, seperator, value, icon }) => {
             <span>{value}</span>
         </div>
     );
-};
-
-LabelValuePair.defaultProps = {
-    seperator: ':'
 };
 
 LabelValuePair.propTypes = {
