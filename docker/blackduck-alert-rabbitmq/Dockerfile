@@ -1,5 +1,5 @@
 FROM blackducksoftware/hub-docker-common:1.0.7 AS docker-common
-FROM rabbitmq:4.2-alpine
+FROM rabbitmq:4.3-alpine
 
 ARG VERSION
 ARG COMMITHASH
@@ -18,6 +18,7 @@ ENV CERTIFICATE_MANAGER_DIR=$APPLICATION_HOME/bin
 RUN set -ex \
     && mkdir -p -m 775 "$APPLICATION_HOME/bin" "$APPLICATION_HOME/security" "$APPLICATION_HOME/logs" \
     && apk update \
+    && apk upgrade --no-cache \
     && apk add --no-cache --virtual .run-deps \
            curl \
            jq \
