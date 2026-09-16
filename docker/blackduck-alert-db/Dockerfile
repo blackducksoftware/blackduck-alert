@@ -34,6 +34,10 @@ ENV PGBINNEW=/usr/local/bin
 ENV POSTGRES_MIGRATION_VERSION=${POSTGRES_MIGRATION_VERSION}
 ENV ICU74=/opt/icu74
 
+RUN set -ex \
+    && apk update \
+    && apk upgrade --no-cache
+
 LABEL com.blackducksoftware.integration.alert.vendor="Black Duck Software, Inc." \
       com.blackducksoftware.integration.alert.version="$VERSION" \
       com.blackducksoftware.integration.alert.commitHash="$COMMITHASH"
