@@ -144,7 +144,7 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
             + "ON CONFLICT (content_id) DO NOTHING",
         nativeQuery = true
     )
-    void saveIgnoreContentIdConflict(
+    int saveIgnoreContentIdConflict(
         @Param("createdAt") OffsetDateTime createdAt,
         @Param("provider") String provider,
         @Param("providerConfigId") Long providerConfigId,

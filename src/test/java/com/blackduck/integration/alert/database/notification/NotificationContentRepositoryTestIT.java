@@ -114,8 +114,9 @@ class NotificationContentRepositoryTestIT {
         DescriptorConfigEntity providerConfig = createProviderConfig();
         String contentId = String.format("content-id-%s", UUID.randomUUID());
 
-        saveNotificationWithContentId(providerConfig.getId(), contentId);
+        int rowsInserted = saveNotificationWithContentId(providerConfig.getId(), contentId);
 
+        assertEquals(1, rowsInserted, "Inserting a new notification should return 1 affected row");
         assertEquals(1, notificationContentRepository.count(), "A new notification with a unique contentId should be inserted");
     }
 
@@ -124,9 +125,11 @@ class NotificationContentRepositoryTestIT {
         DescriptorConfigEntity providerConfig = createProviderConfig();
         String contentId = String.format("content-id-%s", UUID.randomUUID());
 
-        saveNotificationWithContentId(providerConfig.getId(), contentId);
-        saveNotificationWithContentId(providerConfig.getId(), contentId);
+        int firstInsert = saveNotificationWithContentId(providerConfig.getId(), contentId);
+        int secondInsert = saveNotificationWithContentId(providerConfig.getId(), contentId);
 
+        assertEquals(1, firstInsert, "Inserting a new notification should return 1 affected row");
+        assertEquals(0, secondInsert, "Inserting a duplicate contentId should return 0 affected rows");
         assertEquals(1, notificationContentRepository.count(), "A duplicate contentId should not produce a second row");
     }
 
@@ -188,8 +191,8 @@ class NotificationContentRepositoryTestIT {
         assertEquals(saved.getContentId(), result.get(0).getContentId(), "The returned entity should match the saved contentId");
     }
 
-    private void saveNotificationWithContentId(Long providerConfigId, String contentId) {
-        notificationContentRepository.saveIgnoreContentIdConflict(
+    private int saveNotificationWithContentId(Long providerConfigId, String contentId) {
+        return notificationContentRepository.saveIgnoreContentIdConflict(
             OffsetDateTime.now(),
             BLACK_DUCK_PROVIDER_KEY.getUniversalKey(),
             providerConfigId,

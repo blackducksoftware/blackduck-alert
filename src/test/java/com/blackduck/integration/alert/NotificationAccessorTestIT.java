@@ -528,7 +528,7 @@ class NotificationAccessorTestIT {
 
     private AlertNotificationModel createNotificationModelWithContentId(OffsetDateTime createdAt, String contentId) {
         // Truncate to microseconds to match PostgreSQL TIMESTAMP WITH TIME ZONE precision.
-        // Without this, some systems with only microsecond precision will result in tests failures.
+        // Without this, some systems with only microsecond precision will result in test failures.
         OffsetDateTime microsCreatedAt = createdAt.truncatedTo(ChronoUnit.MICROS);
         return new AlertNotificationModel(
             providerConfigModel.getConfigurationId(),

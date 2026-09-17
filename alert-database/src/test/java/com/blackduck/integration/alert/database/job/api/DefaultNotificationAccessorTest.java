@@ -115,6 +115,17 @@ class DefaultNotificationAccessorTest {
         Mockito.when(notificationContentRepository.findByContentIdIn(Mockito.any()))
             .thenReturn(List.of())
             .thenReturn(List.of(notificationEntity));
+        Mockito.when(notificationContentRepository.saveIgnoreContentIdConflict(
+            Mockito.any(OffsetDateTime.class),
+            Mockito.anyString(),
+            Mockito.anyLong(),
+            Mockito.any(OffsetDateTime.class),
+            Mockito.anyString(),
+            Mockito.anyString(),
+            Mockito.anyBoolean(),
+            Mockito.anyString(),
+            Mockito.anyBoolean()
+        )).thenReturn(1);
         Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.any())).thenReturn(Optional.of(configurationModel));
 
         DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(
@@ -183,6 +194,17 @@ class DefaultNotificationAccessorTest {
         Mockito.when(notificationContentRepository.findByContentIdIn(Mockito.any()))
             .thenReturn(List.of())
             .thenReturn(List.of(savedEntity));
+        Mockito.when(notificationContentRepository.saveIgnoreContentIdConflict(
+            Mockito.any(OffsetDateTime.class),
+            Mockito.anyString(),
+            Mockito.anyLong(),
+            Mockito.any(OffsetDateTime.class),
+            Mockito.anyString(),
+            Mockito.anyString(),
+            Mockito.anyBoolean(),
+            Mockito.anyString(),
+            Mockito.anyBoolean()
+        )).thenReturn(1);
         Mockito.when(configurationModelConfigurationAccessor.getConfigurationById(Mockito.any())).thenReturn(Optional.of(createConfigurationModel()));
 
         DefaultNotificationAccessor defaultNotificationAccessor = new DefaultNotificationAccessor(
@@ -241,6 +263,50 @@ class DefaultNotificationAccessorTest {
         assertTrue(result.isEmpty(), "Notifications already in the database should not be saved again");
 
         verifySaveIgnoreContentIdConflict(notificationContentRepository, Mockito.never());
+    }
+
+    @Test
+    void saveAllNotificationsIgnoresContentIdRaceConditionTest() {
+        OffsetDateTime createdAt = DateUtils.createCurrentDateTimestamp();
+        OffsetDateTime providerCreationTime = createdAt.minusSeconds(10);
+
+        AlertNotificationModel notification = new AlertNotificationModel(
+            null,
+            providerConfigId,
+            provider,
+            providerConfigName,
+            notificationType,
+            content,
+            createdAt,
+            providerCreationTime,
+            false,
+            contentId,
+            false
+        );
+
+        NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
+
+        // Prefetch returns empty (notification not yet in DB)
+        Mockito.when(notificationContentRepository.findByContentIdIn(Mockito.any())).thenReturn(List.of());
+        // Simulate losing the content_id race (Another caller already inserted the row)
+        Mockito.when(notificationContentRepository.saveIgnoreContentIdConflict(
+            Mockito.any(OffsetDateTime.class),
+            Mockito.anyString(),
+            Mockito.anyLong(),
+            Mockito.any(OffsetDateTime.class),
+            Mockito.anyString(),
+            Mockito.anyString(),
+            Mockito.anyBoolean(),
+            Mockito.anyString(),
+            Mockito.anyBoolean()
+        )).thenReturn(0);
+
+        DefaultNotificationAccessor defaultNotificationAccessor = new DefaultNotificationAccessor(notificationContentRepository, null, null, notificationBatchRepository);
+        List<AlertNotificationModel> result = defaultNotificationAccessor.saveAllNotifications(List.of(notification));
+
+        assertTrue(result.isEmpty());
+        // findByContentIdIn should only be called once for the prefetch; no post-save fetch should occur
+        Mockito.verify(notificationContentRepository, Mockito.times(1)).findByContentIdIn(Mockito.any());
     }
 
     @Test

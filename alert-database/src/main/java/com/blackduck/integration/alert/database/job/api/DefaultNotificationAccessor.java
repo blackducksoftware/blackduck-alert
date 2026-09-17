@@ -96,8 +96,9 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
             }
         }
 
+        List<String> savedContentIds = new ArrayList<>();
         for (NotificationEntity entity : entitiesToSave) {
-            notificationContentRepository.saveIgnoreContentIdConflict(
+            int inserted = notificationContentRepository.saveIgnoreContentIdConflict(
                 entity.getCreatedAt(),
                 entity.getProvider(),
                 entity.getProviderConfigId(),
@@ -108,14 +109,17 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
                 entity.getContentId(),
                 entity.isMappingToJobs()
             );
+            if (inserted > 0) {
+                savedContentIds.add(entity.getContentId());
+            }
         }
 
-        if (contentIdsToSave.isEmpty()) {
+        if (savedContentIds.isEmpty()) {
             return List.of();
         }
         // Native query insert bypasses Hibernate's identity management. As a result, the in-memory NotificationEntities do not have their ID populated.
-        // A fetch is required to ensure the correct notifications are returned with the correct IDs.
-        return notificationContentRepository.findByContentIdIn(contentIdsToSave)
+        // Only content IDs actually inserted by this transaction are fetched.
+        return notificationContentRepository.findByContentIdIn(savedContentIds)
             .stream()
             .map(this::toModel)
             .toList();
