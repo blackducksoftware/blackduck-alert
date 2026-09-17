@@ -293,7 +293,7 @@ public class MockNotificationContentRepository extends MockRepositoryContainer<L
     }
 
     @Override
-    public void saveIgnoreContentIdConflict(
+    public int saveIgnoreContentIdConflict(
         final OffsetDateTime createdAt,
         final String provider,
         final Long providerConfigId,
@@ -306,7 +306,9 @@ public class MockNotificationContentRepository extends MockRepositoryContainer<L
     ) {
         if (!existsByContentId(contentId)) {
             super.save(new NotificationEntity(createdAt, provider, providerConfigId, providerCreationTime, notificationType, content, processed, contentId, mappingToJobs));
+            return 1;
         }
+        return 0;
     }
 
     @Override
