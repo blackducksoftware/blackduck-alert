@@ -19,11 +19,11 @@ plugins {
 }
 
 ext {
-    tomcatVersion = '10.1.59'
+    tomcatVersion = '11.0.25'
     bouncyCastleVersion = '1.86'
     rabbitMqAmqpClientVersion = '5.35.0'
     freemarkerVersion = '2.3.35'
-    logbackVersion = '1.6.2'
+    logbackVersion = '1.6.3'
     micrometerCoreVersion='1.17.1'
 
     userID = 'id -u'.execute().text.trim()
