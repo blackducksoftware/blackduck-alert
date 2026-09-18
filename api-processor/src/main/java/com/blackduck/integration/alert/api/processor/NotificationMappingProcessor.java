@@ -7,8 +7,11 @@
  */
 package com.blackduck.integration.alert.api.processor;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -24,6 +27,7 @@ import com.blackduck.integration.alert.common.enumeration.FrequencyType;
 import com.blackduck.integration.alert.common.logging.AlertLoggerFactory;
 import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
+import com.blackduck.integration.alert.common.util.DateUtils;
 
 @Component
 public class NotificationMappingProcessor {
@@ -51,16 +55,20 @@ public class NotificationMappingProcessor {
     }
 
     public void processNotifications(UUID correlationID, List<AlertNotificationModel> notifications, List<FrequencyType> frequencies) {
-        logNotifications("Start mapping notifications: {}", notifications);
+        Instant start = Instant.now();
+        logNotifications(() -> "Start mapping notifications: {}", notifications);
         notificationAccessor.setNotificationsMapping(notifications);
         List<DetailedNotificationContent> filterableNotifications = notifications
             .stream()
             .map(notificationDetailExtractionDelegator::wrapNotification)
             .flatMap(List::stream)
             .toList();
-        jobNotificationMapper.mapJobsToNotifications(correlationID, filterableNotifications, frequencies);
+        jobNotificationMapper.mapNotificationsToJobs(correlationID, filterableNotifications, frequencies);
         notificationAccessor.setNotificationsProcessed(notifications);
-        logNotifications("Finished mapping notifications: {}", notifications);
+        logNotifications(
+            () -> "Finished mapping notifications. Duration: " + DateUtils.formatDurationFromMilliseconds(Duration.between(start, Instant.now()).toMillis()) + ": {}",
+            notifications
+        );
     }
 
     public boolean hasExceededBatchLimit(UUID correlationID) {
@@ -71,22 +79,22 @@ public class NotificationMappingProcessor {
         return notificationMappingBatchLimit;
     }
 
-    private void logNotifications(String messageFormat, List<AlertNotificationModel> notifications) {
+    private void logNotifications(Supplier<String> messageFormatSupplier, List<AlertNotificationModel> notifications) {
         if (logger.isDebugEnabled()) {
             List<Long> notificationIds = notifications.stream()
                 .map(AlertNotificationModel::getId)
                 .toList();
             String joinedIds = StringUtils.join(notificationIds, ", ");
-            notificationLogger.debug(messageFormat, joinedIds);
+            notificationLogger.debug(messageFormatSupplier.get(), joinedIds);
         }
     }
 
     private int setNotificationMappingBatchLimitFromEnvironment(AlertProperties alertProperties) {
         int batchLimit = alertProperties.getNotificationMappingBatchLimit().orElse(DEFAULT_BATCH_LIMIT_MAXIMUM);
-        if( batchLimit < DEFAULT_BATCH_LIMIT_MINIMUM) {
+        if (batchLimit < DEFAULT_BATCH_LIMIT_MINIMUM) {
             logger.warn("Notification mapping batch limit of {} is below the minimum limit of {}. Default to the minimum.", batchLimit, DEFAULT_BATCH_LIMIT_MINIMUM);
             batchLimit = DEFAULT_BATCH_LIMIT_MINIMUM;
-        } else if ( batchLimit > DEFAULT_BATCH_LIMIT_MAXIMUM) {
+        } else if (batchLimit > DEFAULT_BATCH_LIMIT_MAXIMUM) {
             logger.warn("Notification mapping batch limit of {} is above the maximum limit of {}. Default to the maximum.", batchLimit, DEFAULT_BATCH_LIMIT_MAXIMUM);
             batchLimit = DEFAULT_BATCH_LIMIT_MAXIMUM;
         }

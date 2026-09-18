@@ -7,6 +7,8 @@
  */
 package com.blackduck.integration.alert.api.processor.mapping;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -26,6 +28,7 @@ import com.blackduck.integration.alert.common.persistence.model.job.FilteredDist
 import com.blackduck.integration.alert.common.persistence.model.job.JobToNotificationMappingModel;
 import com.blackduck.integration.alert.common.persistence.model.job.SimpleFilteredDistributionJobResponseModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedDetails;
+import com.blackduck.integration.alert.common.util.DateUtils;
 
 @Component
 public class JobNotificationMapper2 {
@@ -42,15 +45,26 @@ public class JobNotificationMapper2 {
         this.jobNotificationMappingAccessor = jobNotificationMappingAccessor;
     }
 
-    public void mapJobsToNotifications(
+    public void mapNotificationsToJobs(
         UUID correlationID,
         List<DetailedNotificationContent> detailedContents,
         List<FrequencyType> frequencies
     ) {
-        detailedContents
+        Instant start = Instant.now();
+        long mappedCount = detailedContents
             .stream()
             .map(content -> convertToRequest(content, frequencies))
-            .forEach(jobRequestModel -> retrieveResponse(correlationID, jobRequestModel));
+            .filter(jobRequestModel -> mapNotificationToJobs(correlationID, jobRequestModel))
+            .count();
+        if (logger.isDebugEnabled()) {
+            logger.debug(
+                "Mapped {} of {} notifications to jobs for correlationId: {}. Duration: {}.",
+                mappedCount,
+                detailedContents.size(),
+                correlationID,
+                DateUtils.formatDurationFromMilliseconds(Duration.between(start, Instant.now()).toMillis())
+            );
+        }
     }
 
     public boolean hasBatchReachedSizeLimit(UUID correlationID, int limit) {
@@ -71,7 +85,7 @@ public class JobNotificationMapper2 {
         return filteredDistributionJobRequestModel;
     }
 
-    private void retrieveResponse(
+    private boolean mapNotificationToJobs(
         UUID correlationId,
         FilteredDistributionJobRequestModel filteredDistributionJobRequestModel
     ) {
@@ -123,6 +137,7 @@ public class JobNotificationMapper2 {
                 additionalNotificationContext
             );
         }
+        return anyMapped;
     }
 
     private String getAdditionalNotificationContext(final FilteredDistributionJobRequestModel filteredDistributionJobRequestModel) {
