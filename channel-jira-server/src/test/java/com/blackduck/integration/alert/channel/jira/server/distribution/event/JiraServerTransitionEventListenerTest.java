@@ -36,7 +36,7 @@ class JiraServerTransitionEventListenerTest {
     private final Gson gson = BlackDuckServicesFactory.createDefaultGson();
 
     @Test
-    void onMessageTest() {
+    void onMessageTest() throws Exception {
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
         EventManager eventManager = Mockito.mock(EventManager.class);
@@ -75,7 +75,7 @@ class JiraServerTransitionEventListenerTest {
     }
 
     @Test
-    void onMessageJobWithRemainingEventsFinishedTest() {
+    void onMessageJobWithRemainingEventsFinishedTest() throws Exception {
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
         EventManager eventManager = Mockito.mock(EventManager.class);
@@ -115,7 +115,7 @@ class JiraServerTransitionEventListenerTest {
     }
 
     @Test
-    void onMessageJobWithRemainingEventsTest() {
+    void onMessageJobWithRemainingEventsTest() throws Exception {
         UUID jobId = UUID.randomUUID();
         Set<Long> notificationIds = Set.of(1L, 2L, 3L);
         EventManager eventManager = Mockito.mock(EventManager.class);

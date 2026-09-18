@@ -31,7 +31,7 @@ import jakarta.persistence.Table;
 public class NotificationEntity extends BaseEntity implements DatabaseEntity {
     @Id
     @GeneratedValue(generator = "alert.raw_notification_content_id_seq_generator", strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(name = "alert.raw_notification_content_id_seq_generator", sequenceName = "alert.raw_notification_content_id_seq")
+    @SequenceGenerator(name = "alert.raw_notification_content_id_seq_generator", sequenceName = "alert.raw_notification_content_id_seq", allocationSize = 1)
     @Column(name = "id")
     private Long id;
     @Column(name = "created_at")
@@ -49,7 +49,7 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
     @Column(name = "processed")
     private boolean processed;
 
-    @Column(name = "content_id")
+    @Column(name = "content_id", nullable = false, unique = true)
     private String contentId;
 
     @Column(name = "mapping_to_jobs")
@@ -59,7 +59,7 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
     private final List<AuditNotificationRelation> auditNotificationRelations = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "notification_id", referencedColumnName = "id",  insertable = false, updatable = false)
+    @JoinColumn(name = "notification_id", referencedColumnName = "id", insertable = false, updatable = false)
     private List<NotificationBatchEntity> notificationBatches = new ArrayList<>();
 
     public NotificationEntity() {

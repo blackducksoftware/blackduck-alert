@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.blackduck.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,9 +74,10 @@ public class JiraCloudCreateIssueEventHandler extends IssueTrackerCreateIssueEve
     }
 
     @Override
-    public synchronized void handleEvent(IssueTrackerCreateIssueEvent event) {
+    public synchronized void handleEvent(IssueTrackerCreateIssueEvent event) throws AlertException {
         UUID jobId = event.getJobId();
         IssueCreationModel creationModel = event.getCreationModel();
+        logger.debug("Begin Handle Event: {} for Alert Issue ID: {}", getClass().getSimpleName(), creationModel.getAlertIssueId());
         Optional<JiraCloudJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
         if (details.isPresent()) {
             try {
@@ -116,15 +118,21 @@ public class JiraCloudCreateIssueEventHandler extends IssueTrackerCreateIssueEve
                     List<String> issuePairs = responses.stream()
                         .map(response -> response.getIssueId() + " | " + response.getIssueKey())
                         .toList();
-                    logger.info("Created issues (Issue ID | Issue Key): {}", issuePairs);
+                    logger.info("Created issues for Alert Issue ID: {}, (Issue ID | Issue Key): {}", creationModel.getAlertIssueId(), issuePairs);
+                } else {
+                    logger.debug("Issue already exists. Alert Issue ID: {}, JQL query: {}", creationModel.getAlertIssueId(), jqlQuery);
                 }
             } catch (AlertException ex) {
-                logger.error("Cannot create issue for job {}", jobId);
+                logger.error("Cannot create issue for job id: {}, Alert Issue ID: {}", jobId, creationModel.getAlertIssueId());
                 logger.error("Query: {}", creationModel.getQueryString());
                 logger.error("Cause: ", ex);
+                // Re-throw the error so the base class can publish an AuditFailedEvent with detailed error information.
+                throw ex;
             }
         } else {
-            logger.error("No Jira Cloud job found with id {}", jobId);
+            String errorMessage = String.format("No Jira Cloud job found with job id: %s, Alert Issue ID: %s", jobId, creationModel.getAlertIssueId());
+            logger.error(errorMessage);
+            throw new AlertException(errorMessage);
         }
     }
 

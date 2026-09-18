@@ -11,6 +11,9 @@ import java.time.Instant;
 import java.util.UUID;
 import java.util.function.Predicate;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
 import com.blackduck.integration.alert.api.distribution.audit.AuditFailedEvent;
 import com.blackduck.integration.alert.api.distribution.execution.ExecutingJob;
@@ -23,6 +26,7 @@ import com.blackduck.integration.alert.common.enumeration.AuditEntryStatus;
 import com.blackduck.integration.alert.common.persistence.util.AuditStackTraceUtil;
 
 public abstract class JobSubTaskEventHandler<T extends JobSubTaskEvent> implements AlertEventHandler<T> {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final EventManager eventManager;
     private final JobStage jobStage;
     private final ExecutingJobManager executingJobManager;
@@ -58,8 +62,23 @@ public abstract class JobSubTaskEventHandler<T extends JobSubTaskEvent> implemen
                 exception.getMessage(),
                 AuditStackTraceUtil.createStackTraceString(exception)
             ));
+        } catch (Exception exception) {
+            handleUnknownException(exception, jobExecutionId, event);
         }
     }
 
     protected abstract void handleEvent(T event) throws AlertException;
+
+    protected void handleUnknownException(Exception e, UUID jobExecutionId, T event) {
+        logger.error("An unexpected error occurred while handling the following issue tracker event: {}.", event.getEventId(), e);
+        executingJobManager.endStage(jobExecutionId, jobStage, Instant.now());
+        executingJobManager.incrementSentNotificationCount(jobExecutionId, event.getNotificationIds().size());
+        eventManager.sendEvent(new AuditFailedEvent(
+            event.getJobExecutionId(),
+            event.getJobId(),
+            event.getNotificationIds(),
+            "An unexpected error occurred during issue tracker distribution. Please refer to the logs for more details.",
+            AuditStackTraceUtil.createStackTraceString(e)
+        ));
+    }
 }

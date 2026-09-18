@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.blackduck.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,8 +73,10 @@ public class JiraCloudCommentEventHandler extends IssueTrackerCommentEventHandle
     }
 
     @Override
-    public void handleEvent(JiraCloudCommentEvent event) {
+    public void handleEvent(JiraCloudCommentEvent event) throws AlertException {
         UUID jobId = event.getJobId();
+        IssueCommentModel<String> commentModel = event.getCommentModel();
+        logger.debug("Begin Handle Event: {} for Alert Issue ID: {}", getClass().getSimpleName(), commentModel.getAlertIssueId());
         Optional<JiraCloudJobDetailsModel> details = jobDetailsAccessor.retrieveDetails(jobId);
         if (details.isPresent()) {
             try {
@@ -105,14 +108,18 @@ public class JiraCloudCommentEventHandler extends IssueTrackerCommentEventHandle
                     jiraErrorMessageUtility,
                     jiraCloudQueryExecutor
                 );
-                IssueCommentModel<String> commentModel = event.getCommentModel();
                 List<IssueTrackerIssueResponseModel<String>> responses = messageSender.sendMessage(commentModel);
                 postProcess(new IssueTrackerResponse<>("Success", responses));
             } catch (AlertException ex) {
-                logger.error("Cannot comment on issue for job {}", jobId);
+                logger.error("Cannot comment on issue for job id: {}, Alert Issue ID: {}", jobId, commentModel.getAlertIssueId());
+                logger.error("Cause: ", ex);
+                // Re-throw the error so the base class can publish an AuditFailedEvent with detailed error information.
+                throw ex;
             }
         } else {
-            logger.error("No Jira Cloud job found with id {}", jobId);
+            String errorMessage = String.format("No Jira Cloud job found with job id: %s, Alert Issue ID: %s", jobId, commentModel.getAlertIssueId());
+            logger.error(errorMessage);
+            throw new AlertException(errorMessage);
         }
     }
 
