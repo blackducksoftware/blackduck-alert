@@ -64,7 +64,7 @@ class JobNotificationMapper2Test {
         );
         ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
 
-        jobNotificationMapper.mapJobsToNotifications(
+        jobNotificationMapper.mapNotificationsToJobs(
             correlationId,
             List.of(DetailedNotificationContent.project(notificationModel, projectVersionNotificationContent, project, projectVersion)),
             List.of(FrequencyType.REAL_TIME)
@@ -98,7 +98,7 @@ class JobNotificationMapper2Test {
         );
         ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
 
-        jobNotificationMapper.mapJobsToNotifications(
+        jobNotificationMapper.mapNotificationsToJobs(
             correlationId,
             List.of(DetailedNotificationContent.project(notificationModel, projectVersionNotificationContent, project, projectVersion)),
             List.of(FrequencyType.REAL_TIME)
@@ -133,7 +133,7 @@ class JobNotificationMapper2Test {
         );
         ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
 
-        jobNotificationMapper.mapJobsToNotifications(
+        jobNotificationMapper.mapNotificationsToJobs(
             correlationId,
             List.of(DetailedNotificationContent.project(notificationModel, projectVersionNotificationContent, project, projectVersion)),
             List.of(FrequencyType.REAL_TIME)
@@ -169,7 +169,7 @@ class JobNotificationMapper2Test {
         );
         ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
 
-        jobNotificationMapper.mapJobsToNotifications(
+        jobNotificationMapper.mapNotificationsToJobs(
             correlationId,
             List.of(DetailedNotificationContent.project(notificationModel, projectVersionNotificationContent, project, projectVersion)),
             List.of(FrequencyType.REAL_TIME)
@@ -205,7 +205,7 @@ class JobNotificationMapper2Test {
         );
         ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
 
-        jobNotificationMapper.mapJobsToNotifications(
+        jobNotificationMapper.mapNotificationsToJobs(
             correlationId,
             List.of(DetailedNotificationContent.project(notificationModel, projectVersionNotificationContent, project, projectVersion)),
             List.of(FrequencyType.REAL_TIME)
@@ -240,7 +240,7 @@ class JobNotificationMapper2Test {
         );
         ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
 
-        jobNotificationMapper.mapJobsToNotifications(
+        jobNotificationMapper.mapNotificationsToJobs(
             correlationId,
             List.of(DetailedNotificationContent.project(notificationModel, projectVersionNotificationContent, project, projectVersion)),
             List.of(FrequencyType.REAL_TIME)

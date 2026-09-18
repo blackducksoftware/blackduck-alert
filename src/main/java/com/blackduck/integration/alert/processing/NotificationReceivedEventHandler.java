@@ -7,6 +7,8 @@
  */
 package com.blackduck.integration.alert.processing;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,6 +27,7 @@ import com.blackduck.integration.alert.common.enumeration.FrequencyType;
 import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.blackduck.integration.alert.common.rest.model.AlertNotificationModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
+import com.blackduck.integration.alert.common.util.DateUtils;
 
 @Component
 public class NotificationReceivedEventHandler implements AlertEventHandler<NotificationReceivedEvent> {
@@ -56,6 +59,7 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
     }
 
     private void processNotifications(NotificationReceivedEvent event) {
+        Instant start = Instant.now();
         UUID correlationID = event.getCorrelationId();
         long providerConfigId = event.getProviderConfigId();
         UUID accumulationBatchId = event.getBatchId();
@@ -113,6 +117,12 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
             );
             eventManager.sendEvent(new JobNotificationMappedEvent(correlationID));
         }
-        logger.info("Finished processing batch for provider({}): batch: {} correlation id: {} event for notifications.", providerConfigId, accumulationBatchId, correlationID);
+        logger.info(
+            "Finished processing batch for provider({}): batch: {} correlation id: {} event for notifications. Duration: {}.",
+            providerConfigId,
+            accumulationBatchId,
+            correlationID,
+            DateUtils.formatDurationFromMilliseconds(Duration.between(start, Instant.now()).toMillis())
+        );
     }
 }

@@ -7,6 +7,8 @@
  */
 package com.blackduck.integration.alert.provider.blackduck.task.accumulator;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -135,6 +137,7 @@ public class BlackDuckAccumulator extends ProviderTask {
     }
 
     private void retrieveAndStoreNotifications(BlackDuckNotificationRetriever notificationRetriever, DateRange dateRange) throws IntegrationException {
+        Instant start = Instant.now();
         StatefulAlertPage<NotificationUserView, IntegrationException> notificationPage = notificationRetriever.retrievePageOfFilteredNotifications(
             dateRange,
             SUPPORTED_NOTIFICATION_TYPES
@@ -152,12 +155,18 @@ public class BlackDuckAccumulator extends ProviderTask {
                 hasExceedBatchSize = storedNotifications >= batchLimit;
                 notificationPage = notificationPage.retrieveNextPage();
             }
-            if(hasExceedBatchSize) {
+            if (hasExceedBatchSize) {
                 logger.info("Accumulator batch limit exceeded.  Accumulation cycle stopped.  Sending event to begin processing notifications.");
             }
 
         } finally {
             if (storedNotifications > 0) {
+                logger.debug(
+                    "Accumulation run complete: stored {} notifications for provider {}. Duration: {}.",
+                    storedNotifications,
+                    getProviderProperties().getConfigId(),
+                    DateUtils.formatDurationFromMilliseconds(Duration.between(start, Instant.now()).toMillis())
+                );
                 eventManager.sendEvent(new NotificationReceivedEvent(getProviderProperties().getConfigId(), batchId));
             }
         }
