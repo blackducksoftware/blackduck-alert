@@ -51,11 +51,13 @@ public class JobNotificationMapper2 {
         List<FrequencyType> frequencies
     ) {
         Instant start = Instant.now();
-        long mappedCount = detailedContents
-            .stream()
-            .map(content -> convertToRequest(content, frequencies))
-            .filter(jobRequestModel -> mapNotificationToJobs(correlationID, jobRequestModel))
-            .count();
+        long mappedCount = 0;
+        for (DetailedNotificationContent content : detailedContents) {
+            FilteredDistributionJobRequestModel request = convertToRequest(content, frequencies);
+            if (mapNotificationToJobs(correlationID, request)) {
+                mappedCount++;
+            }
+        }
         if (logger.isDebugEnabled()) {
             logger.debug(
                 "Mapped {} of {} notifications to jobs for correlationId: {}. Duration: {}.",

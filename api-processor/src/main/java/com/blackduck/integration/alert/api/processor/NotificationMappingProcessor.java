@@ -66,7 +66,7 @@ public class NotificationMappingProcessor {
         jobNotificationMapper.mapNotificationsToJobs(correlationID, filterableNotifications, frequencies);
         notificationAccessor.setNotificationsProcessed(notifications);
         logNotifications(
-            () -> "Finished mapping notifications. Duration: " + DateUtils.formatDurationFromMilliseconds(Duration.between(start, Instant.now()).toMillis()) + ": {}",
+            () -> "Finished mapping notifications. Duration: " + DateUtils.formatDurationFromMilliseconds(Duration.between(start, Instant.now()).toMillis()) + ". {}",
             notifications
         );
     }
