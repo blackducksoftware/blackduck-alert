@@ -24,6 +24,15 @@ public final class BlackDuckMessageLinkUtils {
         return createProjectVersionComponentsLink(bomComponentUrl);
     }
 
+    public static String createProjectVersionLink(ProjectVersionComponentVersionView bomComponent) {
+        String bomComponentUrl = bomComponent.getHref().toString();
+        int componentsStartIndex = StringUtils.lastIndexOf(bomComponentUrl, URI_PIECE_COMPONENTS);
+        if (componentsStartIndex > 0) {
+            return StringUtils.substring(bomComponentUrl, 0, componentsStartIndex);
+        }
+        return bomComponentUrl;
+    }
+
     public static String createComponentQueryLink(String bomComponentUrl, String bomComponentName) {
         String projectVersionComponentsLink = createProjectVersionComponentsLink(bomComponentUrl);
         return createComponentQueryLinkFromProjectVersionComponentsLink(projectVersionComponentsLink, bomComponentName);
