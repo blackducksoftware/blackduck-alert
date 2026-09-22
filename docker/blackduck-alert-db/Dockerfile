@@ -17,6 +17,10 @@ ENV PGBINOLD=/usr/local-old/bin
 ENV PGBINNEW=/usr/local/bin
 ENV POSTGRES_MIGRATION_VERSION=${POSTGRES_MIGRATION_VERSION}
 
+RUN set -ex \
+    && apk update \
+    && apk upgrade --no-cache
+
 LABEL com.blackducksoftware.integration.alert.vendor="Black Duck Software, Inc." \
       com.blackducksoftware.integration.alert.version="$VERSION" \
       com.blackducksoftware.integration.alert.commitHash="$COMMITHASH"
