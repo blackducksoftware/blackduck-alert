@@ -37,7 +37,7 @@ RUN set -ex \
            bash \
            curl \
            jq \
-           openjdk17 \
+           openjdk17-jre-headless \
            openssl \
            postgresql${POSTGRES_CURRENT_MAJOR_VERSION}-client
 
