@@ -32,12 +32,13 @@ RUN set -ex \
     && mkdir -p -m 775 $ALERT_CONFIG_HOME $ALERT_TAR_HOME $ALERT_DATA_DIR $CERTIFICATE_MANAGER_DIR \
     && mkdir -p -m 777 $SECURITY_DIR \
     && apk update \
+    && apk upgrade --no-cache \
     && apk add --no-cache --virtual .blackduck-alert-run-deps \
-           openjdk17 \
+           bash \
            curl \
            jq \
+           openjdk17 \
            openssl \
-           bash \
            postgresql${POSTGRES_CURRENT_MAJOR_VERSION}-client
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
