@@ -34,11 +34,11 @@ RUN set -ex \
     && apk update \
     && apk upgrade --no-cache \
     && apk add --no-cache --virtual .blackduck-alert-run-deps \
-           openjdk17-jre-headless \
+           bash \
            curl \
            jq \
+           openjdk17-jre-headless \
            openssl \
-           bash \
            postgresql${POSTGRES_CURRENT_MAJOR_VERSION}-client
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
