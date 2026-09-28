@@ -10,7 +10,6 @@ package com.blackduck.integration.alert.performance;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 
-import org.junit.Ignore;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -49,8 +48,7 @@ class CopyJobPerformanceTest {
     private final String alertURL = "https://localhost:8443/alert";
 
     @Test
-    @Ignore // performance test
-    @Disabled
+    @Disabled  // performance test
     void copyJobTest() throws IntegrationException {
         ExternalAlertRequestUtility alertRequestUtility = new ExternalAlertRequestUtility(intLogger, client, alertURL);
         // Create an authenticated connection to Alert

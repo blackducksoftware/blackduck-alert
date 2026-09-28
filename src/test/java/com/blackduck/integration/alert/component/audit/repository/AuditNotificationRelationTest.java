@@ -7,8 +7,8 @@
  */
 package com.blackduck.integration.alert.component.audit.repository;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.blackduck.integration.alert.database.audit.AuditNotificationRelation;
 import com.blackduck.integration.alert.database.settings.RelationTest;

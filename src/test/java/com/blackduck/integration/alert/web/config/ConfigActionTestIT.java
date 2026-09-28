@@ -40,7 +40,7 @@ import com.blackduck.integration.alert.util.AlertIntegrationTest;
 import com.blackduck.integration.alert.web.api.config.ConfigActions;
 import com.blackduck.integration.alert.web.api.config.GlobalConfigurationModelToConcreteConversionService;
 
-import junit.framework.AssertionFailedError;
+import org.opentest4j.AssertionFailedError;
 
 @AlertIntegrationTest
 class ConfigActionTestIT {

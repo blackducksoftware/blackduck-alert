@@ -27,12 +27,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.saml2.provider.service.authentication.OpenSaml4AuthenticationProvider;
+import org.springframework.security.saml2.provider.service.authentication.OpenSaml5AuthenticationProvider;
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
 import org.springframework.security.saml2.provider.service.authentication.Saml2Authentication;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -41,16 +42,16 @@ import com.blackduck.integration.alert.api.authentication.security.event.Authent
 import com.blackduck.integration.alert.common.enumeration.AuthenticationType;
 import com.blackduck.integration.alert.common.persistence.model.UserModel;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith({ SpringExtension.class, MockitoExtension.class })
 class SAMLGroupConverterTest {
     @Mock
     private AuthenticationEventManager authenticationEventManager;
     @Mock
-    private Converter<OpenSaml4AuthenticationProvider.ResponseToken, Saml2Authentication> delegate;
+    private Converter<OpenSaml5AuthenticationProvider.ResponseToken, Saml2Authentication> delegate;
     @Mock
     private Saml2AuthenticatedPrincipal principal;
     @Mock
-    private OpenSaml4AuthenticationProvider.ResponseToken responseToken;
+    private OpenSaml5AuthenticationProvider.ResponseToken responseToken;
     @Mock
     private UserDetailsService userDetailsService;
     @Mock
@@ -82,8 +83,8 @@ class SAMLGroupConverterTest {
         Mockito.when(principal.getAttribute(anyString())).thenAnswer(invocation -> ATTRIBUTES.get((String) invocation.getArguments()[0]));
         authentication.setAuthenticated(true);
 
-        try (MockedStatic<OpenSaml4AuthenticationProvider> openSaml4AuthenticationProvider = Mockito.mockStatic(OpenSaml4AuthenticationProvider.class)) {
-            openSaml4AuthenticationProvider.when(OpenSaml4AuthenticationProvider::createDefaultResponseAuthenticationConverter)
+        try (MockedStatic<OpenSaml5AuthenticationProvider> openSaml4AuthenticationProvider = Mockito.mockStatic(OpenSaml5AuthenticationProvider.class)) {
+            openSaml4AuthenticationProvider.when(OpenSaml5AuthenticationProvider::createDefaultResponseAuthenticationConverter)
                 .thenReturn(delegate);
             Mockito.when(delegate.convert(responseToken)).thenReturn(authentication);
 
@@ -111,8 +112,8 @@ class SAMLGroupConverterTest {
         Mockito.when(principal.getAttribute(anyString())).thenAnswer(invocation -> EMPTY_ATTRIBUTES.get((String) invocation.getArguments()[0]));
         authentication.setAuthenticated(false);
 
-        try (MockedStatic<OpenSaml4AuthenticationProvider> openSaml4AuthenticationProvider = Mockito.mockStatic(OpenSaml4AuthenticationProvider.class)) {
-            openSaml4AuthenticationProvider.when(OpenSaml4AuthenticationProvider::createDefaultResponseAuthenticationConverter)
+        try (MockedStatic<OpenSaml5AuthenticationProvider> openSaml4AuthenticationProvider = Mockito.mockStatic(OpenSaml5AuthenticationProvider.class)) {
+            openSaml4AuthenticationProvider.when(OpenSaml5AuthenticationProvider::createDefaultResponseAuthenticationConverter)
                 .thenReturn(delegate);
             Mockito.when(delegate.convert(responseToken)).thenReturn(authentication);
 

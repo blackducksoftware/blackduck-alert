@@ -37,7 +37,7 @@ import com.blackduck.integration.alert.component.certificates.CertificatesDescri
 import com.blackduck.integration.alert.database.certificates.CustomCertificateRepository;
 import com.blackduck.integration.alert.util.AlertIntegrationTest;
 
-import junit.framework.AssertionFailedError;
+import org.opentest4j.AssertionFailedError;
 
 @Transactional
 @AlertIntegrationTest

@@ -21,6 +21,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -32,7 +35,8 @@ import com.blackduck.integration.alert.channel.email.database.accessor.EmailGlob
 import com.blackduck.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
 import com.blackduck.integration.alert.test.common.EnvironmentVariableMockingUtil;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith({ SpringExtension.class, MockitoExtension.class })
+@MockitoSettings(strictness = Strictness.LENIENT)
 class EmailEnvironmentVariableHandlerTest {
     private final EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
 

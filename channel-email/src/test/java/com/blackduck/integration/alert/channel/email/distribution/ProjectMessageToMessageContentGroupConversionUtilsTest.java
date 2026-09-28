@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.blackduck.integration.alert.api.processor.extract.model.ProviderDetails;
@@ -34,7 +35,7 @@ import com.blackduck.integration.alert.channel.email.attachment.compatibility.Pr
 import com.blackduck.integration.alert.common.enumeration.ItemOperation;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith({ SpringExtension.class, MockitoExtension.class })
 class ProjectMessageToMessageContentGroupConversionUtilsTest {
     @Mock
     BomComponentDetails mockBomComponentDetails;

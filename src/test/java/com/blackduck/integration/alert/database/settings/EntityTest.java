@@ -7,8 +7,8 @@
  */
 package com.blackduck.integration.alert.database.settings;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;

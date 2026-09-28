@@ -24,6 +24,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.blackduck.integration.alert.api.channel.issue.tracker.callback.IssueTrackerCallbackInfoCreator;
@@ -46,7 +49,8 @@ import com.blackduck.integration.jira.common.server.model.IssueCreationRequestMo
 import com.blackduck.integration.jira.common.server.service.IssueService;
 import com.blackduck.integration.jira.common.server.service.ProjectService;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith({ SpringExtension.class, MockitoExtension.class })
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class JiraServerIssueCreatorTest {
     final String TEST_ISSUE_CREATOR_NAME = "user_name01";
     final String TEST_PROJECT_NAME_OR_KEY = "JIRA-Y";

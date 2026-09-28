@@ -20,6 +20,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.blackduck.integration.alert.api.processor.detail.NotificationDetailExtractionDelegator;
@@ -27,7 +28,7 @@ import com.blackduck.integration.alert.api.processor.mapping.JobNotificationMapp
 import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.blackduck.integration.alert.test.common.MockAlertProperties;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith({ SpringExtension.class, MockitoExtension.class })
 class NotificationMappingProcessorTest {
     @Mock
     NotificationDetailExtractionDelegator notificationDetailExtractionDelegator;
