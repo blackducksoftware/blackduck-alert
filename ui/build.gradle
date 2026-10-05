@@ -112,6 +112,10 @@ task copyStaticWebContent(type: Copy) {
 
 tasks.copyStaticWebContent.finalizedBy(updatePnpmVersion)
 tasks.copyStaticWebContent.finalizedBy(pnpmBuild)
+tasks.jar.dependsOn(copyStaticWebContent)
+tasks.jar.dependsOn(pnpmBuild)
 tasks.pnpmBuild.mustRunAfter(updatePnpmVersion)
 tasks.pnpmBuild.mustRunAfter(copyStaticWebContent)
+tasks.pnpmInstallFromLockfile.mustRunAfter(updatePnpmVersion)
+tasks.pnpmInstallFromLockfileRetry.mustRunAfter(updatePnpmVersion)
 tasks.clean.finalizedBy(cleanBundles)
