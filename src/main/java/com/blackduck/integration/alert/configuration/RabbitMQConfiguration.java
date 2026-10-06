@@ -7,13 +7,14 @@
  */
 package com.blackduck.integration.alert.configuration;
 
+import java.time.Duration;
+
 import org.springframework.amqp.core.ExchangeBuilder;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.retry.backoff.ExponentialBackOffPolicy;
-import org.springframework.retry.policy.AlwaysRetryPolicy;
-import org.springframework.retry.support.RetryTemplate;
+import org.springframework.core.retry.RetryPolicy;
+import org.springframework.core.retry.RetryTemplate;
 
 @Configuration
 public class RabbitMQConfiguration {
@@ -31,13 +32,13 @@ public class RabbitMQConfiguration {
 
     @Bean
     public RetryTemplate rabbitmqRetryTemplate() {
-        RetryTemplate retryTemplate = new RetryTemplate();
-        ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
-        backOffPolicy.setMultiplier(BACKOFF_MULTIPLIER);
-        backOffPolicy.setInitialInterval(BACKOFF_INITIAL_INTERVAL);
-        backOffPolicy.setMaxInterval(BACKOFF_MAX_INTERVAL);
-        retryTemplate.setBackOffPolicy(backOffPolicy);
-        retryTemplate.setRetryPolicy(new AlwaysRetryPolicy());
-        return retryTemplate;
+        RetryPolicy retryPolicy = RetryPolicy.builder()
+            .maxRetries(Integer.MAX_VALUE)
+            .delay(Duration.ofMillis(BACKOFF_INITIAL_INTERVAL))
+            .multiplier(BACKOFF_MULTIPLIER)
+            .maxDelay(Duration.ofMillis(BACKOFF_MAX_INTERVAL))
+            .build();
+
+        return new RetryTemplate(retryPolicy);
     }
 }
