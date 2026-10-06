@@ -13,12 +13,12 @@ public class AlertQueueInformation extends AlertSerializableModel {
     private static final long serialVersionUID = 5325498975996171650L;
 
     private final String name;
-    private final int messageCount;
+    private final long messageCount;
     private final int consumerCount;
     private final long handledMessageCount;
     private final double averageMessageSizeBytes;
 
-    public AlertQueueInformation(String name, int messageCount, int consumerCount, long handledMessageCount,  double averageMessageSizeBytes) {
+    public AlertQueueInformation(String name, long messageCount, int consumerCount, long handledMessageCount,  double averageMessageSizeBytes) {
         this.name = name;
         this.messageCount = messageCount;
         this.consumerCount = consumerCount;
@@ -30,7 +30,7 @@ public class AlertQueueInformation extends AlertSerializableModel {
         return name;
     }
 
-    public int getMessageCount() {
+    public long getMessageCount() {
         return messageCount;
     }
 
