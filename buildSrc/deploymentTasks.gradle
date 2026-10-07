@@ -60,7 +60,7 @@ project.tasks.create(name: createDeploymentZipTaskName, type: Zip, dependsOn: [c
     from "${project.buildDir}/deployment"
     into "${project.name}-${project.version}-deployment"
     archiveBaseName = "${project.name}"
-    classifier 'deployment'
+    archiveClassifier.set('deployment')
 }
 
 project.tasks.create(name: helmLintTaskName, type: Exec, dependsOn: [copyDeploymentFilesTaskName], group: 'Deployment', description: "Execute helm lint. <sub-task>") {
