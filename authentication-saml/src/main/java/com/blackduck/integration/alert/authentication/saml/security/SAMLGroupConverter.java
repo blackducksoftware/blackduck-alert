@@ -18,7 +18,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.saml2.provider.service.authentication.OpenSaml4AuthenticationProvider;
+import org.springframework.security.saml2.provider.service.authentication.OpenSaml5AuthenticationProvider;
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
 import org.springframework.security.saml2.provider.service.authentication.Saml2Authentication;
 import org.springframework.stereotype.Component;
@@ -37,9 +37,9 @@ public class SAMLGroupConverter {
         this.userDetailsService = userDetailsService;
     }
 
-    public Converter<OpenSaml4AuthenticationProvider.ResponseToken, Saml2Authentication> groupsConverter() {
-        Converter<OpenSaml4AuthenticationProvider.ResponseToken, Saml2Authentication> delegate =
-            OpenSaml4AuthenticationProvider.createDefaultResponseAuthenticationConverter();
+    public Converter<OpenSaml5AuthenticationProvider.ResponseToken, Saml2Authentication> groupsConverter() {
+        Converter<OpenSaml5AuthenticationProvider.ResponseToken, Saml2Authentication> delegate =
+            OpenSaml5AuthenticationProvider.createDefaultResponseAuthenticationConverter();
 
         return responseToken -> {
             Saml2Authentication authentication = delegate.convert(responseToken);

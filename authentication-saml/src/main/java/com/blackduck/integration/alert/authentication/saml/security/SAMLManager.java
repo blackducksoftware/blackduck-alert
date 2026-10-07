@@ -24,7 +24,7 @@ import org.springframework.security.converter.RsaKeyConverters;
 import org.springframework.security.saml2.core.Saml2X509Credential;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrations;
-import org.springframework.security.saml2.provider.service.web.authentication.OpenSaml4AuthenticationRequestResolver;
+import org.springframework.security.saml2.provider.service.web.authentication.OpenSaml5AuthenticationRequestResolver;
 import org.springframework.security.saml2.provider.service.web.authentication.Saml2AuthenticationRequestResolver;
 import org.springframework.stereotype.Component;
 
@@ -125,7 +125,7 @@ public class SAMLManager {
     }
 
     private void reconfigureForceAuth(boolean forceAuth) {
-        ((OpenSaml4AuthenticationRequestResolver) saml2AuthenticationRequestResolver).setAuthnRequestCustomizer(
+        ((OpenSaml5AuthenticationRequestResolver) saml2AuthenticationRequestResolver).setAuthnRequestCustomizer(
             context -> context.getAuthnRequest().setForceAuthn(forceAuth)
         );
     }
@@ -153,7 +153,7 @@ public class SAMLManager {
             Saml2X509Credential decryptionCredential = Saml2X509Credential.decryption(encryptionRSAPrivateKey, encryptionCert);
             builder
                 .decryptionX509Credentials(credentials -> credentials.add(decryptionCredential))
-                .assertingPartyDetails(party -> party.encryptionX509Credentials(credentials -> credentials.add(encryptionCredential)));
+                .assertingPartyMetadata(party -> party.encryptionX509Credentials(credentials -> credentials.add(encryptionCredential)));
         }
     }
 
@@ -161,6 +161,6 @@ public class SAMLManager {
         String verificationCertString = filePersistenceUtil.readFromUploadsFile(AuthenticationDescriptor.SAML_VERIFICATION_CERT_FILE);
         X509Certificate verificationCert = X509Support.decodeCertificate(verificationCertString.getBytes());
         Saml2X509Credential verificationCredential = Saml2X509Credential.verification(verificationCert);
-        builder.assertingPartyDetails(party -> party.verificationX509Credentials(credentials -> credentials.add(verificationCredential)));
+        builder.assertingPartyMetadata(party -> party.verificationX509Credentials(credentials -> credentials.add(verificationCredential)));
     }
 }
