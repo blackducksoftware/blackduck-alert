@@ -14,6 +14,10 @@ task copyToLib(type: Copy, dependsOn: [compileJava]) {
 
 tasks.compileJava.finalizedBy(copyToLib)
 
+tasks.matching { it.name in ['bootDistTar', 'bootDistZip'] }.configureEach {
+    dependsOn(copyToLib)
+}
+
 task cleanBundles(type: Delete) {
     File testDatabaseDirectory = new File('testDB')
     if (testDatabaseDirectory.exists()) {
@@ -67,12 +71,12 @@ task createAboutText(type: Task, dependsOn: 'getCommitHash') {
     aboutFile << aboutJson
 }
 
-task copyStaticWebModuleContent(type: Copy, dependsOn: ':ui:copyStaticWebContent') {
+task copyStaticWebModuleContent(type: Copy, dependsOn: [':ui:copyStaticWebContent', ':ui:processResources', ':ui:pnpmBuild']) {
     from "${project(':ui').buildDir}/resources/main/static/"
     into "${project.buildDir}/resources/main/static/"
 }
 
-task copyToTemplates(type: Copy, dependsOn: 'copyStaticWebModuleContent') {
+task copyToTemplates(type: Copy, dependsOn: ['copyStaticWebModuleContent', 'processResources']) {
     from "${project.buildDir}/resources/main/static/index.html"
     into "${project.buildDir}/resources/main/templates/"
 }
@@ -85,4 +89,7 @@ task copyChannelTemplatesToMainTemplates(type: Copy) {
 
 tasks.copyToTemplates.mustRunAfter(copyStaticWebModuleContent)
 tasks.copyChannelTemplatesToMainTemplates.mustRunAfter(copyToTemplates)
+tasks.jar.dependsOn(copyToTemplates)
+tasks.compileTestJava.dependsOn(copyToTemplates)
+tasks.resolveMainClassName.dependsOn(copyToTemplates)
 tasks.compileJava.mustRunAfter(createAboutText)
