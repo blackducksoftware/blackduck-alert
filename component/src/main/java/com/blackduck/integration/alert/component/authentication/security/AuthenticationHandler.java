@@ -12,37 +12,31 @@ import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.saml2.provider.service.authentication.OpenSaml4AuthenticationProvider;
+import org.springframework.security.saml2.provider.service.authentication.OpenSaml5AuthenticationProvider;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.web.DefaultRelyingPartyRegistrationResolver;
 import org.springframework.security.saml2.provider.service.web.RelyingPartyRegistrationResolver;
-import org.springframework.security.saml2.provider.service.web.authentication.OpenSaml4AuthenticationRequestResolver;
+import org.springframework.security.saml2.provider.service.web.authentication.OpenSaml5AuthenticationRequestResolver;
 import org.springframework.security.saml2.provider.service.web.authentication.Saml2AuthenticationRequestResolver;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
-import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.blackduck.integration.alert.authentication.saml.security.SAMLGroupConverter;
 import com.blackduck.integration.alert.common.AlertProperties;
-import com.blackduck.integration.alert.common.descriptor.accessor.RoleAccessor;
-import com.blackduck.integration.alert.common.persistence.model.UserRoleModel;
 
 @EnableWebSecurity
 @Configuration
@@ -50,7 +44,6 @@ public class AuthenticationHandler {
     private final HttpPathManager httpPathManager;
     private final CsrfTokenRepository csrfTokenRepository;
     private final AlertProperties alertProperties;
-    private final RoleAccessor roleAccessor;
 
     private final SAMLGroupConverter samlGroupConverter;
     private final AlertAuthenticationProvider authenticationProvider;
@@ -60,14 +53,12 @@ public class AuthenticationHandler {
         HttpPathManager httpPathManager,
         CsrfTokenRepository csrfTokenRepository,
         AlertProperties alertProperties,
-        RoleAccessor roleAccessor,
         SAMLGroupConverter samlGroupConverter,
         AlertAuthenticationProvider authenticationProvider
     ) {
         this.httpPathManager = httpPathManager;
         this.csrfTokenRepository = csrfTokenRepository;
         this.alertProperties = alertProperties;
-        this.roleAccessor = roleAccessor;
         this.samlGroupConverter = samlGroupConverter;
         this.authenticationProvider = authenticationProvider;
     }
@@ -105,9 +96,6 @@ public class AuthenticationHandler {
                 customizer.csrfTokenRepository(csrfTokenRepository);
                 customizer.ignoringRequestMatchers(allowedRequestMatchers);
             })
-            .authorizeHttpRequests(customizer -> {
-                customizer.withObjectPostProcessor(createRoleProcessor());
-            })
             .logout(customizer -> customizer.logoutSuccessUrl(HttpPathManager.PATH_ROOT));
 
         configureSAML(http);
@@ -116,13 +104,13 @@ public class AuthenticationHandler {
 
     private void configureWithSSL(HttpSecurity http) throws Exception {
         if (alertProperties.getSslEnabled()) {
-            http.requiresChannel().anyRequest().requiresSecure();
+            http.addFilterBefore(new RequireSecureChannelFilter(), SecurityContextHolderFilter.class);
         }
     }
 
     private void configureSAML(HttpSecurity http) throws Exception {
         //eventually configure SAML
-        OpenSaml4AuthenticationProvider openSaml4AuthenticationProvider = new OpenSaml4AuthenticationProvider();
+        OpenSaml5AuthenticationProvider openSaml4AuthenticationProvider = new OpenSaml5AuthenticationProvider();
         openSaml4AuthenticationProvider.setResponseAuthenticationConverter(samlGroupConverter.groupsConverter());
 
         http.saml2Login(saml2 -> {
@@ -144,25 +132,8 @@ public class AuthenticationHandler {
         return new RequestMatcher[] {
             request ->
                 Arrays.stream(httpPathManager.getAllowedPaths())
-                    .map(AntPathRequestMatcher::new)
+                    .map(PathPatternRequestMatcher::pathPattern)
                     .anyMatch(requestMatcher -> requestMatcher.matches(request))
-        };
-    }
-
-    private ObjectPostProcessor<AffirmativeBased> createRoleProcessor() {
-        return new ObjectPostProcessor<>() {
-            @Override
-            public <O extends AffirmativeBased> O postProcess(O affirmativeBased) {
-                WebExpressionVoter webExpressionVoter = new WebExpressionVoter();
-                DefaultWebSecurityExpressionHandler expressionHandler = new DefaultWebSecurityExpressionHandler();
-                expressionHandler.setRoleHierarchy(authorities -> {
-                    String[] allAlertRoles = retrieveAllowedRoles();
-                    return AuthorityUtils.createAuthorityList(allAlertRoles);
-                });
-                webExpressionVoter.setExpressionHandler(expressionHandler);
-                affirmativeBased.getDecisionVoters().add(webExpressionVoter);
-                return affirmativeBased;
-            }
         };
     }
 
@@ -195,23 +166,6 @@ public class AuthenticationHandler {
         return simpleUrlLogoutSuccessHandler;
     }
 
-    @Bean
-    public DefaultWebSecurityExpressionHandler webSecurityExpressionHandler() {
-        DefaultWebSecurityExpressionHandler expressionHandler = new DefaultWebSecurityExpressionHandler();
-        expressionHandler.setRoleHierarchy(authorities -> {
-            String[] allAlertRoles = retrieveAllowedRoles();
-            return AuthorityUtils.createAuthorityList(allAlertRoles);
-        });
-        return expressionHandler;
-    }
-
-    private String[] retrieveAllowedRoles() {
-        return roleAccessor.getRoles()
-            .stream()
-            .map(UserRoleModel::getName)
-            .toArray(String[]::new);
-    }
-
     // ==========
     // SAML Beans
     // ==========
@@ -220,8 +174,8 @@ public class AuthenticationHandler {
     Saml2AuthenticationRequestResolver authenticationRequestResolver(RelyingPartyRegistrationRepository registrations) {
         RelyingPartyRegistrationResolver registrationResolver =
             new DefaultRelyingPartyRegistrationResolver(registrations);
-        OpenSaml4AuthenticationRequestResolver authenticationRequestResolver =
-            new OpenSaml4AuthenticationRequestResolver(registrationResolver);
+        OpenSaml5AuthenticationRequestResolver authenticationRequestResolver =
+            new OpenSaml5AuthenticationRequestResolver(registrationResolver);
         authenticationRequestResolver.setAuthnRequestCustomizer(context -> context
             .getAuthnRequest().setForceAuthn(false));
         return authenticationRequestResolver;
