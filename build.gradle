@@ -49,7 +49,7 @@ ext {
     // https://hub.docker.com/_/alpine/tags?name=3.
     alpineImageVersion = '3.24'
     // https://hub.docker.com/_/rabbitmq/tags?name=4.
-    rabbitmqImageVersion = '4.2'
+    rabbitmqImageVersion = '4.3'
     // https://hub.docker.com/u/blackducksoftware?page=1&search=blackduck-cfssl
     cfsslImageVersion = '1.0.38'
     // https://hub.docker.com/u/blackducksoftware?page=1&search=hub-docker-common
