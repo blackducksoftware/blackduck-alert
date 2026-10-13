@@ -220,6 +220,7 @@ dependencies {
     // Logging
     runtimeOnly 'ch.qos.logback:logback-classic'
     runtimeOnly 'ch.qos.logback:logback-core'
+    runtimeOnly 'org.apache.tomcat.embed:tomcat-embed-el'
     // Tomcat messages use these loggers.
     runtimeOnly 'org.slf4j:jcl-over-slf4j'
     runtimeOnly 'org.slf4j:jul-to-slf4j'
@@ -263,7 +264,6 @@ dependencies {
 
         if (!containsExternalDbArg) {
             runtimeOnly 'com.playtika.testcontainers:embedded-postgresql'
-            runtimeOnly 'org.apache.tomcat.embed:tomcat-embed-el'
         }
 
         if (!containsExternalRabbitMqArg) {
