@@ -104,9 +104,7 @@ public class AuthenticationHandler {
 
     private void configureWithSSL(HttpSecurity http) throws Exception {
         if (alertProperties.getSslEnabled()) {
-            http.requiresChannel(requiresChannel ->
-                    requiresChannel.anyRequest().requiresSecure()
-            );
+            http.redirectToHttps(Customizer.withDefaults());
         }
     }
 
