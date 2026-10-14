@@ -26,7 +26,7 @@ import org.springframework.util.backoff.BackOff;
 import org.springframework.util.backoff.BackOffExecution;
 import org.springframework.util.backoff.ExponentialBackOff;
 
-class RabbitMQConfigurationRetryTestIT {
+class RabbitMQConfigurationRetryTest {
     private RabbitMQConfiguration rabbitMQConfiguration;
     private RetryTemplate retryTemplate;
 

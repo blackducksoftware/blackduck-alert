@@ -28,7 +28,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
@@ -110,11 +109,11 @@ public class AuthenticationHandler {
 
     private void configureSAML(HttpSecurity http) throws Exception {
         //eventually configure SAML
-        OpenSaml5AuthenticationProvider openSaml4AuthenticationProvider = new OpenSaml5AuthenticationProvider();
-        openSaml4AuthenticationProvider.setResponseAuthenticationConverter(samlGroupConverter.groupsConverter());
+        OpenSaml5AuthenticationProvider openSaml5AuthenticationProvider = new OpenSaml5AuthenticationProvider();
+        openSaml5AuthenticationProvider.setResponseAuthenticationConverter(samlGroupConverter.groupsConverter());
 
         http.saml2Login(saml2 -> {
-                saml2.authenticationManager(new ProviderManager(openSaml4AuthenticationProvider));
+                saml2.authenticationManager(new ProviderManager(openSaml5AuthenticationProvider));
                 saml2.loginPage("/");
             })
             .saml2Logout(Customizer.withDefaults());

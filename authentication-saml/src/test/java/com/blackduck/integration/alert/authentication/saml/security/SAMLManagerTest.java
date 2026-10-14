@@ -46,7 +46,7 @@ class SAMLManagerTest {
     @Mock
     private FilePersistenceUtil filePersistenceUtil;
     @Mock
-    private OpenSaml5AuthenticationRequestResolver saml2AuthenticationRequestResolver;
+    private OpenSaml5AuthenticationRequestResolver saml5AuthenticationRequestResolver;
     @Mock
     private RelyingPartyRegistration relyingPartyRegistration;
     @Mock
@@ -56,7 +56,7 @@ class SAMLManagerTest {
     void init() throws IOException {
         samlConfigAccessor = SAMLTestHelper.createTestSAMLConfigAccessor();
         alertRelyingPartyRegistrationRepository = new AlertRelyingPartyRegistrationRepository();
-        samlManager = new SAMLManager(samlConfigAccessor, alertRelyingPartyRegistrationRepository, filePersistenceUtil, saml2AuthenticationRequestResolver);
+        samlManager = new SAMLManager(samlConfigAccessor, alertRelyingPartyRegistrationRepository, filePersistenceUtil, saml5AuthenticationRequestResolver);
 
         Mockito.when(filePersistenceUtil.readFromUploadsFile(AuthenticationDescriptor.SAML_METADATA_FILE)).thenReturn("dummy data");
         Mockito.when(builder.build()).thenReturn(relyingPartyRegistration);
@@ -77,7 +77,7 @@ class SAMLManagerTest {
 
             samlManager.reconfigureSAML();
             assertTrue(alertRelyingPartyRegistrationRepository.iterator().hasNext());
-            Mockito.verify(saml2AuthenticationRequestResolver, times(1)).setAuthnRequestCustomizer(any());
+            Mockito.verify(saml5AuthenticationRequestResolver, times(1)).setAuthnRequestCustomizer(any());
         }
     }
 
@@ -94,7 +94,7 @@ class SAMLManagerTest {
 
             samlManager.reconfigureSAML();
             assertTrue(alertRelyingPartyRegistrationRepository.iterator().hasNext());
-            Mockito.verify(saml2AuthenticationRequestResolver, times(1)).setAuthnRequestCustomizer(any());
+            Mockito.verify(saml5AuthenticationRequestResolver, times(1)).setAuthnRequestCustomizer(any());
         }
     }
 
