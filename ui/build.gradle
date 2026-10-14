@@ -95,6 +95,7 @@ task pnpmBuild(type: Exec, dependsOn: [pnpmInstallFromLockfileRetry]) {
     outputs.dir("${project.buildDir}/resources/main/static")
     outputs.cacheIf { true }
 
+    environment 'NODE_OPTIONS', (System.getenv('NODE_OPTIONS') ?: '').replace('--preserve-symlinks', '').trim()
     commandLine 'pnpm', 'run', 'build'
 }
 
