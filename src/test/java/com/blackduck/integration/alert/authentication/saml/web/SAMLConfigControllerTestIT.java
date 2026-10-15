@@ -24,6 +24,7 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -169,7 +170,7 @@ class SAMLConfigControllerTestIT {
         filePersistenceUtil.writeFileToUploadsDirectory(AuthenticationDescriptor.SAML_METADATA_FILE, new ByteArrayInputStream("data".getBytes()));
 
         String urlPath = REQUEST_URL + SAMLConfigController.METADATA_FILE_UPLOAD_PATH;
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.multipart(urlPath)
+        MockMultipartHttpServletRequestBuilder request = MockMvcRequestBuilders.multipart(urlPath)
             .file(new MockMultipartFile("file", "filename.txt", "text/plain", "<note></note>".getBytes()))
             .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
             .with(SecurityMockMvcRequestPostProcessors.csrf());

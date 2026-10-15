@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.opentest4j.AssertionFailedError;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -27,7 +28,7 @@ import com.blackduck.integration.alert.authentication.saml.validator.SAMLConfigu
 import com.blackduck.integration.alert.common.action.ActionResponse;
 import com.blackduck.integration.alert.common.persistence.util.FilePersistenceUtil;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith({ SpringExtension.class, MockitoExtension.class })
 class SAMLCrudActionsTest {
     private SAMLCrudActions samlCrudActions;
     private SAMLConfigModel samlConfigModel;

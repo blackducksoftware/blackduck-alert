@@ -15,5 +15,6 @@ dependencies {
     api 'org.junit.jupiter:junit-jupiter-params'
     api 'com.github.springtestdbunit:spring-test-dbunit'
     api 'org.mockito:mockito-core'
+    api 'org.mockito:mockito-junit-jupiter'
     api 'org.skyscreamer:jsonassert'
 }
