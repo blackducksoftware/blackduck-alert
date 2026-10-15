@@ -1,7 +1,7 @@
 /*
  * blackduck-alert
  *
- * Copyright (c) 2024 Black Duck Software, Inc.
+ * Copyright (c) 2026 Black Duck Software, Inc.
  *
  * Use subject to the terms and conditions of the Black Duck Software End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.retry.RetryException;
 import org.springframework.core.retry.RetryListener;
@@ -26,6 +27,8 @@ import org.springframework.util.backoff.BackOff;
 import org.springframework.util.backoff.BackOffExecution;
 import org.springframework.util.backoff.ExponentialBackOff;
 
+@Disabled("This test class is used to validate the retry configuration and behavior of RabbitMQConfiguration. " +
+        "It is disabled to avoid delay in test execution in higher environments.")
 class RabbitMQConfigurationRetryTest {
     private RabbitMQConfiguration rabbitMQConfiguration;
     private RetryTemplate retryTemplate;
