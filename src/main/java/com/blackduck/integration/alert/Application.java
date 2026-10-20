@@ -7,9 +7,9 @@
  */
 package com.blackduck.integration.alert;
 
+import com.blackduck.integration.alert.component.authentication.security.database.UserDatabaseService;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.batch.autoconfigure.BatchAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -21,8 +21,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import com.blackduck.integration.alert.component.authentication.security.database.UserDatabaseService;
 
 @EnableJpaRepositories(basePackages = {"com.blackduck.integration.alert.database", "com.blackduck.integration.alert.channel", "com.blackduck.integration.alert.api.oauth",
         "com.blackduck.integration.alert.authentication"})
@@ -39,7 +37,6 @@ public class Application {
 
     public static void main(String[] args) {
         new SpringApplicationBuilder(Application.class)
-                .web(WebApplicationType.SERVLET)
                 .logStartupInfo(false)
                 .run(args);
     }
