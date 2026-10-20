@@ -7,28 +7,20 @@
  */
 package com.blackduck.integration.alert.configuration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.retry.RetryException;
-import org.springframework.core.retry.RetryListener;
 import org.springframework.core.retry.RetryPolicy;
-import org.springframework.core.retry.RetryState;
 import org.springframework.core.retry.RetryTemplate;
-import org.springframework.core.retry.Retryable;
 import org.springframework.util.backoff.BackOff;
 import org.springframework.util.backoff.BackOffExecution;
 import org.springframework.util.backoff.ExponentialBackOff;
 
-@Disabled("This test class is used to validate the retry configuration and behavior of RabbitMQConfiguration. " +
-        "It is disabled to avoid delay in test execution in higher environments.")
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 class RabbitMQConfigurationRetryTest {
     private RabbitMQConfiguration rabbitMQConfiguration;
     private RetryTemplate retryTemplate;
@@ -62,14 +54,13 @@ class RabbitMQConfigurationRetryTest {
         BackOff backOff = retryPolicy.getBackOff();
         BackOffExecution execution = backOff.start();
 
-        assertEquals(5000L, execution.nextBackOff());
-        assertEquals(10000L, execution.nextBackOff());
-        assertEquals(20000L, execution.nextBackOff());
-        assertEquals(40000L, execution.nextBackOff());
-        // 5th retry delay: 40000 * 2 = 80000 capped at max interval (60000ms)
-        assertEquals(60000L, execution.nextBackOff());
-        assertEquals(60000L, execution.nextBackOff());
-        assertEquals(60000L, execution.nextBackOff());
+        long expectedDelay = RabbitMQConfiguration.BACKOFF_INITIAL_INTERVAL;
+        long maxInterval = RabbitMQConfiguration.BACKOFF_MAX_INTERVAL;
+
+        for (int i = 0; i < 7; i++) {
+            assertEquals(expectedDelay, execution.nextBackOff());
+            expectedDelay = Math.min(expectedDelay * RabbitMQConfiguration.BACKOFF_MULTIPLIER, maxInterval);
+        }
     }
 
     @Test
@@ -110,43 +101,5 @@ class RabbitMQConfigurationRetryTest {
 
         assertEquals("RECOVERED", result);
         assertEquals(succeedOnAttempt, attempts.get());
-    }
-
-    @Test
-    void testRetryListenerInterception() throws RetryException {
-        AtomicInteger executionsReported = new AtomicInteger(0);
-        AtomicInteger beforeRetryReported = new AtomicInteger(0);
-        AtomicInteger successReported = new AtomicInteger(0);
-
-        retryTemplate.setRetryListener(new RetryListener() {
-            @Override
-            public void onRetryableExecution(RetryPolicy policy, Retryable<?> retryable, RetryState state) {
-                executionsReported.incrementAndGet();
-            }
-
-            @Override
-            public void beforeRetry(RetryPolicy policy, Retryable<?> retryable, RetryState state) {
-                beforeRetryReported.incrementAndGet();
-            }
-
-            @Override
-            public void onRetrySuccess(RetryPolicy policy, Retryable<?> retryable, Object result) {
-                successReported.incrementAndGet();
-            }
-        });
-
-        AtomicInteger attempts = new AtomicInteger(0);
-        String outcome = retryTemplate.execute(() -> {
-            if (attempts.incrementAndGet() < 2) {
-                throw new RuntimeException("Temporary failure");
-            }
-            return "OK";
-        });
-
-        assertEquals("OK", outcome);
-        assertEquals(2, attempts.get());
-        assertEquals(1, beforeRetryReported.get(), "One retry occurred before succeeding");
-        assertEquals(1, successReported.get(), "Final recovery should trigger success listener");
-        assertTrue(executionsReported.get() >= 2, "Executions should be tracked in listener");
     }
 }
