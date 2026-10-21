@@ -7,6 +7,7 @@
  */
 package com.blackduck.integration.alert.database.notification;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -15,10 +16,15 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -51,19 +57,27 @@ class NotificationContentRepositoryTestIT {
     private DescriptorConfigRepository descriptorConfigRepository;
     @Autowired
     private NotificationContentRepository notificationContentRepository;
+    @Autowired
+    private NotificationBatchRepository notificationBatchRepository;
+
+    private DescriptorConfigEntity providerConfig;
+
+    @BeforeEach
+    void setUp() {
+        providerConfig = createProviderConfig();
+    }
 
     @AfterEach
-    public void cleanup() {
+    void cleanup() {
+        notificationBatchRepository.deleteAll();
         notificationContentRepository.deleteAll();
+        descriptorConfigRepository.delete(providerConfig);
     }
 
     @Test
     void findByProcessedFalseOrderByProviderCreationTimeAscTestIT() {
-        // Create provider config (required for FK constraint)
-        DescriptorConfigEntity providerConfig = createProviderConfig();
         Long providerConfigId = providerConfig.getId();
 
-        // Create notifications
         OffsetDateTime now = DateUtils.createCurrentDateTimestamp();
         OffsetDateTime fiveSecondsAgo = now.minusSeconds(5L);
         OffsetDateTime threeHoursAgo = now.minusHours(3L);
@@ -73,8 +87,6 @@ class NotificationContentRepositoryTestIT {
         NotificationEntity secondAsc = createNotification(providerConfigId, threeHoursAgo);
         NotificationEntity thirdAsc = createNotification(providerConfigId, fiveSecondsAgo);
         NotificationEntity fourthAsc = createNotification(providerConfigId, now);
-
-        // Begin test...
 
         // Insert notifications out of order
         notificationContentRepository.saveAll(List.of(secondAsc, firstAsc, fourthAsc, thirdAsc));
@@ -96,7 +108,6 @@ class NotificationContentRepositoryTestIT {
 
     @Test
     void countByProcessedTest() {
-        DescriptorConfigEntity providerConfig = createProviderConfig();
         Long providerConfigId = providerConfig.getId();
 
         NotificationEntity entity1 = createNotification(providerConfigId, OffsetDateTime.now(), true);
@@ -111,7 +122,6 @@ class NotificationContentRepositoryTestIT {
 
     @Test
     void saveIgnoreContentIdConflictInsertsNewNotificationTest() {
-        DescriptorConfigEntity providerConfig = createProviderConfig();
         String contentId = String.format("content-id-%s", UUID.randomUUID());
 
         int rowsInserted = saveNotificationWithContentId(providerConfig.getId(), contentId);
@@ -122,7 +132,6 @@ class NotificationContentRepositoryTestIT {
 
     @Test
     void saveIgnoreContentIdConflictIgnoresDuplicateContentIdTest() {
-        DescriptorConfigEntity providerConfig = createProviderConfig();
         String contentId = String.format("content-id-%s", UUID.randomUUID());
 
         int firstInsert = saveNotificationWithContentId(providerConfig.getId(), contentId);
@@ -135,7 +144,6 @@ class NotificationContentRepositoryTestIT {
 
     @Test
     void saveIgnoreContentIdConflictSequentialIdIncrementTest() {
-        DescriptorConfigEntity providerConfig = createProviderConfig();
         int numberOfNotifications = 5;
         List<String> contentIds = new ArrayList<>();
         for (int i = 0; i < numberOfNotifications; i++) {
@@ -156,7 +164,6 @@ class NotificationContentRepositoryTestIT {
 
     @Test
     void findByContentIdInReturnsMatchingEntitiesTest() {
-        DescriptorConfigEntity providerConfig = createProviderConfig();
         OffsetDateTime now = OffsetDateTime.now();
 
         NotificationEntity first = createNotification(providerConfig.getId(), now);
@@ -179,7 +186,6 @@ class NotificationContentRepositoryTestIT {
 
     @Test
     void findByContentIdInReturnsSubsetForPartialMatchesTest() {
-        DescriptorConfigEntity providerConfig = createProviderConfig();
         NotificationEntity saved = createNotification(providerConfig.getId(), OffsetDateTime.now());
         notificationContentRepository.save(saved);
 
@@ -189,6 +195,89 @@ class NotificationContentRepositoryTestIT {
 
         assertEquals(1, result.size(), "Only the notification with a matching contentId should be returned");
         assertEquals(saved.getContentId(), result.get(0).getContentId(), "The returned entity should match the saved contentId");
+    }
+
+    @Test
+    void existsByProviderConfigIdAndMappingToJobsFalseReturnsTrueTest() {
+        UUID batchId = UUID.randomUUID();
+        saveNotificationInBatch(providerConfig.getId(), batchId, false, false);
+
+        assertTrue(
+            notificationContentRepository.existsByProviderConfigIdAndMappingToJobsFalse(providerConfig.getId(), batchId),
+            "Should return true when an unmapped, unprocessed notification exists in the batch"
+        );
+    }
+
+    @Test
+    void existsByProviderConfigIdAndMappingToJobsFalseReturnsTrueWithMultipleNotificationsInBatchTest() {
+        UUID batchId = UUID.randomUUID();
+        saveNotificationInBatch(providerConfig.getId(), batchId, false, false);
+        saveNotificationInBatch(providerConfig.getId(), batchId, false, false);
+
+        assertTrue(
+            notificationContentRepository.existsByProviderConfigIdAndMappingToJobsFalse(providerConfig.getId(), batchId),
+            "Should return true when multiple unmapped, unprocessed notifications exist in the batch"
+        );
+    }
+
+    @Test
+    void existsByProviderConfigIdAndMappingToJobsFalseReturnsFalseWhenTableIsEmptyTest() {
+        assertFalse(
+            notificationContentRepository.existsByProviderConfigIdAndMappingToJobsFalse(providerConfig.getId(), UUID.randomUUID()),
+            "Should return false when no notifications exist"
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("mappedOrProcessedNotificationParameters")
+    void existsByProviderConfigIdAndMappingToJobsFalseReturnsFalseWhenNotificationIsMappedOrProcessedTest(boolean mappingToJobs, boolean processed) {
+        UUID batchId = UUID.randomUUID();
+        saveNotificationInBatch(providerConfig.getId(), batchId, mappingToJobs, processed);
+
+        assertFalse(
+            notificationContentRepository.existsByProviderConfigIdAndMappingToJobsFalse(providerConfig.getId(), batchId),
+            "Should return false when notification is already mapped or processed"
+        );
+    }
+
+    @Test
+    void existsByProviderConfigIdAndMappingToJobsFalseReturnsFalseWhenBatchIdDoesNotMatchTest() {
+        UUID batchId = UUID.randomUUID();
+        saveNotificationInBatch(providerConfig.getId(), batchId, false, false);
+
+        assertFalse(
+            notificationContentRepository.existsByProviderConfigIdAndMappingToJobsFalse(providerConfig.getId(), UUID.randomUUID()),
+            "Should return false when queried with a different batchId"
+        );
+    }
+
+    @Test
+    void existsByProviderConfigIdAndMappingToJobsFalseReturnsFalseWhenProviderIdDoesNotMatchTest() {
+        UUID batchId = UUID.randomUUID();
+        saveNotificationInBatch(providerConfig.getId(), batchId, false, false);
+
+        assertFalse(
+            notificationContentRepository.existsByProviderConfigIdAndMappingToJobsFalse(providerConfig.getId() + 1, batchId),
+            "Should return false when queried with a different providerId"
+        );
+    }
+
+    private static Stream<Arguments> mappedOrProcessedNotificationParameters() {
+        return Stream.of(
+            Arguments.of(true, false),
+            Arguments.of(false, true),
+            Arguments.of(true, true)
+        );
+    }
+
+    private void saveNotificationInBatch(long providerConfigId, UUID batchId, boolean mappingToJobs, boolean processed) {
+        String contentId = String.format("content-id-%s", UUID.randomUUID());
+        notificationContentRepository.saveIgnoreContentIdConflict(
+            OffsetDateTime.now(), BLACK_DUCK_PROVIDER_KEY.getUniversalKey(), providerConfigId,
+            OffsetDateTime.now(), NotificationType.VULNERABILITY.name(), "{\"content\": {}}", processed, contentId, mappingToJobs
+        );
+        NotificationEntity saved = notificationContentRepository.findByContentIdIn(List.of(contentId)).get(0);
+        notificationBatchRepository.save(new NotificationBatchEntity(providerConfigId, batchId, saved.getId()));
     }
 
     private int saveNotificationWithContentId(Long providerConfigId, String contentId) {
