@@ -10,6 +10,7 @@ package com.blackduck.integration.alert;
 import com.blackduck.integration.alert.component.authentication.security.database.UserDatabaseService;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.batch.autoconfigure.BatchAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -37,6 +38,7 @@ public class Application {
 
     public static void main(String[] args) {
         new SpringApplicationBuilder(Application.class)
+                .web(WebApplicationType.SERVLET)
                 .logStartupInfo(false)
                 .run(args);
     }

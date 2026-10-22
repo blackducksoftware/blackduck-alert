@@ -188,6 +188,7 @@ public class RunServerTask extends Exec {
         // change the --server.ssl.key-store parameter to the keystore file to use for running over ssl
         List<String> variables = new LinkedList<>();
         List<String> commonVariables = List.of(
+            "--spring.main.web-application-type=servlet",
             String.format("--server.ssl.key-store=%s/certs/blackduck-alert.keystore", buildDirectory),
             String.format("--server.ssl.trust-store=%s/certs/blackduck-alert.truststore", buildDirectory),
             "--server.port=8443",
