@@ -8,6 +8,7 @@
 package com.blackduck.integration.alert.processing;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -85,13 +86,17 @@ class NotificationReceivedEventHandlerTestIT {
         ConfigurationFieldModel blackduckTimeout = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT);
         blackduckTimeout.setFieldValue(String.valueOf(BlackDuckProperties.DEFAULT_TIMEOUT));
 
-        ConfigurationModel blackduckConfigurationModel = defaultConfigurationAccessor.createConfiguration(blackDuckProviderKey,
+        ConfigurationModel blackduckConfigurationModel = defaultConfigurationAccessor.createConfiguration(
+            blackDuckProviderKey,
             ConfigContextEnum.GLOBAL,
-            List.of(providerConfigEnabled,
+            List.of(
+                providerConfigEnabled,
                 providerConfigName,
                 blackduckUrl,
                 blackduckApiKey,
-                blackduckTimeout));
+                blackduckTimeout
+            )
+        );
         blackDuckGlobalConfigId = blackduckConfigurationModel.getConfigurationId();
         batchId = UUID.randomUUID();
     }
@@ -184,9 +189,31 @@ class NotificationReceivedEventHandlerTestIT {
             notificationMappingProcessor,
             eventManagerSpy
         );
-        notificationReceivedEventHandler.handle(new NotificationReceivedEvent(blackDuckGlobalConfigId,batchId));
+        notificationReceivedEventHandler.handle(new NotificationReceivedEvent(blackDuckGlobalConfigId, batchId));
 
         assertEquals(200, defaultNotificationAccessor.getFirstPageOfNotificationsNotProcessed(200).getModels().size());
+    }
+
+    @Test
+    void testHasMoreNotificationsToMapWithMultipleBatches() {
+        // Simulate a prior accumulation cycle: save a notification under a different batchId so it remains in raw_notification_content
+        // but is not part of the current batch. This previous row must not influence the result for the current batch.
+        UUID priorBatchId = UUID.randomUUID();
+        defaultNotificationAccessor.saveAllNotificationsInBatch(priorBatchId, List.of(createAlertNotificationModel(false)));
+
+        List<AlertNotificationModel> currentBatch = defaultNotificationAccessor.saveAllNotificationsInBatch(batchId, List.of(createAlertNotificationModel(false)));
+        assertTrue(
+            defaultNotificationAccessor.hasMoreNotificationsToMap(blackDuckGlobalConfigId, batchId),
+            "hasMoreNotificationsToMap should return true when the current batch has unmapped notifications"
+        );
+        // Mark the current batch notifications as mapped and processed
+        defaultNotificationAccessor.setNotificationsMapping(currentBatch);
+        defaultNotificationAccessor.setNotificationsProcessed(currentBatch);
+        // After all current batch notifications are mapped, hasMoreNotificationsToMap must return false.
+        assertFalse(
+            defaultNotificationAccessor.hasMoreNotificationsToMap(blackDuckGlobalConfigId, batchId),
+            "hasMoreNotificationsToMap should return false when all current batch notifications have been mapped"
+        );
     }
 
     private AlertNotificationModel createAlertNotificationModel(boolean processed) {
@@ -199,8 +226,10 @@ class NotificationReceivedEventHandlerTestIT {
             + "\"componentVersionName\": \"test\""
             + "}"
             + "}";
-        MockNotificationContent notificationMocker = new MockNotificationContent(DateUtils.createCurrentDateTimestamp(), blackDuckProviderKey.getUniversalKey(), DateUtils.createCurrentDateTimestamp(), NotificationType.BOM_EDIT.name(),
-            bomEditContent, blackDuckGlobalConfigId);
+        MockNotificationContent notificationMocker = new MockNotificationContent(
+            DateUtils.createCurrentDateTimestamp(), blackDuckProviderKey.getUniversalKey(), DateUtils.createCurrentDateTimestamp(), NotificationType.BOM_EDIT.name(),
+            bomEditContent, blackDuckGlobalConfigId
+        );
         NotificationEntity entity = notificationMocker.createEntity();
         return new AlertNotificationModel(
             null,
