@@ -24,7 +24,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot'
 
     // SAML
-    implementation "org.opensaml:opensaml-core"
+    implementation "org.opensaml:opensaml-core-api"
     implementation "org.opensaml:opensaml-saml-api"
     implementation "org.opensaml:opensaml-saml-impl"
 

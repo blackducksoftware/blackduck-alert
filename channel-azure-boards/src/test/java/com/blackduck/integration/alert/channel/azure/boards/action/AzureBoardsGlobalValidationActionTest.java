@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -31,7 +32,7 @@ import com.blackduck.integration.alert.common.persistence.model.PermissionMatrix
 import com.blackduck.integration.alert.common.security.authorization.AuthorizationManager;
 import com.blackduck.integration.alert.test.common.AuthenticationTestUtils;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith({ SpringExtension.class, MockitoExtension.class })
 class AzureBoardsGlobalValidationActionTest {
     private final AuthenticationTestUtils authenticationTestUtils = new AuthenticationTestUtils();
     private final DescriptorKey descriptorKey = ChannelKeys.AZURE_BOARDS;

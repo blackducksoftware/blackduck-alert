@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '3.5.16'
+        springBootVersion = '4.1.1'
     }
 
     apply from: 'https://raw.githubusercontent.com/blackducksoftware/integration-resources/master/gradle_common/buildscript-repositories.gradle', to: buildscript
@@ -125,6 +125,18 @@ subprojects {
 }
 
 allprojects {
+    tasks.withType(org.gradle.testing.jacoco.tasks.JacocoReport).matching { it.name == 'codeCoverageReport' }.configureEach {
+        // The shared plugin scans rootDir, which overlaps unrelated task outputs in Gradle 8.
+        executionData.setFrom(rootProject.allprojects.collect { coverageProject ->
+            coverageProject.fileTree(coverageProject.layout.buildDirectory.dir('jacoco')) {
+                include '*.exec'
+            }
+        })
+        mustRunAfter {
+            rootProject.allprojects.collect { coverageProject -> coverageProject.tasks.withType(Test) }
+        }
+    }
+
     configurations {
         all {
             exclude group: 'com.blackducksoftware.bdio', module: 'bdio2'
@@ -135,6 +147,7 @@ allprojects {
                and bouncycastle to patched versions */
             resolutionStrategy {
                 force "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}"
+                force "org.apache.tomcat.embed:tomcat-embed-el:${tomcatVersion}"
                 force "org.apache.tomcat:tomcat-annotations-api:${tomcatVersion}"
                 force "org.bouncycastle:bcprov-jdk18on:${bouncyCastleVersion}"
                 force "org.bouncycastle:bcpkix-jdk18on:${bouncyCastleVersion}"
@@ -219,6 +232,7 @@ dependencies {
     // Logging
     runtimeOnly 'ch.qos.logback:logback-classic'
     runtimeOnly 'ch.qos.logback:logback-core'
+    runtimeOnly 'org.apache.tomcat.embed:tomcat-embed-el'
     // Tomcat messages use these loggers.
     runtimeOnly 'org.slf4j:jcl-over-slf4j'
     runtimeOnly 'org.slf4j:jul-to-slf4j'
@@ -227,6 +241,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation 'org.springframework.boot:spring-boot-autoconfigure'
     implementation 'org.springframework.data:spring-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-amqp'
+    implementation 'org.springframework.boot:spring-boot-batch'
+    implementation 'org.springframework.boot:spring-boot-hibernate'
+    implementation 'org.springframework.boot:spring-boot-webmvc'
+    implementation 'org.springframework.boot:spring-boot-jackson'
+    implementation 'org.springframework.boot:spring-boot-tomcat'
     implementation 'org.springframework.batch:spring-batch-core'
     implementation 'org.springframework.security:spring-security-core'
     implementation 'org.springframework.security:spring-security-web'
@@ -235,8 +255,10 @@ dependencies {
     // =============
     // Test and Dev
     // =============
-    testImplementation 'org.testcontainers:postgresql'
-    testImplementation 'org.testcontainers:rabbitmq'
+    testImplementation 'org.testcontainers:testcontainers-postgresql'
+    testImplementation 'org.testcontainers:testcontainers-rabbitmq'
+    testImplementation 'org.springframework.boot:spring-boot-jdbc-test'
+    testImplementation 'org.springframework.boot:spring-boot-http-converter'
     testRuntimeOnly 'org.dbunit:dbunit'
     testRuntimeOnly 'com.playtika.testcontainers:embedded-postgresql'
     testRuntimeOnly 'com.playtika.testcontainers:embedded-rabbitmq'
@@ -248,16 +270,16 @@ dependencies {
         def containsExternalRabbitMqArg = getGradle().getStartParameter().taskNames.contains("--external-rabbit")
 
         if (!containsExternalDbArg || !containsExternalRabbitMqArg) {
-            runtimeClasspath 'org.springframework.cloud:spring-cloud-starter-bootstrap'
-            runtimeClasspath 'org.springframework.boot:spring-boot-devtools'
+            runtimeOnly 'org.springframework.cloud:spring-cloud-starter-bootstrap'
+            runtimeOnly 'org.springframework.boot:spring-boot-devtools'
         }
 
         if (!containsExternalDbArg) {
-            runtimeClasspath 'com.playtika.testcontainers:embedded-postgresql'
+            runtimeOnly 'com.playtika.testcontainers:embedded-postgresql'
         }
 
         if (!containsExternalRabbitMqArg) {
-            runtimeClasspath 'com.playtika.testcontainers:embedded-rabbitmq'
+            runtimeOnly 'com.playtika.testcontainers:embedded-rabbitmq'
         }
     }
 
@@ -266,10 +288,6 @@ dependencies {
     testImplementation 'jakarta.persistence:jakarta.persistence-api'
     testImplementation 'org.javassist:javassist'
     testImplementation 'jakarta.mail:jakarta.mail-api'
-}
-
-bootJar {
-    launchScript()
 }
 
 distributions {
