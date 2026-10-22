@@ -47,7 +47,6 @@ task updatePnpmVersion(type: Task) {
 
 task pnpmInstallFromLockfile(type: Exec, dependsOn: [corepackPrepare]) {
     inputs.files('package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml')
-    inputs.property('nodeLinker', 'hoisted')
     outputs.dir('node_modules')
     outputs.cacheIf { true }
     ignoreExitValue = true
@@ -55,7 +54,7 @@ task pnpmInstallFromLockfile(type: Exec, dependsOn: [corepackPrepare]) {
     // --config.confirmModulesPurge=false tells PNPM to ignore the confirmation prompt needed when purging node_modules.
     // If PNPM determines that the lockfile is out of sync with package.json, it will automatically purge the node_modules.
     // Without this flag, the build would fail as there is no way to provide that necessary confirmation in an automated build process.
-    commandLine 'pnpm', 'install', '--frozen-lockfile', '--store-dir', pnpmStoreDir, '--config.confirmModulesPurge=false', '--config.node-linker=hoisted'
+    commandLine 'pnpm', 'install', '--frozen-lockfile', '--store-dir', pnpmStoreDir, '--config.confirmModulesPurge=false'
 }
 
 task pnpmPruneStore(type: Exec, dependsOn: [pnpmInstallFromLockfile]) {
@@ -74,7 +73,7 @@ task pnpmPruneStore(type: Exec, dependsOn: [pnpmInstallFromLockfile]) {
 task pnpmInstallFromLockfileRetry(type: Exec, dependsOn: [pnpmPruneStore]) {
     inputs.file('package.json')
     inputs.file('pnpm-lock.yaml')
-    inputs.property('nodeLinker', 'hoisted')
+    inputs.file('pnpm-workspace.yaml')
     outputs.dir('node_modules')
     outputs.cacheIf { true }
     onlyIf {
@@ -86,7 +85,7 @@ task pnpmInstallFromLockfileRetry(type: Exec, dependsOn: [pnpmPruneStore]) {
         logger.error('pnpm is required. See README.md')
     }
 
-    commandLine 'pnpm', 'install', '--frozen-lockfile', '--store-dir', pnpmStoreDir, '--config.confirmModulesPurge=false', '--config.node-linker=hoisted'
+    commandLine 'pnpm', 'install', '--frozen-lockfile', '--store-dir', pnpmStoreDir, '--config.confirmModulesPurge=false'
 }
 
 task pnpmBuild(type: Exec, dependsOn: [pnpmInstallFromLockfileRetry]) {
