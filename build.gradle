@@ -125,6 +125,18 @@ subprojects {
 }
 
 allprojects {
+    tasks.withType(org.gradle.testing.jacoco.tasks.JacocoReport).matching { it.name == 'codeCoverageReport' }.configureEach {
+        // The shared plugin scans rootDir, which overlaps unrelated task outputs in Gradle 8.
+        executionData.setFrom(rootProject.allprojects.collect { coverageProject ->
+            coverageProject.fileTree(coverageProject.layout.buildDirectory.dir('jacoco')) {
+                include '*.exec'
+            }
+        })
+        mustRunAfter {
+            rootProject.allprojects.collect { coverageProject -> coverageProject.tasks.withType(Test) }
+        }
+    }
+
     configurations {
         all {
             exclude group: 'com.blackducksoftware.bdio', module: 'bdio2'
