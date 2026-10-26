@@ -38,7 +38,7 @@ import com.blackduck.integration.alert.test.common.TestTags;
 @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
 class EventListenerConfigurerTestIT {
 
-    private static final RabbitMQContainer RABBIT_MQ_TEST_CONTAINER = new RabbitMQContainer(DockerImageName.parse("rabbitmq:4.3-management"));
+    private static final RabbitMQContainer RABBIT_MQ_TEST_CONTAINER = new RabbitMQContainer(DockerImageName.parse("rabbitmq:4.3"));
 
     @BeforeAll
     static void startContainer() {
@@ -52,7 +52,7 @@ class EventListenerConfigurerTestIT {
 
     private CachingConnectionFactory connectionFactory;
     private RabbitAdmin rabbitAdmin;
-    private EventListenerConfigurer configurer;
+    private EventListenerConfigurer eventListenerConfigurer;
 
     @BeforeEach
     void setUp() {
@@ -68,7 +68,7 @@ class EventListenerConfigurerTestIT {
         Mockito.when(rabbitProperties.getListener()).thenReturn(listener);
         Mockito.when(listener.getSimple()).thenReturn(simpleContainer);
 
-        configurer = new EventListenerConfigurer(
+        eventListenerConfigurer = new EventListenerConfigurer(
             List.of(),
             List.of(),
             List.of(),
@@ -93,7 +93,7 @@ class EventListenerConfigurerTestIT {
     void declareQueueWithMigrationWhenNoExistingQueueSucceeds() {
         Queue queue = QueueBuilder.durable(DeadLetterListener.DEAD_LETTER_QUEUE_NAME).build();
 
-        assertDoesNotThrow(() -> configurer.declareQueueWithMigration(queue), "Declaration should succeed when queue does not exist");
+        assertDoesNotThrow(() -> eventListenerConfigurer.declareQueueWithMigration(queue), "Declaration should succeed when queue does not exist");
 
         Properties queueProperties = rabbitAdmin.getQueueProperties(DeadLetterListener.DEAD_LETTER_QUEUE_NAME);
         assertNotNull(queueProperties, "Queue should exist after declaration");
@@ -109,10 +109,13 @@ class EventListenerConfigurerTestIT {
 
         Queue newQueue = QueueBuilder.durable(DeadLetterListener.DEAD_LETTER_QUEUE_NAME).build();
 
-        assertDoesNotThrow(() -> configurer.declareQueueWithMigration(newQueue), "Migration should succeed when queue has incompatible arguments");
+        assertDoesNotThrow(() -> eventListenerConfigurer.declareQueueWithMigration(newQueue), "Migration should succeed when queue has incompatible arguments");
 
         Properties queueProperties = rabbitAdmin.getQueueProperties(DeadLetterListener.DEAD_LETTER_QUEUE_NAME);
         assertNotNull(queueProperties, "Queue should exist after migration");
+
+        // Use the broker to redeclare the queue. If "x-expires" was not removed this declaration will fail with a PRECONDITION_FAILED mismatch error.
+        assertDoesNotThrow(() -> rabbitAdmin.declareQueue(newQueue), "Migrated queue should accept declaration without 'x-expires' set");
     }
 
     @Test
@@ -120,8 +123,8 @@ class EventListenerConfigurerTestIT {
         Queue queue = QueueBuilder.durable(DeadLetterListener.DEAD_LETTER_QUEUE_NAME).build();
         rabbitAdmin.declareQueue(queue);
 
-        // Redeclaring an identical queue should not produce an error.
-        assertDoesNotThrow(() -> configurer.declareQueueWithMigration(queue), "Redeclaring a compatible queue should succeed");
+        // Re-declaring an identical queue should not produce an error.
+        assertDoesNotThrow(() -> eventListenerConfigurer.declareQueueWithMigration(queue), "Re-declaring a compatible queue should succeed");
     }
 
 }
