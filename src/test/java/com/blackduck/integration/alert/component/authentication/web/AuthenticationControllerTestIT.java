@@ -80,10 +80,10 @@ class AuthenticationControllerTestIT {
     @Test
     void testLogout() throws Exception {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(logoutUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN));
-        mockMvc.perform(request).andExpect(ResultMatcher.matchAll(
+        mockMvc.perform(request).andExpectAll(
             MockMvcResultMatchers.redirectedUrl("/"),
             MockMvcResultMatchers.status().isNoContent()
-        ));
+        );
     }
 
     @Test

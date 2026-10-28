@@ -17,6 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.blackduck.integration.alert.api.authentication.descriptor.AuthenticationDescriptor;
@@ -26,7 +29,8 @@ import com.blackduck.integration.alert.authentication.saml.model.SAMLConfigModel
 import com.blackduck.integration.alert.authentication.saml.model.SAMLMetadataMode;
 import com.blackduck.integration.alert.common.persistence.util.FilePersistenceUtil;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith({ SpringExtension.class, MockitoExtension.class })
+@MockitoSettings(strictness = Strictness.LENIENT)
 class SAMLConfigurationValidatorTest {
     private SAMLConfigurationValidator samlConfigurationValidator;
 

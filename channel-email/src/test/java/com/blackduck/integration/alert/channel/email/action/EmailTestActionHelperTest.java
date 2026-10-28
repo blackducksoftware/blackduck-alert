@@ -21,6 +21,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.blackduck.integration.alert.api.common.model.exception.AlertException;
@@ -35,7 +38,8 @@ import com.blackduck.integration.alert.common.persistence.model.job.Distribution
 import com.blackduck.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith({ SpringExtension.class, MockitoExtension.class })
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class EmailTestActionHelperTest {
     private final List<ProviderProject> providerProjects = createProviderProjects();
     private final String projectOwnerEmailAddress = "project-owner@blackduck.com";

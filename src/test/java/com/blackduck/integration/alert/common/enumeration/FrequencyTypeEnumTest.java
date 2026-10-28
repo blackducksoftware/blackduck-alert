@@ -7,7 +7,7 @@
  */
 package com.blackduck.integration.alert.common.enumeration;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 

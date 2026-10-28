@@ -73,6 +73,7 @@ task pnpmPruneStore(type: Exec, dependsOn: [pnpmInstallFromLockfile]) {
 task pnpmInstallFromLockfileRetry(type: Exec, dependsOn: [pnpmPruneStore]) {
     inputs.file('package.json')
     inputs.file('pnpm-lock.yaml')
+    inputs.file('pnpm-workspace.yaml')
     outputs.dir('node_modules')
     outputs.cacheIf { true }
     onlyIf {
@@ -112,6 +113,10 @@ task copyStaticWebContent(type: Copy) {
 
 tasks.copyStaticWebContent.finalizedBy(updatePnpmVersion)
 tasks.copyStaticWebContent.finalizedBy(pnpmBuild)
+tasks.jar.dependsOn(copyStaticWebContent)
+tasks.jar.dependsOn(pnpmBuild)
 tasks.pnpmBuild.mustRunAfter(updatePnpmVersion)
 tasks.pnpmBuild.mustRunAfter(copyStaticWebContent)
+tasks.pnpmInstallFromLockfile.mustRunAfter(updatePnpmVersion)
+tasks.pnpmInstallFromLockfileRetry.mustRunAfter(updatePnpmVersion)
 tasks.clean.finalizedBy(cleanBundles)

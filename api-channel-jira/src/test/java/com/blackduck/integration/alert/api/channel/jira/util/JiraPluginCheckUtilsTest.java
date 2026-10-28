@@ -16,13 +16,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.blackduck.integration.alert.api.channel.jira.JiraConstants;
 import com.blackduck.integration.exception.IntegrationException;
 import com.blackduck.integration.jira.common.rest.service.PluginManagerService;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith({ SpringExtension.class, MockitoExtension.class })
 public class JiraPluginCheckUtilsTest {
     @Mock
     private PluginManagerService mockPluginManagerService;
