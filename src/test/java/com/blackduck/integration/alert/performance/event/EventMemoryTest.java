@@ -13,7 +13,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -45,8 +44,7 @@ class EventMemoryTest {
     private List<TestAlertEventListener> eventListeners;
 
     @Test
-    @Ignore // performance test
-    @Disabled
+    @Disabled // performance test
     void testEventLoadTest() {
         executeTest();
     }

@@ -19,9 +19,8 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Ignore;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
@@ -92,8 +91,7 @@ public class ComponentUnknownVersionNotificationSerializationTest {
     }
 
     @Test
-    @Ignore // performance test
-    @Disabled
+    @Disabled   // performance test
     void testNotificationSerialization() throws IntegrationException {
         LocalDateTime searchStartTime = LocalDateTime.now().minusMinutes(1);
         AlertRequestUtility alertRequestUtility = IntegrationPerformanceTestRunnerLegacy.createAlertRequestUtility(webApplicationContext);

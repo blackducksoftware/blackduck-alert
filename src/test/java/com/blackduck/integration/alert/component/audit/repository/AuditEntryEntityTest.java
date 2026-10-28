@@ -7,9 +7,9 @@
  */
 package com.blackduck.integration.alert.component.audit.repository;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 import com.blackduck.integration.alert.component.audit.mock.MockAuditEntryEntity;
 import com.blackduck.integration.alert.database.audit.AuditEntryEntity;
@@ -34,12 +34,12 @@ public class AuditEntryEntityTest extends EntityTest<AuditEntryEntity> {
 
     @Override
     public void assertEntityFieldsFull(AuditEntryEntity entity) {
-        Assert.assertEquals(getMockUtil().getCommonConfigId(), entity.getCommonConfigId());
-        Assert.assertEquals(getMockUtil().getErrorMessage(), entity.getErrorMessage());
-        Assert.assertEquals(getMockUtil().getErrorStackTrace(), entity.getErrorStackTrace());
-        Assert.assertEquals(getMockUtil().getStatus().toString(), entity.getStatus());
-        Assert.assertEquals(getMockUtil().getTimeCreated(), entity.getTimeCreated());
-        Assert.assertEquals(getMockUtil().getTimeLastSent(), entity.getTimeLastSent());
+        Assertions.assertEquals(getMockUtil().getCommonConfigId(), entity.getCommonConfigId());
+        Assertions.assertEquals(getMockUtil().getErrorMessage(), entity.getErrorMessage());
+        Assertions.assertEquals(getMockUtil().getErrorStackTrace(), entity.getErrorStackTrace());
+        Assertions.assertEquals(getMockUtil().getStatus().toString(), entity.getStatus());
+        Assertions.assertEquals(getMockUtil().getTimeCreated(), entity.getTimeCreated());
+        Assertions.assertEquals(getMockUtil().getTimeLastSent(), entity.getTimeLastSent());
     }
 
     @Override

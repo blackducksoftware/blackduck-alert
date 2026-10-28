@@ -22,9 +22,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.junit.Ignore;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
@@ -113,8 +112,7 @@ class NotificationRemovalTest {
     }
 
     @Test
-    @Ignore // performance test
-    @Disabled
+    @Disabled // performance test
     void testDeletion() throws IntegrationException, InterruptedException {
         providerConfig = createBlackDuckConfiguration();
         OffsetDateTime testStartTime = OffsetDateTime.now();

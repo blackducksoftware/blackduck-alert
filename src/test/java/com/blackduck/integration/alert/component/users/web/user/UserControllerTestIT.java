@@ -39,7 +39,7 @@ import com.blackduck.integration.alert.util.AlertIntegrationTestConstants;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import junit.framework.AssertionFailedError;
+import org.opentest4j.AssertionFailedError;
 
 @Transactional
 @AlertIntegrationTest
