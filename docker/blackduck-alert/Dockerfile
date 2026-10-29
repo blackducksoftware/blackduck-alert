@@ -43,6 +43,7 @@ RUN set -ex \
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY --from=docker-common healthcheck.sh /usr/local/bin/docker-healthcheck.sh
+COPY --from=docker-common remove-emudhra-certs.sh /usr/local/bin/remove-emudhra-certs.sh
 COPY --from=docker-common certificate-manager.sh "$CERTIFICATE_MANAGER_DIR/certificate-manager.sh"
 COPY --from=docker-common java.security "$SECURITY_DIR/java.security"
 
