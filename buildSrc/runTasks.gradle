@@ -20,6 +20,7 @@ task runServer(type: com.blackduck.integration.alert.build.RunServerTask, depend
         }
     }
     postgresVersion = project.ext.postgresContainerVersionCurrent
+    rabbitmqVersion = project.ext.rabbitmqImageVersion
 }
 
 tasks.createKeystore.onlyIf { !file(keystoreFile).exists() }
