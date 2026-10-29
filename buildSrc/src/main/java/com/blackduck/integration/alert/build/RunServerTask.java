@@ -31,6 +31,8 @@ public class RunServerTask extends Exec {
     private String externalDBName = "alertdb";
     private String externalDbUser = "sa";
     private String externalDbPassword = "blackduck";
+    private String rabbitmqVersion;
+    private boolean useManagementRabbitmq = false;
     private boolean externalRabbitmq = false;
     private String externalRabbitHost = "localhost";
     private String externalRabbitPort = "5672";
@@ -93,6 +95,15 @@ public class RunServerTask extends Exec {
         this.externalDbPassword = externalDbPassword;
     }
 
+    public void setRabbitmqVersion(String rabbitmqVersion) {
+        this.rabbitmqVersion = rabbitmqVersion;
+    }
+
+    @Option(option = "rabbit-management", description = "Use the RabbitMQ management image to enable the management UI. Get the port from 'docker ps' listing the management port, typically 15672")
+    public void setUseManagementRabbitmq(boolean useManagementRabbitmq) {
+        this.useManagementRabbitmq = useManagementRabbitmq;
+    }
+
     @Option(option = "external-rabbit", description = "Flag to indicate an external rabbitmq is used")
     public void setExternalRabbitmq(boolean externalRabbitmq) {
         this.externalRabbitmq = externalRabbitmq;
@@ -127,7 +138,6 @@ public class RunServerTask extends Exec {
     public void setProfiler(boolean profiler) {
         this.profiler = profiler;
     }
-
 
     @Override
     protected void exec() {
@@ -251,7 +261,9 @@ public class RunServerTask extends Exec {
                 String.format("--spring.rabbitmq.virtual-host=%s", externalRabbitVirtualHost)
             );
         }
+        String rabbitmqImageSuffix = useManagementRabbitmq ? "-management" : "-alpine";
         return List.of(
+            "--embedded.rabbitmq.dockerImage=rabbitmq:" + rabbitmqVersion + rabbitmqImageSuffix,
             "--embedded.rabbitmq.password=blackduck",
             "--embedded.rabbitmq.vhost=blackduck-alert",
 
