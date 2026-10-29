@@ -350,9 +350,10 @@ createPostgresExtensions() {
 }
 
 removeCompromisedCertificates() {
-  for foundTrustStoreFile in "${JAVA_HOME}/lib/security/"*cacerts "${truststoreFile}"; do
+  for foundTrustStoreFile in "${JAVA_HOME}/lib/security/"*cacerts; do
     foundTrustStoreFile=$(readlink -f "${foundTrustStoreFile}") || continue
-    logIt "Calling remove-emudhra-certs.sh for ${foundTrustStoreFile}"
+    [ -w "${foundTrustStoreFile}" ] || continue
+    logIt "Calling remove-emudhra-certs.sh for ${foundTrustStoreFile}."
     /usr/local/bin/remove-emudhra-certs.sh "${foundTrustStoreFile}" "${JAVA_HOME}/bin/keytool"
     checkStatus $? "Calling remove-emudhra-certs.sh for ${foundTrustStoreFile}"
   done
