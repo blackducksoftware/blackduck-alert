@@ -354,6 +354,7 @@ removeCompromisedCertificates() {
     foundTrustStoreFile=$(readlink -f "${foundTrustStoreFile}") || continue
     logIt "Calling remove-emudhra-certs.sh for ${foundTrustStoreFile}"
     /usr/local/bin/remove-emudhra-certs.sh "${foundTrustStoreFile}" "${JAVA_HOME}/bin/keytool"
+    checkStatus $? "Calling remove-emudhra-certs.sh for ${foundTrustStoreFile}"
   done
 }
 
