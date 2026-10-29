@@ -47,6 +47,13 @@ COPY --from=docker-common remove-emudhra-certs.sh /usr/local/bin/remove-emudhra-
 COPY --from=docker-common certificate-manager.sh "$CERTIFICATE_MANAGER_DIR/certificate-manager.sh"
 COPY --from=docker-common java.security "$SECURITY_DIR/java.security"
 
+RUN set -ex; \
+    for truststore in "${JAVA_HOME}/lib/security/"*cacerts; do \
+        [ -e "${truststore}" ] || continue; \
+        truststore=$(readlink -f "${truststore}"); \
+        /usr/local/bin/remove-emudhra-certs.sh "${truststore}" "${JAVA_HOME}/bin/keytool"; \
+    done
+
 COPY blackduck-alert-boot-$VERSION $ALERT_TAR_HOME
 
 ENTRYPOINT [ "docker-entrypoint.sh", "blackduck-alert" ]
