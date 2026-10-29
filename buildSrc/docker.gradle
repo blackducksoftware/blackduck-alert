@@ -97,8 +97,10 @@ new File(baseDockerDirectory).eachFileRecurse() { it ->
     }
 }
 
+ArrayList<String> fullDockerImageNames = []
 dockerImagesToBuild.each { imageName ->
     String fullDockerImageName = 'blackducksoftware/' + imageName + ':' + project.version
+    fullDockerImageNames.add(fullDockerImageName)
     String artifactoryDockerImageName = System.env.DOCKER_REGISTRY_SIG + '/' + fullDockerImageName
     logger.lifecycle('Creating tasks to process Docker image:: ' + fullDockerImageName)
 
@@ -224,4 +226,10 @@ dockerImagesToBuild.each { imageName ->
     project.tasks.findByName(dockerPublishAllImages_ART).dependsOn project.tasks.findByName(dockerImagePublishARTTaskName)
 
     ext.createDockerRemoveTask(dockerImageRemoveTagARTaskName, 'Docker_Artifactory', [artifactoryDockerImageName], dockerRemoveAllImages)
+}
+
+tasks.register('printDockerImagesNames') {
+    doLast {
+        println fullDockerImageNames.join(',')
+    }
 }
