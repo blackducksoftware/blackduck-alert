@@ -8,13 +8,15 @@
 package com.blackduck.integration.alert.configuration;
 
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.AmqpIOException;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -27,6 +29,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListenerConfigurer;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerEndpoint;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistrar;
@@ -40,6 +43,9 @@ import com.blackduck.integration.alert.api.channel.DistributionEventReceiver;
 import com.blackduck.integration.alert.api.event.AlertMessageListener;
 import com.blackduck.integration.alert.api.event.DeadLetterListener;
 import com.blackduck.integration.alert.api.processor.event.NotificationProcessingReceiver;
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Method;
+import com.rabbitmq.client.ShutdownSignalException;
 
 @Configuration
 public class EventListenerConfigurer implements RabbitListenerConfigurer {
@@ -155,13 +161,11 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
         String listenerId = createListenerId(DeadLetterListener.DEAD_LETTER_QUEUE_NAME);
         Queue queue = QueueBuilder
             .durable(DeadLetterListener.DEAD_LETTER_QUEUE_NAME)
-            .withArgument("x-expires", TimeUnit.HOURS.toMillis(8))
-            // may need to add dead letter queue and dead letter queue listener
             .build();
         TopicExchange deadLetterExchange = ExchangeBuilder.topicExchange(RabbitMQConfiguration.DEAD_LETTER_EXCHANGE_NAME).durable(true).build();
         Binding binding = BindingBuilder.bind(queue).to(deadLetterExchange).with(DeadLetterListener.DEAD_LETTER_QUEUE_NAME);
         amqpAdmin.declareExchange(deadLetterExchange);
-        amqpAdmin.declareQueue(queue);
+        declareQueueWithMigration(queue);
         amqpAdmin.declareBinding(binding);
         logger.debug("Registering Dead Letter Listener: {}", listenerId);
         SimpleRabbitListenerEndpoint endpoint = new SimpleRabbitListenerEndpoint();
@@ -196,14 +200,53 @@ public class EventListenerConfigurer implements RabbitListenerConfigurer {
     private void initQueue(String queueName) {
         Queue queue = QueueBuilder
             .durable(queueName)
-            .withArgument("x-expires", TimeUnit.HOURS.toMillis(1))
             .withArgument("x-dead-letter-exchange", RabbitMQConfiguration.DEAD_LETTER_EXCHANGE_NAME)
             .withArgument("x-dead-letter-routing-key", DeadLetterListener.DEAD_LETTER_QUEUE_NAME)
-            // may need to add dead letter queue and dead letter queue listener
             .build();
         Binding binding = BindingBuilder.bind(queue).to(exchange).with(queueName);
-        amqpAdmin.declareQueue(queue);
+        declareQueueWithMigration(queue);
         amqpAdmin.declareBinding(binding);
+    }
+
+    /**
+     * RabbitMQ does not allow re-declaring a queue with different arguments (ex. adding or removing x-expires).
+     * If a queue already exists with incompatible arguments, the broker returns a 406 (PRECONDITION_FAILED).
+     * This method changes configuration changes across updates, deleting the old queue and re-dclaring a new one.
+     * @param queue The AMQP Queue representing a queue in RabbitMQ
+     */
+    @VisibleForTesting
+    void declareQueueWithMigration(Queue queue) {
+        try {
+            amqpAdmin.declareQueue(queue);
+        } catch (AmqpIOException e) {
+            if (isPreconditionFailed(e)) {
+                Properties queueProperties = amqpAdmin.getQueueProperties(queue.getName());
+                Object messageCount = queueProperties != null ? queueProperties.get(RabbitAdmin.QUEUE_MESSAGE_COUNT) : null;
+                logger.warn(
+                    "Queue '{}' exists with incompatible arguments ({} messages will be discarded). Deleting and redeclaring to apply updated configuration.",
+                    queue.getName(),
+                    messageCount != null ? messageCount : "unknown"
+                );
+                amqpAdmin.deleteQueue(queue.getName());
+                amqpAdmin.declareQueue(queue);
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    private boolean isPreconditionFailed(AmqpIOException exception) {
+        Throwable cause = exception.getCause();
+        while (cause != null) {
+            if (cause instanceof ShutdownSignalException shutdownSignalException) {
+                Method reason = shutdownSignalException.getReason();
+                if (reason instanceof AMQP.Channel.Close channelClose) {
+                    return channelClose.getReplyCode() == AMQP.PRECONDITION_FAILED;
+                }
+            }
+            cause = cause.getCause();
+        }
+        return false;
     }
 
     private String createListenerId(String name) {
