@@ -53,7 +53,7 @@ ext {
     // https://hub.docker.com/u/blackducksoftware?page=1&search=blackduck-cfssl
     cfsslImageVersion = '1.0.38'
     // https://hub.docker.com/u/blackducksoftware?page=1&search=hub-docker-common
-    hubDockerCommonImageVersion = '1.0.9'
+    hubDockerCommonImageVersion = '1.0.11'
 
     // All variables that start with 'dockerBuildParam+' will all be passed to the 'docker build' command
     dockerBuildParam_BASEIMAGE_HUB_DOCKER_COMMON = 'blackducksoftware/hub-docker-common:' + hubDockerCommonImageVersion

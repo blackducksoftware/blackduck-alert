@@ -349,6 +349,16 @@ createPostgresExtensions() {
   checkStatus $? "Running ${upgradeResourcesDir}/create_extension.sql"
 }
 
+removeCompromisedCertificates() {
+  for foundTrustStoreFile in "${JAVA_HOME}/lib/security/"*cacerts "${truststoreFile}"; do
+    foundTrustStoreFile=$(readlink -f "${foundTrustStoreFile}") || continue
+    [ -w "${foundTrustStoreFile}" ] || continue
+    logIt "Calling remove-emudhra-certs.sh for ${foundTrustStoreFile}."
+    /usr/local/bin/remove-emudhra-certs.sh "${foundTrustStoreFile}" "${JAVA_HOME}/bin/keytool"
+    checkStatus $? "Calling remove-emudhra-certs.sh for ${foundTrustStoreFile}"
+  done
+}
+
 setLocalVariableFromFileContents() {
   filename="${1}"
   localVariableName="${2}"
@@ -482,6 +492,7 @@ createPostgresDatabase
 validatePostgresDatabase
 createPostgresExtensions
 liquibaseChangelockResetPostgres
+removeCompromisedCertificates
 
 if [ -f "$truststoreFile" ];
 then
