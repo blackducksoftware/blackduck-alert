@@ -19,12 +19,13 @@ plugins {
 }
 
 ext {
-    tomcatVersion = '11.0.25'
+    tomcatVersion = '11.0.27'
     bouncyCastleVersion = '1.86'
     rabbitMqAmqpClientVersion = '5.35.0'
     freemarkerVersion = '2.3.35'
     logbackVersion = '1.6.3'
     micrometerCoreVersion='1.17.1'
+    httpcore5Version = '5.4.4'
 
     userID = 'id -u'.execute().text.trim()
     groupID = 'id -g'.execute().text.trim()
@@ -157,6 +158,8 @@ allprojects {
                 force "ch.qos.logback:logback-classic:${logbackVersion}"
                 force "ch.qos.logback:logback-core:${logbackVersion}"
                 force "io.micrometer:micrometer-core:${micrometerCoreVersion}"
+                force "org.apache.httpcomponents.core5:httpcore5:${httpcore5Version}"
+                force "org.apache.httpcomponents.core5:httpcore5-h2:${httpcore5Version}"
             }
         }
     }
