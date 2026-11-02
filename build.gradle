@@ -87,7 +87,7 @@ ext {
 }
 
 mainClassName = 'com.blackduck.integration.alert.Application'
-version = '9.0.0-SIGQA3-SNAPSHOT'
+version = '9.1.0-SNAPSHOT'
 
 ext.isSnapshot = project.version.endsWith('-SNAPSHOT')
 ext.isSIGQA = project.version.contains('-SIGQA')
