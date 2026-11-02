@@ -14,7 +14,7 @@ This application provides the ability to send notifications from a provider to v
 ### Build Steps ###
 #### Requirements ####
  - JDK 17
- - Node 24.11.1 (Recommended Version)
+ - Node 24.22.1 (Recommended Version)
  - PNPM 10.33.0 (Recommended Version)
 
 To compile the UI and create the jar file run:
