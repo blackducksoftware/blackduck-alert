@@ -8,6 +8,16 @@ javaPlatform {
 
 dependencies {
     api platform('org.springframework.cloud:spring-cloud-dependencies:2025.1.3')
+
+    // Two Jackson BOMs are required because Spring Boot 4.x migrated to Jackson 3.x (tools.jackson),
+    // while several transitive dependencies still depend on Jackson 2.x (com.fasterxml.jackson):
+    //   - zjsonpatch (via com.blackduck.integration:integration-common)
+    //   - metrics-json (via opensaml-core-impl)
+    //   - swagger-core-jakarta (via springdoc-openapi-starter-webmvc-ui)
+    // Both BOMs pin their respective lines to security-patched versions.
+    // Remove com.fasterxml.jackson:jackson-bom once all of the above have migrated to tools.jackson,
+    // and migrate Alert's own com.fasterxml.jackson imports in alert-common, api-common-model,
+    // channel-email, channel-jira-cloud, provider-blackduck, and web.
     api platform('com.fasterxml.jackson:jackson-bom:2.22.4')
     api platform('tools.jackson:jackson-bom:3.2.4')
 

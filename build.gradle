@@ -19,12 +19,16 @@ plugins {
 }
 
 ext {
+    // Remove this override and its constraints/forces after upgrading to Spring Boot 4.1.1+,
+    // once its BOM manages Tomcat 11.0.27 or newer.
     tomcatVersion = '11.0.27'
     bouncyCastleVersion = '1.86'
     rabbitMqAmqpClientVersion = '5.35.0'
     freemarkerVersion = '2.3.35'
     logbackVersion = '1.6.3'
     micrometerCoreVersion='1.17.1'
+    // Remove this override and its forces after upgrading to Spring Boot 4.1.1+,
+    // once its BOM manages HttpCore 5.4.4 or newer.
     httpcore5Version = '5.4.4'
 
     userID = 'id -u'.execute().text.trim()
@@ -142,10 +146,8 @@ allprojects {
         all {
             exclude group: 'com.blackducksoftware.bdio', module: 'bdio2'
 
-            /* Spring is no longer patching the 3.5 line of Spring Boot, but Apache Tomcat
-               has critical & high vulnerabilities it has addressed in newer releases and
-               bouncycastle does as well. Because of this, force version of Apache Tomcat
-               and bouncycastle to patched versions */
+            /*  Spring managed versions has critical & high vulnerabilities and are addressed in newer releases.
+                Because of this, force versions of below components to patched versions */
             resolutionStrategy {
                 force "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}"
                 force "org.apache.tomcat.embed:tomcat-embed-el:${tomcatVersion}"
