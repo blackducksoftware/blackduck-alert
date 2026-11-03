@@ -1,6 +1,6 @@
 {
     "name": "blackduck-alert",
-    "version": "9.0.0-SIGQA2",
+    "version": "9.0.0-SIGQA3",
     "description": "Alert UI",
     "keywords": [
         "blackduck",
@@ -40,11 +40,11 @@
         "node": "24.22.1"
     },
     "packageManager": "pnpm@10.33.0",
-       "//": "Temporary security overrides: remove when the dependency graph resolves fast-uri >= 3.1.9 and postcss >= 8.5.23 without them.",
+    "//": "Temporary security overrides: remove when the dependency graph resolves fast-uri >= 3.1.9 and postcss >= 8.5.23 without them.",
     "pnpm": {
         "overrides": {
-               "fast-uri": "3.1.9",
-               "postcss": "8.5.23"
+            "fast-uri": "3.1.9",
+            "postcss": "8.5.23"
         }
     },
     "devDependencies": {
