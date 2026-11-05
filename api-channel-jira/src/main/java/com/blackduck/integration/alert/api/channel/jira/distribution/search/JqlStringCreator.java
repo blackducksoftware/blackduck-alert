@@ -10,7 +10,6 @@ package com.blackduck.integration.alert.api.channel.jira.distribution.search;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.blackduck.integration.alert.api.channel.jira.JiraConstants;
@@ -109,7 +108,8 @@ public final class JqlStringCreator {
         @Nullable LinkableItem component,
         @Nullable LinkableItem componentVersion,
         @Nullable ComponentConcernType concernType,
-        @Nullable String policyName) {
+        @Nullable String policyName
+    ) {
 
         jqlBuilder.append("(");
         appendProjectKey(jqlBuilder, jiraProjectKey);
@@ -118,43 +118,50 @@ public final class JqlStringCreator {
         jqlBuilder.append(String.format("comment ~\"%s\"", JiraIssuePropertyKeys.JIRA_ISSUE_KEY_START_HEADER));
         jqlBuilder.append(StringUtils.SPACE);
 
-        if(provider != null && provider.getUrl().isPresent()) {
+        // The provider label is always "Black Duck" as this is the only supported Alert provider. For backwards compatibility with the Alert Issue Property Indexer, this field remains included.
+        if (provider != null) {
             jqlBuilder.append(SEARCH_CONJUNCTION);
             jqlBuilder.append(StringUtils.SPACE);
-            appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_PROVIDER, provider.getUrl().get());
+            appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_PROVIDER, provider.getLabel());
         }
 
-        if(project != null && project.getUrl().isPresent()) {
+        if (provider != null && provider.getUrl().isPresent()) {
+            jqlBuilder.append(SEARCH_CONJUNCTION);
+            jqlBuilder.append(StringUtils.SPACE);
+            appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_PROVIDER_URL, provider.getUrl().get());
+        }
+
+        if (project != null && project.getUrl().isPresent()) {
             jqlBuilder.append(SEARCH_CONJUNCTION);
             jqlBuilder.append(StringUtils.SPACE);
             appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_PROJECT_ID, project.getValue());
         }
 
-        if(projectVersion != null && projectVersion.getUrl().isPresent()) {
+        if (projectVersion != null && projectVersion.getUrl().isPresent()) {
             jqlBuilder.append(SEARCH_CONJUNCTION);
             jqlBuilder.append(StringUtils.SPACE);
             appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_PROJECT_VERSION_ID, projectVersion.getValue());
         }
 
-        if(component != null) {
+        if (component != null) {
             jqlBuilder.append(SEARCH_CONJUNCTION);
             jqlBuilder.append(StringUtils.SPACE);
             appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_COMPONENT_NAME, component.getValue());
         }
 
-        if(componentVersion != null) {
+        if (componentVersion != null) {
             jqlBuilder.append(SEARCH_CONJUNCTION);
             jqlBuilder.append(StringUtils.SPACE);
             appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_COMPONENT_VERSION_NAME, componentVersion.getValue());
         }
 
-        if(concernType != null) {
+        if (concernType != null) {
             jqlBuilder.append(SEARCH_CONJUNCTION);
             jqlBuilder.append(StringUtils.SPACE);
             appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_CATEGORY, concernType.name());
         }
 
-        if(StringUtils.isNotBlank(policyName)) {
+        if (StringUtils.isNotBlank(policyName)) {
             String escapedPolicyName = JiraIssueSearchPropertyStringCompatibilityUtils.createPolicyAdditionalKey(policyName);
             jqlBuilder.append(SEARCH_CONJUNCTION);
             jqlBuilder.append(StringUtils.SPACE);
@@ -215,7 +222,7 @@ public final class JqlStringCreator {
 
     private static void appendCommentSearchString(StringBuilder jqlBuilder, String key, String value) {
         jqlBuilder.append("comment ~ \"");
-        jqlBuilder.append(String.format("%s%s%s", key,JiraIssuePropertyKeys.JIRA_ISSUE_KEY_SEPARATOR, escapeSearchString(value)));
+        jqlBuilder.append(String.format("%s%s%s", key, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_SEPARATOR, escapeSearchString(value)));
         jqlBuilder.append("\"");
         jqlBuilder.append(StringUtils.SPACE);
     }

@@ -2,35 +2,60 @@ package com.blackduck.integration.alert.api.channel.jira.distribution.search;
 
 import com.blackduck.integration.alert.api.processor.extract.model.project.ComponentConcernType;
 import com.blackduck.integration.alert.common.message.model.LinkableItem;
+
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
+
 import java.util.Optional;
 
 public final class SearchCommentCreator {
 
-    public static String createSearchComment(LinkableItem provider, LinkableItem project, LinkableItem projectVersion, LinkableItem component, @Nullable LinkableItem componentVersion, @Nullable ComponentConcernType componentConcernType, @Nullable String policyName) {
-        String providerName = provider.getLabel();
+    public static String createSearchComment(
+        LinkableItem provider,
+        LinkableItem project,
+        LinkableItem projectVersion,
+        LinkableItem component,
+        @Nullable LinkableItem componentVersion,
+        @Nullable ComponentConcernType componentConcernType,
+        @Nullable String policyName
+    ) {
+        // A provider LinkableItem is described as "label" = Black Duck. "value" = provider name. "url" = provider url. If the provider url cannot be derived, the name is used instead.
+        String providerType = provider.getLabel();
+        String providerUrl = provider.getUrl().orElse(provider.getValue());
         String projectId = project.getValue();
         String projectVersionId = projectVersion.getValue();
         String componentName = component.getValue();
         String componentVersionName = null;
         String category = Optional.ofNullable(componentConcernType).map(ComponentConcernType::name).orElse(null);
-        if(null != componentVersion) {
+        if (null != componentVersion) {
             componentVersionName = componentVersion.getValue();
         }
-        return createSearchComment(providerName, projectId, projectVersionId, componentName, componentVersionName, category, policyName);
+        return createSearchComment(providerType, providerUrl, projectId, projectVersionId, componentName, componentVersionName, category, policyName);
     }
 
-    public static String createSearchComment(String providerId, String projectId, String projectVersionId, String componentName, @Nullable String componentVersion, @Nullable String category, @Nullable String policyName) {
-            StringBuilder keyBuilder = new StringBuilder();
+    public static String createSearchComment(
+        String providerType,
+        String providerUrl,
+        String projectId,
+        String projectVersionId,
+        String componentName,
+        @Nullable String componentVersion,
+        @Nullable String category,
+        @Nullable String policyName
+    ) {
+        StringBuilder keyBuilder = new StringBuilder();
 
         keyBuilder.append("This comment was automatically created by Alert. DO NOT REMOVE.");
         keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_START_HEADER);
         keyBuilder.append(StringUtils.SPACE);
         keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_PROVIDER);
         keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_SEPARATOR);
-        keyBuilder.append(providerId);
+        keyBuilder.append(providerType);
+        keyBuilder.append(StringUtils.SPACE);
+        keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_PROVIDER_URL);
+        keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_SEPARATOR);
+        keyBuilder.append(providerUrl);
         keyBuilder.append(StringUtils.SPACE);
         keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_PROJECT_ID);
         keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_SEPARATOR);
@@ -44,21 +69,21 @@ public final class SearchCommentCreator {
         keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_SEPARATOR);
         keyBuilder.append(componentName);
         keyBuilder.append(StringUtils.SPACE);
-        if(StringUtils.isNotBlank(componentVersion)) {
+        if (StringUtils.isNotBlank(componentVersion)) {
             keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_COMPONENT_VERSION_NAME);
             keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_SEPARATOR);
             keyBuilder.append(componentVersion);
             keyBuilder.append(StringUtils.SPACE);
         }
 
-        if(StringUtils.isNotBlank(category)) {
+        if (StringUtils.isNotBlank(category)) {
             keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_CATEGORY);
             keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_SEPARATOR);
             keyBuilder.append(category);
             keyBuilder.append(StringUtils.SPACE);
         }
 
-        if(StringUtils.isNotBlank(policyName)) {
+        if (StringUtils.isNotBlank(policyName)) {
             // add policy name
             keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_POLICY_NAME);
             keyBuilder.append(JiraIssuePropertyKeys.JIRA_ISSUE_KEY_SEPARATOR);
