@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { fetchDistribution } from 'store/actions/distribution';
 import { useDispatch, useSelector } from 'react-redux';
 
-const DistributionTableActions = ({ data, selected, setSelected, paramsConfig, setParamsConfig }) => {
+const DistributionTableActions = ({ data, selected, setSelected, paramsConfig, setParamsConfig, readOnly }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { fetching } = useSelector((state) => state.distribution);
@@ -37,13 +37,13 @@ const DistributionTableActions = ({ data, selected, setSelected, paramsConfig, s
                 />
             )}
 
-            <Button onClick={handleCreateProviderClick} type="button" icon="plus" text="Create Job" buttonStyle="action" />
+            <Button onClick={handleCreateProviderClick} type="button" icon="plus" text="Create Job" buttonStyle="action" isDisabled={readOnly} />
 
             <Button
                 onClick={handleDeleteProviderClick}
                 type="button"
                 icon="trash"
-                isDisabled={selected.length === 0}
+                isDisabled={selected.length === 0 || readOnly}
                 text="Delete"
                 buttonStyle="actionSecondary"
             />
@@ -81,7 +81,8 @@ DistributionTableActions.propTypes = {
     selected: PropTypes.array,
     setSelected: PropTypes.func,
     paramsConfig: PropTypes.object,
-    setParamsConfig: PropTypes.func
+    setParamsConfig: PropTypes.func,
+    readOnly: PropTypes.bool
 };
 
 export default DistributionTableActions;
