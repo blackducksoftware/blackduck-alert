@@ -12,7 +12,7 @@ const DistributionRowActionsCell = ({ data, settings }) => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [statusMessage, setStatusMessage] = useState();
     const dataStagedForDelete = { models: [data] };
-    const { paramsConfig, setParamsConfig, readonly } = settings;
+    const { paramsConfig, setParamsConfig, readOnly, canDelete, canSave } = settings;
 
     function handleCopyClick() {
         navigate(`${DISTRIBUTION_URLS.distributionConfigCopyUrl}/${data.jobId}`);
@@ -37,14 +37,14 @@ const DistributionRowActionsCell = ({ data, settings }) => {
             )}
 
             <RowActionsCell>
-                <Dropdown.Item as="button" onClick={handleEditClick} disabled={readonly}>
+                <Dropdown.Item as="button" onClick={handleEditClick} disabled={readOnly || !canSave}>
                     Edit
                 </Dropdown.Item>
-                <Dropdown.Item as="button" onClick={handleCopyClick} disabled={readonly}>
+                <Dropdown.Item as="button" onClick={handleCopyClick} disabled={readOnly || !canSave}>
                     Copy
                 </Dropdown.Item>
                 <Dropdown.Divider />
-                <Dropdown.Item as="button" onClick={handleDeleteClick} disabled={readonly}>
+                <Dropdown.Item as="button" onClick={handleDeleteClick} disabled={readOnly || !canDelete}>
                     Delete
                 </Dropdown.Item>
             </RowActionsCell>
@@ -68,7 +68,9 @@ const DistributionRowActionsCell = ({ data, settings }) => {
 DistributionRowActionsCell.propTypes = {
     data: PropTypes.object,
     settings: PropTypes.shape({
-        readonly: PropTypes.bool,
+        readOnly: PropTypes.bool,
+        canDelete: PropTypes.bool,
+        canSave: PropTypes.bool,
         paramsConfig: PropTypes.object,
         setParamsConfig: PropTypes.func
     })

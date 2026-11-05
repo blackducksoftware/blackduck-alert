@@ -194,7 +194,7 @@ const MainPage = () => {
             {/* Create Distribution Job Page */}
             <Route
                 path="/alert/jobs/distribution"
-                element={<DistributionConfiguration csrfToken={csrfToken} descriptors={descriptors} errorHandler={errorHandler} showRefreshButton={!autoRefresh} />}
+                element={<DistributionConfiguration csrfToken={csrfToken} descriptors={distributionDescriptorMap} errorHandler={errorHandler} showRefreshButton={!autoRefresh} />}
             />
 
             {/* Edit Distribution Job Page */}
