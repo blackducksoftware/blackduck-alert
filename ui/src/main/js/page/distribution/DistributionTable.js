@@ -35,7 +35,7 @@ const DistributionTable = ({ descriptors }) => {
     });
 
     // This hook retrieves the user's permissions for the Black Duck provider and determines if the table/row actions should be read-only.
-    const { readOnly } = useGetPermissions(descriptors[BLACKDUCK_INFO.key]);
+    const { readOnly, canDelete, canSave } = useGetPermissions(descriptors[BLACKDUCK_INFO.key]);
 
     const columns = [{
         key: 'jobName',
@@ -77,7 +77,7 @@ const DistributionTable = ({ descriptors }) => {
         label: '',
         sortable: false,
         customCell: DistributionRowActionsCell,
-        settings: { alignment: 'center', paramsConfig, setParamsConfig, readOnly }
+        settings: { alignment: 'center', paramsConfig, setParamsConfig, readOnly, canDelete, canSave }
     }];
 
     useEffect(() => {
@@ -184,6 +184,8 @@ const DistributionTable = ({ descriptors }) => {
                 <DistributionTableActions
                     data={data}
                     readOnly={readOnly}
+                    canDelete={canDelete}
+                    canSave={canSave}
                     selected={selected}
                     setSelected={setSelected}
                     paramsConfig={paramsConfig}
