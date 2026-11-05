@@ -10,7 +10,6 @@ package com.blackduck.integration.alert.api.channel.jira.distribution.search;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.blackduck.integration.alert.api.channel.jira.JiraConstants;
@@ -119,7 +118,7 @@ public final class JqlStringCreator {
         jqlBuilder.append(String.format("comment ~\"%s\"", JiraIssuePropertyKeys.JIRA_ISSUE_KEY_START_HEADER));
         jqlBuilder.append(StringUtils.SPACE);
 
-        // The provider label is always "Black Duck" as this is the only supported Alert provider. For backwards compatability with the Alert Issue Property Indexer, this field remains included.
+        // The provider label is always "Black Duck" as this is the only supported Alert provider. For backwards compatibility with the Alert Issue Property Indexer, this field remains included.
         if (provider != null) {
             jqlBuilder.append(SEARCH_CONJUNCTION);
             jqlBuilder.append(StringUtils.SPACE);
@@ -129,7 +128,7 @@ public final class JqlStringCreator {
         if (provider != null && provider.getUrl().isPresent()) {
             jqlBuilder.append(SEARCH_CONJUNCTION);
             jqlBuilder.append(StringUtils.SPACE);
-            appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_PROVIDER_URL, provider.getUrl().orElse(provider.getValue()));
+            appendCommentSearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_KEY_PROVIDER_URL, provider.getUrl().get());
         }
 
         if (project != null && project.getUrl().isPresent()) {
