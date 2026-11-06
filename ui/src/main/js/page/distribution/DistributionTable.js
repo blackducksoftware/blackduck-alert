@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
 import Table from 'common/component/table/Table';
 import DistributionTableActions from 'page/distribution/DistributionTableActions';
 import DistributionRowActionsCell from 'page/distribution/DistributionRowActionsCell';
@@ -10,12 +11,13 @@ import ProviderCell from 'page/distribution/ProviderCell';
 import FrequencyCell from 'page/distribution/FrequencyCell';
 import EnabledCell from 'common/component/table/cell/EnabledCell';
 import { fetchDistribution } from 'store/actions/distribution';
+import useGetPermissions from 'common/hooks/useGetPermissions';
 
 const emptyTableConfig = {
     message: 'There are no records to display for this table.  Please create a Distribution Job to use this table.'
 };
 
-const DistributionTable = ({ readonly }) => {
+const DistributionTable = ({ descriptors }) => {
     const dispatch = useDispatch();
     const { data } = useSelector((state) => state.distribution);
     const refreshStatus = JSON.parse(window.localStorage.getItem('DISTRIBUTION_REFRESH_STATUS') || true);
@@ -31,6 +33,9 @@ const DistributionTable = ({ readonly }) => {
             sortOrder: data?.mutatorData?.direction
         }
     });
+
+    // This hook retrieves the user's permissions for the Black Duck provider and determines if the table/row actions should be read-only.
+    const { readOnly, canDelete, canSave } = useGetPermissions(descriptors[BLACKDUCK_INFO.key]);
 
     const columns = [{
         key: 'jobName',
@@ -72,7 +77,7 @@ const DistributionTable = ({ readonly }) => {
         label: '',
         sortable: false,
         customCell: DistributionRowActionsCell,
-        settings: { alignment: 'center', paramsConfig, setParamsConfig, readonly }
+        settings: { alignment: 'center', paramsConfig, setParamsConfig, readOnly, canDelete, canSave }
     }];
 
     useEffect(() => {
@@ -178,7 +183,9 @@ const DistributionTable = ({ readonly }) => {
             tableActions={() => (
                 <DistributionTableActions
                     data={data}
-                    readonly={readonly}
+                    readOnly={readOnly}
+                    canDelete={canDelete}
+                    canSave={canSave}
                     selected={selected}
                     setSelected={setSelected}
                     paramsConfig={paramsConfig}
@@ -190,7 +197,7 @@ const DistributionTable = ({ readonly }) => {
 };
 
 DistributionTable.propTypes = {
-    readonly: PropTypes.bool
+    descriptors: PropTypes.object.isRequired
 };
 
 export default DistributionTable;

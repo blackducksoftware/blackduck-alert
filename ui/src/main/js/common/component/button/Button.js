@@ -77,7 +77,13 @@ const useStyles = createUseStyles((theme) => ({
         columnGap: '8px',
         '&:hover': {
             backgroundColor: theme.colors.purple.darkPurple
-        }
+        },
+        '&:disabled': {
+            border: `solid 1px ${theme.colors.grey.lightGrey}`,
+            backgroundColor: theme.colors.grey.lightGrey,
+            color: theme.colors.grey.darkGrey,
+            cursor: 'not-allowed'
+        },
     },
     actionSecondary: {
         color: theme.colors.grey.darkerGrey,

@@ -19,6 +19,7 @@ import com.blackduck.integration.jira.common.server.service.IssueService;
 import com.blackduck.integration.jira.common.server.service.JiraServerServiceFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
@@ -33,7 +34,15 @@ public class JiraSearchCommentUpdateTask extends JiraTask {
     private Logger logger = LoggerFactory.getLogger(getClass());
     private final JiraServerPropertiesFactory jiraPropertiesFactory;
 
-    public JiraSearchCommentUpdateTask(TaskScheduler taskScheduler, TaskManager taskManager, JiraServerPropertiesFactory jiraPropertiesFactory, Gson gson, String configId, String configName, String taskNameSuffix) {
+    public JiraSearchCommentUpdateTask(
+        TaskScheduler taskScheduler,
+        TaskManager taskManager,
+        JiraServerPropertiesFactory jiraPropertiesFactory,
+        Gson gson,
+        String configId,
+        String configName,
+        String taskNameSuffix
+    ) {
         super(taskScheduler, taskManager, configId, configName, taskNameSuffix, gson);
         this.jiraPropertiesFactory = jiraPropertiesFactory;
     }
@@ -44,7 +53,7 @@ public class JiraSearchCommentUpdateTask extends JiraTask {
         UUID configId = UUID.fromString(getConfigId());
         try {
             JiraServerProperties jiraProperties = jiraPropertiesFactory.createJiraProperties(configId);
-            JiraServerServiceFactory serviceFactory = jiraProperties.createJiraServicesServerFactory(logger,getGson());
+            JiraServerServiceFactory serviceFactory = jiraProperties.createJiraServicesServerFactory(logger, getGson());
             IssueSearchService issueSearchService = serviceFactory.createIssueSearchService();
             IssuePropertyService issuePropertyService = serviceFactory.createIssuePropertyService();
             IssueSearchResponseModel responseModel = issueSearchService.queryForIssuePage(JiraConstants.createCommentMigrationJQL(), 0, JQL_QUERY_MAX_RESULTS);
@@ -53,10 +62,10 @@ public class JiraSearchCommentUpdateTask extends JiraTask {
             int totalIssues = responseModel.getTotal();
             boolean foundIssues = totalIssues > 0;
 
-            if(foundIssues) {
+            if (foundIssues) {
                 List<String> issueKeys = responseModel.getIssues().stream()
-                        .map(IssueSearchIssueComponent::getKey)
-                        .toList();
+                    .map(IssueSearchIssueComponent::getKey)
+                    .toList();
                 ExecutorService executorService = getExecutorService();
                 for (String issueKey : issueKeys) {
                     executorService.submit(createUpdateRunnable(issueKey, issuePropertyService, issueService));
@@ -93,11 +102,11 @@ public class JiraSearchCommentUpdateTask extends JiraTask {
                 // try the old key
                 propertyValue = getPropertyValue(issueKey, issuePropertyService, JiraConstants.JIRA_ISSUE_PROPERTY_OLD_KEY);
             }
-            if(propertyValue.isPresent()) {
+            if (propertyValue.isPresent()) {
                 try {
                     JsonObject jsonObject = propertyValue.get().getValue();
                     // projectName, projectVersionName, and componentName should all be populated but since an optional is returned use orElse(null)
-                    String provider = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER).orElse(null);
+                    String providerType = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER).orElse(null);
                     String providerUrl = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER_URL).orElse(null);
                     String projectLabel = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROJECT_LABEL).orElse(null);
                     String projectName = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROJECT_NAME).orElse(null);
@@ -110,13 +119,22 @@ public class JiraSearchCommentUpdateTask extends JiraTask {
                     String category = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_CATEGORY).orElse(null);
                     String policyName = getPropertyValue(jsonObject, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY).orElse(null);
 
-                    String commentString = SearchCommentCreator.createSearchComment(provider, projectName, projectVersionName, componentName, componentVersionName, category, policyName);
+                    String commentString = SearchCommentCreator.createSearchComment(
+                        providerType,
+                        providerUrl,
+                        projectName,
+                        projectVersionName,
+                        componentName,
+                        componentVersionName,
+                        category,
+                        policyName
+                    );
                     IssueCommentRequestModel comment = new IssueCommentRequestModel(issueKey, commentString);
                     issueService.addComment(comment);
 
                     // mark the issue as migrated
                     JsonObject migratedProperty = new JsonObject();
-                    migratedProperty.addProperty(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER, provider);
+                    migratedProperty.addProperty(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER, providerType);
                     migratedProperty.addProperty(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER_URL, providerUrl);
                     migratedProperty.addProperty(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROJECT_LABEL, projectLabel);
                     migratedProperty.addProperty(JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROJECT_NAME, projectName);
@@ -142,13 +160,12 @@ public class JiraSearchCommentUpdateTask extends JiraTask {
     public Optional<String> getPropertyValue(JsonObject jsonObject, String propertyKey) {
         Optional<String> value = Optional.empty();
 
-        if(jsonObject.has(propertyKey)) {
+        if (jsonObject.has(propertyKey)) {
             value = Optional.of(jsonObject.get(propertyKey).getAsString());
         }
 
         return value;
     }
-
 
     protected Optional<IssuePropertyResponseModel> getPropertyValue(String issueKey, IssuePropertyService issuePropertyService, String propertyKey) {
         // empty property value

@@ -4,18 +4,18 @@ import * as PropTypes from 'prop-types';
 import DistributionTable from 'page/distribution/DistributionTable';
 import PageLayout from 'common/component/PageLayout';
 
-const DistributionConfiguration = ({ readonly }) => (
+const DistributionConfiguration = ({ descriptors }) => (
     <PageLayout
         title={DISTRIBUTION_INFO.label}
         description={DISTRIBUTION_INFO.description}
         headerIcon={['fas', 'tasks']}
     >
-        <DistributionTable readonly={readonly} />
+        <DistributionTable descriptors={descriptors} />
     </PageLayout>
 );
 
 DistributionConfiguration.propTypes = {
-    readonly: PropTypes.bool
+    descriptors: PropTypes.object.isRequired
 };
 
 export default DistributionConfiguration;
