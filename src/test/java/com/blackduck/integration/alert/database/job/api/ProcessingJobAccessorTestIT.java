@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.blackduck.integration.alert.api.descriptor.BlackDuckProviderKey;
 import com.blackduck.integration.alert.api.descriptor.model.ChannelKeys;
-import com.blackduck.integration.alert.api.processor.mapping.JobNotificationMapper2;
+import com.blackduck.integration.alert.api.processor.mapping.JobNotificationMapper;
 import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
 import com.blackduck.integration.alert.common.enumeration.FrequencyType;
@@ -41,7 +41,7 @@ import com.blackduck.integration.alert.common.persistence.accessor.Configuration
 import com.blackduck.integration.alert.common.persistence.accessor.JobAccessor;
 import com.blackduck.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
 import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
-import com.blackduck.integration.alert.common.persistence.accessor.ProcessingJobAccessor2;
+import com.blackduck.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
 import com.blackduck.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.blackduck.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
 import com.blackduck.integration.alert.common.persistence.model.job.DistributionJobModel;
@@ -60,7 +60,7 @@ import com.blackduck.integration.blackduck.api.generated.enumeration.Vulnerabili
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @AlertIntegrationTest
-class ProcessingJobAccessor2TestIT {
+class ProcessingJobAccessorTestIT {
     private static final List<UUID> CREATED_JOBS = new LinkedList<>();
     private static final Set<Long> CREATED_NOTIFICATIONS = new LinkedHashSet<>();
     private static final String PROJECT_NAME_1 = "testProject1";
@@ -77,7 +77,7 @@ class ProcessingJobAccessor2TestIT {
     @Autowired
     public NotificationAccessor notificationAccessor;
     @Autowired
-    public ProcessingJobAccessor2 processingJobAccessor;
+    public ProcessingJobAccessor processingJobAccessor;
     @Autowired
     public ConfigurationModelConfigurationAccessor configurationModelConfigurationAccessor;
     @Autowired
@@ -85,7 +85,7 @@ class ProcessingJobAccessor2TestIT {
     @Autowired
     public JobNotificationMappingAccessor jobNotificationMappingAccessor;
     @Autowired
-    public JobNotificationMapper2 jobNotificationMapper;
+    public JobNotificationMapper jobNotificationMapper;
     @Autowired
     public EncryptionUtility encryptionUtility;
 

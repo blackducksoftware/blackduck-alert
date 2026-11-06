@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 
 import com.blackduck.integration.alert.api.processor.detail.DetailedNotificationContent;
 import com.blackduck.integration.alert.api.processor.detail.NotificationDetailExtractionDelegator;
-import com.blackduck.integration.alert.api.processor.mapping.JobNotificationMapper2;
+import com.blackduck.integration.alert.api.processor.mapping.JobNotificationMapper;
 import com.blackduck.integration.alert.common.AlertProperties;
 import com.blackduck.integration.alert.common.enumeration.FrequencyType;
 import com.blackduck.integration.alert.common.logging.AlertLoggerFactory;
@@ -37,14 +37,14 @@ public class NotificationMappingProcessor {
     private static final Logger logger = LoggerFactory.getLogger(NotificationMappingProcessor.class);
     private final Logger notificationLogger = AlertLoggerFactory.getNotificationLogger(getClass());
     private final NotificationDetailExtractionDelegator notificationDetailExtractionDelegator;
-    private final JobNotificationMapper2 jobNotificationMapper;
+    private final JobNotificationMapper jobNotificationMapper;
     private final NotificationAccessor notificationAccessor;
     private final int notificationMappingBatchLimit;
 
     @Autowired
     public NotificationMappingProcessor(
         NotificationDetailExtractionDelegator notificationDetailExtractionDelegator,
-        JobNotificationMapper2 jobNotificationMapper,
+        JobNotificationMapper jobNotificationMapper,
         NotificationAccessor notificationAccessor,
         AlertProperties alertProperties
     ) {

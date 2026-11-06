@@ -18,7 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.blackduck.integration.alert.common.persistence.accessor.ProcessingJobAccessor2;
+import com.blackduck.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
 import com.blackduck.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
 import com.blackduck.integration.alert.common.persistence.model.job.SimpleFilteredDistributionJobResponseModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
@@ -26,12 +26,12 @@ import com.blackduck.integration.alert.database.job.DistributionJobRepository;
 import com.blackduck.integration.alert.database.job.FilteredDistributionJob;
 
 @Component
-public class DefaultProcessingJobAccessor2 implements ProcessingJobAccessor2 {
+public class DefaultProcessingJobAccessor implements ProcessingJobAccessor {
 
     private final DistributionJobRepository distributionJobRepository;
 
     @Autowired
-    public DefaultProcessingJobAccessor2(DistributionJobRepository distributionJobRepository) {
+    public DefaultProcessingJobAccessor(DistributionJobRepository distributionJobRepository) {
         this.distributionJobRepository = distributionJobRepository;
     }
 

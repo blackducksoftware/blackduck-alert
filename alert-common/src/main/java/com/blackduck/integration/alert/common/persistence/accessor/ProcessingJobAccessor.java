@@ -11,7 +11,7 @@ import com.blackduck.integration.alert.common.persistence.model.job.FilteredDist
 import com.blackduck.integration.alert.common.persistence.model.job.SimpleFilteredDistributionJobResponseModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 
-public interface ProcessingJobAccessor2 {
+public interface ProcessingJobAccessor {
     AlertPagedModel<SimpleFilteredDistributionJobResponseModel> getMatchingEnabledJobsForNotifications(
         FilteredDistributionJobRequestModel filteredDistributionJobRequestModel,
         int pageOffset,
