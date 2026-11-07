@@ -48,6 +48,11 @@ project.tasks.create(name: copyDeploymentFilesTaskName, type: Copy, group: 'Depl
         ant.replace(file: "${project.buildDir}/deployment/helm/blackduck-alert/Chart.yaml", token: "ALERT_VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/helm/blackduck-alert/values.yaml", token: "ALERT_VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/helm/blackduck-alert/README.md", token: "ALERT_VERSION_TOKEN", value: "${project.version}")
+
+        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/external-db/standalone/docker-compose.yml", token: "CFSSL_VERSION_TOKEN", value: "${project.cfsslImageVersion}")
+        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/standalone/docker-compose.yml", token: "CFSSL_VERSION_TOKEN", value: "${project.cfsslImageVersion}")
+        ant.replace(file: "${project.buildDir}/deployment/helm/blackduck-alert/README.md", token: "CFSSL_VERSION_TOKEN", value: "${project.cfsslImageVersion}")
+        ant.replace(file: "${project.buildDir}/deployment/helm/blackduck-alert/values.yaml", token: "CFSSL_VERSION_TOKEN", value: "${project.cfsslImageVersion}")
     }
 }
 
