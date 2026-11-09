@@ -30,7 +30,7 @@ import com.blackduck.integration.alert.api.event.EventManager;
 import com.blackduck.integration.alert.api.event.NotificationReceivedEvent;
 import com.blackduck.integration.alert.api.processor.NotificationMappingProcessor;
 import com.blackduck.integration.alert.api.processor.detail.NotificationDetailExtractionDelegator;
-import com.blackduck.integration.alert.api.processor.mapping.JobNotificationMapper2;
+import com.blackduck.integration.alert.api.processor.mapping.JobNotificationMapper;
 import com.blackduck.integration.alert.api.provider.ProviderDescriptor;
 import com.blackduck.integration.alert.common.AlertProperties;
 import com.blackduck.integration.alert.common.enumeration.ConfigContextEnum;
@@ -62,7 +62,7 @@ class NotificationReceivedEventHandlerTestIT {
     @Autowired
     private EventManager eventManager;
     @Autowired
-    private JobNotificationMapper2 jobNotificationMapper2;
+    private JobNotificationMapper jobNotificationMapper;
     @Autowired
     private AlertProperties alertProperties;
 
@@ -266,7 +266,7 @@ class NotificationReceivedEventHandlerTestIT {
         Mockito.when(notificationDetailExtractionDelegator.wrapNotification(Mockito.any())).thenReturn(List.of());
         return new NotificationMappingProcessor(
             notificationDetailExtractionDelegator,
-            jobNotificationMapper2,
+            jobNotificationMapper,
             defaultNotificationAccessor,
             alertProperties
         );
