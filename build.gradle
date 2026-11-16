@@ -47,10 +47,10 @@ ext {
     // DOCKER IMAGE VERSIONS
 
     // https://hub.docker.com/_/postgres/tags?name=16.
-    postgresContainerVersionMigration = '16.15'
+    postgresContainerVersionMigration = '16.16'
     // This version is auto updated in src/test/resources/spring-test.properties for the test jdbc connection
     // https://hub.docker.com/_/postgres/tags?name=17.
-    postgresContainerVersionCurrent = '17.11'
+    postgresContainerVersionCurrent = '17.12'
     // https://hub.docker.com/_/alpine/tags?name=3.
     alpineImageVersion = '3.24'
     // https://hub.docker.com/_/rabbitmq/tags?name=4.
