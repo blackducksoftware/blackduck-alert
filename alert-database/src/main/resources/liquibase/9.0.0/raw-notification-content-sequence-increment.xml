@@ -7,4 +7,17 @@
                        incrementBy="1"
         />
     </changeSet>
+
+    <!-- On an upgrade, set the sequence to be safely past the max id already in raw_notification_content -->
+    <changeSet author="martinch" id="raw-notification-content-sequence-advance-past-max-id">
+        <sql>
+            SELECT setval(
+                           'alert.raw_notification_content_id_seq',
+                           GREATEST(
+                                   (SELECT COALESCE(MAX(id), 1) FROM alert.raw_notification_content),
+                                   (SELECT last_value FROM alert.raw_notification_content_id_seq)
+                           )
+                   );
+        </sql>
+    </changeSet>
 </databaseChangeLog>
