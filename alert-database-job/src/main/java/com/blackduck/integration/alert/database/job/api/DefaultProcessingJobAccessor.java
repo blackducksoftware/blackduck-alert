@@ -7,9 +7,9 @@
  */
 package com.blackduck.integration.alert.database.job.api;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,31 +18,26 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.blackduck.integration.alert.common.enumeration.ProcessingType;
 import com.blackduck.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
-import com.blackduck.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
 import com.blackduck.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
-import com.blackduck.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
+import com.blackduck.integration.alert.common.persistence.model.job.SimpleFilteredDistributionJobResponseModel;
 import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
-import com.blackduck.integration.alert.database.job.DistributionJobEntity;
 import com.blackduck.integration.alert.database.job.DistributionJobRepository;
-import com.blackduck.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
-import com.blackduck.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
+import com.blackduck.integration.alert.database.job.FilteredDistributionJob;
 
 @Component
 public class DefaultProcessingJobAccessor implements ProcessingJobAccessor {
+
     private final DistributionJobRepository distributionJobRepository;
-    private final BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor;
 
     @Autowired
-    public DefaultProcessingJobAccessor(DistributionJobRepository distributionJobRepository, BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor) {
+    public DefaultProcessingJobAccessor(DistributionJobRepository distributionJobRepository) {
         this.distributionJobRepository = distributionJobRepository;
-        this.blackDuckJobDetailsAccessor = blackDuckJobDetailsAccessor;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public AlertPagedModel<FilteredDistributionJobResponseModel> getMatchingEnabledJobsByFilteredNotifications(
+    public AlertPagedModel<SimpleFilteredDistributionJobResponseModel> getMatchingEnabledJobsForNotifications(
         FilteredDistributionJobRequestModel filteredDistributionJobRequestModel,
         int pageNumber,
         int pageLimit
@@ -53,7 +48,6 @@ public class DefaultProcessingJobAccessor implements ProcessingJobAccessor {
             .collect(Collectors.toList());
 
         Set<String> projectNames = filteredDistributionJobRequestModel.getProjectName();
-        Set<String> notificationTypes = filteredDistributionJobRequestModel.getNotificationTypes();
 
         // If no policies and/or vulnerabilitySeverities exist the repository query expects a null to be passed
         Set<String> policyNames = filteredDistributionJobRequestModel.getPolicyNames().isEmpty() ? null : filteredDistributionJobRequestModel.getPolicyNames();
@@ -62,54 +56,28 @@ public class DefaultProcessingJobAccessor implements ProcessingJobAccessor {
             filteredDistributionJobRequestModel.getVulnerabilitySeverities();
 
         PageRequest pageRequest = PageRequest.of(pageNumber, pageLimit);
-        Page<DistributionJobEntity> pageOfDistributionJobEntities = distributionJobRepository.findAndSortMatchingEnabledJobsByFilteredNotifications(
+        Page<FilteredDistributionJob> pageOfDistributionJobEntities = distributionJobRepository.findAndSortMatchingEnabledJobsByFilteredNotification(
+            filteredDistributionJobRequestModel.getNotificationId().orElse(null),
             filteredDistributionJobRequestModel.getProviderConfigId(),
             frequencyTypes,
-            notificationTypes,
             projectNames,
             policyNames,
             vulnerabilitySeverities,
             pageRequest
         );
-
-        List<FilteredDistributionJobResponseModel> distributionJobResponseModels = pageOfDistributionJobEntities.getContent()
-            .stream()
-            .map(this::convertToFilteredDistributionJobResponseModel)
-            .collect(Collectors.toList());
+        List<SimpleFilteredDistributionJobResponseModel> distributionJobResponseModels = new ArrayList<>(pageOfDistributionJobEntities.getNumberOfElements());
+        for (FilteredDistributionJob filteredJob : pageOfDistributionJobEntities.getContent()) {
+            int projectCount = distributionJobRepository.countConfiguredProjectsForJob(filteredJob.getJobId(), projectNames);
+            distributionJobResponseModels.add(new SimpleFilteredDistributionJobResponseModel(
+                filteredJob.getNotificationId(),
+                filteredJob.getJobId(),
+                filteredJob.getFilterByProject(),
+                filteredJob.getProjectNamePattern(),
+                filteredJob.getProjectVersionNamePattern(),
+                projectCount
+            ));
+        }
         return new AlertPagedModel<>(pageOfDistributionJobEntities.getTotalPages(), pageNumber, pageLimit, distributionJobResponseModels);
 
     }
-
-    private FilteredDistributionJobResponseModel convertToFilteredDistributionJobResponseModel(DistributionJobEntity jobEntity) {
-        UUID jobId = jobEntity.getJobId();
-        ProcessingType processingType = Enum.valueOf(ProcessingType.class, jobEntity.getProcessingType());
-        String channelName = jobEntity.getChannelDescriptorName();
-        String jobName = jobEntity.getName();
-
-        BlackDuckJobDetailsEntity blackDuckJobDetails = jobEntity.getBlackDuckJobDetails();
-        List<String> notificationTypes = blackDuckJobDetailsAccessor.retrieveNotificationTypesForJob(jobId);
-        List<BlackDuckProjectDetailsModel> projectDetails = blackDuckJobDetailsAccessor.retrieveProjectDetailsForJob(jobId);
-        List<String> policyNames = blackDuckJobDetailsAccessor.retrievePolicyNamesForJob(jobId);
-        List<String> vulnerabilitySeverityNames = blackDuckJobDetailsAccessor.retrieveVulnerabilitySeverityNamesForJob(jobId);
-
-        boolean filterByProject = blackDuckJobDetails.getFilterByProject();
-        String projectNamePattern = blackDuckJobDetails.getProjectNamePattern();
-        String projectVersionNamePattern = blackDuckJobDetails.getProjectVersionNamePattern();
-
-        return new FilteredDistributionJobResponseModel(
-            jobId,
-            processingType,
-            channelName,
-            jobName,
-            notificationTypes,
-            projectDetails,
-            policyNames,
-            vulnerabilitySeverityNames,
-            filterByProject,
-            projectNamePattern,
-            projectVersionNamePattern
-        );
-    }
-
 }
-

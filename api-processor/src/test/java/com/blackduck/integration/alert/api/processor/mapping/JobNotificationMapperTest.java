@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 import com.blackduck.integration.alert.api.processor.detail.DetailedNotificationContent;
 import com.blackduck.integration.alert.common.enumeration.FrequencyType;
 import com.blackduck.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
-import com.blackduck.integration.alert.common.persistence.accessor.ProcessingJobAccessor2;
+import com.blackduck.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
 import com.blackduck.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
 import com.blackduck.integration.alert.common.persistence.model.job.JobToNotificationMappingModel;
 import com.blackduck.integration.alert.common.persistence.model.job.SimpleFilteredDistributionJobResponseModel;
@@ -37,7 +37,7 @@ import com.blackduck.integration.alert.common.rest.model.AlertPagedModel;
 import com.blackduck.integration.blackduck.api.manual.component.ProjectVersionNotificationContent;
 import com.blackduck.integration.blackduck.api.manual.enumeration.NotificationType;
 
-class JobNotificationMapper2Test {
+class JobNotificationMapperTest {
     private AtomicLong notificationId = new AtomicLong(1);
 
     @Test
@@ -45,9 +45,9 @@ class JobNotificationMapper2Test {
         UUID correlationId = UUID.randomUUID();
         String project = "project-1";
         String projectVersion = "version-1";
-        ProcessingJobAccessor2 processingJobAccessor = createProcessingAccessor(List.of());
+        ProcessingJobAccessor processingJobAccessor = createProcessingAccessor(List.of());
         JobNotificationMappingAccessor jobNotificationMappingAccessor = createJobNotificationMappingAccessor();
-        JobNotificationMapper2 jobNotificationMapper = new JobNotificationMapper2(processingJobAccessor, jobNotificationMappingAccessor);
+        JobNotificationMapper jobNotificationMapper = new JobNotificationMapper(processingJobAccessor, jobNotificationMappingAccessor);
 
         AlertNotificationModel notificationModel = new AlertNotificationModel(
             1L,
@@ -79,9 +79,9 @@ class JobNotificationMapper2Test {
         UUID jobId = UUID.randomUUID();
         String project = "project-1";
         String projectVersion = "version-1";
-        ProcessingJobAccessor2 processingJobAccessor = createProcessingAccessor(List.of(createFilteredJobResponse(jobId, false, false, "", "")));
+        ProcessingJobAccessor processingJobAccessor = createProcessingAccessor(List.of(createFilteredJobResponse(jobId, false, false, "", "")));
         JobNotificationMappingAccessor jobNotificationMappingAccessor = createJobNotificationMappingAccessor();
-        JobNotificationMapper2 jobNotificationMapper = new JobNotificationMapper2(processingJobAccessor, jobNotificationMappingAccessor);
+        JobNotificationMapper jobNotificationMapper = new JobNotificationMapper(processingJobAccessor, jobNotificationMappingAccessor);
 
         AlertNotificationModel notificationModel = new AlertNotificationModel(
             1L,
@@ -114,9 +114,9 @@ class JobNotificationMapper2Test {
         UUID jobId = UUID.randomUUID();
         String project = "project-1";
         String projectVersion = "version-1";
-        ProcessingJobAccessor2 processingJobAccessor = createProcessingAccessor(List.of(createFilteredJobResponse(jobId, true, true, "", "")));
+        ProcessingJobAccessor processingJobAccessor = createProcessingAccessor(List.of(createFilteredJobResponse(jobId, true, true, "", "")));
         JobNotificationMappingAccessor jobNotificationMappingAccessor = createJobNotificationMappingAccessor();
-        JobNotificationMapper2 jobNotificationMapper = new JobNotificationMapper2(processingJobAccessor, jobNotificationMappingAccessor);
+        JobNotificationMapper jobNotificationMapper = new JobNotificationMapper(processingJobAccessor, jobNotificationMappingAccessor);
 
         AlertNotificationModel notificationModel = new AlertNotificationModel(
             1L,
@@ -150,9 +150,9 @@ class JobNotificationMapper2Test {
         String goodProjectPattern = "^project-\\d$";
         String project = "project-1";
         String projectVersion = "version-1";
-        ProcessingJobAccessor2 processingJobAccessor = createProcessingAccessor(List.of(createFilteredJobResponse(jobId, true, false, goodProjectPattern, "")));
+        ProcessingJobAccessor processingJobAccessor = createProcessingAccessor(List.of(createFilteredJobResponse(jobId, true, false, goodProjectPattern, "")));
         JobNotificationMappingAccessor jobNotificationMappingAccessor = createJobNotificationMappingAccessor();
-        JobNotificationMapper2 jobNotificationMapper = new JobNotificationMapper2(processingJobAccessor, jobNotificationMappingAccessor);
+        JobNotificationMapper jobNotificationMapper = new JobNotificationMapper(processingJobAccessor, jobNotificationMappingAccessor);
 
         AlertNotificationModel notificationModel = new AlertNotificationModel(
             1L,
@@ -186,9 +186,9 @@ class JobNotificationMapper2Test {
         String goodProjectVersionPattern = "^version-\\d$";
         String project = "project-1";
         String projectVersion = "version-1";
-        ProcessingJobAccessor2 processingJobAccessor = createProcessingAccessor(List.of(createFilteredJobResponse(jobId, true, true, "", goodProjectVersionPattern)));
+        ProcessingJobAccessor processingJobAccessor = createProcessingAccessor(List.of(createFilteredJobResponse(jobId, true, true, "", goodProjectVersionPattern)));
         JobNotificationMappingAccessor jobNotificationMappingAccessor = createJobNotificationMappingAccessor();
-        JobNotificationMapper2 jobNotificationMapper = new JobNotificationMapper2(processingJobAccessor, jobNotificationMappingAccessor);
+        JobNotificationMapper jobNotificationMapper = new JobNotificationMapper(processingJobAccessor, jobNotificationMappingAccessor);
 
         AlertNotificationModel notificationModel = new AlertNotificationModel(
             1L,
@@ -221,9 +221,9 @@ class JobNotificationMapper2Test {
         UUID jobId = UUID.randomUUID();
         String project = "project-1";
         String projectVersion = "version-1";
-        ProcessingJobAccessor2 processingJobAccessor = createProcessingAccessor(List.of(createFilteredJobResponse(jobId, false, false, "", "")));
+        ProcessingJobAccessor processingJobAccessor = createProcessingAccessor(List.of(createFilteredJobResponse(jobId, false, false, "", "")));
         JobNotificationMappingAccessor jobNotificationMappingAccessor = createJobNotificationMappingAccessor();
-        JobNotificationMapper2 jobNotificationMapper = new JobNotificationMapper2(processingJobAccessor, jobNotificationMappingAccessor);
+        JobNotificationMapper jobNotificationMapper = new JobNotificationMapper(processingJobAccessor, jobNotificationMappingAccessor);
 
         AlertNotificationModel notificationModel = new AlertNotificationModel(
             1L,
@@ -250,8 +250,8 @@ class JobNotificationMapper2Test {
         assertEquals(1, jobNotificationMappingAccessor.getNotificationCountForJob(correlationId, jobId));
     }
 
-    private ProcessingJobAccessor2 createProcessingAccessor(List<SimpleFilteredDistributionJobResponseModel> results) {
-        return new ProcessingJobAccessor2() {
+    private ProcessingJobAccessor createProcessingAccessor(List<SimpleFilteredDistributionJobResponseModel> results) {
+        return new ProcessingJobAccessor() {
             @Override
             public AlertPagedModel<SimpleFilteredDistributionJobResponseModel> getMatchingEnabledJobsForNotifications(
                 FilteredDistributionJobRequestModel filteredDistributionJobRequestModel,

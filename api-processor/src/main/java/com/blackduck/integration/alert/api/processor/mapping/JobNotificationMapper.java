@@ -23,7 +23,7 @@ import com.blackduck.integration.alert.api.processor.detail.DetailedNotification
 import com.blackduck.integration.alert.api.processor.filter.JobNotificationFilterUtils;
 import com.blackduck.integration.alert.common.enumeration.FrequencyType;
 import com.blackduck.integration.alert.common.persistence.accessor.JobNotificationMappingAccessor;
-import com.blackduck.integration.alert.common.persistence.accessor.ProcessingJobAccessor2;
+import com.blackduck.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
 import com.blackduck.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
 import com.blackduck.integration.alert.common.persistence.model.job.JobToNotificationMappingModel;
 import com.blackduck.integration.alert.common.persistence.model.job.SimpleFilteredDistributionJobResponseModel;
@@ -31,14 +31,14 @@ import com.blackduck.integration.alert.common.rest.model.AlertPagedDetails;
 import com.blackduck.integration.alert.common.util.DateUtils;
 
 @Component
-public class JobNotificationMapper2 {
+public class JobNotificationMapper {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final ProcessingJobAccessor2 processingJobAccessor;
+    private final ProcessingJobAccessor processingJobAccessor;
     private final JobNotificationMappingAccessor jobNotificationMappingAccessor;
 
     @Autowired
-    public JobNotificationMapper2(
-        ProcessingJobAccessor2 processingJobAccessor,
+    public JobNotificationMapper(
+        ProcessingJobAccessor processingJobAccessor,
         JobNotificationMappingAccessor jobNotificationMappingAccessor
     ) {
         this.processingJobAccessor = processingJobAccessor;

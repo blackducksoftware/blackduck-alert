@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.blackduck.integration.alert.api.processor.detail.NotificationDetailExtractionDelegator;
 import com.blackduck.integration.alert.api.processor.event.JobNotificationMappedEvent;
-import com.blackduck.integration.alert.api.processor.mapping.JobNotificationMapper2;
+import com.blackduck.integration.alert.api.processor.mapping.JobNotificationMapper;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -61,7 +61,7 @@ class NotificationReceivedEventHandlerTest {
     void notificationsTableEmptyTest() {
         NotificationAccessor notificationAccessor = new MockNotificationAccessor(List.of(), batchId);
         NotificationDetailExtractionDelegator notificationDetailExtractionDelegator = Mockito.mock(NotificationDetailExtractionDelegator.class);
-        JobNotificationMapper2 jobNotificationMapper = Mockito.mock(JobNotificationMapper2.class);
+        JobNotificationMapper jobNotificationMapper = Mockito.mock(JobNotificationMapper.class);
 
         NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(
             notificationDetailExtractionDelegator,
@@ -87,7 +87,7 @@ class NotificationReceivedEventHandlerTest {
         AlertNotificationModel alreadyMappedNotification = createAlertNotificationModel(1L, false, true);
         NotificationAccessor notificationAccessor = new MockNotificationAccessor(List.of(alreadyMappedNotification), batchId);
         NotificationDetailExtractionDelegator notificationDetailExtractionDelegator = Mockito.mock(NotificationDetailExtractionDelegator.class);
-        JobNotificationMapper2 jobNotificationMapper = Mockito.mock(JobNotificationMapper2.class);
+        JobNotificationMapper jobNotificationMapper = Mockito.mock(JobNotificationMapper.class);
 
         NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(
             notificationDetailExtractionDelegator,
@@ -122,7 +122,7 @@ class NotificationReceivedEventHandlerTest {
         }
         NotificationAccessor notificationAccessor = new MockNotificationAccessor(alertNotificationModels, batchId);
         NotificationDetailExtractionDelegator notificationDetailExtractionDelegator = Mockito.mock(NotificationDetailExtractionDelegator.class);
-        JobNotificationMapper2 jobNotificationMapper = Mockito.mock(JobNotificationMapper2.class);
+        JobNotificationMapper jobNotificationMapper = Mockito.mock(JobNotificationMapper.class);
         // the batch limit has been exceeded
         Mockito.when(jobNotificationMapper.hasBatchReachedSizeLimit(Mockito.any(UUID.class), Mockito.anyInt())).thenReturn(true);
 
@@ -161,7 +161,7 @@ class NotificationReceivedEventHandlerTest {
         }
         NotificationAccessor notificationAccessor = new MockNotificationAccessor(alertNotificationModels, batchId);
         NotificationDetailExtractionDelegator notificationDetailExtractionDelegator = Mockito.mock(NotificationDetailExtractionDelegator.class);
-        JobNotificationMapper2 jobNotificationMapper = Mockito.mock(JobNotificationMapper2.class);
+        JobNotificationMapper jobNotificationMapper = Mockito.mock(JobNotificationMapper.class);
 
         NotificationMappingProcessor notificationMappingProcessor = new NotificationMappingProcessor(
             notificationDetailExtractionDelegator,
@@ -199,7 +199,7 @@ class NotificationReceivedEventHandlerTest {
         }
         NotificationAccessor notificationAccessor = new MockNotificationAccessor(alertNotificationModels, batchId);
         NotificationDetailExtractionDelegator notificationDetailExtractionDelegator = Mockito.mock(NotificationDetailExtractionDelegator.class);
-        JobNotificationMapper2 jobNotificationMapper = Mockito.mock(JobNotificationMapper2.class);
+        JobNotificationMapper jobNotificationMapper = Mockito.mock(JobNotificationMapper.class);
         // the batch limit has been exceeded
         Mockito.when(jobNotificationMapper.hasBatchReachedSizeLimit(Mockito.any(UUID.class), Mockito.anyInt())).thenReturn(true);
 

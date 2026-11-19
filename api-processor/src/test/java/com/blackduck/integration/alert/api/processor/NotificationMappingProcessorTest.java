@@ -24,7 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.blackduck.integration.alert.api.processor.detail.NotificationDetailExtractionDelegator;
-import com.blackduck.integration.alert.api.processor.mapping.JobNotificationMapper2;
+import com.blackduck.integration.alert.api.processor.mapping.JobNotificationMapper;
 import com.blackduck.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.blackduck.integration.alert.test.common.MockAlertProperties;
 
@@ -33,7 +33,7 @@ class NotificationMappingProcessorTest {
     @Mock
     NotificationDetailExtractionDelegator notificationDetailExtractionDelegator;
     @Mock
-    JobNotificationMapper2 jobNotificationMapper;
+    JobNotificationMapper jobNotificationMapper;
     @Mock
     NotificationAccessor notificationAccessor;
 
